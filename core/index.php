@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
+ * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -34,7 +34,7 @@ if (isset($_SERVER['DOCUMENT_ROOT']) && $_SERVER['DOCUMENT_ROOT'])
 }
 else
 {
-	define('PATH_ROOT', __DIR__);
+	define('PATH_ROOT', dirname(__DIR__));
 }
 
 
