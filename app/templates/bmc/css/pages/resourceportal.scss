@@ -218,6 +218,15 @@
     @include grid-support {
       width: auto;
     }
+    @include grid-support {
+      width: auto;
+    }
+  }
+  @include respond-at(901px) {
+    @include grid(null, 1fr);
+  }
+  @include grid-support {
+    width: auto;
   }
   @include respond-at(901px) {
     @include grid(null, 1fr);
@@ -248,9 +257,12 @@
     padding: 2.5em;
     margin: 0 auto;
     .link {
-      @include buttons($white);
+      // @include buttons($white);
       display: inline-block;
       margin: 1em;
+      a {
+        @include btn-border-drawing($white, $orange, 2px, bottom, right);
+      }
     }
   }
 }
@@ -285,8 +297,11 @@
     align-self: center;
     order: -1;
     .link {
-      @include buttons($green);
+      // @include buttons($green);
       margin-top: 3em;
+      a {
+        @include btn-border-drawing($link-default, $orange, 2px, bottom, right);
+      }
     }
     @include respond-at(901px) {
       @include grid(span 1, 1);
@@ -296,6 +311,12 @@
     @include grid-support {
       width: auto;
     }
+    @include grid-support {
+      width: auto;
+    }
+  }
+  @include respond-at(901px) {
+    @include grid-template(null, 1fr);
   }
   @include respond-at(901px) {
     @include grid-template(null, 1fr);
@@ -319,8 +340,11 @@
     align-self: center;
     padding: 2.5em;
     .link {
-      @include buttons($white);
+      // @include buttons($white);
       margin-top: 3em;
+      a {
+        @include btn-border-drawing($white, $orange, 2px, bottom, right);
+      }
     }
     @include respond-at(901px) {
       @include grid(span 1, 1);
@@ -355,12 +379,20 @@
         a {
           color: $light-gray;
           &:visited {
-            color: $light-gray'
-          }
-          &:hover {
-            color: $light-gray'
+            color: $light-gray;
           }
         }
+      }
+      &:hover {
+        transition: all 0.3s ease-in-out;
+        transform: scale(1.1);
+        a {
+          color: $orange;
+        }
+      }
+      @include grid-support {
+        width: auto;
+        height: auto;
       }
     }
     @include respond-at(901px) {
