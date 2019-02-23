@@ -59,6 +59,7 @@
 //Buttons
 @mixin buttons($color) {
   text-transform: uppercase;
+
   a {
     border: 1px solid $color;
     color: $color !important;
@@ -74,13 +75,13 @@
   }
 }
 
-@mixin btn-border-drawing($color: #ccc, $hover: black, $width: 2px, $vertical: top, $horizontal: left, $duration: 0.25s) {
+@mixin btn-border-drawing($color: #ccc, $hover: black, $width: 2px, $vertical: top, $horizontal: left, $duration:  .25s) {
   box-shadow: inset 0 0 0 $width $color;
   color: $color;
   padding: .25em .75em;
   position: relative;
   text-transform: uppercase;
-  transition: color $duration $duration/3;
+  transition: color $duration $duration / 3;
 
 
   &::before,
@@ -132,7 +133,7 @@
 @mixin truncate($font-size, $line-height, $lines-to-show) {
   display: block; /* Fallback for non-webkit */
   display: -webkit-box;
-  height: $font-size*$line-height*$lines-to-show; /* Fallback for non-webkit */
+  height: $font-size * $line-height * $lines-to-show; /* Fallback for non-webkit */
   margin: 0 auto;
   font-size: $font-size;
   line-height: $line-height;
@@ -140,6 +141,108 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+//Horizontal Newsletter/FMN Card
+@mixin horizontal-card($height, $width) {
+  @include flexbox;
+  flex: 1 1 auto;
+  height: $height;
+  margin: 1em .75em;
+  position: relative;
+  width: $width;
+
+}
+
+@mixin horizontal-card-title($color) {
+  @include truncate(1rem, 1.4, 5);
+  font-family: 'Martel', serif;
+  padding: 0 .5em;
+
+  a {
+    color: $color;
+  }
+}
+
+@mixin horizontal-card-tag($bgColor, $color) {
+  background-color: $bgColor;
+  bottom: 1.5em;
+  font-size: .8em;
+  font-weight: bold;
+  left: -.5em;
+  padding: .5em .8em;
+  position: absolute;
+  text-transform: uppercase;
+
+  span {
+    color: $color;
+  }
+}
+
+@mixin horizontal-card-img($width, $borderColor) {
+  border-right: 5px solid $borderColor;
+  height: 100%;
+  overflow: hidden;
+  width: $width;
+
+
+  img {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: 3s ease-in-out;
+  }
+
+  &:hover {
+    img {
+      transform: translateY(-50%) scale(1.1);
+    }
+  }
+}
+
+//Mixin vertical newsletter/ROW card
+@mixin vertical-card($height, $width, $flex) {
+  flex: 1 1 $flex;
+  height: $height;
+  margin: 1em .75em;
+  position: relative;
+  width: $width;
+}
+
+@mixin vertical-card-img($height) {
+  height: $height;
+  overflow: hidden;
+  width: 100%;
+
+  img {
+    height: 100%;
+    object-fit: cover;
+    transition: 3s ease-in-out;
+    width: 100%;
+  }
+
+  &:hover {
+    img {
+      transform: scale(1.1);
+    }
+  }
+}
+
+@mixin vertical-card-title {
+  @include truncate(1rem, 1.6, 2);
+  border-bottom: 2px solid $green;
+  font-family: 'Martel', serif;
+
+  h3,
+  h4 {
+    font-family: 'Martel', serif;
+    font-size: 1.1rem;
+    margin-top: .5em;
+  }
+
+  a {
+    color: $dark-blue;
+  }
 }
 
 //Showcase Module
@@ -220,12 +323,12 @@
 }
 
 %image-gradient {
+  background-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 50%,rgba(0,0,0,1) 100%);
+  bottom: 0;
   content: '';
   display: block;
-  position: absolute;
-  bottom: 0;
-  background-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 50%,rgba(0,0,0,1) 100%);
   height: 100%;
+  position: absolute;
   width: 100%;
 }
 

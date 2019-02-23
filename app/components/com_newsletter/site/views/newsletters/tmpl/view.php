@@ -37,74 +37,199 @@ $this->css()
      ->js();
 ?>
 
-<header id="content-header">
-	<h2><?php echo Lang::txt(strtoupper($this->option)); ?></h2>
-
-	<div id="content-header-extra">
-		<ul>
-			<?php if (isset($this->id) && $this->id != 0) : ?>
-				<li>
-					<a href="<?php echo Route::url('index.php?option=com_newsletter&id=' . $this->id . '&task=output'); ?>" class="btn icon-file">
-						<?php echo Lang::txt('COM_NEWSLETTER_VIEW_SAVEASPDF'); ?>
-					</a>
-				</li>
-			<?php endif; ?>
-			<li>
-				<a href="<?php echo Route::url('index.php?option=com_newsletter&task=subscribe'); ?>" class="btn icon-feed">
-					<?php echo Lang::txt('COM_NEWSLETTER_VIEW_SUBSCRIBE_TO_MAILINGLISTS'); ?>
-				</a>
-			</li>
-		</ul>
-	</div>
-</header>
 
 <section class="main section">
-	<div class="section-inner hz-layout-with-aside">
-		<div class="subject newsletter">
-			<?php
-			if ($this->getError())
-			{
-				echo '<p class="error">' . $this->getError() . '</p>';
-			}
-			?>
+  <div class="newsletter-wrap">
+    <div class="current-newsletter-wrap">
+      <a href="<?php echo Route::url('index.php?option=com_newsletter&task=subscribe'); ?>" class="btn icon-feed">
+        <?php echo Lang::txt('COM_NEWSLETTER_VIEW_SUBSCRIBE_TO_MAILINGLISTS'); ?>
+      </a>
 
-			<h3><?php echo $this->escape($this->title); ?></h3>
+      <div class="current-newsletter">
+        <a href="#">
+          <div class="current-img">
+            <img src="https://qubeshub.org/app/site/media/images/newsletters/19/01/LDC2019%20banner_blue.png" alt="Newsletter Image">
+          </div>
+        </a>
+        <div class="newsletter-title">
+          <a href="#">
+            <h3>QUBES Newsletter - January 2019</h3>
+          </a>
+        </div>
+        <div class="newsletter-tag">
+          <span>Current</span>
+        </div>
+      </div>
+    </div>
 
-			<?php if ($this->newsletter != '') : ?>
-				<div class="container">
-					<iframe id="newsletter-iframe" width="100%" height="0" title="<?php echo $this->escape($this->title); ?>" src="<?php echo Route::url('index.php?option=com_newsletter&id=' . $this->id . '&no_html=1'); ?>"></iframe>
-				</div>
-			<?php else : ?>
-				<p class="info">
-					<?php echo Lang::txt('COM_NEWSLETTER_VIEW_NO_NEWSLETTERS'); ?>
-				</p>
-			<?php endif; ?>
-		</div><!-- /.subject -->
-		<aside class="aside">
-		<div class="container">
-			<h3><?php echo Lang::txt('COM_NEWSLETTER_VIEW_PAST_NEWSLETTERS'); ?></h3>
-			<ul>
-				<?php foreach ($this->newsletters as $newsletter) : ?>
-					<?php if ($newsletter->published) : ?>
-						<li>
-							<a class="<?php if ($this->id == $newsletter->id) { echo "active"; } ?>" href="<?php echo Route::url('index.php?option=com_newsletter&id=' . $newsletter->id); ?>">
-								<?php echo $newsletter->name; ?>
-							</a>
-						</li>
-					<?php endif; ?>
-				<?php endforeach; ?>
-			</ul>
-		</div>
-		<div class="container">
-			<h3><?php echo Lang::txt('COM_NEWSLETTER_VIEW_NEWSLETTER_HELP'); ?></h3>
-			<ul>
-				<li>
-					<a class="popup" href="<?php echo Route::url('index.php?option=com_help&component=newsletter&page=index'); ?>">
-						<?php echo Lang::txt('COM_NEWSLETTER_VIEW_NEWSLETTER_HELP'); ?>
-					</a>
-				</li>
-			</ul>
-		</div>
-	</aside><!-- /.aside -->
-	</div>
-</section><!-- /.main .section -->
+    <div class="past-newsletter-wrapper"> <!-- Start: 4 most recent newsletters -->
+      <h2>Latest</h2>
+      <hr>
+      <div class="past-newsletter-wrap">
+        <div class="past-newsletter-content highlight">
+          <div class="past-newsletter">
+            <a href="#">
+              <div class="past-img">
+                <img src="https://qubeshub.org/app/site/media/images/newsletters/NIBLSE/01/NIBLSE_logo.png" alt="Image: Current Newsletter">
+              </div>
+            </a>
+            <div class="newsletter-title">
+              <a href="#">NIBLSE Newsletter: December 2018</a>
+            </div>
+            <div class="newsletter-tag">
+              <span>Partner News</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="vb"></div>
+
+        <div class="past-newsletter-content">
+          <div class="past-newsletter">
+            <a href="#">
+              <div class="past-img">
+                <img src="https://qubeshub.org/app/site/media/images/newsletters/18/12/placeholder_GEA_logo_white_150.png" alt="Image: Recent Newsletter">
+              </div>
+            </a>
+            <div class="newsletter-title">
+              <a href="#">QUBES Newsletter - December 2018</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="vb"></div>
+
+        <div class="past-newsletter-content">
+          <div class="past-newsletter">
+            <a href="#">
+              <div class="past-img">
+                <img src="https://qubeshub.org/app/site/media/images/newsletters/18/11/Nicole%20Chodkowski.png" alt="Image: Recent Newsletter">
+              </div>
+            </a>
+            <div class="newsletter-title">
+              <a href="#">QUBES Newsletter - November 2018</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="vb"></div>
+
+        <div class="past-newsletter-content">
+          <div class="past-newsletter">
+            <a href="#">
+              <div class="past-img">
+                <img src="https://qubeshub.org/app/site/media/images/newsletters/18/11/Carrie.png" alt="Image: Recent Newsletter">
+              </div>
+            </a>
+            <div class="newsletter-title">
+              <a href="#">QUBES Newsletter - October 2018</a>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End: recent newsletter wrap -->
+    </div> <!-- End: recent newsletters -->
+  </div> <!-- End: newsletter wrap -->
+
+  <div class="row-newsletter-wrapper"> <!-- Start: ROW section -->
+    <h2>Resource of the Week</h2>
+    <hr>
+    <span>Check out <a href="https://qubeshub.org/news/newsletter/row">all past</a> resources featured in ROW!</span>
+    <div class="row-newsletter-wrap">
+      <div class="row-newsletter">
+        <div class="row-img">
+          <a href="#">
+            <img src="https://qubeshub.org/app/site/media/images/newsletters/ROW/22/1200px-Bike_path_on_College_in_Toronto-3009.jpeg" alt="Image: Resource of the Week">
+          </a>
+        </div>
+        <div class="row-title">
+          <h3><a href="#">Working with spreadsheet-style data in Python with pandas and seaborn (Version 1.0)</a></h3>
+        </div>
+      </div>
+
+      <div class="row-newsletter">
+        <div class="row-img">
+          <a href="#">
+            <img src="https://qubeshub.org/app/site/media/images/newsletters/ROW/021/Screenshot%20from%202018-10-30%2002-58-31-2690.png" alt="Image: Resource of the Week">
+          </a>
+        </div>
+        <div class="row-title">
+          <h3><a href="#">Statistical Exploration of Climate Data (Version 1.0)</a></h3>
+        </div>
+      </div>
+
+      <div class="row-newsletter">
+        <div class="row-img">
+          <a href="#">
+            <img src="https://qubeshub.org/app/site/media/images/newsletters/ROW/020/AntPicture-1628.jpg" alt="Image: Resource of the Week">
+          </a>
+        </div>
+        <div class="row-title">
+          <h3><a href="#">Leaf cutter ant foraging (Version 1.0)</a></h3>
+        </div>
+      </div>
+
+      <div class="row-newsletter">
+        <div class="row-img">
+          <a href="#">
+            <img src="https://qubeshub.org/app/site/media/images/newsletters/ROW/019/gslogo-print%20copy-2480.jpg" alt="Image: Resource of the Week">
+          </a>
+        </div>
+        <div class="row-title">
+          <h3><a href="#">Genome Solver - Complete Set of Lessons</a></h3>
+        </div>
+      </div>
+    </div>
+  </div> <!-- End: ROW section -->
+
+  <div class="partner-newsletter-wrapper"> <!-- Start: Partner Newsletter -->
+    <h2>Partner Newsletters</h2>
+    <hr>
+    <div class="partner-newsletter-wrap">
+      <div class="partner-newsletter">
+        <div class="partner-img">
+          <a href="#">
+            <img src="https://qubeshub.org/app/site/media/images/newsletters/NIBLSE/01/NIBLSE_logo.png" alt="Image: Partner Newsletter">
+          </a>
+        </div>
+        <div class="partner-title">
+          <h3><a href="#">NIBLSE Newsletter: December 2018</a></h3>
+        </div>
+      </div>
+
+      <!-- Ghosting 3 fillers to keep one entry aligned with ROW on window resizing. Fillers will need to be removed as this section fills up as well as CSS updating updating -->
+
+      <div class="partner-newsletter">
+        <div class="partner-img">
+          <a href="#">
+            <!-- <img src="https://qubeshub.org/app/site/media/images/newsletters/NIBLSE/01/NIBLSE_logo.png" alt="Image: Partner Newsletter"> -->
+          </a>
+        </div>
+        <!-- <div class="partner-title">
+          <h3><a href="#">NIBLSE Newsletter: December 2018</a></h3>
+        </div> -->
+      </div>
+
+      <div class="partner-newsletter">
+        <div class="partner-img">
+          <a href="#">
+            <!-- <img src="https://qubeshub.org/app/site/media/images/newsletters/NIBLSE/01/NIBLSE_logo.png" alt="Image: Partner Newsletter"> -->
+          </a>
+        </div>
+        <!-- <div class="partner-title">
+          <h3><a href="#">NIBLSE Newsletter: December 2018</a></h3>
+        </div> -->
+      </div>
+
+      <div class="partner-newsletter">
+        <div class="partner-img">
+          <a href="#">
+            <!-- <img src="https://qubeshub.org/app/site/media/images/newsletters/NIBLSE/01/NIBLSE_logo.png" alt="Image: Partner Newsletter"> -->
+          </a>
+        </div>
+        <!-- <div class="partner-title">
+          <h3><a href="#">NIBLSE Newsletter: December 2018</a></h3>
+        </div> -->
+      </div>
+    </div>
+  </div> <!-- End: Partner Newsletter -->
+</section>
