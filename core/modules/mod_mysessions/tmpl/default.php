@@ -204,4 +204,4 @@ $base = rtrim(Request::base(true), '/');
 			</p>
 		<?php endif; ?>
 	</div>
-<?php endif; 
+<?php endif;
