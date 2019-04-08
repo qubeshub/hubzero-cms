@@ -184,7 +184,8 @@
 		color: red;
 	}
 
-  .truncate {
+.truncate {
+
 		display: block; /* Fallback for non-webkit */
 	  display: -webkit-box;
 	  height: 2.4em; /* Fallback for non-webkit */
@@ -196,6 +197,7 @@
 	  overflow: hidden;
 	  text-overflow: ellipsis;
 	}
+
 
 /*
   .grpdisp {
