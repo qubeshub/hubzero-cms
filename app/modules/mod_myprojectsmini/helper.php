@@ -42,6 +42,8 @@ use User;
  */
 class Helper extends Module
 {
+
+
 	/**
 	 * Display module content
 	 *
@@ -49,6 +51,7 @@ class Helper extends Module
 	 */
 	public function display()
 	{
+
 		$db = \App::get('db');
 
 		// Get the module parameters
@@ -62,6 +65,7 @@ class Helper extends Module
 		// Load classes
 		require_once Component::path('com_projects') . DS . 'tables' . DS . 'project.php';
 		require_once Component::path('com_projects') . DS . 'helpers' . DS . 'html.php';
+
 
 		// Set filters
 		$filters = array(
@@ -89,9 +93,21 @@ class Helper extends Module
 		// Get records
 		$this->rows = $obj->getRecords($filters, false, User::get('id'), 0, $setup_complete);
 
-		// pass limit to view
-		$this->limit = $limit;
+    $projctsorted = $this->rows;
 
+		foreach ($projctsorted as $project){
+
+         $query = "SELECT lastvisit FROM `#__project_owners` WHERE id= " . $project->id;
+				 $db->setQuery($query);
+				 $lastvisit= $db->loadResult();
+				 $project->lastvisit = $lastvisit;
+			}
+
+    uasort($projctsorted,function($first,$second){
+    return $first->lastvisit < $second->lastvisit;
+    });
+    // pass limit to view
+    $this->limit = $limit;
 		require $this->getLayoutPath();
 	}
 }
