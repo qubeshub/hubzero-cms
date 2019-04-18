@@ -34,7 +34,7 @@ defined('_HZEXEC_') or die();
 
 	$cls = isset($this->cls) ? $this->cls : 'odd';
 
-	$name = Lang::txt('PLG_PUBLICATIONS_REVIEWS_ANONYMOUS');
+	$name = Lang::txt('PLG_PUBLICATIONS_COMMENT_ANONYMOUS');
 	$huser = \Hubzero\User\User::oneOrNew($this->comment->get('created_by'));
 
 	if (!$this->comment->get('anonymous'))

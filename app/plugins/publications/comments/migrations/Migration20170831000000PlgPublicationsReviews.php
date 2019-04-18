@@ -6,16 +6,16 @@ use Hubzero\Content\Migration\Base;
 defined('_HZEXEC_') or die();
 
 /**
- * Migration script for adding entry for Publications - Reviews plugin
+ * Migration script for adding entry for Publications - Comments plugin
  **/
-class Migration20170831000000PlgPublicationsReviews extends Base
+class Migration20191708000000PlgPublicationsComments extends Base
 {
 	/**
 	 * Up
 	 **/
 	public function up()
 	{
-		$this->addPluginEntry('publications', 'reviews');
+		$this->addPluginEntry('publications', 'comments');
 	}
 
 	/**
@@ -23,6 +23,6 @@ class Migration20170831000000PlgPublicationsReviews extends Base
 	 **/
 	public function down()
 	{
-		$this->deletePluginEntry('publications', 'reviews');
+		$this->deletePluginEntry('publications', 'comments');
 	}
 }
