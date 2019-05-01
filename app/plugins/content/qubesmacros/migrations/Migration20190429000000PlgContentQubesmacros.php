@@ -8,7 +8,7 @@ defined('_HZEXEC_') or die();
 /**
  * Migration script for adding Content - QUBES Macros
  **/
-class Migration20180530000000PlgContentQubesmacros extends Base
+class Migration20190429000000PlgContentQubesmacros extends Base
 {
 	/**
 	 * Up
