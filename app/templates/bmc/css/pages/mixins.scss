@@ -144,23 +144,35 @@
 
 //Showcase Module
 @mixin showcase-header($font-size, $line-height, $lines-to-show) {
-  display: block; /* Fallback for non-webkit */
-  display: -webkit-box;
-  height: $font-size*$line-height*$lines-to-show; /* Fallback for non-webkit */
-  margin: 0 auto;
-  font-size: $font-size;
-  line-height: $line-height;
-  -webkit-line-clamp: $lines-to-show;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: $white;
+  background-color: $white;
+  border: 1px solid $light-gray;
+  opacity: .85;
+
+  a {
+    display: block; /* Fallback for non-webkit */
+    display: -webkit-box;
+    height: $font-size*$line-height*$lines-to-show; /* Fallback for non-webkit */
+    margin: 0 auto;
+    font-size: $font-size;
+    line-height: $line-height;
+    -webkit-line-clamp: $lines-to-show;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: $link-color;
+
+    &:hover {
+      color: $dark-blue;
+    }
+  }
 }
 
 @mixin showcase-tag($background-color, $link-color) {
   background-color: $background-color;
   bottom: 5em;
+  font-family: 'open_sansregular', Helvetica Neue, Helvetica, sans-serif;
   font-size: .8em;
+  font-style: normal;
   font-weight: bold;
   padding: .5em .8em;
   position: absolute;
@@ -184,9 +196,9 @@
     width: 100%;
   }
 
-  &::after {
-    @extend %image-gradient;
-  }
+  // &::after {
+  //   @extend %image-gradient;
+  // }
 
   &:hover {
     img {
@@ -208,9 +220,9 @@
     transition: 3s ease-in-out;
   }
 
-  &::after {
-    @extend %image-gradient;
-  }
+  // &::after {
+  //   @extend %image-gradient;
+  // }
 
   &:hover {
     img {
