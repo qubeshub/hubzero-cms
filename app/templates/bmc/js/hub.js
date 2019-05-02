@@ -209,6 +209,14 @@ if (!jq) {
 			}
 		});
 
+		// Remove link stylings if an image exists
+
+		$('.contentpane a').each(function() {
+			if ($(this).find('img').length) {
+				$(this).addClass('removeLinkStyles');
+			}
+		});
+
 		body = $('body');
 
 		// Sticky header vars

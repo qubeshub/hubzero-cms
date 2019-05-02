@@ -88,6 +88,58 @@ a:hover {
 	color: @colorLinkHover;
 }
 
+.contentpaneopen {
+	a,
+	a:active,
+	a:visited {
+		color: @colorLink;
+		display: inline-block;
+		font-family: @fontScript;
+		font-style: italic;
+		font-weight: bold;
+		position: relative;
+
+		&::before {
+			background-color: @colorLink;
+			content: '';
+			display: block;
+			height: 2px;
+			left: 0;
+			margin: 0 auto;
+			opacity: .5;
+			position: absolute;
+			top: 100%;
+			transform: scaleX(.7);
+			-webkit-transform: scaleX(.7);
+			width: 100%;
+			transition: .3s ease;
+		}
+
+		&:hover {
+			color: @colorSidebarBg;
+		}
+
+		&:hover::before {
+			background-color: @colorSidebarBg;
+			opacity: 1;
+			transform: scaleX(1);
+			-webkit-transform: scaleX(1);
+		}
+	}
+}
+
+
+
+
+a.removeLinkStyles {
+	display: unset;
+
+	&::before {
+		display: none;
+	}
+}
+
+
 /* ********************************************
  * Other tags
  */
