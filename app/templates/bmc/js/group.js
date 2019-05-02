@@ -115,4 +115,12 @@ jQuery(document).ready(function(jq){
 	};
 
 	HUB.template.init();
+
+	// Remove link stylings if an image exists
+
+	$('.super-group-content a').each(function() {
+		if ($(this).find('img').length) {
+			$(this).addClass('removeLinkStyles');
+		}
+	});
 });
