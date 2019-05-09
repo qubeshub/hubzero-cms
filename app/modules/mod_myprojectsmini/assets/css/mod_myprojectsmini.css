@@ -37,13 +37,13 @@
 	float: left;
 	margin-right: 0.5em;
 	*padding-bottom: 0;
-}	
+}
 #myprojects span.sub {
 	display: block;
 	font-size: 85%;
 	margin-top: -0.2em;
 	line-height: 1.2em;
-}	
+}
 #myprojects .compactlist li span span.s-new {
 	display: block;
 	position: absolute;
@@ -54,3 +54,26 @@
 	padding: 0 0.5em;
 	margin-top: 1em;
 }
+
+div.prjctdisp{
+    display:table;
+		width: 100%;
+}
+
+div .project-name{
+		vertical-align:middle;
+		display:table-cell;
+}
+
+div.prjctdisp .project-img{
+    vertical-align:middle;
+    display:table-cell;
+    width:45px;
+		/* you can change width */
+}
+
+div.a.project-img img{
+	height:45px;
+	width: 100%;
+	vertical-align:middle;
+ }
