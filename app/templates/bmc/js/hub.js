@@ -209,6 +209,7 @@ if (!jq) {
 			}
 		});
 
+<<<<<<< HEAD
 		// Remove link stylings if an image exists
 
 		$('.contentpane a').each(function() {
@@ -216,6 +217,11 @@ if (!jq) {
 				$(this).addClass('removeLinkStyles');
 			}
 		});
+=======
+		// Secondary Menu - adjust margin of last visible link
+
+		$('.nav-secondary > .menu > li > a:not(".hidden"):last').closest('li').addClass('removeMargin');
+>>>>>>> master
 
 		body = $('body');
 
@@ -733,6 +739,5 @@ jQuery(document).ready(function(jq) {
 	TPL.init();
 });
 
-$(window).load(function() {
-
+$(window).on("load", function() {
 });
