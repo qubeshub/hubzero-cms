@@ -1,8 +1,7 @@
 /**
- * @package     hubzero-cms
- * @file        templates/system/js/group.js
- * @copyright   Copyright 2005-2015 HUBzero Foundation, LLC.
- * @license     http://opensource.org/licenses/MIT MIT
+ * @package    hubzero-cms
+ * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @license    http://opensource.org/licenses/MIT MIT
  */
 
 if (!jq) {
@@ -115,6 +114,7 @@ jQuery(document).ready(function(jq){
 	};
 
 	HUB.template.init();
+<<<<<<< HEAD
 
 	// Remove link stylings if an image exists
 
@@ -123,4 +123,6 @@ jQuery(document).ready(function(jq){
 			$(this).addClass('removeLinkStyles');
 		}
 	});
+=======
+>>>>>>> master
 });

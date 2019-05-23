@@ -602,7 +602,10 @@ class plgProjectsFiles extends \Hubzero\Plugin\Plugin
 			{
 				$extraFields = array(
 					array('name' => 'id', 'value' => $view->publication->get('id')),
+<<<<<<< HEAD
 					array('name' => 'task', 'value' => 'submit'),
+=======
+>>>>>>> master
 					array('name' => 'option', 'value' => 'com_publications'),
 					array('name' => 'ajax', 'value' => '0')
 				);
