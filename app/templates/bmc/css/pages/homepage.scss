@@ -36,7 +36,7 @@
 }
 
 .intro {
-  @include bcg-img('/app/site/media/images/pexels-photo-355988.jpg');
+  @include bcg-img('/app/site/media/images/idea-2000.jpg');
   @include bcg($black, $white);
   color: $white;
   flex-direction: column;
@@ -80,10 +80,6 @@
   a {
     color: $white;
 
-    &::before {
-      background-color: $white;
-    }
-
     &::after {
       background-color: $white;
     }
@@ -92,7 +88,7 @@
       color: $white;
     }
 
-    &:hover::before {
+    &:hover::after {
       background-color: $white;
     }
   }
@@ -202,17 +198,21 @@
   margin-top: 1em;
 }
 
-.link::after {
-  background: $hr-color;
-  content: '';
-  display: block;
-  height: 1px;
-  margin-right: .2em;
-  position: absolute;
-  right: 100%;
-  width: 1rem;
-  top: 50%;
+.link {
+  text-align: center;
 }
+
+// .link::after {
+//   background: $hr-color;
+//   content: '';
+//   display: block;
+//   height: 1px;
+//   margin-right: .2em;
+//   position: absolute;
+//   right: 100%;
+//   width: 1rem;
+//   top: 50%;
+// }
 
 //Resources
 .one {
@@ -280,6 +280,7 @@
       @include grid-support {
         margin: 0;
       }
+      border: 1px solid $light-gray;
       flex: 1 1 15rem;
       height: 15rem;
       margin: 5px;
@@ -294,7 +295,7 @@
     }
 
     .resource-title {
-      @include showcase-header(1em, 1, 2);
+      @include showcase-header(1em, 1.1, 2);
       bottom: 0;
       padding: 0.625em;
       position: absolute;
@@ -357,6 +358,8 @@
       }
 
       a {
+        font-weight: normal;
+
         &::before {
           background-color: transparent;
         }
@@ -576,6 +579,7 @@
     .blog,
     .newsletter,
     .fmn {
+      border: 1px solid $light-gray;
       position: relative;
     }
 
@@ -597,10 +601,11 @@
     .blog-title,
     .newsletter-title,
     .fmn-title {
-      @include showcase-header(1em, 1, 2);
+      @include showcase-header(1em, 1.1, 2);
       bottom: 0;
       padding: 0.625em;
       position: absolute;
+      width: 100%;
     }
 
     .partner-img,

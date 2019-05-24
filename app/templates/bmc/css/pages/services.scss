@@ -5,13 +5,6 @@
   display: none;
 }
 
-.wrapper {
-  h3,
-  h4 {
-    font-family: 'Martel', serif;
-  }
-}
-
 //Header
 .service-header {
   @include flexbox;
@@ -26,9 +19,12 @@
     padding: 2.5em;
     width: 75%;
 
-    .link {
-      @include btn-border-drawing($white, $orange, 1px, bottom, right);
-      border-radius: 2px;
+    a {
+      color: $white;
+
+      &::after {
+        background-color: $white;
+      }
     }
   }
 
@@ -60,15 +56,6 @@
     padding: 2.5em;
     text-align: center;
     width: 100%;
-
-    .link {
-      @include respond-at(670px) {
-        display: initial;
-      }
-      @include btn-border-drawing($link-color, $orange, 1px, bottom, right);
-      border-radius: 2px;
-      display: block;
-    }
   }
 }
 
@@ -92,11 +79,6 @@
     @include bcg-plain-img('/app/site/media/images/workplace-1245776_1920.jpg');
     height: 20rem;
     width: 100%;
-  }
-
-  .link {
-    @include btn-border-drawing($link-color, $orange, 1px, bottom, right);
-    border-radius: 2px;
   }
 }
 
@@ -144,10 +126,5 @@
     align-self: center;
     margin: 0 auto;
     text-align: center;
-
-    .link {
-      @include btn-border-drawing($link-color, $orange, 1px, bottom, right);
-      border-radius: 2px;
-    }
   }
 }

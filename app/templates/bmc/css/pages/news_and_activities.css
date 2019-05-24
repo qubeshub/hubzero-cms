@@ -42,13 +42,11 @@
 
 .header h1 {
   border-bottom: 3px solid #8CC540;
-  color: #222b37;
   font-family: 'montserratultra_light', Helvetica Neue, Helvetica, sans-serif;
   margin: 1rem 0;
 }
 
 .header h4 {
-  font-family: 'Martel', serif;
   text-align: right;
 }
 
@@ -133,13 +131,13 @@
 }
 
 .newsletters {
-  border: 1px solid #8CC540;
+  border: 1px solid #222b37;
   border-radius: 6px;
   padding: 1em;
 }
 
 .newsletters h2 {
-  color: #8CC540;
+  color: #222b37;
   margin-bottom: .6em;
   text-align: center;
 }
@@ -159,22 +157,41 @@
   object-fit: contain;
 }
 
+.module-newsletters .newsletter-title {
+  background-color: #fff;
+  border: 1px solid #F1F2F2;
+  font-family: 'Martel', Georgia, Times, "Times New Roman", serif;
+  opacity: .85;
+  border-bottom: 2px solid #8CC540;
+}
+
 .module-newsletters .newsletter-title a {
   display: block;
   /* Fallback for non-webkit */
-  display: -webkit-box;
-  height: 2.4em;
+  height: 3.6em;
   /* Fallback for non-webkit */
+  display: -webkit-box;
   margin: 0 auto;
   font-size: 1em;
+  font-weight: normal;
   line-height: 1.2;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #fff;
-  color: #4c4c4c;
-  margin: .3em 0;
+  color: #597F2F;
+}
+
+.module-newsletters .newsletter-title a:hover {
+  color: #222b37;
+}
+
+.module-newsletters .newsletter-title a {
+  margin: .5em;
+}
+
+.module-newsletters .newsletter-title a::after {
+  display: none;
 }
 
 .module-newsletters div:first-of-type {
@@ -197,12 +214,18 @@
   text-align: center;
 }
 
+.module-newsletters div:first-of-type .newsletter-title a {
+  border: none;
+}
+
 .module-newsletters div:nth-of-type(2) {
+  border: 1px solid #F1F2F2;
   margin: 0 1em;
   width: 40%;
 }
 
 .module-newsletters div:nth-of-type(3) {
+  border: 1px solid #F1F2F2;
   margin: 0 1em;
   width: 40%;
 }
@@ -234,28 +257,33 @@
 }
 
 .blog-title {
+  background-color: #fff;
+  border: 1px solid #F1F2F2;
+  font-family: 'Martel', Georgia, Times, "Times New Roman", serif;
+  opacity: .85;
+  border: none;
   margin-left: .5em;
 }
 
 .blog-title a {
   display: block;
   /* Fallback for non-webkit */
-  display: -webkit-box;
   height: 4.8em;
   /* Fallback for non-webkit */
+  display: -webkit-box;
   margin: 0 auto;
   font-size: 1em;
+  font-weight: normal;
   line-height: 1.2;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #fff;
-  color: #4c4c4c;
+  color: #597F2F;
 }
 
-.blog-title span {
-  color: #4c4c4c;
+.blog-title a:hover {
+  color: #222b37;
 }
 
 .newsletter {
@@ -295,23 +323,38 @@
 }
 
 .newsletter-title {
+  background-color: #fff;
+  border: 1px solid #F1F2F2;
+  font-family: 'Martel', Georgia, Times, "Times New Roman", serif;
+  opacity: .85;
   border-bottom: 2px solid #8CC540;
 }
 
 .newsletter-title a {
   display: block;
   /* Fallback for non-webkit */
-  display: -webkit-box;
   height: 4.8em;
   /* Fallback for non-webkit */
+  display: -webkit-box;
   margin: 0 auto;
   font-size: 1em;
+  font-weight: normal;
   line-height: 1.2;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: #fff;
-  color: #4c4c4c;
-  margin: .3em 0;
+  color: #597F2F;
+}
+
+.newsletter-title a:hover {
+  color: #222b37;
+}
+
+.newsletter-title a {
+  margin: .5em;
+}
+
+.newsletter-title a::after {
+  display: none;
 }

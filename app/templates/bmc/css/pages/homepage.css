@@ -38,17 +38,6 @@
   transform: translateY(-50%) scale(1.1);
 }
 
-.community .module-right .partner-img::after,
-.community .module-right .group-img::after {
-  content: '';
-  display: block;
-  position: absolute;
-  bottom: 0;
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 50%, black 100%);
-  height: 100%;
-  width: 100%;
-}
-
 .wrapper {
   display: grid;
   grid-template-columns: repeat(4, [col] 1fr);
@@ -91,8 +80,8 @@
 }
 
 .intro {
-  background: url("/app/site/media/images/pexels-photo-355988.jpg");
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%), url("/app/site/media/images/pexels-photo-355988.jpg");
+  background: url("/app/site/media/images/idea-2000.jpg");
+  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%), url("/app/site/media/images/idea-2000.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   background-color: #000;
@@ -143,10 +132,6 @@
   color: #fff;
 }
 
-.anchor-link a::before {
-  background-color: #fff;
-}
-
 .anchor-link a::after {
   background-color: #fff;
 }
@@ -155,7 +140,7 @@
   color: #fff;
 }
 
-.anchor-link a:hover::before {
+.anchor-link a:hover::after {
   background-color: #fff;
 }
 
@@ -276,7 +261,9 @@
 .feature .fmn-title {
   background-color: #fff;
   border: 1px solid #F1F2F2;
+  font-family: 'Martel', Georgia, Times, "Times New Roman", serif;
   opacity: .85;
+  width: 100%;
   border: none;
   margin-left: .5em;
 }
@@ -287,11 +274,12 @@
 .feature .fmn-title a {
   display: block;
   /* Fallback for non-webkit */
-  display: -webkit-box;
   height: 4.8em;
   /* Fallback for non-webkit */
+  display: -webkit-box;
   margin: 0 auto;
   font-size: 1em;
+  font-weight: normal;
   line-height: 1.2;
   -webkit-line-clamp: 4;
   -webkit-box-orient: vertical;
@@ -315,16 +303,8 @@
   margin-top: 1em;
 }
 
-.link::after {
-  background: #c1c1c1;
-  content: '';
-  display: block;
-  height: 1px;
-  margin-right: .2em;
-  position: absolute;
-  right: 100%;
-  width: 1rem;
-  top: 50%;
+.link {
+  text-align: center;
 }
 
 .one {
@@ -422,6 +402,7 @@
 }
 
 .resources .module-left .resource {
+  border: 1px solid #F1F2F2;
   flex: 1 1 15rem;
   height: 15rem;
   margin: 5px;
@@ -456,7 +437,9 @@
 .resources .module-left .resource-title {
   background-color: #fff;
   border: 1px solid #F1F2F2;
+  font-family: 'Martel', Georgia, Times, "Times New Roman", serif;
   opacity: .85;
+  width: 100%;
   bottom: 0;
   padding: 0.625em;
   position: absolute;
@@ -466,12 +449,13 @@
 .resources .module-left .resource-title a {
   display: block;
   /* Fallback for non-webkit */
-  display: -webkit-box;
-  height: 2em;
+  height: 2.2em;
   /* Fallback for non-webkit */
+  display: -webkit-box;
   margin: 0 auto;
   font-size: 1em;
-  line-height: 1;
+  font-weight: normal;
+  line-height: 1.1;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -561,6 +545,10 @@
   height: 65%;
   object-fit: scale-down;
   width: 6.25em;
+}
+
+.software .software-logos .logo-wrap a {
+  font-weight: normal;
 }
 
 .software .software-logos .logo-wrap a::before {
@@ -860,6 +848,7 @@
 .community .module-right .blog,
 .community .module-right .newsletter,
 .community .module-right .fmn {
+  border: 1px solid #F1F2F2;
   position: relative;
 }
 
@@ -899,10 +888,13 @@
 .community .module-right .fmn-title {
   background-color: #fff;
   border: 1px solid #F1F2F2;
+  font-family: 'Martel', Georgia, Times, "Times New Roman", serif;
   opacity: .85;
+  width: 100%;
   bottom: 0;
   padding: 0.625em;
   position: absolute;
+  width: 100%;
 }
 
 .community .module-right .billboard-header a,
@@ -914,12 +906,13 @@
 .community .module-right .fmn-title a {
   display: block;
   /* Fallback for non-webkit */
-  display: -webkit-box;
-  height: 2em;
+  height: 2.2em;
   /* Fallback for non-webkit */
+  display: -webkit-box;
   margin: 0 auto;
   font-size: 1em;
-  line-height: 1;
+  font-weight: normal;
+  line-height: 1.1;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;

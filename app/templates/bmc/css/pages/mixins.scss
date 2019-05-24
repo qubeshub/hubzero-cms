@@ -146,14 +146,17 @@
 @mixin showcase-header($font-size, $line-height, $lines-to-show) {
   background-color: $white;
   border: 1px solid $light-gray;
+  font-family: 'Martel', Georgia, Times, "Times New Roman", serif;
   opacity: .85;
+  width: 100%;
 
   a {
     display: block; /* Fallback for non-webkit */
-    display: -webkit-box;
     height: $font-size*$line-height*$lines-to-show; /* Fallback for non-webkit */
+    display: -webkit-box;
     margin: 0 auto;
     font-size: $font-size;
+    font-weight: normal;
     line-height: $line-height;
     -webkit-line-clamp: $lines-to-show;
     -webkit-box-orient: vertical;
@@ -249,14 +252,13 @@
 }
 
 %anchor {
-  color: $dark-blue;
   margin: 2em;
   padding: 1em;
   transition: .2s ease;
   width: 22rem;
 
   hr {
-    background: $dark-blue;
+    background: $green;
     margin: 0;
     transition: .3s;
     width: 45%;
@@ -266,17 +268,28 @@
     transition: .2s;
   }
 
+  p {
+    a {
+      font-family: 'open_sansregular', 'Helvetica Neue', Helvetica, sans-serif;
+      font-weight: normal;
+
+      &::after {
+        display: none;
+      }
+    }
+  }
+
   a {
-    color: $dark-blue;
+    color: $body;
 
     &:hover,
     &:visited {
-      color: $dark-blue;
+      color: $body;
     }
   }
 
   &:hover {
-    border-left: 4px solid $dark-blue;
+    border-left: 4px solid $green;
 
     hr {
       width: 65%;

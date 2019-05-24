@@ -445,6 +445,11 @@ ul.postdoc-list {
     z-index: 3;
   }
 
+	img {
+		height: 100%;
+		width: 100%;
+	}
+
   &.active {
     .img-container {
       border-radius: 50%;

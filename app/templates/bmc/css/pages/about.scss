@@ -62,11 +62,6 @@ html {
   display: none;
 }
 
-.link {
-  @include btn-border-drawing($link-color, $orange, 1px, bottom, right);
-  border-radius: 2px;
-}
-
 //Mission Statement
 .mission {
   color: $white;
@@ -211,6 +206,10 @@ html {
 //Citations
 .citations {
   padding: 7em 0;
+
+  .link {
+    margin: 2em auto;
+  }
 
   h2 {
     text-align: center;

@@ -10,9 +10,9 @@
   grid-column: col/span 3;
   grid-row: row;
   display: grid;
+  grid-gap: 1rem;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, auto);
-  grid-gap: 1rem;
   visibility: hidden;
 }
 
@@ -31,7 +31,7 @@
 .one .current-postdocs {
   grid-column: 1/span 3;
   grid-row: 2;
-  border: 1px solid #84bf41;
+  border: 1px solid #8CC540;
   border-radius: 6px;
   padding: 0 18px 0 10px;
   position: relative;
@@ -56,8 +56,8 @@
     display: flex;
     flex-wrap: nowrap;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
     grid-gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
     padding: 2.5em;
   }
 }
@@ -68,9 +68,9 @@
   grid-column: col/span 3;
   grid-row: row 2;
   display: grid;
+  grid-gap: 1rem;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, auto);
-  grid-gap: 1rem;
   background-color: #F1F2F2;
   padding: 2.5em;
 }
@@ -123,9 +123,9 @@
     display: flex;
     flex-wrap: nowrap;
     display: grid;
+    grid-gap: 1rem;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(2, auto);
-    grid-gap: 1rem;
   }
 }
 
@@ -135,9 +135,9 @@
   grid-column: col/span 3;
   grid-row: row 3;
   display: grid;
+  grid-gap: 1rem;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, auto);
-  grid-gap: 1rem;
   padding: 2.5em;
 }
 
@@ -173,8 +173,8 @@
     display: flex;
     flex-wrap: nowrap;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
     grid-gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -184,9 +184,9 @@
   grid-column: col/span 3;
   grid-row: row 4;
   display: grid;
+  grid-gap: 1rem;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, auto);
-  grid-gap: 1rem;
   background-color: #F1F2F2;
   padding: 2.5em;
 }
@@ -222,8 +222,8 @@
     display: flex;
     flex-wrap: nowrap;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
     grid-gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -240,8 +240,8 @@
 
 .past-postdocs {
   display: grid;
-  grid-template-columns: 300px;
   grid-gap: 50px;
+  grid-template-columns: 300px;
   grid-auto-rows: 350px;
   justify-content: center;
 }
@@ -249,16 +249,16 @@
 @media only screen and (min-width: 680px) {
   .past-postdocs {
     display: grid;
-    grid-template-columns: repeat(2, 300px);
     grid-gap: 50px;
+    grid-template-columns: repeat(2, 300px);
   }
 }
 
 @media only screen and (min-width: 1310px) {
   .past-postdocs {
     display: grid;
-    grid-template-columns: repeat(3, 300px);
     grid-gap: 50px;
+    grid-template-columns: repeat(3, 300px);
   }
 }
 
@@ -547,6 +547,11 @@ ul.postdoc-list {
   z-index: 3;
 }
 
+.card img {
+  height: 100%;
+  width: 100%;
+}
+
 .card.active .img-container {
   border-radius: 50%;
   height: 60px;
@@ -589,51 +594,51 @@ ul.postdoc-list {
 }
 
 .green h2 {
-  background-color: #6E9C39;
+  background-color: #597F2F;
 }
 
 .green h2:after {
   border-bottom-color: transparent;
   border-left-color: transparent;
-  border-right-color: #6E9C39;
-  border-top-color: #6E9C39;
+  border-right-color: #597F2F;
+  border-top-color: #597F2F;
 }
 
 .green h2:before {
-  border-bottom-color: #1f2c10;
+  border-bottom-color: #0b0f06;
   border-left-color: transparent;
-  border-right-color: #1f2c10;
+  border-right-color: #0b0f06;
   border-top-color: transparent;
 }
 
 .green.active h2:before {
-  border-bottom-color: #6E9C39;
+  border-bottom-color: #597F2F;
   border-left-color: transparent;
-  border-right-color: #6E9C39;
+  border-right-color: #597F2F;
   border-top-color: transparent;
 }
 
 .green.active h2:after {
   border-bottom-color: transparent;
   border-left-color: transparent;
-  border-right-color: #1f2c10;
-  border-top-color: #1f2c10;
+  border-right-color: #0b0f06;
+  border-top-color: #0b0f06;
 }
 
 .green .btn-action {
-  background-color: #6E9C39;
+  background-color: #597F2F;
 }
 
 .green .btn-action:hover {
-  background-color: #39511e;
+  background-color: #253513;
 }
 
 .green .card-footer h4 {
-  color: #1f2c10;
+  color: #0b0f06;
 }
 
 .green .card-footer a {
-  background-color: #39511e;
+  background-color: #253513;
   color: #fff;
 }
 
@@ -642,11 +647,11 @@ ul.postdoc-list {
 }
 
 .green.active .card-content {
-  background-color: #f7fbf3;
+  background-color: #e4f0d6;
 }
 
 .green.active .card-footer {
-  background-color: #88bd4b;
+  background-color: #73a43d;
 }
 
 .dark-blue h2 {

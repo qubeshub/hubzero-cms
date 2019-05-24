@@ -10,11 +10,6 @@ body {
 }
 
 .wrapper {
-  h3,
-  h4 {
-    font-family: 'Martel', serif;
-  }
-
   p {
     font-size: 1rem;
   }
@@ -80,6 +75,18 @@ body {
   .anchor-wrap {
     @extend %anchor;
     visibility: hidden;
+
+    p {
+      color: $body;
+      font-family: 'open_sansregular', Helvetica Neue, Helvetica, sans-serif;
+      font-weight: normal;
+    }
+  }
+
+  a {
+    &::after {
+      display: none;
+    }
   }
 }
 
@@ -184,11 +191,13 @@ body {
 
     .fmn-title {
       @include truncate(1rem, 1.6, 5);
-      font-family: 'Martel', serif;
+      font-family: 'Martel', Georgia, Times, "Times New Roman", serif;
       margin-left: .5em;
 
       a {
-        color: $dark-blue;
+        &::after {
+          display: none;
+        }
       }
     }
 
@@ -279,7 +288,7 @@ body {
 
   h2 {
     bottom: -.76em;
-    color: $green;
+    color: $dark-blue;
     position: relative;
   }
 
@@ -314,8 +323,9 @@ body {
 
   .product-wrap {
     @include flexbox(wrap);
-    border: 1px solid $green;
+    border: 1px solid $dark-blue;
     border-radius: 6px;
+    margin-bottom: 2em;
     padding: 1em;
   }
 }
@@ -331,16 +341,19 @@ body {
   position: relative;
 
   .resource-tag {
-    @include showcase-tag($dark-blue, $white);
+    @include showcase-tag($green, $white);
   }
 
   .resource-title {
+    @include showcase-header(1em, 1, 2);
     bottom: 0;
     padding: 10px;
     position: absolute;
 
     a {
-      @include showcase-header(1em, 1, 2);
+      &::after {
+        display: none;
+      }
     }
   }
 }
@@ -378,10 +391,6 @@ body {
       }
     }
 
-    .link {
-      @include btn-border-drawing($link-color, $orange, 1px, bottom, right);
-      border-radius: 2px;
-    }
     @include respond-at(40em) {
       flex-direction: row;
     }
