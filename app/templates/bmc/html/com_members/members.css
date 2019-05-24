@@ -91,3 +91,6 @@
 .member_collections > #page_options {
   margin-bottom: 4.5em;
 }
+#s-projects a::after {
+  display: none;
+}

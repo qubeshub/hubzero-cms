@@ -1,3 +1,4 @@
+// out: collections.css
 @import "../../less/_vars/vars";
 @import "../../less/_mixins/mixins";
 
@@ -9,4 +10,18 @@ section.main {
 
 #posts {
 	margin: 0 -10px;
+}
+
+.post {
+	a {
+		&::after {
+			display: none;
+		}
+	}
+}
+
+.add {
+	&::after {
+		display: none;
+	}
 }
