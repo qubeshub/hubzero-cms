@@ -21,7 +21,7 @@ html {
 body {
 	color: @colorTextBody;
 	font-family: @fontSimple;
-	font-size: 0.94rem;
+	font-size: 1rem;
 	line-height: 1.6;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -56,6 +56,12 @@ ul {
 
 	li {
 		margin: 0.5em 0;
+
+		a {
+			&:after {
+				display: none;
+			}
+		}
 	}
 }
 
@@ -192,4 +198,3 @@ tt {
 	background-color: rgba(0, 0, 0, .5);
 	-webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
 }
-

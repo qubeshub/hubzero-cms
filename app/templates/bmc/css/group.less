@@ -405,11 +405,21 @@ body.panel-open {
 }
 
 .super-group-menu-wrap {
-	background-color: @colorLink !important;
+	background-color: @colorLink;
 }
 
-.super-group-menu > ul li a {
-	padding: 6px 15px !important;
+.super-group-menu {
+	ul {
+		li {
+			a {
+				padding: 6px 15px !important;
+
+				&:hover {
+					color: #fff;
+				}
+			}
+		}
+	}
 }
 
 .super-group-content {
@@ -420,53 +430,12 @@ body.panel-open {
 	margin-bottom: 25px !important;
 }
 
-/* Link Styles */
-
-.super-group-content > .group-page {
-	a,
-	a:visited,
-	a:active {
-		color: @colorLink;
-		display: inline-block;
-		font-family: @fontScript;
-		font-style: italic;
-		font-weight: bold;
-		position: relative;
-
-		&::before {
-			background-color: @colorLink;
-			content: '';
-			display: block;
-			height: 2px;
-			left: 0;
-			margin: 0 auto;
-			opacity: .5;
-			position: absolute;
-			top: 100%;
-			transform: scaleX(.7);
-			-webkit-transform: scaleX(.7);
-			width: 100%;
-			transition: .3s ease;
-		}
-
-		&:hover {
-			color: @colorSidebarBg;
-		}
-
-		&:hover::before {
-			background-color: @colorSidebarBg;
-			opacity: 1;
-			transform: scaleX(1);
-			-webkit-transform: scaleX(1);
-		}
-	}
-
-	a.removeLinkStyles {
-		&::before {
-			display: none;
-		}
+a {
+	&::after {
+		display: none;
 	}
 }
+
 
 
 /* END: Supergroup template fixes */

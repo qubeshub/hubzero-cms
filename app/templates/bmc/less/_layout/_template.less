@@ -410,6 +410,10 @@ body.slim {
 			font-size: 0.8rem;
 			color: @colorTextDarkLight;
 			font-family: @fontSimple;
+
+			a::after {
+				display: none;
+			}
 		}
 	}
 
@@ -454,6 +458,10 @@ footer.global {
 			h4 {
 				a {
 					color: @colorLight;
+
+					&:hover {
+						color: @colorLight;
+					}
 				}
 			}
 
@@ -469,6 +477,14 @@ footer.global {
 				a {
 					color: #fff;
 					font-size: 0.75rem;
+
+					&:hover {
+						color: @colorLight;
+					}
+
+					&::after {
+						display: none;
+					}
 				}
 			}
 

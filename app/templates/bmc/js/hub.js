@@ -208,19 +208,17 @@ if (!jq) {
 			}
 		});
 
-<<<<<<< HEAD
 		// Remove link stylings if an image exists
 
-		$('.contentpane a').each(function() {
-			if ($(this).find('img').length) {
+		$('a').each(function() {
+			if ($(this).find('img').length || $(this).find('svg').length) {
 				$(this).addClass('removeLinkStyles');
 			}
 		});
-=======
+
 		// Secondary Menu - adjust margin of last visible link
 
 		$('.nav-secondary > .menu > li > a:not(".hidden"):last').closest('li').addClass('removeMargin');
->>>>>>> master
 
 		body = $('body');
 

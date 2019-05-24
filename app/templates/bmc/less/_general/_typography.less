@@ -36,7 +36,8 @@ h2 {
 }
 
 h3, h4, h5, h6 {
-	font-family: @fontGeometric;
+	// font-family: @fontGeometric;
+	font-family: @fontScript;
 }
 
 
@@ -76,69 +77,86 @@ h1 {
  * Links
  */
 
+// a,
+// a:active,
+// a:visited {
+// 	text-decoration: none;
+// 	color: @colorLink;
+// 	.transition();
+// }
+
 a,
 a:active,
 a:visited {
-	text-decoration: none;
 	color: @colorLink;
-	.transition();
+	display: inline-block;
+	position: relative;
+
+	&::after {
+		background-color: @colorLink;
+		content: '';
+		display: block;
+		height: 2px;
+		left: 0;
+		margin: 0 auto;
+		opacity: .7;
+		position: absolute;
+		top: 100%;
+		transform: scaleX(.7);
+		-webkit-transform: scaleX(.7);
+		width: 100%;
+		transition: .3s ease;
+	}
+
+	&:hover {
+		color: @colorSidebarBg;
+	}
+
+	&:hover::after {
+		background-color: @colorSidebarBg;
+		opacity: 1;
+		transform: scaleX(1);
+		-webkit-transform: scaleX(1);
+	}
 }
 
 a:hover {
 	color: @colorLinkHover;
 }
 
-.contentpaneopen {
-	a,
-	a:active,
-	a:visited {
-		color: @colorLink;
-		display: inline-block;
-		font-family: @fontScript;
-		font-style: italic;
-		font-weight: bold;
-		position: relative;
-
-		&::before {
-			background-color: @colorLink;
-			content: '';
-			display: block;
-			height: 2px;
-			left: 0;
-			margin: 0 auto;
-			opacity: .5;
-			position: absolute;
-			top: 100%;
-			transform: scaleX(.7);
-			-webkit-transform: scaleX(.7);
-			width: 100%;
-			transition: .3s ease;
-		}
-
-		&:hover {
-			color: @colorSidebarBg;
-		}
-
-		&:hover::before {
-			background-color: @colorSidebarBg;
-			opacity: 1;
-			transform: scaleX(1);
-			-webkit-transform: scaleX(1);
-		}
+// Remove underline from headers
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+	a::after {
+		display: none !important;
 	}
 }
 
-
-
-
+// Remove underline from images that are links
 a.removeLinkStyles {
 	display: unset;
 
-	&::before {
+	&::after {
 		display: none;
 	}
 }
 
+ //Temporary overrides of links in Collections and Messages
+ .post {
+	 a {
+		 &::after {
+			 display: none;
+		 }
+	 }
+ }
+
+ // #messages-container {
+	//  a {
+	// 	 &::after {
+	// 		 display: none;
+	// 	 }
+	//  }
+ // }
 
 /* ********************************************
  * Other tags

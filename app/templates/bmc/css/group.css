@@ -469,10 +469,13 @@ body.panel-open .hub-overlay {
   margin-top: -2.45em !important;
 }
 .super-group-menu-wrap {
-  background-color: #597F2F !important;
+  background-color: #597F2F;
 }
-.super-group-menu > ul li a {
+.super-group-menu ul li a {
   padding: 6px 15px !important;
+}
+.super-group-menu ul li a:hover {
+  color: #fff;
 }
 .super-group-content {
   margin-top: 21px !important;
@@ -480,48 +483,7 @@ body.panel-open .hub-overlay {
 .super-group-content-wrap {
   margin-bottom: 25px !important;
 }
-/* Link Styles */
-.super-group-content > .group-page a,
-.super-group-content > .group-page a:visited,
-.super-group-content > .group-page a:active {
-  color: #597F2F;
-  display: inline-block;
-  font-family: 'Martel', Georgia, Times, "Times New Roman", serif;
-  font-style: italic;
-  font-weight: bold;
-  position: relative;
-}
-.super-group-content > .group-page a::before,
-.super-group-content > .group-page a:visited::before,
-.super-group-content > .group-page a:active::before {
-  background-color: #597F2F;
-  content: '';
-  display: block;
-  height: 2px;
-  left: 0;
-  margin: 0 auto;
-  opacity: .5;
-  position: absolute;
-  top: 100%;
-  transform: scaleX(0.7);
-  -webkit-transform: scaleX(0.7);
-  width: 100%;
-  transition: .3s ease;
-}
-.super-group-content > .group-page a:hover,
-.super-group-content > .group-page a:visited:hover,
-.super-group-content > .group-page a:active:hover {
-  color: #222b37;
-}
-.super-group-content > .group-page a:hover::before,
-.super-group-content > .group-page a:visited:hover::before,
-.super-group-content > .group-page a:active:hover::before {
-  background-color: #222b37;
-  opacity: 1;
-  transform: scaleX(1);
-  -webkit-transform: scaleX(1);
-}
-.super-group-content > .group-page a.removeLinkStyles::before {
+a::after {
   display: none;
 }
 /* END: Supergroup template fixes */
