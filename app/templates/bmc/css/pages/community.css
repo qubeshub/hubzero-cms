@@ -229,7 +229,6 @@
   background-color: #fff;
   border: 1px solid #F1F2F2;
   font-family: 'Martel', Georgia, Times, "Times New Roman", serif;
-  opacity: .85;
   width: 100%;
   bottom: 0;
   padding: 0.625em;
@@ -415,6 +414,7 @@
 }
 
 .one .module-fmn .fmn .fmn-img {
+  background-color: #fff;
   border-right: 5px solid #8CC540;
   height: 100%;
   overflow: hidden;
@@ -557,7 +557,6 @@
   background-color: #fff;
   border: 1px solid #F1F2F2;
   font-family: 'Martel', Georgia, Times, "Times New Roman", serif;
-  opacity: .85;
   width: 100%;
   bottom: 0;
   padding: 10px;
@@ -705,7 +704,6 @@
   background-color: #fff;
   border: 1px solid #F1F2F2;
   font-family: 'Martel', Georgia, Times, "Times New Roman", serif;
-  opacity: .85;
   width: 100%;
   bottom: 0;
   padding: 10px;

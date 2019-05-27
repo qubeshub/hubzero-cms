@@ -33,20 +33,12 @@
   transition: .2s;
 }
 
-.anchor-links .anchor-wrap h4 a {
-  font-weight: normal;
-}
-
-.anchor-links .anchor-wrap h4 a::before {
-  display: none;
-}
-
 .anchor-links .anchor-wrap p a {
   font-family: 'open_sansregular', 'Helvetica Neue', Helvetica, sans-serif;
   font-weight: normal;
 }
 
-.anchor-links .anchor-wrap p a::before {
+.anchor-links .anchor-wrap p a::after {
   display: none;
 }
 
@@ -471,7 +463,6 @@ body {
   background-color: #fff;
   border: 1px solid #F1F2F2;
   font-family: 'Martel', Georgia, Times, "Times New Roman", serif;
-  opacity: .85;
   width: 100%;
   bottom: 0;
   padding: 10px;

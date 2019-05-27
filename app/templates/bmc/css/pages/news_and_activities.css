@@ -161,7 +161,7 @@
   background-color: #fff;
   border: 1px solid #F1F2F2;
   font-family: 'Martel', Georgia, Times, "Times New Roman", serif;
-  opacity: .85;
+  width: 100%;
   border-bottom: 2px solid #8CC540;
 }
 
@@ -260,7 +260,7 @@
   background-color: #fff;
   border: 1px solid #F1F2F2;
   font-family: 'Martel', Georgia, Times, "Times New Roman", serif;
-  opacity: .85;
+  width: 100%;
   border: none;
   margin-left: .5em;
 }
@@ -326,7 +326,7 @@
   background-color: #fff;
   border: 1px solid #F1F2F2;
   font-family: 'Martel', Georgia, Times, "Times New Roman", serif;
-  opacity: .85;
+  width: 100%;
   border-bottom: 2px solid #8CC540;
 }
 
