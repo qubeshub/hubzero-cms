@@ -44,6 +44,15 @@ ol.comments {
 		}
 	}
 
+	// Title
+	.comment-title {
+		a {
+			&::after {
+				display: none;
+			}
+		}
+	}
+
 	// Options
 	.comment-options {
 		color: @white;
@@ -56,6 +65,10 @@ ol.comments {
 
 			&:before {
 				margin-right: 0.4em;
+			}
+
+			&::after {
+				display: none;
 			}
 		}
 
@@ -390,6 +403,14 @@ ol.comments .time {
 	/*p.comment-member-photo + fieldset {
 		margin-left: 70px;
 	}*/
+
+	.comment-title {
+		a {
+			&::after {
+				display: none;
+			}
+		}
+	}
 
 	p.comment-member-photo {
 		display: none;

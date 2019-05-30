@@ -179,3 +179,12 @@ a.fs-dropdown-selected-item span {
 	top: 10px;
 }
 /* END: Fixing page creation */
+
+/* Remove underline from default Overview page */
+.group-content-header-extra {
+	a {
+		&::after {
+			display: none;
+		}
+	}
+}

@@ -121,7 +121,7 @@
 .btn-info {
   color: #fff;
   border-color: inherit;
-  background: #6E9C39;
+  background: #597F2F;
 }
 .form-controls .save .btn {
   border: 1px solid #fff;
@@ -136,3 +136,6 @@ a.fs-dropdown-selected-item span {
   top: 10px;
 }
 /* END: Fixing page creation */
+.group-content-header-extra a::after {
+  display: none;
+}

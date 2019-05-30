@@ -298,6 +298,12 @@ table.entries {
 				text-align: left;
 				border-bottom: 1px solid #eee;
 				padding: 10px;
+
+				a {
+					&::after {
+						display: none;
+					}
+				}
 			}
 
 			&:last-child {
@@ -694,6 +700,12 @@ body #page_header {
 	font-weight: normal;
 	font-style: normal;
 	position: relative;
+}
+
+.aside li a {
+	&::after {
+		display: none;
+	}
 }
 
 .withleft .aside li#current {
