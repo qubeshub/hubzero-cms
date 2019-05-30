@@ -7,49 +7,65 @@
 /*
 
 	-- -- -- -- -- -- --
-	mod_myprojects
+	mod_myprojectsmini
 	-- -- -- -- -- -- --
 
 */
 
-#myprojects {
-	padding: 0 !important;
+.truncate {
+	display: block; /* Fallback for non-webkit */
+	display: -webkit-box;
+	height: 2.4em; /* Fallback for non-webkit */
+	margin: 0 auto;
+	font-size: 1em;
+	line-height: 1.2;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
-#myprojects .compactlist li {
-	padding-left: 1em;
-	clear: both;
+
+#myprojectsmini div.prjctdisp {
+    display:table;
+		width: 100%;
 }
-#myprojects .compactlist li.pr-inactive {
-	background: #f9f9f9;
+
+#myprojectsmini div .project-name{
+		vertical-align:middle;
+		display:table-cell;
+		padding-left:15px;
 }
-#myprojects .compactlist li.pr-setup {
-	background: #fdf8ef;
+
+#myprojectsmini div.prjctdisp .project-img{
+    vertical-align:middle;
+    display:table-cell;
+		width:45px;
+		background: #fff;
+		padding: 2px;
 }
-#myprojects a {
-	padding: 0;
+
+#myprojectsmini div.a.project-img img{
+	height:45px;
+	width: 100%;
+	vertical-align:middle;
+ }
+
+#myprojectsmini li.pr-active span.sub .s-new {
+   margin-top: -50px !important;
+	 margin-left: -5px;
+	 display: block;
+	 position: absolute;
+	 margin-top: -2em;
+	 font-size: 75%;
+	 font-weight: bold;
+	 color: #FFF;
+	 background: red;
+	 padding: 0 6px;
+	 top: auto;
+	 left: auto;
+}
+
+#myprojectsmini p.note {
+	padding: .8rem 2rem;
 	margin: 0;
-}
-#myprojects img {
-	width: 30px;
-	height: 30px;
-	padding: 0 0.5em 1.2em 0.5em;
-	float: left;
-	margin-right: 0.5em;
-	*padding-bottom: 0;
-}	
-#myprojects span.sub {
-	display: block;
-	font-size: 85%;
-	margin-top: -0.2em;
-	line-height: 1.2em;
-}	
-#myprojects .compactlist li span span.s-new {
-	display: block;
-	position: absolute;
-	font-size: 75%;
-	font-weight: bold;
-	color: #FFF;
-	background: red;
-	padding: 0 0.5em;
-	margin-top: 1em;
 }
