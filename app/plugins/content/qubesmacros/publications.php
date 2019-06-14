@@ -118,10 +118,13 @@ class Publications extends Macro
 
 		$base = rtrim(str_replace(PATH_ROOT, '', __DIR__));
 
-		\Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'pubcards.css');
-		\Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'colorbrewer.css');
-		\Document::addScript($base . DS . 'assets' . DS . 'publications' . DS . 'js' . DS . 'pubcards.js');
+    \Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'publists.css');
+		//\Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'pubcards.css');
+		//\Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'colorbrewer.css');
+		//\Document::addScript($base . DS . 'assets' . DS . 'publications' . DS . 'js' . DS . 'pubcards.js');
 
+
+    /*
 		$html = '<style>';
 		$html .= '  .ribbon-alt {';
 		$html .= '    background-color: #' . $sponsorbgcol . ';';
@@ -131,8 +134,16 @@ class Publications extends Macro
 		$html .= '    border-color: transparent ' . $this->sass_darken($sponsorbgcol, 20) . ' transparent transparent;';
 		$html .= '  }';
 		$html .= '</style>';
-		$html .= '<div class="card-container">';
+		$html = '<div class="card-container">';
+		*/
+		$html = '<section class="main-section">';
+		$html .= ' <div class="section-inner">';
+		$html .= '  <div class="subject">';
+		$html .= '   <div class="container">';
+		$html .= '    <ol class="results" id="publications">';
+
 		if ($style == 'legacy') {
+			/*
 			foreach ($items as $pub)
 			{
 				$html .= '<div class="demo-two-card">';
@@ -292,11 +303,14 @@ class Publications extends Macro
 
 				$html .= '</div>';
 			}
+		 */
 		} else {
 			foreach ($items as $pub)
 			{
-				$html .= '  <div class="card" style="background-image: url(' . $this->_db->quote(Route::url($pub->link('masterimage'))) . ');">';
-				
+				$html .= '  <li class="pubListView">';
+
+				//$html .= '  <div class="pub-thumb"><img src=" .  ' $this->_db->quote(Route::url($pub->link('masterimage'))) . ' " alt="" /></div>';
+
 				// Featured ROW
 				// For some reason, featured is not stored in model so we need to grab it
 				$this->_db->setQuery(
@@ -305,7 +319,7 @@ class Publications extends Macro
 					WHERE `id`=" . $this->_db->quote($pub->id)
 				);
 				$featured = (int) $this->_db->loadResult();
-				
+
 				if ($featured) {
 					$html .= '	<div class="featured">';
 					$html .= '    <a aria-label="Featured ROW" title="Featured Resouce of the Week" href="' . Route::url('/news/newsletter/row') . '">';
@@ -342,7 +356,7 @@ class Publications extends Macro
 				}
 
 				// Content
-				$html .= '    <div class="card-content">';
+				//$html .= '    <div class="card-content">';
 				// $html .= '      <div class="img-wrap">';
 				// $html .= '        <img src="' . Route::url($pub->link('masterimage')) . '" alt="Resource Image">';
 				// $html .= '      </div>';
@@ -393,7 +407,7 @@ class Publications extends Macro
 				);
 
 				// Sub-menu
-				$html .= '    <div class="sub-menu">';
+				$html .= '    <div class="listView">';
 				$html .= '      <a aria-label="Full Record" title= "Full Record" href="' . $pub->link() . '">';
 		    $html .= '        <span class="menu-icon">' . file_get_contents("core/assets/icons/arrow-right.svg") . '</span>';
 		    $html .= '        Full Record';
@@ -416,13 +430,14 @@ class Publications extends Macro
   		    $html .= '      </a>';
 				}
 		    $html .= '    </div>'; // End sub-menu
-				$html .= '    </div>'; // End content
+				//$html .= '    </div>'; // End content
 
 				// More information button
+        /*
 				$html .= '    <button aria-label="More Information" title="More Information" href="#" class="btn-action">';
 				$html .= '      <i class="menu"></i>';
 		    $html .= '    </button>';
-
+        */
 				// Meta
 				$tags = $pub->getTags()->toArray();
 				$nonAdminTags = array_filter(array_map(function ($tag) {return (!$tag['admin'] ? $tag['raw_tag'] : NULL); }, $tags), 'strlen');
@@ -496,11 +511,15 @@ class Publications extends Macro
 
 				$html .= '    </div>'; // End meta
 
-				$html .= '  </div>'; // End card
+				$html .= '  </li>'; // End list
 			}
 		}
 
-		$html .= '</div>'; // End card list
+		$html .= '    </ol>'; // End card list
+		$html .= '   </div>';
+		$html .= '  </div>';
+		$html .= ' </div>';
+		$html .= '</section>';
 
 		return $html;
 	}
@@ -551,7 +570,7 @@ class Publications extends Macro
 		}
 
 		$sql .= ' AND V.state != 2 GROUP BY C.id ORDER BY';
-		
+
 		// Sorting
 		if ($sortby == 'id') {
 			if ($sortdir == 'none') {
@@ -828,7 +847,7 @@ class Publications extends Macro
 
 		return false;
 	}
-	
+
 	/**
 	 * Get sort by argument
 	 *
@@ -849,7 +868,7 @@ class Publications extends Macro
 
 		return false;
 	}
-	
+
 	/**
 	 * Get sort direction argument
 	 *

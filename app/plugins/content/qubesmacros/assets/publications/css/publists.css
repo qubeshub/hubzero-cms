@@ -1,0 +1,31 @@
+/*
+.container .results {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+ .container .results div {
+  margin-left: 1em;
+}
+ .container .results div.title {
+  margin-left: 0;
+}
+
+#publications img {
+  float: left;
+  margin: 1em 1em 1em 0;
+  max-width: 50px;
+}
+#publications li div h3 {
+  text-indent: 0;
+}
+#publications li {
+  clear: left;
+}
+*/
+
+.menu-icon {
+  display: inline-block;
+  fill: #fff;
+  width: 1.1875rem;
+}
