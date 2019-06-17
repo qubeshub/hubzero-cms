@@ -509,7 +509,204 @@ class Publications extends Macro
 	}
 
 else {
+	
+	foreach ($items as $pub)
+	{
+		$html .= '  <li class="pubListView">';
 
+		// Featured ROW
+		// For some reason, featured is not stored in model so we need to grab it
+		$this->_db->setQuery(
+			"SELECT `featured`
+			FROM `#__publications`
+			WHERE `id`=" . $this->_db->quote($pub->id)
+		);
+		$featured = (int) $this->_db->loadResult();
+
+		if ($featured) {
+			$html .= '	<div class="featured">';
+			$html .= '    <a aria-label="Featured ROW" title="Featured Resouce of the Week" href="' . Route::url('/news/newsletter/row') . '">';
+			$html .= '	    <span>Featured Resource of the Week</span>';
+			$html .= '    </a>';
+			$html .= '  </div>'; // End feature ribbon
+		}
+
+		// Sponsors
+		if ($sponsors) {
+			$html .= '    <div class="logo-wrap">';
+			foreach ($sponsors as $sponsor)
+			{
+				$logo = 'app' . DS . 'site' . DS . 'groups' . DS . $sponsor->get('gidNumber') . DS . 'uploads' . DS . $sponsor->get('logo');
+				$html .= '    <a href=' . \Route::url('index.php?option=com_groups&cn=' . $sponsor->get('cn')) . ' title="' . $sponsor->get('description') . ' Home"><img src="' . \Route::url($logo) . '" alt="Sponsor Logo" class="logo"></a>';
+			}
+			$html .= '    </div>';
+		}
+
+		// Focus Tags
+		if ($focusTags) {
+			// http://colorbrewer2.org/#type=qualitative&scheme=Dark2
+			// Dark2 has a maximum of 8 colors
+			$ncolors = count($focusTags);
+			foreach ($pub->getTags() as $tag) {
+				if (!$tag->admin && (($ind = array_search($tag->raw_tag, $focusTags)) !== false)) {
+					$html .= '    <a href="' . $tag->link() . '">';
+					$html .= '      <span class="featured-tag primary cat ' . $fascheme . ' q' . $ind % $ncolors . '-' . min($ncolors, 8) . '">';
+					$html .= '        ' . $tag->raw_tag;
+					$html .= '      </span>';
+					$html .= '    </a>';
+				}
+			}
+		}
+
+		// Citation info
+		$html .= '	  <div class="title">';
+
+		// Title
+		$html .= '      <h3>';
+		$html .= '        <a href="' . $pub->link() . '">' . $pub->get('title') . '</a>';
+		$html .= '      </h3>';
+
+		// Authors
+		$authors = implode(', ', array_map(function ($author) {return $author->name; }, $pub->authors()));
+		$html .= '      <p class="authors" title= "' . $authors . '">';
+		$html .= '        ' . $authors;
+		$html .= '      </p>';
+
+		// Version info
+		$html .= '      <p class="hist">';
+		$html .= '        <span class="versions">';
+		$html .= '          Version: ' . $pub->version->get('version_label');
+		$html .= '        </span>';
+		if ($v = $pub->forked_from) {
+			// Get forked ancestor
+			// Code pulled from: com_publications/site/views/view/tmpl/default.php
+			$this->_db->setQuery("SELECT publication_id FROM `#__publication_versions` WHERE `id`=" . $this->_db->quote($v));
+			$p = $this->_db->loadResult();
+			$ancestor = new \Components\Publications\Models\Publication($p, 'default', $v);
+
+			$html .= '        <span class="adapted">';
+			$html .= '          Adapted From: <a href="' . $ancestor->link('version') . '">' . $ancestor->version->get('title') . '</a> v' . $ancestor->version->get('version_label');
+			$html .= '        </span>';
+		}
+		$html .= '      </p>';
+		$html .= '    </div>'; // End title
+		$html .= '      <div class="abstract">';
+		$html .= '        ' . $pub->get('abstract');
+		$html .= '      </div>';
+
+		// Watch
+		// Code pulled from: plugins/publications/watch
+		// Bug in watching code - Waiting for fix (see https://qubeshub.org/support/tickets/990)
+		$watching = \Hubzero\Item\Watch::isWatching(
+			$pub->get('id'),
+			'publication',
+			User::get('id')
+		);
+
+		// Sub-menu
+
+		$html .= '    <div class="listView">';
+		$html .= '      <a aria-label="Full Record" title= "Full Record" href="' . $pub->link() . '">';
+		$html .= '        <span class="menu-icon">' . file_get_contents("core/assets/icons/arrow-right.svg") . '</span>';
+		$html .= '        Full Record';
+		$html .= '      </a>';
+		$html .= '      <a aria-label="Download" title= "Download" href="' . $pub->link('serve') . '?render=archive">';
+		$html .= '        <span class="menu-icon">' . file_get_contents("core/assets/icons/download-alt.svg") . '</span>';
+		$html .= '      </a>';
+
+		$url = $pub->link() . '/forks/' . $pub->version->get('version_number') . '?action=fork';
+		$html .= '      <a aria-label="Adapt" title= "Adapt" href="' . $url . '">';
+		$html .= '        <span class="menu-icon">' . file_get_contents("core/assets/icons/code-fork.svg") . '</span>';
+		$html .= '      </a>';
+		if ($watching) {
+			$html .= '      <a aria-label="Watch" title= "Click to unsubscribe from this resource\'s notifications" href="' . \Route::url($pub->link()) . DS . 'watch' . DS . $pub->version->get('version_number') . '?confirm=1&action=unsubscribe">';
+			$html .= '        <span class="menu-icon">' . file_get_contents("app/plugins/content/qubesmacros/assets/icons/feed-off.svg") . '</span>';
+			$html .= '      </a>';
+		} else {
+			$html .= '      <a aria-label="Watch" title= "Click to receive notifications when a new version is released" href="' . \Route::url($pub->link()) . DS . 'watch' . DS . $pub->version->get('version_number') . '?confirm=1&action=subscribe">';
+			$html .= '        <span class="menu-icon">' . file_get_contents("core/assets/icons/feed.svg") . '</span>';
+			$html .= '      </a>';
+		}
+		$html .= '    </div>'; // End sub-menu
+
+		// Meta
+		$tags = $pub->getTags()->toArray();
+		$nonAdminTags = array_filter(array_map(function ($tag) {return (!$tag['admin'] ? $tag['raw_tag'] : NULL); }, $tags), 'strlen');
+		$tagsTitle = implode(', ', $nonAdminTags);
+		$html .= '    <div class="addons">';
+		$html .= '      <div aria-label="Tags" title= "' . $tagsTitle . '" class="tag-wrap">';
+		$html .= '        <span class="icons">' . file_get_contents("core/assets/icons/tags.svg") . '</span>';
+		$html .= '        <span>';
+		if ($nonAdminTags) {
+			$html .= '          <span class="tags">' . implode(', </span><span class="tags">', $nonAdminTags);
+		}
+		$html .= '        </span>';
+		$html .= '      </div>'; // End tags
+
+		// Views Information
+		// Code pulled from: plugins/publications/usage/usage.php (onPublication)
+		$this->_db->setQuery(
+			"SELECT SUM(page_views)
+			FROM `#__publication_logs`
+			WHERE `publication_id`=" . $this->_db->quote($pub->id) . " AND `publication_version_id`=" . $this->_db->quote($pub->version->id) . "
+			ORDER BY `year` ASC, `month` ASC"
+		);
+		$views = (int) $this->_db->loadResult();
+
+		$html .= '      <div class="views">';
+		$html .= '        <span aria-label="Views" title= "Views">';
+		$html .= '          <span class="icons">' . file_get_contents("core/assets/icons/eye-open.svg") . '</span>';
+		$html .= '          ' . $views;
+		$html .= '        </span>';
+		$html .= '      </div>'; // End views
+
+		// Download information
+		// Code pulled from: plugins/publications/usage/usage.php (onPublication)
+		$this->_db->setQuery(
+			"SELECT SUM(primary_accesses)
+			FROM `#__publication_logs`
+			WHERE `publication_id`=" . $this->_db->quote($pub->id) . " AND `publication_version_id`=" . $this->_db->quote($pub->version->id) . "
+			ORDER BY `year` ASC, `month` ASC"
+		);
+		$downloads = (int) $this->_db->loadResult();
+
+		$html .= '      <div class="downloads">';
+		$html .= '        <span aria-label="Downloads" title= "Downloads">';
+		$html .= '          <span class="icons">' . file_get_contents("core/assets/icons/download-alt.svg") . '</span>';
+		$html .= '          ' . $downloads;
+		$html .= '        </span>';
+		$html .= '      </div>'; // End downloads
+
+		// Adaptation information
+		$this->_db->setQuery(
+			"SELECT COUNT(id)
+			FROM `#__publication_versions`
+			WHERE `forked_from`
+			IN (" . $this->_db->quote($pub->version->id) . ")");
+		$forks = (int) $this->_db->loadResult();
+
+		$html .= '      <div class="forks">';
+		$html .= '        <span aria-label="Adaptations" title= "Adaptations">';
+		$html .= '          <span class="icons">' . file_get_contents("core/assets/icons/code-fork.svg") . '</span>';
+		$html .= '          ' . $forks;
+		$html .= '        </span>';
+		$html .= '      </div>'; // End adaptations
+
+		// Publish Date
+		$html .= '      <div class="date">';
+		$html .= '        <span aria-label="Publish Date" title= "Publish Date">';
+		$html .= '          <span class="icons">' . file_get_contents("core/assets/icons/calendar-alt.svg") . '</span>';
+		$html .= '         ' . Date::of($pub->version->get('published_up'))->toLocal('m.d.Y');
+		$html .= '        </span>';
+		$html .= '      </div>'; // End publish date
+
+		$html .= '    </div>'; // End meta
+
+		$html .= '  </li>'; // End list
+	}
+}
+
+}
 	private function _getPublications($mastertype, $group, $project, $id, $tags, $limit, $sortby, $sortdir)
 	{
 		// Get publication model
