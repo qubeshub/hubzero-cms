@@ -121,6 +121,7 @@ class Publications extends Macro
 		$base = rtrim(str_replace(PATH_ROOT, '', __DIR__));
 
 		\Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'pubcards.css');
+		\Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'publist.css');
 		\Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'colorbrewer.css');
 		\Document::addScript($base . DS . 'assets' . DS . 'publications' . DS . 'js' . DS . 'pubcards.js');
 
@@ -515,7 +516,7 @@ else {
 	$html .= '  <div class="subject">';
 	$html .= '   <div class="container">';
 	$html .= '    <ol class="results" id="publications">';
-	
+
 	foreach ($items as $pub)
 	{
 		$html .= '  <li class="pubListView">';
@@ -710,6 +711,14 @@ else {
 
 		$html .= '  </li>'; // End list
 	}
+
+	$html .= '    </ol>'; // End card list
+	$html .= '   </div>';
+	$html .= '  </div>';
+	$html .= ' </div>';
+	$html .= '</section>';
+
+	return $html;
 }
 
 }
