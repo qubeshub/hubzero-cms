@@ -1,0 +1,53 @@
+.listicons {
+  display: inline-block;
+  width: .75rem;
+}
+
+.menu-icon {
+  display: inline-block;
+  fill: #fff;
+  width: 1.1875rem;
+}
+
+.listView {
+  display: flex;
+  flex-wrap: nowrap;
+  background-color: #84bf41;
+  font-size: 0.875rem;
+  justify-content: flex-end;
+  position: absolute;
+  padding: .2em .5em .1em;
+  width: 100%;
+  top: 12em;
+}
+
+.listView a {
+  color: #fff;
+  margin: 0 1em;
+}
+
+.listView a:first-child {
+  left: 0;
+  position: absolute;
+}
+
+
+.addons {
+  display: flex;
+  flex-wrap: nowrap;
+  font-size: 0.875rem;
+  justify-content: flex-end;
+  position: absolute;
+  padding: .2em .5em .1em;
+  width: 100%;
+  top: 14em;
+}
+
+.addons div {
+ margin: 0 1em;
+}
+
+.addons div:first-child {
+  left: 0;
+  position: absolute;
+}

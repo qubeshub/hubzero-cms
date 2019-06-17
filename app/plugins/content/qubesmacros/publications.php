@@ -121,7 +121,7 @@ class Publications extends Macro
 		$base = rtrim(str_replace(PATH_ROOT, '', __DIR__));
 
 		\Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'pubcards.css');
-		\Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'publist.css');
+		\Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'publists.css');
 		\Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'colorbrewer.css');
 		\Document::addScript($base . DS . 'assets' . DS . 'publications' . DS . 'js' . DS . 'pubcards.js');
 
@@ -642,7 +642,7 @@ else {
 		$tagsTitle = implode(', ', $nonAdminTags);
 		$html .= '    <div class="addons">';
 		$html .= '      <div aria-label="Tags" title= "' . $tagsTitle . '" class="tag-wrap">';
-		$html .= '        <span class="icons">' . file_get_contents("core/assets/icons/tags.svg") . '</span>';
+		$html .= '        <span class="listicons">' . file_get_contents("core/assets/icons/tags.svg") . '</span>';
 		$html .= '        <span>';
 		if ($nonAdminTags) {
 			$html .= '          <span class="tags">' . implode(', </span><span class="tags">', $nonAdminTags);
@@ -662,7 +662,7 @@ else {
 
 		$html .= '      <div class="views">';
 		$html .= '        <span aria-label="Views" title= "Views">';
-		$html .= '          <span class="icons">' . file_get_contents("core/assets/icons/eye-open.svg") . '</span>';
+		$html .= '          <span class="listicons">' . file_get_contents("core/assets/icons/eye-open.svg") . '</span>';
 		$html .= '          ' . $views;
 		$html .= '        </span>';
 		$html .= '      </div>'; // End views
@@ -679,7 +679,7 @@ else {
 
 		$html .= '      <div class="downloads">';
 		$html .= '        <span aria-label="Downloads" title= "Downloads">';
-		$html .= '          <span class="icons">' . file_get_contents("core/assets/icons/download-alt.svg") . '</span>';
+		$html .= '          <span class="listicons">' . file_get_contents("core/assets/icons/download-alt.svg") . '</span>';
 		$html .= '          ' . $downloads;
 		$html .= '        </span>';
 		$html .= '      </div>'; // End downloads
@@ -694,7 +694,7 @@ else {
 
 		$html .= '      <div class="forks">';
 		$html .= '        <span aria-label="Adaptations" title= "Adaptations">';
-		$html .= '          <span class="icons">' . file_get_contents("core/assets/icons/code-fork.svg") . '</span>';
+		$html .= '          <span class="listicons">' . file_get_contents("core/assets/icons/code-fork.svg") . '</span>';
 		$html .= '          ' . $forks;
 		$html .= '        </span>';
 		$html .= '      </div>'; // End adaptations
@@ -702,7 +702,7 @@ else {
 		// Publish Date
 		$html .= '      <div class="date">';
 		$html .= '        <span aria-label="Publish Date" title= "Publish Date">';
-		$html .= '          <span class="icons">' . file_get_contents("core/assets/icons/calendar-alt.svg") . '</span>';
+		$html .= '          <span class="listicons">' . file_get_contents("core/assets/icons/calendar-alt.svg") . '</span>';
 		$html .= '         ' . Date::of($pub->version->get('published_up'))->toLocal('m.d.Y');
 		$html .= '        </span>';
 		$html .= '      </div>'; // End publish date
