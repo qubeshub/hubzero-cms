@@ -407,6 +407,7 @@ class Publications extends Macro
 				);
 
 				// Sub-menu
+
 				$html .= '    <div class="listView">';
 				$html .= '      <a aria-label="Full Record" title= "Full Record" href="' . $pub->link() . '">';
 		    $html .= '        <span class="menu-icon">' . file_get_contents("core/assets/icons/arrow-right.svg") . '</span>';
@@ -442,7 +443,7 @@ class Publications extends Macro
 				$tags = $pub->getTags()->toArray();
 				$nonAdminTags = array_filter(array_map(function ($tag) {return (!$tag['admin'] ? $tag['raw_tag'] : NULL); }, $tags), 'strlen');
 				$tagsTitle = implode(', ', $nonAdminTags);
-				$html .= '    <div class="meta">';
+				$html .= '    <div class="addons">';
 				$html .= '      <div aria-label="Tags" title= "' . $tagsTitle . '" class="tag-wrap">';
 	      $html .= '        <span class="icons">' . file_get_contents("core/assets/icons/tags.svg") . '</span>';
 				$html .= '        <span>';
