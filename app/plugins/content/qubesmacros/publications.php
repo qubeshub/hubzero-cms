@@ -61,6 +61,7 @@ class Publications extends Macro
 		$txt['html'] .= '<p>Examples:</p>
 							<ul>
 								<li><code>[[Publications()]]</code> - Shows all publications.</li>
+								<li><code>[[Publications(view=list)]]</code> - Display publications in list format.</li>
 								<li><code>[[Publications(limit=5, style=legacy)]]</code> - Show the 5 most recent publications using the legacy style.</li>
 								<li><code>[[Publications(sponsor=mygroup, sponsorbgcol=cb48b7)]]</code> - Display a sponsor ribbon with each publication, linking to Group "mygroup" (multiple sponsors are allowed if separated by a semicolon).  Background color of ribbon is given in hexidecimal without # (default is cb48b7).</li>
 								<li><code>[[Publications(group=mygroup1;mygroup2, project=myproject, id=2;6;8)]]</code> - Display all publications from Groups "mygroup1" and "mygroup2", Project "myproject", and Publications with ids 2, 6, and 8.</li>
@@ -109,6 +110,7 @@ class Publications extends Macro
 		$style = $this->_getStyle($args);
 		$sortby = $this->_getSortBy($args);
 		$sortdir = $this->_getSortDir($args);
+		$viewType = $this->_getViewType($args);
 
 		// 2.2 should take care of not needed to import?  i.e. the "use" command above should handle this
 		include_once \Component::path('com_publications') . DS . 'models' . DS . 'publication.php';
@@ -122,6 +124,7 @@ class Publications extends Macro
 		\Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'colorbrewer.css');
 		\Document::addScript($base . DS . 'assets' . DS . 'publications' . DS . 'js' . DS . 'pubcards.js');
 
+  if($viewType == 'card') {
 		$html = '<style>';
 		$html .= '  .ribbon-alt {';
 		$html .= '    background-color: #' . $sponsorbgcol . ';';
@@ -296,7 +299,7 @@ class Publications extends Macro
 			foreach ($items as $pub)
 			{
 				$html .= '  <div class="card" style="background-image: url(' . $this->_db->quote(Route::url($pub->link('masterimage'))) . ');">';
-				
+
 				// Featured ROW
 				// For some reason, featured is not stored in model so we need to grab it
 				$this->_db->setQuery(
@@ -305,7 +308,7 @@ class Publications extends Macro
 					WHERE `id`=" . $this->_db->quote($pub->id)
 				);
 				$featured = (int) $this->_db->loadResult();
-				
+
 				if ($featured) {
 					$html .= '	<div class="featured">';
 					$html .= '    <a aria-label="Featured ROW" title="Featured Resouce of the Week" href="' . Route::url('/news/newsletter/row') . '">';
@@ -505,6 +508,8 @@ class Publications extends Macro
 		return $html;
 	}
 
+else {
+
 	private function _getPublications($mastertype, $group, $project, $id, $tags, $limit, $sortby, $sortdir)
 	{
 		// Get publication model
@@ -551,7 +556,7 @@ class Publications extends Macro
 		}
 
 		$sql .= ' AND V.state != 2 GROUP BY C.id ORDER BY';
-		
+
 		// Sorting
 		if ($sortby == 'id') {
 			if ($sortdir == 'none') {
@@ -652,6 +657,7 @@ class Publications extends Macro
 	 * @param   integer  $default  Default return value
 	 * @return  mixed
 	 */
+
 	private function _getLimit(&$args)
 	{
 		foreach ($args as $k => $arg)
@@ -828,7 +834,7 @@ class Publications extends Macro
 
 		return false;
 	}
-	
+
 	/**
 	 * Get sort by argument
 	 *
@@ -849,7 +855,7 @@ class Publications extends Macro
 
 		return false;
 	}
-	
+
 	/**
 	 * Get sort direction argument
 	 *
@@ -890,6 +896,22 @@ class Publications extends Macro
 			$color .= str_pad(dechex($primary_colors[$i]), 2, '0', STR_PAD_LEFT);
 		}
 		return $color;
+	}
+
+
+	private function _getViewType(&$args, $default = "card")
+	{
+		foreach ($args as $k => $arg)
+		{
+			if (preg_match('/view=\blist\b/i', $arg, $matches))
+			{
+				$viewType = (isset($matches[1]) ? $matches[1] : '');
+				unset($args[$k]);
+				return $viewType;
+			}
+		}
+
+		return $default;
 	}
 
 	/**
