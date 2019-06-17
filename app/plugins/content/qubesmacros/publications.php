@@ -509,6 +509,12 @@ class Publications extends Macro
 	}
 
 else {
+
+	$html = '<section class="main-section">';
+	$html .= ' <div class="section-inner">';
+	$html .= '  <div class="subject">';
+	$html .= '   <div class="container">';
+	$html .= '    <ol class="results" id="publications">';
 	
 	foreach ($items as $pub)
 	{
