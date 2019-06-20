@@ -93,35 +93,35 @@ class Publications extends Macro
 	public function render()
 	{
 		// Get args
-	  $arg = $this->getArgs();
+	  $args = $this->getArgs();
 
 		// Database
 		$this->_db = App::get('db');
 
 		// Get details
-		$limit = $this->_getLimit($arg);
-		$sponsors = $this->_getSponsor($arg);
-		$group = $this->_getGroup($arg);
-		$project = $this->_getProject($arg);
-		$pubid = $this->_getId($arg);
-		$focusTags = $this->_getFocusTags($arg);
-		$fascheme = $this->_getFaScheme($arg);
-		$sponsorbgcol = $this->_getSponsorBGCol($arg);
-		$mastertype = $this->_getMasterType($arg);
-		$tags = $this->_getTags($arg);
-		$style = $this->_getStyle($arg);
-		$sortby = $this->_getSortBy($arg);
-		$sortdir = $this->_getSortDir($arg);
-		$viewType = $this->_getViewType($arg);
+		$limit = $this->_getLimit($args);
+		$sponsors = $this->_getSponsor($args);
+		$group = $this->_getGroup($args);
+		$project = $this->_getProject($args);
+		$pubid = $this->_getId($args);
+		$focusTags = $this->_getFocusTags($args);
+		$fascheme = $this->_getFaScheme($args);
+		$sponsorbgcol = $this->_getSponsorBGCol($args);
+		$mastertype = $this->_getMasterType($args);
+		$tags = $this->_getTags($args);
+		$style = $this->_getStyle($args);
+		$sortby = $this->_getSortBy($args);
+		$sortdir = $this->_getSortDir($args);
+		$viewType = $this->_getViewType($args);
 
-    echo $viewType;
-		if($viewType == 'list') {
+
+		if ($viewType) {
        echo "bharath";
 			 //$this->_getCardView();
 		}
 
 		else {
-			 echo "bharath";
+			 //echo "bharath";
 		   //$this->_getListView();
 		}
 
