@@ -83,6 +83,8 @@ class Publications extends Macro
 		return explode(',', $this->args);
 	}
 
+//public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $sponsorbgcol, $mastertype, $tags, $style, $sortby, $sortdir, $viewType, $ar, $items, $base;
+
 	/**
 	 * Generate macro output
 	 *
@@ -91,61 +93,77 @@ class Publications extends Macro
 	public function render()
 	{
 		// Get args
-		$args = $this->getArgs();
+	  $arg = $this->getArgs();
 
 		// Database
 		$this->_db = App::get('db');
 
 		// Get details
-		$limit = $this->_getLimit($args);
-		$sponsors = $this->_getSponsor($args);
-		$group = $this->_getGroup($args);
-		$project = $this->_getProject($args);
-		$pubid = $this->_getId($args);
-		$focusTags = $this->_getFocusTags($args);
-		$fascheme = $this->_getFaScheme($args);
-		$sponsorbgcol = $this->_getSponsorBGCol($args);
-		$mastertype = $this->_getMasterType($args);
-		$tags = $this->_getTags($args);
-		$style = $this->_getStyle($args);
-		$sortby = $this->_getSortBy($args);
-		$sortdir = $this->_getSortDir($args);
-		$viewType = $this->_getViewType($args);
+		$limit = $this->_getLimit($arg);
+		$sponsors = $this->_getSponsor($arg);
+		$group = $this->_getGroup($arg);
+		$project = $this->_getProject($arg);
+		$pubid = $this->_getId($arg);
+		$focusTags = $this->_getFocusTags($arg);
+		$fascheme = $this->_getFaScheme($arg);
+		$sponsorbgcol = $this->_getSponsorBGCol($arg);
+		$mastertype = $this->_getMasterType($arg);
+		$tags = $this->_getTags($arg);
+		$style = $this->_getStyle($arg);
+		$sortby = $this->_getSortBy($arg);
+		$sortdir = $this->_getSortDir($arg);
+		$viewType = $this->_getViewType($arg);
+
+    echo $viewType;
+		if($viewType == 'list') {
+       echo "bharath";
+			 //$this->_getCardView();
+		}
+
+		else {
+			 echo "bharath";
+		   //$this->_getListView();
+		}
+
+
 
 		// 2.2 should take care of not needed to import?  i.e. the "use" command above should handle this
 		include_once \Component::path('com_publications') . DS . 'models' . DS . 'publication.php';
 
 		// Get publications
-		$items = $this->_getPublications($mastertype, $group, $project, $pubid, $tags, $limit, $sortby, $sortdir);
+		$items = $this->_getPublications($mastertype, $group, $project, $pubid, $tags,
+	  $limit, $sortby, $sortdir);
 
-		$base = rtrim(str_replace(PATH_ROOT, '', __DIR__));
-
-		\Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'pubcards.css');
-		\Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'publists.css');
-		\Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'colorbrewer.css');
+    $base = rtrim(str_replace(PATH_ROOT, '', __DIR__));
+    //echo $base;
+    \Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'colorbrewer.css');
 		\Document::addScript($base . DS . 'assets' . DS . 'publications' . DS . 'js' . DS . 'pubcards.js');
 
-  if($viewType == 'card') {
+}
+
+		public function _getCardView() {
+			echo $this->base;
+
+	  \Document::addStyleSheet($this->base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'pubcards.css');
 		$html = '<style>';
 		$html .= '  .ribbon-alt {';
-		$html .= '    background-color: #' . $sponsorbgcol . ';';
-		$html .= '    color: ' . $this->getContrastYIQ($sponsorbgcol) . ';';
+		$html .= '    background-color: #' . $this->sponsorbgcol . ';';
+		$html .= '    color: ' . $this->getContrastYIQ($this->sponsorbgcol) . ';';
 		$html .= '  }';
 		$html .= '  .ribbon-alt:before {';
-		$html .= '    border-color: transparent ' . $this->sass_darken($sponsorbgcol, 20) . ' transparent transparent;';
+		$html .= '    border-color: transparent ' . $this->sass_darken($this->sponsorbgcol, 20) . ' transparent transparent;';
 		$html .= '  }';
 		$html .= '</style>';
 		$html .= '<div class="card-container">';
-		if ($style == 'legacy') {
-			foreach ($items as $pub)
+		if ($this->style == 'legacy') {
+			foreach ($this->items as $pub)
 			{
-				$html .= '<div class="demo-two-card">';
 
 				// Sponsors
-				if ($sponsors) {
+				if ($this->sponsors) {
 					$html .= '  <div class="ribbon-alt">';
 					$html .= '    Sponsored by <br>';
-					foreach ($sponsors as $sponsor)
+					foreach ($this->sponsors as $sponsor)
 					{
 						$logo = 'app' . DS . 'site' . DS . 'groups' . DS . $sponsor->get('gidNumber') . DS . 'uploads' . DS . $sponsor->get('logo');
 						$html .= '    <a href=' . \Route::url('index.php?option=com_groups&cn=' . $sponsor->get('cn')) . ' title="' . $sponsor->get('description') . ' Home"><img src="' . \Route::url($logo) . '" alt="Sponsor Logo"></a>';
@@ -190,15 +208,15 @@ class Publications extends Macro
 	      $html .= '  <div class="demo-two-content">';
 
 	  		// Focus Tags
-	  		if ($focusTags) {
+	  		if ($this->focusTags) {
 	  			// http://colorbrewer2.org/#type=qualitative&scheme=Dark2
 	  			// Dark2 has a maximum of 8 colors
-	  			$ncolors = count($focusTags);
+	  			$ncolors = count($this->focusTags);
 	  			foreach ($pub->getTags() as $tag) {
-	  				if (!$tag->admin && (($ind = array_search($tag->raw_tag, $focusTags)) !== false)) {
+	  				if (!$tag->admin && (($ind = array_search($tag->raw_tag, $this->focusTags)) !== false)) {
 	  					$html .= '    <div class="categories">';
 	  					$html .= '      <a href="' . $tag->link() . '">';
-							$html .= '        <span class="primary cat ' . $fascheme . ' q' . $ind % $ncolors . '-' . min($ncolors, 8) . '">' . $tag->raw_tag . '</span>';
+							$html .= '        <span class="primary cat ' . $this->fascheme . ' q' . $ind % $ncolors . '-' . min($ncolors, 8) . '">' . $tag->raw_tag . '</span>';
 							$html .= '      </a>';
 	  					$html .= '    </div>';
 	  				}
@@ -319,9 +337,9 @@ class Publications extends Macro
 				}
 
 				// Sponsors
-				if ($sponsors) {
+				if ($this->sponsors) {
 					$html .= '    <div class="logo-wrap">';
-					foreach ($sponsors as $sponsor)
+					foreach ($this->sponsors as $sponsor)
 					{
 						$logo = 'app' . DS . 'site' . DS . 'groups' . DS . $sponsor->get('gidNumber') . DS . 'uploads' . DS . $sponsor->get('logo');
 						$html .= '    <a href=' . \Route::url('index.php?option=com_groups&cn=' . $sponsor->get('cn')) . ' title="' . $sponsor->get('description') . ' Home"><img src="' . \Route::url($logo) . '" alt="Sponsor Logo" class="logo"></a>';
@@ -330,14 +348,14 @@ class Publications extends Macro
 				}
 
 				// Focus Tags
-				if ($focusTags) {
+				if ($this->focusTags) {
 					// http://colorbrewer2.org/#type=qualitative&scheme=Dark2
 					// Dark2 has a maximum of 8 colors
-					$ncolors = count($focusTags);
+					$ncolors = count($this->focusTags);
 					foreach ($pub->getTags() as $tag) {
-						if (!$tag->admin && (($ind = array_search($tag->raw_tag, $focusTags)) !== false)) {
+						if (!$tag->admin && (($ind = array_search($tag->raw_tag, $this->focusTags)) !== false)) {
 							$html .= '    <a href="' . $tag->link() . '">';
-							$html .= '      <span class="featured-tag primary cat ' . $fascheme . ' q' . $ind % $ncolors . '-' . min($ncolors, 8) . '">';
+							$html .= '      <span class="featured-tag primary cat ' . $this->fascheme . ' q' . $ind % $ncolors . '-' . min($ncolors, 8) . '">';
 							$html .= '        ' . $tag->raw_tag;
 							$html .= '      </span>';
 							$html .= '    </a>';
@@ -428,8 +446,8 @@ class Publications extends Macro
 		    $html .= '    </button>';
 
 				// Meta
-				$tags = $pub->getTags()->toArray();
-				$nonAdminTags = array_filter(array_map(function ($tag) {return (!$tag['admin'] ? $tag['raw_tag'] : NULL); }, $tags), 'strlen');
+				$this->tags = $pub->getTags()->toArray();
+				$nonAdminTags = array_filter(array_map(function ($tag) {return (!$tag['admin'] ? $tag['raw_tag'] : NULL); }, $this->tags), 'strlen');
 				$tagsTitle = implode(', ', $nonAdminTags);
 				$html .= '    <div class="meta">';
 				$html .= '      <div aria-label="Tags" title= "' . $tagsTitle . '" class="tag-wrap">';
@@ -509,7 +527,8 @@ class Publications extends Macro
 		return $html;
 	}
 
-else {
+	public function _getListView() {
+	\Document::addStyleSheet($this->base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'publists.css');
 
 	$html = '<section class="main-section">';
 	$html .= ' <div class="section-inner">';
@@ -517,7 +536,7 @@ else {
 	$html .= '   <div class="container">';
 	$html .= '    <ol class="results" id="publications">';
 
-	foreach ($items as $pub)
+	foreach ($this->items as $pub)
 	{
 		$html .= '  <li class="pubListView">';
 
@@ -539,9 +558,9 @@ else {
 		}
 
 		// Sponsors
-		if ($sponsors) {
+		if ($this->sponsors) {
 			$html .= '    <div class="logo-wrap">';
-			foreach ($sponsors as $sponsor)
+			foreach ($this->sponsors as $sponsor)
 			{
 				$logo = 'app' . DS . 'site' . DS . 'groups' . DS . $sponsor->get('gidNumber') . DS . 'uploads' . DS . $sponsor->get('logo');
 				$html .= '    <a href=' . \Route::url('index.php?option=com_groups&cn=' . $sponsor->get('cn')) . ' title="' . $sponsor->get('description') . ' Home"><img src="' . \Route::url($logo) . '" alt="Sponsor Logo" class="logo"></a>';
@@ -550,14 +569,14 @@ else {
 		}
 
 		// Focus Tags
-		if ($focusTags) {
+		if ($this->focusTags) {
 			// http://colorbrewer2.org/#type=qualitative&scheme=Dark2
 			// Dark2 has a maximum of 8 colors
-			$ncolors = count($focusTags);
+			$ncolors = count($this->focusTags);
 			foreach ($pub->getTags() as $tag) {
-				if (!$tag->admin && (($ind = array_search($tag->raw_tag, $focusTags)) !== false)) {
+				if (!$tag->admin && (($ind = array_search($tag->raw_tag, $this->focusTags)) !== false)) {
 					$html .= '    <a href="' . $tag->link() . '">';
-					$html .= '      <span class="featured-tag primary cat ' . $fascheme . ' q' . $ind % $ncolors . '-' . min($ncolors, 8) . '">';
+					$html .= '      <span class="featured-tag primary cat ' . $this->fascheme . ' q' . $ind % $ncolors . '-' . min($ncolors, 8) . '">';
 					$html .= '        ' . $tag->raw_tag;
 					$html .= '      </span>';
 					$html .= '    </a>';
@@ -614,35 +633,35 @@ else {
 
 		$html .= '    <div class="listView">';
 		$html .= '      <a aria-label="Full Record" title= "Full Record" href="' . $pub->link() . '">';
-		$html .= '        <span class="menu-icon">' . file_get_contents("core/assets/icons/arrow-right.svg") . '</span>';
+		$html .= '        <span class="menu-iconlist">' . file_get_contents("core/assets/icons/arrow-right.svg") . '</span>';
 		$html .= '        Full Record';
 		$html .= '      </a>';
 		$html .= '      <a aria-label="Download" title= "Download" href="' . $pub->link('serve') . '?render=archive">';
-		$html .= '        <span class="menu-icon">' . file_get_contents("core/assets/icons/download-alt.svg") . '</span>';
+		$html .= '        <span class="menu-iconlist">' . file_get_contents("core/assets/icons/download-alt.svg") . '</span>';
 		$html .= '      </a>';
 
 		$url = $pub->link() . '/forks/' . $pub->version->get('version_number') . '?action=fork';
 		$html .= '      <a aria-label="Adapt" title= "Adapt" href="' . $url . '">';
-		$html .= '        <span class="menu-icon">' . file_get_contents("core/assets/icons/code-fork.svg") . '</span>';
+		$html .= '        <span class="menu-iconlist">' . file_get_contents("core/assets/icons/code-fork.svg") . '</span>';
 		$html .= '      </a>';
 		if ($watching) {
 			$html .= '      <a aria-label="Watch" title= "Click to unsubscribe from this resource\'s notifications" href="' . \Route::url($pub->link()) . DS . 'watch' . DS . $pub->version->get('version_number') . '?confirm=1&action=unsubscribe">';
-			$html .= '        <span class="menu-icon">' . file_get_contents("app/plugins/content/qubesmacros/assets/icons/feed-off.svg") . '</span>';
+			$html .= '        <span class="menu-iconlist">' . file_get_contents("app/plugins/content/qubesmacros/assets/icons/feed-off.svg") . '</span>';
 			$html .= '      </a>';
 		} else {
 			$html .= '      <a aria-label="Watch" title= "Click to receive notifications when a new version is released" href="' . \Route::url($pub->link()) . DS . 'watch' . DS . $pub->version->get('version_number') . '?confirm=1&action=subscribe">';
-			$html .= '        <span class="menu-icon">' . file_get_contents("core/assets/icons/feed.svg") . '</span>';
+			$html .= '        <span class="menu-iconlist">' . file_get_contents("core/assets/icons/feed.svg") . '</span>';
 			$html .= '      </a>';
 		}
 		$html .= '    </div>'; // End sub-menu
 
 		// Meta
-		$tags = $pub->getTags()->toArray();
-		$nonAdminTags = array_filter(array_map(function ($tag) {return (!$tag['admin'] ? $tag['raw_tag'] : NULL); }, $tags), 'strlen');
+		$this->tags = $pub->getTags()->toArray();
+		$nonAdminTags = array_filter(array_map(function ($tag) {return (!$tag['admin'] ? $tag['raw_tag'] : NULL); }, $this->tags), 'strlen');
 		$tagsTitle = implode(', ', $nonAdminTags);
 		$html .= '    <div class="addons">';
 		$html .= '      <div aria-label="Tags" title= "' . $tagsTitle . '" class="tag-wrap">';
-		$html .= '        <span class="listicons">' . file_get_contents("core/assets/icons/tags.svg") . '</span>';
+		$html .= '        <span class="icons">' . file_get_contents("core/assets/icons/tags.svg") . '</span>';
 		$html .= '        <span>';
 		if ($nonAdminTags) {
 			$html .= '          <span class="tags">' . implode(', </span><span class="tags">', $nonAdminTags);
@@ -662,7 +681,7 @@ else {
 
 		$html .= '      <div class="views">';
 		$html .= '        <span aria-label="Views" title= "Views">';
-		$html .= '          <span class="listicons">' . file_get_contents("core/assets/icons/eye-open.svg") . '</span>';
+		$html .= '          <span class="icons">' . file_get_contents("core/assets/icons/eye-open.svg") . '</span>';
 		$html .= '          ' . $views;
 		$html .= '        </span>';
 		$html .= '      </div>'; // End views
@@ -679,7 +698,7 @@ else {
 
 		$html .= '      <div class="downloads">';
 		$html .= '        <span aria-label="Downloads" title= "Downloads">';
-		$html .= '          <span class="listicons">' . file_get_contents("core/assets/icons/download-alt.svg") . '</span>';
+		$html .= '          <span class="icons">' . file_get_contents("core/assets/icons/download-alt.svg") . '</span>';
 		$html .= '          ' . $downloads;
 		$html .= '        </span>';
 		$html .= '      </div>'; // End downloads
@@ -694,7 +713,7 @@ else {
 
 		$html .= '      <div class="forks">';
 		$html .= '        <span aria-label="Adaptations" title= "Adaptations">';
-		$html .= '          <span class="listicons">' . file_get_contents("core/assets/icons/code-fork.svg") . '</span>';
+		$html .= '          <span class="icons">' . file_get_contents("core/assets/icons/code-fork.svg") . '</span>';
 		$html .= '          ' . $forks;
 		$html .= '        </span>';
 		$html .= '      </div>'; // End adaptations
@@ -702,7 +721,7 @@ else {
 		// Publish Date
 		$html .= '      <div class="date">';
 		$html .= '        <span aria-label="Publish Date" title= "Publish Date">';
-		$html .= '          <span class="listicons">' . file_get_contents("core/assets/icons/calendar-alt.svg") . '</span>';
+		$html .= '          <span class="icons">' . file_get_contents("core/assets/icons/calendar-alt.svg") . '</span>';
 		$html .= '         ' . Date::of($pub->version->get('published_up'))->toLocal('m.d.Y');
 		$html .= '        </span>';
 		$html .= '      </div>'; // End publish date
@@ -719,9 +738,9 @@ else {
 	$html .= '</section>';
 
 	return $html;
-}
 
 }
+
 	private function _getPublications($mastertype, $group, $project, $id, $tags, $limit, $sortby, $sortdir)
 	{
 		// Get publication model
