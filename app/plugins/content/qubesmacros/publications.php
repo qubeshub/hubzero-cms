@@ -83,8 +83,8 @@ class Publications extends Macro
 		return explode(',', $this->args);
 	}
 
-//public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $sponsorbgcol, $mastertype, $tags, $style, $sortby, $sortdir, $viewType, $ar, $items, $base;
-
+public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $sponsorbgcol, $mastertype, $tags, $style, $sortby, $sortdir, $items, $base;
+//public $sponsorbgcol;
 	/**
 	 * Generate macro output
 	 *
@@ -99,51 +99,42 @@ class Publications extends Macro
 		$this->_db = App::get('db');
 
 		// Get details
-		$limit = $this->_getLimit($args);
-		$sponsors = $this->_getSponsor($args);
-		$group = $this->_getGroup($args);
-		$project = $this->_getProject($args);
-		$pubid = $this->_getId($args);
-		$focusTags = $this->_getFocusTags($args);
-		$fascheme = $this->_getFaScheme($args);
-		$sponsorbgcol = $this->_getSponsorBGCol($args);
-		$mastertype = $this->_getMasterType($args);
-		$tags = $this->_getTags($args);
-		$style = $this->_getStyle($args);
-		$sortby = $this->_getSortBy($args);
-		$sortdir = $this->_getSortDir($args);
+		$this->limit = $this->_getLimit($args);
+		$this->sponsors = $this->_getSponsor($args);
+		$this->group = $this->_getGroup($args);
+		$this->project = $this->_getProject($args);
+		$this->pubid = $this->_getId($args);
+		$this->focusTags = $this->_getFocusTags($args);
+		$this->fascheme = $this->_getFaScheme($args);
+		$this->sponsorbgcol = $this->_getSponsorBGCol($args);
+		$this->mastertype = $this->_getMasterType($args);
+		$this->tags = $this->_getTags($args);
+		$this->style = $this->_getStyle($args);
+		$this->sortby = $this->_getSortBy($args);
+		$this->sortdir = $this->_getSortDir($args);
 		$viewType = $this->_getViewType($args);
 
-
-		if ($viewType) {
-       echo "bharath";
-			 //$this->_getCardView();
-		}
-
+    if($viewType =='list') {
+        $this->_getCardView();
+			}
 		else {
-			 //echo "bharath";
-		   //$this->_getListView();
+			$this->_getListView();
 		}
-
-
 
 		// 2.2 should take care of not needed to import?  i.e. the "use" command above should handle this
 		include_once \Component::path('com_publications') . DS . 'models' . DS . 'publication.php';
 
 		// Get publications
-		$items = $this->_getPublications($mastertype, $group, $project, $pubid, $tags,
-	  $limit, $sortby, $sortdir);
 
-    $base = rtrim(str_replace(PATH_ROOT, '', __DIR__));
-    //echo $base;
-    \Document::addStyleSheet($base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'colorbrewer.css');
-		\Document::addScript($base . DS . 'assets' . DS . 'publications' . DS . 'js' . DS . 'pubcards.js');
 
+    $this->base = rtrim(str_replace(PATH_ROOT, '', __DIR__));
+    \Document::addStyleSheet($this->base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'colorbrewer.css');
+		\Document::addScript($this->base . DS . 'assets' . DS . 'publications' . DS . 'js' . DS . 'pubcards.js');
 }
 
-		public function _getCardView() {
-			echo $this->base;
-
+		private function _getCardView() {
+			$this->items = $this->_getPublications($this->mastertype, $this->group, $this->project, $this->pubid, $this->tags,
+  	  $this->limit, $this->sortby, $this->sortdir);
 	  \Document::addStyleSheet($this->base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'pubcards.css');
 		$html = '<style>';
 		$html .= '  .ribbon-alt {';
@@ -315,7 +306,7 @@ class Publications extends Macro
 				$html .= '</div>';
 			}
 		} else {
-			foreach ($items as $pub)
+			foreach ($this->items as $pub)
 			{
 				$html .= '  <div class="card" style="background-image: url(' . $this->_db->quote(Route::url($pub->link('masterimage'))) . ');">';
 
@@ -525,9 +516,10 @@ class Publications extends Macro
 		$html .= '</div>'; // End card list
 
 		return $html;
-	}
+}
 
-	public function _getListView() {
+
+  private function _getListView() {
 	\Document::addStyleSheet($this->base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'publists.css');
 
 	$html = '<section class="main-section">';
@@ -738,8 +730,7 @@ class Publications extends Macro
 	$html .= '</section>';
 
 	return $html;
-
-}
+ }
 
 	private function _getPublications($mastertype, $group, $project, $id, $tags, $limit, $sortby, $sortdir)
 	{
@@ -1134,7 +1125,7 @@ class Publications extends Macro
 	{
 		foreach ($args as $k => $arg)
 		{
-			if (preg_match('/view=\blist\b/i', $arg, $matches))
+			if (preg_match('/view=(\blist\b)/i', $arg, $matches))
 			{
 				$viewType = (isset($matches[1]) ? $matches[1] : '');
 				unset($args[$k]);
