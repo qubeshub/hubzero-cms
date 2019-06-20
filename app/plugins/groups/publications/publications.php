@@ -17,49 +17,49 @@ use Components\Publications\Tables\Publication as Publicationtable;
  */
 class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 {
-	
+
 	/**
 	 * Affects constructor behavior. If true, language files will be loaded automatically. Standard HUBzero plugin approach
 	 *
 	 * @var  boolean
 	 */
 	protected $_autoloadLanguage = true;
-	
+
 	/**
 	 * Component name
 	 *
 	 * @var  string
 	 */
 	protected $_option = 'com_groups';
-	
+
 	/**
 	 * Store internal message
 	 *
 	 * @var	 array
 	 */
 	protected $_msg = null;
-	
+
 	/**
 	 * Categories
 	 *
 	 * @var array
 	 */
 	private $_cats  = null;
-	
+
 	/**
 	 * Count for record
 	 *
 	 * @var array
 	 */
 	protected $_total = null;
-	
+
 	/**
 	 * Publications areas
 	 *
 	 * @var array
 	 */
 	private $_areas = null;
-	
+
 	/**
 	 * Loads the plugin language file
 	 *
@@ -73,27 +73,27 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 		{
 			$extension = 'plg_' . $this->_type . '_' . $this->_name;
 		}
-		
+
 		$group = \Hubzero\User\Group::getInstance(Request::getCmd('cn'));
 		if ($group && $group->isSuperGroup())
 		{
 			$basePath = PATH_APP . DS . 'site' . DS . 'groups' . DS . $group->get('gidNumber');
 		}
-		
+
 		$lang = \App::get('language');
 		return $lang->load(strtolower($extension), $basePath, null, false, true)
 		|| $lang->load(strtolower($extension), PATH_APP . DS . 'plugins' . DS . $this->_type . DS . $this->_name, null, false, true)
 		|| $lang->load(strtolower($extension), PATH_APP . DS . 'plugins' . DS . $this->_type . DS . $this->_name, null, false, true)
 		|| $lang->load(strtolower($extension), PATH_CORE . DS . 'plugins' . DS . $this->_type . DS . $this->_name, null, false, true);
 	}
-	
-	
+
+
 	/**
 	 * Return the alias and name for this category of content name. changed from on ProjectAreas to onGroupAreas
 	 *
 	 * @return     array
 	 */
-	
+
 	public function &onGroupAreas()
 	{
 		$area = array(
@@ -103,10 +103,10 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 			'display_menu_tab' => $this->params->get('display_tab', 1),
 			'icon'    => 'f053'
 		);
-		
+
 		return $area;
 	}
-	
+
 	/**
 	 * Return data on a group view (this will be some form of HTML)
 	 *
@@ -125,15 +125,15 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 		$this->group = $group;
 		$return = 'html';
 		$active = 'publications';
-		
+
 		// The output array we're returning
 		$arr = array(
 			'html'=>''
 		);
-		
+
 		//get this area details
 		$this_area = $this->onGroupAreas();
-		
+
 		// Check if our area is in the array of areas we want to return results for
 		if (is_array($areas) && $limit)
 		{
@@ -142,13 +142,13 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 				$return = 'metadata';
 			}
 		}
-		
+
 		//set group members plugin access level
 		$group_plugin_acl = $access[$active];
-		
+
 		//get the group members
 		$members = $group->get('members');
-		
+
 		if ($return == 'html')
 		{
 			//if set to nobody make sure they cant access TODO
@@ -157,14 +157,14 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 			// 	$arr['html'] = '<p class="info">' . Lang::txt('GROUPS_PLUGIN_OFF', ucfirst($active)) . '</p>';
 			// 	return $arr;
 			// }
-			
+
 			//check if guest and force login if plugin access is registered or members
 			// if (User::isGuest()
 			//  && ($group_plugin_acl == 'registered' || $group_plugin_acl == 'members'))
 			// {
 			// 	$area = Request::getWord('area', 'publications');//changed from 'resources' to 'publications'
 			// 	$url = Route::url('index.php?option=com_groups&cn=' . $group->get('cn') . '&active=' . $active . '&area=' . $area);
-			
+
 			// 	App::redirect(
 			// 		Route::url('index.php?option=com_users&view=login&return=' . base64_encode($url)),
 			// 		Lang::txt('GROUPS_PLUGIN_REGISTERED', ucfirst($active)),
@@ -172,7 +172,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 			// 	);
 			// 	return;
 			// }
-			
+
 			//check to see if user is member and plugin access requires members
 			// if (!in_array(User::get('id'), $members)
 			//  && $group_plugin_acl == 'members'
@@ -182,9 +182,9 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 			// 	return $arr;
 			// }
 		}
-		
+
 		$database = App::get('db');
-		
+
 		// Incoming paging vars
 		$sort = Request::getVar('sort', 'date');
 		if (!in_array($sort, array('date', 'title', 'ranking', 'rating')))
@@ -196,7 +196,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 		{
 			$access = 'date';
 		}
-		
+
 		$config = Component::params('com_publications');//changed from com_resources to com_publications
 		if ($return == 'metadata')
 		{
@@ -209,10 +209,10 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 				$sort = 'rating';
 			}
 		}
-		
+
 		// Trigger the functions that return the areas we'll be using
 		$pareas = $this->getPublicationsAreas(); //changed from rareas to pareas and method called
-		
+
 		// Get the active category
 		$area = Request::getWord('area', 'publications');//changed from resources to publications
 		if ($area)
@@ -224,7 +224,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 			$limit = 5;
 			$activeareas = $pareas;
 		}
-		
+
 		if ($return == 'metadata')
 		{
 			$ls = -1;
@@ -233,7 +233,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 		{
 			$ls = $limitstart;
 		}
-		
+
 		// Get the search result totals
 		$ts = $this->getPublications(
 			$group,
@@ -245,7 +245,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 			$activeareas
 		);
 		$totals = array($ts);
-		
+
 		// Get the total results found (sum of all categories)
 		$i = 0;
 		$total = 0;
@@ -253,7 +253,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 		foreach ($pareas as $c => $t)
 		{
 			$cats[$i]['category'] = $c;
-			
+
 			// Do sub-categories exist?
 			if (is_array($t) && !empty($t))
 			{
@@ -284,12 +284,12 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 				$cats[$i]['title'] = $t;
 				$cats[$i]['total'] = (!is_array($totals[$i])) ? $totals[$i] : 0;
 			}
-			
+
 			// Add to the overall total
 			$total = $total + intval($cats[$i]['total']);
 			$i++;
 		}
-		
+
 		// Do we have an active area?
 		if (count($activeareas) == 1 && !is_array(current($activeareas)))
 		{
@@ -299,7 +299,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 		{
 			$active = '';
 		}
-		
+
 		// Get the search results THIS is where search the database r
 		$r = $this->getPublications(//changed from getResources to getPublications
 			$group,
@@ -311,7 +311,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 			$activeareas
 		);
 		$results = array($r);
-		
+
 		// Build the output
 		switch ($return)
 		{
@@ -328,7 +328,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 				require_once \Component::path('com_publications') . DS .'helpers' . DS . 'html.php'; // Mirrors com_resources/helpers/html.php
 				// //require_once Component::path('com_publications') . DS .'helpers' . DS . 'utilities.php';//replaced helper.php with utilities.php
 				// require_once Component::path('com_publications') . DS .'helpers' . DS . 'tags.php';
-				
+
 				// Set the request up to make it look like a user made the request to the controller
 				Request::setVar('task', 'page');
 				Request::setVar('option', 'com_publications');
@@ -338,14 +338,14 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 				Request::setVar('tab_base_url', 'index.php?option=' . $this->option . '&cn=' . $this->group->cn . '&active=publications');
 				// Added a noview variable to indicate to the controller that we do not want it to try to display the view, simply build it
 				Request::setVar('noview', 1);
-				
+
 				// Instantiate the controller and have it execute
 				$newtest = new \Components\Publications\Site\Controllers\Publications(array('base_path'=>\Component::path('com_publications') . DS . 'site'));
 				$newtest->execute(); // This is leaving the group
-				
+
 				$arr['html'] = $newtest->view->loadTemplate();
 				$arr['metadata']['count'] = $total;
-				
+
 				// $view = $this->view('result','results');
 				// $view->option = $option;
 				// $view->group = $group;
@@ -373,13 +373,18 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 				//
 				// $arr['metadata']['count'] = count($results[0]); // We need to clean this up - was $total, which should work
 				// $arr['html'] = $view->loadTemplate();
-				
+
 			}
 			else
 			{
 				// Instantiate a vew
 				$view = $this->view('cards', 'results');
-				
+
+				include_once(PATH_APP . '/plugins/content/qubesmacros/publications.php');
+				$pubmacro = new \Plugins\Content\Formathtml\Macros\Publications();
+        $pubmacro->args = "group=bhar";
+				$html = $pubmacro->render();
+
 				// Pass the view some info
 				$view->option = $option;
 				$view->group = $group;
@@ -393,27 +398,27 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 				$view->total = $total;
 				$view->sort = $sort;
 				$view->access = $access;
-				
+
 				foreach ($this->getErrors() as $error)
 				{
 					$view->setError($error);
 				}
-				
+
 				// Return the output
 				$arr['metadata']['count'] = count($results[0]); // We need to clean this up - was $total, which should work
-				$arr['html'] = $view->loadTemplate();
+				$arr['html'] = $html;
 			}
 			break;
-			
+
 			case 'metadata':
 			$arr['metadata']['count'] = count($results[0]); // We need to clean this up - was $total, which should work
 			break;
 		}
-		
+
 		// Return the output
 		return $arr;
 	}
-	
+
 	/**
 	 * Remove any associated resources when group is deleted
 	 *
@@ -424,13 +429,13 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 	{
 		// Get all the IDs for resources associated with this group
 		$ids = $this->getResourceIDs($group->get('cn'));
-		
+
 		// Start the log text
 		$log = Lang::txt('PLG_GROUPS_PUBLICATIONS_LOG') . ': '; //changed from resources to publications
 		if (count($ids) > 0)
 		{
 			$database = App::get('db');
-			
+
 			// Loop through all the IDs for resources associated with this group
 			foreach ($ids as $id)
 			{
@@ -440,7 +445,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 				$rr->group_owner = '';
 				$rr->published = 0;
 				$rr->store();
-				
+
 				// Add the page ID to the log
 				$log .= $id->id . ' ' . "\n";
 			}
@@ -449,11 +454,11 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 		{
 			$log .= Lang::txt('PLG_GROUPS_PUBLICATIONS_NONE') . "\n"; //changed from PLG_GROUPS_RESOURCES_NONE to PLG_GROUPS_RESOURCES_NONE
 		}
-		
+
 		// Return the log
 		return $log;
 	}
-	
+
 	/**
 	 * Return a count of items that will be removed when group is deleted
 	 *
@@ -464,7 +469,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 	{
 		return Lang::txt('PLG_GROUPS_PUBLICATIONS_LOG') . ': ' . count($this->getPublicationIDs($group->get('cn')));
 	}
-	
+
 	/**
 	 * Get a list of publication IDs associated with this group
 	 *
@@ -478,13 +483,13 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 			return array();
 		}
 		$database = App::get('db');
-		
+
 		$rr = new \Components\Publications\Tables\Publication($database);
-		
+
 		$database->setQuery("SELECT id FROM ".$rr->getTableName()." AS p WHERE p.group_owner=".$database->quote($gid));
 		return $database->loadObjectList();
 	}
-	
+
 	/**
 	 * Get a list of Publications Areas
 	 */
@@ -513,7 +518,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 			// 	$categories = $rt->getCategories($filters);
 			// 	$this->_cats = $categories;
 		}
-		
+
 		// // Normalize the category names
 		// // e.g., "Oneline Presentations" -> "onlinepresentations"
 		$cats = array();
@@ -521,18 +526,18 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 		{
 			// 	$normalized = preg_replace("/[^a-zA-Z0-9]/", '', $categories[$i]->getCategory());
 			// 	$normalized = strtolower($normalized);
-			
+
 			// 	//$categories[$i]->title = $normalized;
 			$cats[$normalized] = $categories[$i]/*->type*/;
 		}
-		
+
 		$areas = array(
 			'publications' => $cats //changed from resources to publications
 		);
 		$this->_areas = $areas;
 		return $areas;
 	}
-	
+
 	/**
 	 * Retrieve records for items associated with this group
 	 *
@@ -576,7 +581,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 		$filters['authorized'] = $authorized;
 		$filters['state'] = array(1);
 		//get categories of project
-		
+
 		$filters = array();
 		$filters['limit']         = Request::getInt('limit', Config::get('list_limit'));
 		$filters['start']         = Request::getInt('limitstart', 0);
@@ -602,7 +607,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 		// 	$cats[$normalized] = array();
 		// 	$cats[$normalized]['id'] = $categories[$i]->id;
 		// }
-		
+
 		if ($limit)
 		{
 			if ($this->_total != null)
@@ -619,8 +624,8 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 					return array();
 				}
 			}
-			
-			
+
+
 			$filters['group_owner'] = $group->get('gidNumber');
 			$filters['sortby'] = 'title';
 			$filters['limit'] = $limit;
@@ -632,11 +637,11 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 				$filters['type'] = $cats[$areas[0]]['id'];
 			}
 			// Get results
-			
+
 			$rows = $pubtable->getRecords($filters);
 			// Did we get any results?
 			// print_r($rows);
-	
+
 			if ($rows)
 			{
 				// Loop through the results and set each item's HREF
