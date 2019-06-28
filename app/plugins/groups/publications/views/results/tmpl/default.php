@@ -9,7 +9,9 @@
 defined('_HZEXEC_') or die();
 $this->css()
      ->css('publications.css', 'com_publications')
-
+     ->css('list_view.css');
+$this->js()
+     ->js('resource_plugin.js');
      ->js('publications.js', 'com_publications');
 $config = Component::params('com_publications');
 // An array for storing all the links we make
@@ -73,82 +75,127 @@ if ($this->cats)
   </ul>
 
 <main class="main section">
- <div class="filter">
-   Filter
-   <form>
-     <div class="filter-category">
-       <span>Type</span>
+  <div class="filter">
+  Filter
+	<form method="get" action="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications'); ?>">
 
-       <div>
-         <input type="checkbox" id="teaching_material" name="type" value="teaching_material" checked>
-         <label for="teaching_material">Teaching Material</label>
-       </div>
+		<input type="hidden" name="area" value="<?php echo $this->escape($this->active); ?>" />
 
-       <div>
-         <input type="checkbox" id="reference_material" name="type" value="reference_material" checked>
-         <label for="reference_material">Reference Material</label>
-       </div>
+    <div class="filter-category">
+      <span>Type</span>
 
-       <div>
-         <input type="checkbox" id="software" name="type" value="software" checked>
-         <label for="software">Software</label>
-       </div>
-     </div>
+      <div>
+        <input type="checkbox" id="teaching_material" name="type" value="teaching_material" checked>
+        <label for="teaching_material">Teaching Material</label>
+      </div>
 
-     <div class="filter-category">
-       <span>Tags</span>
+      <div>
+        <input type="checkbox" id="reference_material" name="type" value="reference_material" checked>
+        <label for="reference_material">Reference Material</label>
+      </div>
 
-       <div>
-         <input type="checkbox" id="tag1" name="tag" value="tag1" checked>
-         <label for="tag1">Tag 1</label>
-       </div>
+      <div>
+        <input type="checkbox" id="software" name="type" value="software" checked>
+        <label for="software">Software</label>
+      </div>
+    </div>
 
-       <div>
-         <input type="checkbox" id="tag2" name="tag" value="tag2" checked>
-         <label for="tag2">Tag 2</label>
-       </div>
+    <div class="filter-category">
+      <span>Tags</span>
 
-       <div>
-         <input type="checkbox" id="tag3" name="tag" value="tag3" checked>
-         <label for="tag3">Tag 3</label>
-       </div>
+      <div>
+        <input type="checkbox" id="tag1" name="tag" value="tag1" checked>
+        <label for="tag1">Tag 1</label>
+      </div>
 
-       <div>
-         <input type="checkbox" id="tag4" name="tag" value="tag4" checked>
-         <label for="tag4">Tag 4</label>
-       </div>
-     </div>
+      <div>
+        <input type="checkbox" id="tag2" name="tag" value="tag2" checked>
+        <label for="tag2">Tag 2</label>
+      </div>
 
-     <button type="submit" name="submit">Filter</button>
-     <button type="reset" name="reset">Reset</button>
-   </form>
- </div>
+      <div>
+        <input type="checkbox" id="tag3" name="tag" value="tag3" checked>
+        <label for="tag3">Tag 3</label>
+      </div>
 
+      <div>
+        <input type="checkbox" id="tag4" name="tag" value="tag4" checked>
+        <label for="tag4">Tag 4</label>
+      </div>
+    </div>
 
- <div class="resource_contents">
-  <div class="resource_header">
-		<nav class="entries-filters">
-      Sort by:
-      <ul class="sort-option entries-menu filter-options">
-        <li class="active" ><a>Newest</a></li>
-        <li><a>Activity</a></li>
+    <button type="submit" name="submit">Filter</button>
+    <button type="reset" name="reset">Reset</button>
+  </form>
+  </div>
+
+  <div class="resource_contents">
+    <div class="resource_header">
+			<nav class="entries-filter">
+        Sort by:
+				<ul class="sort-option entries-menu filter-options">
+					<li><a<?php echo ($this->sort == 'date') ? ' class="active"' : ''; ?> href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&area=' . urlencode(stripslashes($this->active)) . '&sort=date&access=' . $this->access); ?>" title="Sort by newest to oldest">&darr; <?php echo Lang::txt('PLG_GROUPS_PUBLICATIONS_SORT_BY_NEWEST'); ?></a></li>
+					<li><a<?php echo ($this->sort == 'title') ? ' class="active"' : ''; ?> href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&area=' . urlencode(stripslashes($this->active)) . '&sort=title&access=' . $this->access); ?>" title="Sort by title">&darr; <?php echo Lang::txt('PLG_GROUPS_PUBLICATIONS_SORT_BY_TITLE'); ?></a></li>
+				</ul>
+			</nav>
+
+      <ul class="entries-menu view-option">
+        <li><a class="info-th">Card View</a></li>
+        <li class="active"><a class="info-th-list">List View</a></li>
       </ul>
-		 </nav>
+    </div>
 
-     <ul class="entries-menu view-option">
-       <li><a class="info-th">Card View</a></li>
-       <li class="active"><a class="info-th-list">List View</a></li>
-     </ul>
-   </div>
-
-   <div class="resource_content">
+    <div class="resource_content">
      <ul class="img-option entries-menu filter-options">
        Images:
        <li><a>On</a></li>
        <li class="active"><a>Off</a></li>
      </ul>
 
-		
 
-	</form>
-</main>
+			<div class="container-block">
+				<?php
+				$html = '';
+				$k = 0;
+				foreach ($this->results as $category)
+				{
+					$amt = count($category);
+					if ($amt > 0)
+					{
+						$html .= '<ol class="publications results">'."\n";
+						foreach ($category as $row)
+						{
+							$k++;
+							$html .= $this->view('_item') //calling _item view here
+										->set('row', $row)
+										->set('authorized', $this->authorized)
+										->loadTemplate();
+						}
+						$html .= '</ol>'."\n";
+					}
+				}
+				echo $html;
+				if (!$k)
+				{
+					echo '<p class="warning">' . Lang::txt('PLG_GROUPS_PUBLICATIONS_NONE') . '</p>';
+				}
+				?>
+			</div><!-- / .container-block -->
+			<?php
+			$pageNav = $this->pagination(
+				$this->total,
+				$this->limitstart,
+				$this->limit
+			);
+			$pageNav->setAdditionalUrlParam('cn', $this->group->get('cn'));
+			$pageNav->setAdditionalUrlParam('active', 'publications');
+			$pageNav->setAdditionalUrlParam('area', urlencode(stripslashes($this->active)));
+			$pageNav->setAdditionalUrlParam('sort', $this->sort);
+			$pageNav->setAdditionalUrlParam('access', $this->access);
+			echo $pageNav->render();
+			?>
+			<div class="clearfix"></div>
+     </div>
+    </div>
+ </main>
+</div>
