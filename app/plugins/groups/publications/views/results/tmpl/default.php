@@ -9,6 +9,7 @@
 defined('_HZEXEC_') or die();
 $this->css()
      ->css('publications.css', 'com_publications')
+
      ->js('publications.js', 'com_publications');
 $config = Component::params('com_publications');
 // An array for storing all the links we make
@@ -112,7 +113,7 @@ if ($this->cats)
 				<ul class="entries-menu">
 					<li><a<?php echo ($this->sort == 'date') ? ' class="active"' : ''; ?> href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&area=' . urlencode(stripslashes($this->active)) . '&sort=date&access=' . $this->access); ?>" title="Sort by newest to oldest">&darr; <?php echo Lang::txt('PLG_GROUPS_PUBLICATIONS_SORT_BY_DATE'); ?></a></li>
 					<li><a<?php echo ($this->sort == 'title') ? ' class="active"' : ''; ?> href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&area=' . urlencode(stripslashes($this->active)) . '&sort=title&access=' . $this->access); ?>" title="Sort by title">&darr; <?php echo Lang::txt('PLG_GROUPS_PUBLICATIONS_SORT_BY_TITLE'); ?></a></li>
-					
+
 				</ul>
 			</nav>
 

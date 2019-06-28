@@ -90,6 +90,7 @@ public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $spon
 	 *
 	 * @return  string
 	 */
+
 	public function render()
 	{
 		// Get args
@@ -114,11 +115,11 @@ public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $spon
 		$this->sortdir = $this->_getSortDir($args);
 		$viewType = $this->_getViewType($args);
 
-    if($viewType =='list') {
-        $this->_getCardView();
+    if($viewType =='card') {
+        return $this->_getCardView();
 			}
 		else {
-			$this->_getListView();
+			return $this->_getListView();
 		}
 
 		// 2.2 should take care of not needed to import?  i.e. the "use" command above should handle this
@@ -126,16 +127,15 @@ public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $spon
 
 		// Get publications
 
-
-    $this->base = rtrim(str_replace(PATH_ROOT, '', __DIR__));
-    \Document::addStyleSheet($this->base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'colorbrewer.css');
-		\Document::addScript($this->base . DS . 'assets' . DS . 'publications' . DS . 'js' . DS . 'pubcards.js');
 }
 
-		private function _getCardView() {
+		public function _getCardView() {
 			$this->items = $this->_getPublications($this->mastertype, $this->group, $this->project, $this->pubid, $this->tags,
-  	  $this->limit, $this->sortby, $this->sortdir);
-	  \Document::addStyleSheet($this->base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'pubcards.css');
+		 	$this->limit, $this->sortby, $this->sortdir);
+		 	$this->base = rtrim(str_replace(PATH_ROOT, '', __DIR__));
+			\Document::addStyleSheet($this->base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'colorbrewer.css');
+			\Document::addScript($this->base . DS . 'assets' . DS . 'publications' . DS . 'js' . DS . 'pubcards.js');
+	    \Document::addStyleSheet($this->base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'pubcards.css');
 		$html = '<style>';
 		$html .= '  .ribbon-alt {';
 		$html .= '    background-color: #' . $this->sponsorbgcol . ';';
@@ -519,9 +519,12 @@ public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $spon
 }
 
 
-  private function _getListView() {
+  public function _getListView() {
+	$this->items = $this->_getPublications($this->mastertype, $this->group, $this->project, $this->pubid, $this->tags,
+	$this->limit, $this->sortby, $this->sortdir);
+	$this->base = rtrim(str_replace(PATH_ROOT, '', __DIR__));
 	\Document::addStyleSheet($this->base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'publists.css');
-
+  \Document::addStyleSheet($this->base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'colorbrewer.css');
 	$html = '<section class="main-section">';
 	$html .= ' <div class="section-inner">';
 	$html .= '  <div class="subject">';
