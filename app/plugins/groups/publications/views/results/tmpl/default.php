@@ -9,9 +9,9 @@
 defined('_HZEXEC_') or die();
 $this->css()
      ->css('publications.css', 'com_publications')
-     ->css('list_view.css');
+     ->css('resource_plugin.css');
 $this->js()
-     ->js('resource_plugin.js');
+     ->js('resource_plugin.js')
      ->js('publications.js', 'com_publications');
 $config = Component::params('com_publications');
 // An array for storing all the links we make
@@ -74,10 +74,10 @@ if ($this->cats)
     <li><a href="#" class="icon-config config btn">Settings</a></li>
   </ul>
 
-<main class="main section">
-  <div class="filter">
-  Filter
-	<form method="get" action="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications'); ?>">
+  <main class="main section">
+    <div class="filter">
+    Filter
+	  <form method="get" action="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications'); ?>">
 
 		<input type="hidden" name="area" value="<?php echo $this->escape($this->active); ?>" />
 
