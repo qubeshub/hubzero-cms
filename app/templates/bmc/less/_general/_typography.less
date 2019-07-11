@@ -125,6 +125,19 @@ p {
 	}
 }
 
+//Do not apply link styles to a.btn nested in paragraphs
+p {
+	a.btn {
+		display: unset;
+		font-family: inherit;
+		font-weight: normal;
+
+		&::after {
+			display: none;
+		}
+	}
+}
+
 /* ********************************************
  * Other tags
  */
