@@ -96,7 +96,7 @@ p {
 		font-weight: bold;
 		position: relative;
 
-		&::before {
+		&::after {
 			background-color: @colorLink;
 			content: '';
 			display: block;
@@ -113,11 +113,11 @@ p {
 		}
 
 		&:hover {
-			color: @colorSidebarBg;
+			color: @colorLinkHover;
 		}
 
-		&:hover::before {
-			background-color: @colorSidebarBg;
+		&:hover::after {
+			background-color: @colorLinkHover;
 			opacity: 1;
 			transform: scaleX(1);
 			-webkit-transform: scaleX(1);
