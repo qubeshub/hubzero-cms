@@ -74,7 +74,6 @@ $this->setTitle(Config::get('sitename') . ' - ' . $this->getTitle());
 		<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 		<!-- <meta http-equiv="X-UA-Compatible" content="IE=edge" /> Doesn't validate... -->
 
-		<link href="https://fonts.googleapis.com/css?family=Martel" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" media="screen" href="<?php echo \Hubzero\Document\Assets::getSystemStylesheet(); ?>" />
 
 		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.20.3/TweenMax.min.js"></script>
