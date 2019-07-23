@@ -141,74 +141,36 @@
     margin-bottom: 1em;
   }
 
-  .billboard-image {
-    background-color: $white;
-    border-right: 3px solid $color-accent;
-    height: 5rem;
-    overflow: hidden;
-    transition: 3s ease-in-out;
-    width: 5rem;
-
-    img {
-      position: relative;
-      top: 50%;
-      transform: translateY(-50%);
-      transition: 3s ease-in-out;
-    }
-
-    &:hover {
-      img {
-        transform: translateY(-50%) scale(1.1);
-      }
-    }
-  }
-
-  .billboard {
-    @include flexbox;
-    position: relative;
-
-    .billboard-tag {
-      @include showcase-tag($color-accent2, $white);
-      bottom: 15%;
-      font-size: .7em;
-      left: -.5em;
-    }
-
-    .billboard-header {
-      margin-left: .5em;
-
-      a {
-        @include showcase-header(1em, 1.2, 4);
-        border: none;
-      }
-
-      span {
-        @include truncate(1rem, 1.2, 4);
-        font-family: $font-link;
-      }
-    }
-  }
-
-  .blog,
-  .newsletter,
-  .fmn {
-    @extend .billboard;
-  }
-
+  .billboard-image,
   .blog-img,
   .newsletter-img,
   .fmn-img {
-    @extend .billboard-image;
+    @include showcase-horizontal-img(6rem, 6rem);
   }
 
+  .billboard,
+  .blog,
+  .newsletter,
+  .fmn {
+    @extend %showcase-horizontal;
+  }
+
+  .billboard-tag,
+  .fmn-tag {
+    @include showcase-tag($color-accent2, $white);
+    bottom: 15%;
+    font-size: .7em;
+    left: -.5em;
+  }
+
+  .billboard-header,
   .blog-title,
   .newsletter-title,
   .fmn-title {
-    @extend .billboard-header;
-  }
-
-  .fmn-tag {
-    @extend .billboard-tag;
+    @extend %showcase-horizontal-title;
+    a {
+      @include truncate(1rem, 1.2, 4);
+    }
   }
 
   .regular {
@@ -281,7 +243,7 @@
     .resource {
       flex: 1 1 15rem;
       height: 15rem;
-      margin: 5px;
+      margin: 0.3125em;
       position: relative;
 
       .resource-tag {
@@ -290,9 +252,6 @@
 
       .resource-title {
         @include showcase-header(1em, 1.1, 2);
-        bottom: 0;
-        padding: .625em;
-        position: absolute;
       }
       @include grid-support {
         margin: 0;
@@ -558,30 +517,39 @@
       height: 15rem;
     }
 
-    .billboard-image {
-      @extend %showcase-img;
-    }
-
-    .billboard {
-      position: relative;
-    }
-
-    .billboard-tag {
-      @include showcase-tag($color-accent2, $white);
-    }
-
-    .billboard-header {
-      @include showcase-header(1em, 1.1, 2);
-      bottom: 0;
-      padding: .625em;
-      position: absolute;
-    }
-
+    .billboard-image,
     .resource-img,
     .blog-img,
     .newsletter-img,
     .fmn-img {
-      @extend .billboard-image;
+      @extend %showcase-img;
+    }
+
+    .billboard,
+    .resource,
+    .group,
+    .blog,
+    .newsletter,
+    .fmn {
+      position: relative;
+    }
+
+    .billboard-tag,
+    .resource-tag,
+    .partner-tag,
+    .group-tag,
+    .fmn-tag {
+      @include showcase-tag($color-accent2, $white);
+    }
+
+    .billboard-header,
+    .resource-title,
+    .partner-title,
+    .group-description,
+    .blog-title,
+    .newsletter-title,
+    .fmn-title {
+      @include showcase-header(1em, 1.1, 2);
     }
 
     .partner-img,
@@ -589,33 +557,10 @@
       @extend %showcase-group;
     }
 
-    .resource,
-    .group,
-    .blog,
-    .newsletter,
-    .fmn {
-      @extend .billboard;
-    }
-
     .blog {
       @include flexbox;
     }
 
-    .resource-tag,
-    .partner-tag,
-    .group-tag,
-    .fmn-tag {
-      @extend .billboard-tag;
-    }
-
-    .resource-title,
-    .partner-title,
-    .group-description,
-    .blog-title,
-    .newsletter-title,
-    .fmn-title {
-      @extend .billboard-header;
-    }
     @include grid-support {
       width: auto;
     }

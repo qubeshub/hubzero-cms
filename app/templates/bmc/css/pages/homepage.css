@@ -1,4 +1,5 @@
-.resources .module-left .resource-img, .community .module-right .billboard-image, .community .module-right .resource-img,
+.resources .module-left .resource-img, .community .module-right .billboard-image,
+.community .module-right .resource-img,
 .community .module-right .blog-img,
 .community .module-right .newsletter-img,
 .community .module-right .fmn-img {
@@ -37,6 +38,26 @@
 
 .community .module-right .partner-img:hover img, .community .module-right .group-img:hover img {
   transform: translateY(-50%) scale(1.1);
+}
+
+.feature .billboard,
+.feature .blog,
+.feature .newsletter,
+.feature .fmn {
+  display: flex;
+  flex-wrap: nowrap;
+  margin: 1em .75em;
+  position: relative;
+}
+
+.feature .billboard-header,
+.feature .blog-title,
+.feature .newsletter-title,
+.feature .fmn-title {
+  background-color: #fff;
+  font-family: "montserratregular", Helvetica Neue, Helvetica, sans-serif;
+  padding: .5em;
+  position: static;
 }
 
 .wrapper {
@@ -253,64 +274,43 @@
   margin-bottom: 1em;
 }
 
-.feature .billboard-image, .feature .blog-img,
+.feature .billboard-image,
+.feature .blog-img,
 .feature .newsletter-img,
-.feature .fmn-img, .feature .community .module-right .resource-img, .community .module-right .feature .resource-img,
-.feature .community .module-right .blog-img, .community .module-right .feature .blog-img,
-.feature .community .module-right .newsletter-img, .community .module-right .feature .newsletter-img,
-.feature .community .module-right .fmn-img, .community .module-right .feature .fmn-img {
+.feature .fmn-img {
   background-color: #fff;
   border-right: 3px solid #8cc540;
-  height: 5rem;
+  height: 6rem;
   overflow: hidden;
-  transition: 3s ease-in-out;
-  width: 5rem;
+  width: 6rem;
 }
 
-.feature .billboard-image img, .feature .blog-img img, .feature .newsletter-img img, .feature .fmn-img img, .feature .community .module-right .resource-img img, .community .module-right .feature .resource-img img, .feature .community .module-right .blog-img img, .community .module-right .feature .blog-img img, .feature .community .module-right .newsletter-img img, .community .module-right .feature .newsletter-img img, .feature .community .module-right .fmn-img img, .community .module-right .feature .fmn-img img {
+.feature .billboard-image img,
+.feature .blog-img img,
+.feature .newsletter-img img,
+.feature .fmn-img img {
   position: relative;
   top: 50%;
   transform: translateY(-50%);
   transition: 3s ease-in-out;
 }
 
-.feature .billboard-image:hover img, .feature .blog-img:hover img, .feature .newsletter-img:hover img, .feature .fmn-img:hover img, .feature .community .module-right .resource-img:hover img, .community .module-right .feature .resource-img:hover img {
+.feature .billboard-image:hover img,
+.feature .blog-img:hover img,
+.feature .newsletter-img:hover img,
+.feature .fmn-img:hover img {
   transform: translateY(-50%) scale(1.1);
 }
 
-.feature .billboard, .feature .blog,
-.feature .newsletter,
-.feature .fmn, .feature .community .module-right .resource, .community .module-right .feature .resource,
-.feature .community .module-right .group, .community .module-right .feature .group,
-.feature .community .module-right .blog, .community .module-right .feature .blog,
-.feature .community .module-right .newsletter, .community .module-right .feature .newsletter,
-.feature .community .module-right .fmn, .community .module-right .feature .fmn {
-  display: flex;
-  flex-wrap: nowrap;
-  position: relative;
+.feature .billboard-image::after,
+.feature .blog-img::after,
+.feature .newsletter-img::after,
+.feature .fmn-img::after {
+  visibility: hidden;
 }
 
-.feature .billboard .billboard-tag, .feature .blog .billboard-tag, .feature .newsletter .billboard-tag, .feature .fmn .billboard-tag, .feature .community .module-right .resource .billboard-tag, .community .module-right .feature .resource .billboard-tag, .feature .community .module-right .group .billboard-tag, .community .module-right .feature .group .billboard-tag, .feature .billboard .fmn-tag, .feature .blog .fmn-tag, .feature .newsletter .fmn-tag, .feature .fmn .fmn-tag, .feature .billboard .community .module-right .resource-tag, .community .module-right .feature .billboard .resource-tag, .feature .blog .community .module-right .resource-tag, .feature .newsletter .community .module-right .resource-tag, .feature .fmn .community .module-right .resource-tag, .feature .community .module-right .resource .resource-tag, .community .module-right .feature .resource .resource-tag, .feature .community .module-right .group .resource-tag, .community .module-right .feature .group .resource-tag, .feature .community .module-right .blog .resource-tag, .community .module-right .feature .blog .resource-tag, .feature .community .module-right .newsletter .resource-tag, .community .module-right .feature .newsletter .resource-tag, .feature .community .module-right .fmn .resource-tag, .community .module-right .feature .fmn .resource-tag,
-.feature .billboard .community .module-right .partner-tag, .community .module-right .feature .billboard .partner-tag,
-.feature .blog .community .module-right .partner-tag,
-.feature .newsletter .community .module-right .partner-tag,
-.feature .fmn .community .module-right .partner-tag,
-.feature .community .module-right .resource .partner-tag, .community .module-right .feature .resource .partner-tag,
-.feature .community .module-right .group .partner-tag, .community .module-right .feature .group .partner-tag,
-.feature .community .module-right .blog .partner-tag, .community .module-right .feature .blog .partner-tag,
-.feature .community .module-right .newsletter .partner-tag, .community .module-right .feature .newsletter .partner-tag,
-.feature .community .module-right .fmn .partner-tag, .community .module-right .feature .fmn .partner-tag,
-.feature .billboard .community .module-right .group-tag, .community .module-right .feature .billboard .group-tag,
-.feature .blog .community .module-right .group-tag,
-.feature .newsletter .community .module-right .group-tag,
-.feature .fmn .community .module-right .group-tag,
-.feature .community .module-right .resource .group-tag, .community .module-right .feature .resource .group-tag,
-.feature .community .module-right .group .group-tag, .community .module-right .feature .group .group-tag,
-.feature .community .module-right .blog .group-tag, .community .module-right .feature .blog .group-tag,
-.feature .community .module-right .newsletter .group-tag, .community .module-right .feature .newsletter .group-tag,
-.feature .community .module-right .fmn .group-tag, .community .module-right .feature .fmn .group-tag,
-.feature .community .module-right .resource .fmn-tag, .community .module-right .feature .resource .fmn-tag,
-.feature .community .module-right .group .fmn-tag, .community .module-right .feature .group .fmn-tag {
+.feature .billboard-tag,
+.feature .fmn-tag {
   background-color: #248232;
   bottom: 5em;
   font-family: "open_sansregular", Helvetica Neue, Helvetica, sans-serif;
@@ -325,27 +325,8 @@
   left: -.5em;
 }
 
-.feature .billboard .billboard-tag::before, .feature .blog .billboard-tag::before, .feature .newsletter .billboard-tag::before, .feature .fmn .billboard-tag::before, .feature .community .module-right .resource .billboard-tag::before, .community .module-right .feature .resource .billboard-tag::before, .feature .community .module-right .group .billboard-tag::before, .community .module-right .feature .group .billboard-tag::before, .feature .billboard .fmn-tag::before, .feature .blog .fmn-tag::before, .feature .newsletter .fmn-tag::before, .feature .fmn .fmn-tag::before, .feature .billboard .community .module-right .resource-tag::before, .community .module-right .feature .billboard .resource-tag::before, .feature .blog .community .module-right .resource-tag::before, .feature .newsletter .community .module-right .resource-tag::before, .feature .fmn .community .module-right .resource-tag::before, .feature .community .module-right .resource .resource-tag::before, .community .module-right .feature .resource .resource-tag::before, .feature .community .module-right .group .resource-tag::before, .community .module-right .feature .group .resource-tag::before, .feature .community .module-right .blog .resource-tag::before, .community .module-right .feature .blog .resource-tag::before, .feature .community .module-right .newsletter .resource-tag::before, .community .module-right .feature .newsletter .resource-tag::before, .feature .community .module-right .fmn .resource-tag::before, .community .module-right .feature .fmn .resource-tag::before,
-.feature .billboard .community .module-right .partner-tag::before, .community .module-right .feature .billboard .partner-tag::before,
-.feature .blog .community .module-right .partner-tag::before,
-.feature .newsletter .community .module-right .partner-tag::before,
-.feature .fmn .community .module-right .partner-tag::before,
-.feature .community .module-right .resource .partner-tag::before, .community .module-right .feature .resource .partner-tag::before,
-.feature .community .module-right .group .partner-tag::before, .community .module-right .feature .group .partner-tag::before,
-.feature .community .module-right .blog .partner-tag::before, .community .module-right .feature .blog .partner-tag::before,
-.feature .community .module-right .newsletter .partner-tag::before, .community .module-right .feature .newsletter .partner-tag::before,
-.feature .community .module-right .fmn .partner-tag::before, .community .module-right .feature .fmn .partner-tag::before,
-.feature .billboard .community .module-right .group-tag::before, .community .module-right .feature .billboard .group-tag::before,
-.feature .blog .community .module-right .group-tag::before,
-.feature .newsletter .community .module-right .group-tag::before,
-.feature .fmn .community .module-right .group-tag::before,
-.feature .community .module-right .resource .group-tag::before, .community .module-right .feature .resource .group-tag::before,
-.feature .community .module-right .group .group-tag::before, .community .module-right .feature .group .group-tag::before,
-.feature .community .module-right .blog .group-tag::before, .community .module-right .feature .blog .group-tag::before,
-.feature .community .module-right .newsletter .group-tag::before, .community .module-right .feature .newsletter .group-tag::before,
-.feature .community .module-right .fmn .group-tag::before, .community .module-right .feature .fmn .group-tag::before,
-.feature .community .module-right .resource .fmn-tag::before, .community .module-right .feature .resource .fmn-tag::before,
-.feature .community .module-right .group .fmn-tag::before, .community .module-right .feature .group .fmn-tag::before {
+.feature .billboard-tag::before,
+.feature .fmn-tag::before {
   content: '';
   height: 0;
   width: 0;
@@ -357,76 +338,15 @@
   border-left: 8px solid transparent;
 }
 
-.feature .billboard .billboard-tag span, .feature .blog .billboard-tag span, .feature .newsletter .billboard-tag span, .feature .fmn .billboard-tag span, .feature .community .module-right .resource .billboard-tag span, .community .module-right .feature .resource .billboard-tag span, .feature .community .module-right .group .billboard-tag span, .community .module-right .feature .group .billboard-tag span, .feature .billboard .fmn-tag span, .feature .blog .fmn-tag span, .feature .newsletter .fmn-tag span, .feature .fmn .fmn-tag span, .feature .billboard .community .module-right .resource-tag span, .community .module-right .feature .billboard .resource-tag span, .feature .blog .community .module-right .resource-tag span, .feature .newsletter .community .module-right .resource-tag span, .feature .fmn .community .module-right .resource-tag span, .feature .community .module-right .resource .resource-tag span, .community .module-right .feature .resource .resource-tag span, .feature .community .module-right .group .resource-tag span, .community .module-right .feature .group .resource-tag span, .feature .community .module-right .blog .resource-tag span, .community .module-right .feature .blog .resource-tag span, .feature .community .module-right .newsletter .resource-tag span, .community .module-right .feature .newsletter .resource-tag span, .feature .community .module-right .fmn .resource-tag span, .community .module-right .feature .fmn .resource-tag span, .feature .billboard .community .module-right .partner-tag span, .community .module-right .feature .billboard .partner-tag span, .feature .blog .community .module-right .partner-tag span, .feature .newsletter .community .module-right .partner-tag span, .feature .fmn .community .module-right .partner-tag span, .feature .community .module-right .resource .partner-tag span, .community .module-right .feature .resource .partner-tag span, .feature .community .module-right .group .partner-tag span, .community .module-right .feature .group .partner-tag span, .feature .community .module-right .blog .partner-tag span, .community .module-right .feature .blog .partner-tag span, .feature .community .module-right .newsletter .partner-tag span, .community .module-right .feature .newsletter .partner-tag span, .feature .community .module-right .fmn .partner-tag span, .community .module-right .feature .fmn .partner-tag span, .feature .billboard .community .module-right .group-tag span, .community .module-right .feature .billboard .group-tag span, .feature .blog .community .module-right .group-tag span, .feature .newsletter .community .module-right .group-tag span, .feature .fmn .community .module-right .group-tag span, .feature .community .module-right .resource .group-tag span, .community .module-right .feature .resource .group-tag span, .feature .community .module-right .group .group-tag span, .community .module-right .feature .group .group-tag span, .feature .community .module-right .blog .group-tag span, .community .module-right .feature .blog .group-tag span, .feature .community .module-right .newsletter .group-tag span, .community .module-right .feature .newsletter .group-tag span, .feature .community .module-right .fmn .group-tag span, .community .module-right .feature .fmn .group-tag span, .feature .community .module-right .resource .fmn-tag span, .community .module-right .feature .resource .fmn-tag span, .feature .community .module-right .group .fmn-tag span, .community .module-right .feature .group .fmn-tag span {
+.feature .billboard-tag span,
+.feature .fmn-tag span {
   color: #fff;
 }
 
-.feature .billboard .billboard-header, .feature .blog .billboard-header, .feature .newsletter .billboard-header, .feature .fmn .billboard-header, .feature .community .module-right .resource .billboard-header, .community .module-right .feature .resource .billboard-header, .feature .community .module-right .group .billboard-header, .community .module-right .feature .group .billboard-header, .feature .billboard .blog-title, .feature .blog .blog-title, .feature .newsletter .blog-title, .feature .fmn .blog-title,
-.feature .billboard .newsletter-title,
-.feature .blog .newsletter-title,
-.feature .newsletter .newsletter-title,
-.feature .fmn .newsletter-title,
-.feature .billboard .fmn-title,
-.feature .blog .fmn-title,
-.feature .newsletter .fmn-title,
-.feature .fmn .fmn-title, .feature .billboard .community .module-right .resource-title, .community .module-right .feature .billboard .resource-title, .feature .blog .community .module-right .resource-title, .feature .newsletter .community .module-right .resource-title, .feature .fmn .community .module-right .resource-title, .feature .community .module-right .resource .resource-title, .community .module-right .feature .resource .resource-title, .feature .community .module-right .group .resource-title, .community .module-right .feature .group .resource-title, .feature .community .module-right .blog .resource-title, .community .module-right .feature .blog .resource-title, .feature .community .module-right .newsletter .resource-title, .community .module-right .feature .newsletter .resource-title, .feature .community .module-right .fmn .resource-title, .community .module-right .feature .fmn .resource-title,
-.feature .billboard .community .module-right .partner-title, .community .module-right .feature .billboard .partner-title,
-.feature .blog .community .module-right .partner-title,
-.feature .newsletter .community .module-right .partner-title,
-.feature .fmn .community .module-right .partner-title,
-.feature .community .module-right .resource .partner-title, .community .module-right .feature .resource .partner-title,
-.feature .community .module-right .group .partner-title, .community .module-right .feature .group .partner-title,
-.feature .community .module-right .blog .partner-title, .community .module-right .feature .blog .partner-title,
-.feature .community .module-right .newsletter .partner-title, .community .module-right .feature .newsletter .partner-title,
-.feature .community .module-right .fmn .partner-title, .community .module-right .feature .fmn .partner-title,
-.feature .billboard .community .module-right .group-description, .community .module-right .feature .billboard .group-description,
-.feature .blog .community .module-right .group-description,
-.feature .newsletter .community .module-right .group-description,
-.feature .fmn .community .module-right .group-description,
-.feature .community .module-right .resource .group-description, .community .module-right .feature .resource .group-description,
-.feature .community .module-right .group .group-description, .community .module-right .feature .group .group-description,
-.feature .community .module-right .blog .group-description, .community .module-right .feature .blog .group-description,
-.feature .community .module-right .newsletter .group-description, .community .module-right .feature .newsletter .group-description,
-.feature .community .module-right .fmn .group-description, .community .module-right .feature .fmn .group-description,
-.feature .community .module-right .resource .blog-title, .community .module-right .feature .resource .blog-title,
-.feature .community .module-right .group .blog-title, .community .module-right .feature .group .blog-title,
-.feature .community .module-right .resource .newsletter-title, .community .module-right .feature .resource .newsletter-title,
-.feature .community .module-right .group .newsletter-title, .community .module-right .feature .group .newsletter-title,
-.feature .community .module-right .resource .fmn-title, .community .module-right .feature .resource .fmn-title,
-.feature .community .module-right .group .fmn-title, .community .module-right .feature .group .fmn-title {
-  margin-left: .5em;
-}
-
-.feature .billboard .billboard-header a, .feature .blog .billboard-header a, .feature .newsletter .billboard-header a, .feature .fmn .billboard-header a, .feature .community .module-right .resource .billboard-header a, .community .module-right .feature .resource .billboard-header a, .feature .community .module-right .group .billboard-header a, .community .module-right .feature .group .billboard-header a, .feature .billboard .blog-title a, .feature .blog .blog-title a, .feature .newsletter .blog-title a, .feature .fmn .blog-title a, .feature .billboard .newsletter-title a, .feature .blog .newsletter-title a, .feature .newsletter .newsletter-title a, .feature .fmn .newsletter-title a, .feature .billboard .fmn-title a, .feature .blog .fmn-title a, .feature .newsletter .fmn-title a, .feature .fmn .fmn-title a, .feature .billboard .community .module-right .resource-title a, .community .module-right .feature .billboard .resource-title a, .feature .blog .community .module-right .resource-title a, .feature .newsletter .community .module-right .resource-title a, .feature .fmn .community .module-right .resource-title a, .feature .community .module-right .resource .resource-title a, .community .module-right .feature .resource .resource-title a, .feature .community .module-right .group .resource-title a, .community .module-right .feature .group .resource-title a, .feature .community .module-right .blog .resource-title a, .community .module-right .feature .blog .resource-title a, .feature .community .module-right .newsletter .resource-title a, .community .module-right .feature .newsletter .resource-title a, .feature .community .module-right .fmn .resource-title a, .community .module-right .feature .fmn .resource-title a, .feature .billboard .community .module-right .partner-title a, .community .module-right .feature .billboard .partner-title a, .feature .blog .community .module-right .partner-title a, .feature .newsletter .community .module-right .partner-title a, .feature .fmn .community .module-right .partner-title a, .feature .community .module-right .resource .partner-title a, .community .module-right .feature .resource .partner-title a, .feature .community .module-right .group .partner-title a, .community .module-right .feature .group .partner-title a, .feature .community .module-right .blog .partner-title a, .community .module-right .feature .blog .partner-title a, .feature .community .module-right .newsletter .partner-title a, .community .module-right .feature .newsletter .partner-title a, .feature .community .module-right .fmn .partner-title a, .community .module-right .feature .fmn .partner-title a, .feature .billboard .community .module-right .group-description a, .community .module-right .feature .billboard .group-description a, .feature .blog .community .module-right .group-description a, .feature .newsletter .community .module-right .group-description a, .feature .fmn .community .module-right .group-description a, .feature .community .module-right .resource .group-description a, .community .module-right .feature .resource .group-description a, .feature .community .module-right .group .group-description a, .community .module-right .feature .group .group-description a, .feature .community .module-right .blog .group-description a, .community .module-right .feature .blog .group-description a, .feature .community .module-right .newsletter .group-description a, .community .module-right .feature .newsletter .group-description a, .feature .community .module-right .fmn .group-description a, .community .module-right .feature .fmn .group-description a, .feature .community .module-right .resource .blog-title a, .community .module-right .feature .resource .blog-title a, .feature .community .module-right .group .blog-title a, .community .module-right .feature .group .blog-title a, .feature .community .module-right .resource .newsletter-title a, .community .module-right .feature .resource .newsletter-title a, .feature .community .module-right .group .newsletter-title a, .community .module-right .feature .group .newsletter-title a, .feature .community .module-right .resource .fmn-title a, .community .module-right .feature .resource .fmn-title a, .feature .community .module-right .group .fmn-title a, .community .module-right .feature .group .fmn-title a {
-  background-color: #fff;
-  border: 1px solid #f1f1f1;
-  opacity: .95;
-  width: 100%;
-  border: none;
-}
-
-.feature .billboard .billboard-header a a, .feature .blog .billboard-header a a, .feature .newsletter .billboard-header a a, .feature .fmn .billboard-header a a, .feature .community .module-right .resource .billboard-header a a, .community .module-right .feature .resource .billboard-header a a, .feature .community .module-right .group .billboard-header a a, .community .module-right .feature .group .billboard-header a a, .feature .billboard .blog-title a a, .feature .blog .blog-title a a, .feature .newsletter .blog-title a a, .feature .fmn .blog-title a a, .feature .billboard .newsletter-title a a, .feature .blog .newsletter-title a a, .feature .newsletter .newsletter-title a a, .feature .fmn .newsletter-title a a, .feature .billboard .fmn-title a a, .feature .blog .fmn-title a a, .feature .newsletter .fmn-title a a, .feature .fmn .fmn-title a a, .feature .billboard .community .module-right .resource-title a a, .community .module-right .feature .billboard .resource-title a a, .feature .blog .community .module-right .resource-title a a, .feature .newsletter .community .module-right .resource-title a a, .feature .fmn .community .module-right .resource-title a a, .feature .community .module-right .resource .resource-title a a, .community .module-right .feature .resource .resource-title a a, .feature .community .module-right .group .resource-title a a, .community .module-right .feature .group .resource-title a a, .feature .community .module-right .blog .resource-title a a, .community .module-right .feature .blog .resource-title a a, .feature .community .module-right .newsletter .resource-title a a, .community .module-right .feature .newsletter .resource-title a a, .feature .community .module-right .fmn .resource-title a a, .community .module-right .feature .fmn .resource-title a a, .feature .billboard .community .module-right .partner-title a a, .community .module-right .feature .billboard .partner-title a a, .feature .blog .community .module-right .partner-title a a, .feature .newsletter .community .module-right .partner-title a a, .feature .fmn .community .module-right .partner-title a a, .feature .community .module-right .resource .partner-title a a, .community .module-right .feature .resource .partner-title a a, .feature .community .module-right .group .partner-title a a, .community .module-right .feature .group .partner-title a a, .feature .community .module-right .blog .partner-title a a, .community .module-right .feature .blog .partner-title a a, .feature .community .module-right .newsletter .partner-title a a, .community .module-right .feature .newsletter .partner-title a a, .feature .community .module-right .fmn .partner-title a a, .community .module-right .feature .fmn .partner-title a a, .feature .billboard .community .module-right .group-description a a, .community .module-right .feature .billboard .group-description a a, .feature .blog .community .module-right .group-description a a, .feature .newsletter .community .module-right .group-description a a, .feature .fmn .community .module-right .group-description a a, .feature .community .module-right .resource .group-description a a, .community .module-right .feature .resource .group-description a a, .feature .community .module-right .group .group-description a a, .community .module-right .feature .group .group-description a a, .feature .community .module-right .blog .group-description a a, .community .module-right .feature .blog .group-description a a, .feature .community .module-right .newsletter .group-description a a, .community .module-right .feature .newsletter .group-description a a, .feature .community .module-right .fmn .group-description a a, .community .module-right .feature .fmn .group-description a a, .feature .community .module-right .resource .blog-title a a, .community .module-right .feature .resource .blog-title a a, .feature .community .module-right .group .blog-title a a, .community .module-right .feature .group .blog-title a a, .feature .community .module-right .resource .newsletter-title a a, .community .module-right .feature .resource .newsletter-title a a, .feature .community .module-right .group .newsletter-title a a, .community .module-right .feature .group .newsletter-title a a, .feature .community .module-right .resource .fmn-title a a, .community .module-right .feature .resource .fmn-title a a, .feature .community .module-right .group .fmn-title a a, .community .module-right .feature .group .fmn-title a a {
-  display: block;
-  /* Fallback for non-webkit */
-  display: -webkit-box;
-  height: 4.8em;
-  /* Fallback for non-webkit */
-  font-family: "montserratregular", Helvetica Neue, Helvetica, sans-serif;
-  margin: 0 auto;
-  font-size: 1em;
-  line-height: 1.2;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  color: #597f2f;
-}
-
-.feature .billboard .billboard-header a a:hover, .feature .blog .billboard-header a a:hover, .feature .newsletter .billboard-header a a:hover, .feature .fmn .billboard-header a a:hover, .feature .community .module-right .resource .billboard-header a a:hover, .community .module-right .feature .resource .billboard-header a a:hover, .feature .community .module-right .group .billboard-header a a:hover, .community .module-right .feature .group .billboard-header a a:hover, .feature .billboard .blog-title a a:hover, .feature .blog .blog-title a a:hover, .feature .newsletter .blog-title a a:hover, .feature .fmn .blog-title a a:hover, .feature .billboard .newsletter-title a a:hover, .feature .blog .newsletter-title a a:hover, .feature .newsletter .newsletter-title a a:hover, .feature .fmn .newsletter-title a a:hover, .feature .billboard .fmn-title a a:hover, .feature .blog .fmn-title a a:hover, .feature .newsletter .fmn-title a a:hover, .feature .fmn .fmn-title a a:hover, .feature .billboard .community .module-right .resource-title a a:hover, .community .module-right .feature .billboard .resource-title a a:hover, .feature .blog .community .module-right .resource-title a a:hover, .feature .newsletter .community .module-right .resource-title a a:hover, .feature .fmn .community .module-right .resource-title a a:hover, .feature .community .module-right .resource .resource-title a a:hover, .community .module-right .feature .resource .resource-title a a:hover, .feature .community .module-right .group .resource-title a a:hover, .community .module-right .feature .group .resource-title a a:hover, .feature .community .module-right .blog .resource-title a a:hover, .community .module-right .feature .blog .resource-title a a:hover, .feature .community .module-right .newsletter .resource-title a a:hover, .community .module-right .feature .newsletter .resource-title a a:hover, .feature .community .module-right .fmn .resource-title a a:hover, .community .module-right .feature .fmn .resource-title a a:hover, .feature .billboard .community .module-right .partner-title a a:hover, .community .module-right .feature .billboard .partner-title a a:hover, .feature .blog .community .module-right .partner-title a a:hover, .feature .newsletter .community .module-right .partner-title a a:hover, .feature .fmn .community .module-right .partner-title a a:hover, .feature .community .module-right .resource .partner-title a a:hover, .community .module-right .feature .resource .partner-title a a:hover, .feature .community .module-right .group .partner-title a a:hover, .community .module-right .feature .group .partner-title a a:hover, .feature .community .module-right .blog .partner-title a a:hover, .community .module-right .feature .blog .partner-title a a:hover, .feature .community .module-right .newsletter .partner-title a a:hover, .community .module-right .feature .newsletter .partner-title a a:hover, .feature .community .module-right .fmn .partner-title a a:hover, .community .module-right .feature .fmn .partner-title a a:hover, .feature .billboard .community .module-right .group-description a a:hover, .community .module-right .feature .billboard .group-description a a:hover, .feature .blog .community .module-right .group-description a a:hover, .feature .newsletter .community .module-right .group-description a a:hover, .feature .fmn .community .module-right .group-description a a:hover, .feature .community .module-right .resource .group-description a a:hover, .community .module-right .feature .resource .group-description a a:hover, .feature .community .module-right .group .group-description a a:hover, .community .module-right .feature .group .group-description a a:hover, .feature .community .module-right .blog .group-description a a:hover, .community .module-right .feature .blog .group-description a a:hover, .feature .community .module-right .newsletter .group-description a a:hover, .community .module-right .feature .newsletter .group-description a a:hover, .feature .community .module-right .fmn .group-description a a:hover, .community .module-right .feature .fmn .group-description a a:hover, .feature .community .module-right .resource .blog-title a a:hover, .community .module-right .feature .resource .blog-title a a:hover, .feature .community .module-right .group .blog-title a a:hover, .community .module-right .feature .group .blog-title a a:hover, .feature .community .module-right .resource .newsletter-title a a:hover, .community .module-right .feature .resource .newsletter-title a a:hover, .feature .community .module-right .group .newsletter-title a a:hover, .community .module-right .feature .group .newsletter-title a a:hover, .feature .community .module-right .resource .fmn-title a a:hover, .community .module-right .feature .resource .fmn-title a a:hover, .feature .community .module-right .group .fmn-title a a:hover, .community .module-right .feature .group .fmn-title a a:hover {
-  color: #393c3d;
-}
-
-.feature .billboard .billboard-header span, .feature .blog .billboard-header span, .feature .newsletter .billboard-header span, .feature .fmn .billboard-header span, .feature .community .module-right .resource .billboard-header span, .community .module-right .feature .resource .billboard-header span, .feature .community .module-right .group .billboard-header span, .community .module-right .feature .group .billboard-header span, .feature .billboard .blog-title span, .feature .blog .blog-title span, .feature .newsletter .blog-title span, .feature .fmn .blog-title span, .feature .billboard .newsletter-title span, .feature .blog .newsletter-title span, .feature .newsletter .newsletter-title span, .feature .fmn .newsletter-title span, .feature .billboard .fmn-title span, .feature .blog .fmn-title span, .feature .newsletter .fmn-title span, .feature .fmn .fmn-title span, .feature .billboard .community .module-right .resource-title span, .community .module-right .feature .billboard .resource-title span, .feature .blog .community .module-right .resource-title span, .feature .newsletter .community .module-right .resource-title span, .feature .fmn .community .module-right .resource-title span, .feature .community .module-right .resource .resource-title span, .community .module-right .feature .resource .resource-title span, .feature .community .module-right .group .resource-title span, .community .module-right .feature .group .resource-title span, .feature .community .module-right .blog .resource-title span, .community .module-right .feature .blog .resource-title span, .feature .community .module-right .newsletter .resource-title span, .community .module-right .feature .newsletter .resource-title span, .feature .community .module-right .fmn .resource-title span, .community .module-right .feature .fmn .resource-title span, .feature .billboard .community .module-right .partner-title span, .community .module-right .feature .billboard .partner-title span, .feature .blog .community .module-right .partner-title span, .feature .newsletter .community .module-right .partner-title span, .feature .fmn .community .module-right .partner-title span, .feature .community .module-right .resource .partner-title span, .community .module-right .feature .resource .partner-title span, .feature .community .module-right .group .partner-title span, .community .module-right .feature .group .partner-title span, .feature .community .module-right .blog .partner-title span, .community .module-right .feature .blog .partner-title span, .feature .community .module-right .newsletter .partner-title span, .community .module-right .feature .newsletter .partner-title span, .feature .community .module-right .fmn .partner-title span, .community .module-right .feature .fmn .partner-title span, .feature .billboard .community .module-right .group-description span, .community .module-right .feature .billboard .group-description span, .feature .blog .community .module-right .group-description span, .feature .newsletter .community .module-right .group-description span, .feature .fmn .community .module-right .group-description span, .feature .community .module-right .resource .group-description span, .community .module-right .feature .resource .group-description span, .feature .community .module-right .group .group-description span, .community .module-right .feature .group .group-description span, .feature .community .module-right .blog .group-description span, .community .module-right .feature .blog .group-description span, .feature .community .module-right .newsletter .group-description span, .community .module-right .feature .newsletter .group-description span, .feature .community .module-right .fmn .group-description span, .community .module-right .feature .fmn .group-description span, .feature .community .module-right .resource .blog-title span, .community .module-right .feature .resource .blog-title span, .feature .community .module-right .group .blog-title span, .community .module-right .feature .group .blog-title span, .feature .community .module-right .resource .newsletter-title span, .community .module-right .feature .resource .newsletter-title span, .feature .community .module-right .group .newsletter-title span, .community .module-right .feature .group .newsletter-title span, .feature .community .module-right .resource .fmn-title span, .community .module-right .feature .resource .fmn-title span, .feature .community .module-right .group .fmn-title span, .community .module-right .feature .group .fmn-title span {
+.feature .billboard-header a,
+.feature .blog-title a,
+.feature .newsletter-title a,
+.feature .fmn-title a {
   display: block;
   /* Fallback for non-webkit */
   display: -webkit-box;
@@ -439,7 +359,6 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-family: "montserratregular", Helvetica Neue, Helvetica, sans-serif;
 }
 
 .feature .regular {
@@ -627,7 +546,7 @@
 .resources .module-left .resource {
   flex: 1 1 15rem;
   height: 15rem;
-  margin: 5px;
+  margin: 0.3125em;
   position: relative;
 }
 
@@ -662,11 +581,11 @@
 .resources .module-left .resource .resource-title {
   background-color: #fff;
   border: 1px solid #f1f1f1;
-  opacity: .95;
-  width: 100%;
   bottom: 0;
+  opacity: .95;
   padding: .625em;
   position: absolute;
+  width: 100%;
 }
 
 .resources .module-left .resource .resource-title a {
@@ -1229,7 +1148,8 @@
   }
 }
 
-.community .module-right .billboard, .community .module-right .resource,
+.community .module-right .billboard,
+.community .module-right .resource,
 .community .module-right .group,
 .community .module-right .blog,
 .community .module-right .newsletter,
@@ -1237,7 +1157,8 @@
   position: relative;
 }
 
-.community .module-right .billboard-tag, .community .module-right .resource-tag,
+.community .module-right .billboard-tag,
+.community .module-right .resource-tag,
 .community .module-right .partner-tag,
 .community .module-right .group-tag,
 .community .module-right .fmn-tag {
@@ -1252,7 +1173,8 @@
   text-transform: uppercase;
 }
 
-.community .module-right .billboard-tag::before, .community .module-right .resource-tag::before,
+.community .module-right .billboard-tag::before,
+.community .module-right .resource-tag::before,
 .community .module-right .partner-tag::before,
 .community .module-right .group-tag::before,
 .community .module-right .fmn-tag::before {
@@ -1267,11 +1189,16 @@
   border-left: 8px solid transparent;
 }
 
-.community .module-right .billboard-tag span, .community .module-right .resource-tag span, .community .module-right .partner-tag span, .community .module-right .group-tag span, .community .module-right .fmn-tag span {
+.community .module-right .billboard-tag span,
+.community .module-right .resource-tag span,
+.community .module-right .partner-tag span,
+.community .module-right .group-tag span,
+.community .module-right .fmn-tag span {
   color: #fff;
 }
 
-.community .module-right .billboard-header, .community .module-right .resource-title,
+.community .module-right .billboard-header,
+.community .module-right .resource-title,
 .community .module-right .partner-title,
 .community .module-right .group-description,
 .community .module-right .blog-title,
@@ -1279,14 +1206,20 @@
 .community .module-right .fmn-title {
   background-color: #fff;
   border: 1px solid #f1f1f1;
-  opacity: .95;
-  width: 100%;
   bottom: 0;
+  opacity: .95;
   padding: .625em;
   position: absolute;
+  width: 100%;
 }
 
-.community .module-right .billboard-header a, .community .module-right .resource-title a, .community .module-right .partner-title a, .community .module-right .group-description a, .community .module-right .blog-title a, .community .module-right .newsletter-title a, .community .module-right .fmn-title a {
+.community .module-right .billboard-header a,
+.community .module-right .resource-title a,
+.community .module-right .partner-title a,
+.community .module-right .group-description a,
+.community .module-right .blog-title a,
+.community .module-right .newsletter-title a,
+.community .module-right .fmn-title a {
   display: block;
   /* Fallback for non-webkit */
   display: -webkit-box;
@@ -1303,7 +1236,13 @@
   color: #597f2f;
 }
 
-.community .module-right .billboard-header a:hover, .community .module-right .resource-title a:hover, .community .module-right .partner-title a:hover, .community .module-right .group-description a:hover, .community .module-right .blog-title a:hover, .community .module-right .newsletter-title a:hover, .community .module-right .fmn-title a:hover {
+.community .module-right .billboard-header a:hover,
+.community .module-right .resource-title a:hover,
+.community .module-right .partner-title a:hover,
+.community .module-right .group-description a:hover,
+.community .module-right .blog-title a:hover,
+.community .module-right .newsletter-title a:hover,
+.community .module-right .fmn-title a:hover {
   color: #393c3d;
 }
 
