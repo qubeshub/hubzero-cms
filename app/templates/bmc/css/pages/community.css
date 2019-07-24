@@ -663,6 +663,24 @@
   background: url("/app/site/media/images/workgroup.jxr");
 }
 
+.no-webp .three .horizonal,
+.no-jpeg2000 .three .horizontal,
+.no-jpegxr .three .horizontal {
+  background: url("/app/site/media/images/workgroup.jpg");
+}
+
+.webp .three .horizontal {
+  background: url("/app/site/media/images/workgroup.webp");
+}
+
+.jpeg2000 .three .horizontal {
+  background: url("/app/site/media/images/workgroup.jp2");
+}
+
+.jpeg2xr .three .horizontal {
+  background: url("/app/site/media/images/workgroup.jxr");
+}
+
 .three {
   display: flex;
   flex-wrap: wrap;

@@ -121,6 +121,7 @@ body {
 
   h2 {
     @include gradient-header($color-accent, $white);
+    display: inline-block;
     margin-bottom: 0;
   }
 
