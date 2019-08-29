@@ -40,34 +40,16 @@ class Publications extends SiteController
 	public function execute()
 	{
 		// Set configs
-		//$this->_setConfigs();
-		// Logging
-		$this->_logging = $this->config->get('enable_logs', 1);
-
-		// Are we allowing contributions
-		$this->_contributable = Plugin::isEnabled('projects', 'publications') ? true : false;
+		$this->_setConfigs();
 
 		// Incoming
-		//$this->_incoming();
-		$this->_id      = Request::getInt('id', 0);
-		$this->_alias   = Request::getString('alias', '');
-		$this->_version = Request::getString('v', 'default');
-
-		$this->_identifier = $this->_alias ? $this->_alias : $this->_id;
-
-		$pointer = $this->_id ? '&id=' . $this->_id : '&alias=' . $this->_alias;
-
-		$this->_route  = 'index.php?option=' . $this->_option;
-		$this->_route .= $this->_identifier ? $pointer : '';
-		if ($active = Request::getWord('active'))
-		{
-			$this->_route .= '&active=' . $active;
-		}
+		$this->_incoming();
 
 		// Resource map
 		if (strrpos(strtolower($this->_alias), '.rdf') > 0)
 		{
-			return $this->_resourceMap();
+			$this->_resourceMap();
+			return;
 		}
 
 		// Set the default task
@@ -95,7 +77,6 @@ class Publications extends SiteController
 		{
 			$this->_task = 'intro';
 		}
-
 		if (!$this->_id && !$this->_alias && in_array($this->_task, array('view', 'page')))
 		{
 			Request::setVar('task', 'intro');
@@ -110,12 +91,12 @@ class Publications extends SiteController
 	 *
 	 * @return  void
 	 */
-	/*protected function _setConfigs()
+	protected function _setConfigs()
 	{
 		// Is component enabled?
 		if ($this->config->get('enabled', 0) == 0)
 		{
-			App::redirect(Route::url('index.php?option=com_resources', false));
+			App::redirect(Route::url('index.php?option=com_resources'));
 			return;
 		}
 
@@ -124,14 +105,14 @@ class Publications extends SiteController
 
 		// Are we allowing contributions
 		$this->_contributable = Plugin::isEnabled('projects', 'publications') ? true : false;
-	}*/
+	}
 
 	/**
 	 * Receive incoming data, get model and set url
 	 *
 	 * @return  void
 	 */
-	/*protected function _incoming()
+	protected function _incoming()
 	{
 		$this->_id      = Request::getInt('id', 0);
 		$this->_alias   = Request::getString('alias', '');
@@ -146,7 +127,7 @@ class Publications extends SiteController
 		{
 			$this->_route .= '&active=' . $active;
 		}
-	}*/
+	}
 
 	/**
 	 * Build the "trail"
@@ -275,29 +256,29 @@ class Publications extends SiteController
 	/**
 	 * Set notifications
 	 *
-	 * @param   string  $message
-	 * @param   string  $type
-	 * @return  void
+	 * @param  string $message
+	 * @param  string $type
+	 * @return void
 	 */
 	public function setNotification($message, $type = 'success')
 	{
 		// If message is set push to notifications
 		if ($message != '')
 		{
-			Notify::message($message, $type, $this->_option);
+			\Notify::message($message, $type, $this->_option);
 		}
 	}
 
 	/**
 	 * Get notifications
-	 *
-	 * @param   string  $type
-	 * @return  string  Message if it exist
+	 * @param  string $type
+	 * @return $messages if they exist
 	 */
+
 	public function getNotifications($type = 'success')
 	{
 		// Get messages in quene
-		$messages = Notify::messages($this->_option);
+		$messages = \Notify::messages($this->_option);
 
 		// Return first message of type
 		if ($messages && count($messages) > 0)
@@ -323,10 +304,10 @@ class Publications extends SiteController
 	{
 		$rtrn = Request::getString('REQUEST_URI', Route::url('index.php?option=' . $this->_option . '&task=' . $this->_task), 'server');
 
-		Notify::warning($this->_msg);
-
 		App::redirect(
-			Route::url('index.php?option=com_users&view=login&return=' . base64_encode($rtrn), false)
+			Route::url('index.php?option=com_users&view=login&return=' . base64_encode($rtrn)),
+			$this->_msg,
+			'warning'
 		);
 	}
 
@@ -339,7 +320,7 @@ class Publications extends SiteController
 	{
 		// Redirect to version panel of current version (TEMP)
 		App::redirect(
-			Route::url($this->_route . '&active=versions', false)
+			Route::url($this->_route . '&active=versions')
 		);
 		return;
 	}
@@ -351,13 +332,22 @@ class Publications extends SiteController
 	 */
 	public function introTask()
 	{
+		$this->view->setLayout('intro');
+
 		// Set page title
 		$this->_buildTitle();
 
 		// Set the pathway
 		$this->_buildPathway();
 
-		$filters = array(
+		// Instantiate a new view
+		$this->view->title         = $this->_title;
+		$this->view->option        = $this->_option;
+		$this->view->database      = $this->database;
+		$this->view->config        = $this->config;
+		$this->view->contributable = $this->_contributable;
+
+		$this->view->filters = array(
 			'sortby' => 'date_published',
 			'limit'  => $this->config->get('listlimit', 10),
 			'start'  => Request::getInt('limitstart', 0)
@@ -367,29 +357,23 @@ class Publications extends SiteController
 		$model = new Models\Publication();
 
 		// Get most recent pubs
-		$results = $model->entries('list', $filters);
+		$this->view->results = $model->entries('list', $this->view->filters);
 
 		// Get most popular/oldest pubs
-		$filters['sortby'] = 'popularity';
-		$best = $model->entries('list', $filters);
+		$this->view->filters['sortby'] = 'popularity';
+		$this->view->best = $model->entries('list', $this->view->filters);
 
 		// Get major types
 		$t = new Tables\Category($this->database);
-		$categories = $t->getCategories(array('itemCount' => 1));
+		$this->view->categories = $t->getCategories(array('itemCount' => 1));
 
-		$this->view
-			->set('title', $this->_title)
-			->set('option', $this->_option)
-			->set('database', $this->database)
-			->set('config', $this->config)
-			->set('contributable', $this->_contributable)
-			->set('filters', $filters)
-			->set('results', $results)
-			->set('best', $best)
-			->set('categories', $categories)
-			->setErrors($this->getErrors())
-			->setLayout('intro')
-			->display();
+		foreach ($this->getErrors() as $error)
+		{
+			$this->view->setError($error);
+		}
+
+		$this->view->display();
+		return;
 	}
 
 	/**
@@ -407,7 +391,7 @@ class Publications extends SiteController
 		}
 
 		// Incoming
-		$filters = array(
+		$this->view->filters = array(
 			'category'    => Request::getString('category', ''),
 			'sortby'      => Request::getCmd('sortby', $default_sort),
 			'limit'       => Request::getInt('limit', Config::get('list_limit')),
@@ -417,40 +401,40 @@ class Publications extends SiteController
 			'tag_ignored' => array()
 		);
 
-		if (!in_array($filters['sortby'], array('date', 'title', 'id', 'rating', 'ranking', 'popularity')))
+		if (!in_array($this->view->filters['sortby'], array('date', 'title', 'id', 'rating', 'ranking', 'popularity')))
 		{
-			$filters['sortby'] = $default_sort;
+			$this->view->filters['sortby'] = $default_sort;
 		}
 
 		// Get projects user has access to
 		if (!User::isGuest())
 		{
 			$obj = new \Components\Projects\Tables\Project($this->database);
-			$filters['projects'] = $obj->getUserProjectIds(User::get('id'));
+			$this->view->filters['projects'] = $obj->getUserProjectIds(User::get('id'));
 		}
 
 		// Get major types
 		$t = new Tables\Category($this->database);
-		$categories = $t->getCategories();
+		$this->view->categories = $t->getCategories();
 
-		if (is_numeric($filters['category']))
+		if (is_numeric($this->view->filters['category']))
 		{
-			$filters['category'] = (int)$filters['category'];
+			$this->view->filters['category'] = (int)$this->view->filters['category'];
 		}
-		if (!is_int($filters['category']))
+		if (!is_int($this->view->filters['category']))
 		{
-			foreach ($categories as $cat)
+			foreach ($this->view->categories as $cat)
 			{
-				if (trim($filters['category']) == $cat->url_alias)
+				if (trim($this->view->filters['category']) == $cat->url_alias)
 				{
-					$filters['category'] = (int)$cat->id;
+					$this->view->filters['category'] = (int)$cat->id;
 					break;
 				}
 			}
 
-			if (!is_int($filters['category']))
+			if (!is_int($this->view->filters['category']))
 			{
-				$filters['category'] = null;
+				$this->view->filters['category'] = null;
 			}
 		}
 
@@ -458,24 +442,24 @@ class Publications extends SiteController
 		$model = new Models\Publication();
 
 		// Execute count query
-		$total = $model->entries('count', $filters);
+		$this->view->total = $model->entries('count', $this->view->filters);
 
 		// Run query with limit
-		$results = $model->entries('list', $filters);
+		$this->view->results = $model->entries('list', $this->view->filters);
 
 		// Initiate paging
-		$pageNav = new \Hubzero\Pagination\Paginator(
-			$total,
-			$filters['start'],
-			$filters['limit']
+		$this->view->pageNav = new \Hubzero\Pagination\Paginator(
+			$this->view->total,
+			$this->view->filters['start'],
+			$this->view->filters['limit']
 		);
 
 		// Get type if not given
 		// $this->_title = Lang::txt(strtoupper($this->_option)) . ': ';
 		$this->_title = 'Resources: ';
-		if ($filters['category'] != '')
+		if ($this->view->filters['category'] != '')
 		{
-			$t->load($filters['category']);
+			$t->load($this->view->filters['category']);
 			$this->_title .= $t->name;
 			$this->_task_title = $t->name;
 		}
@@ -492,16 +476,15 @@ class Publications extends SiteController
 		$this->_buildPathway();
 
 		// Output HTML
+		$this->view->title = $this->_title;
+		$this->view->config = $this->config;
+
+		foreach ($this->getErrors() as $error)
+		{
+			$this->view->setError($error);
+		}
+
 		$this->view
-			->set('title', $this->_title)
-			->set('option', $this->_option)
-			->set('config', $this->config)
-			->set('filters', $filters)
-			->set('categories', $categories)
-			->set('total', $total)
-			->set('results', $results)
-			->set('pageNav', $pageNav)
-			->setErrors($this->getErrors())
 			->setName('browse')
 			->setLayout('default')
 			->display();
@@ -518,10 +501,10 @@ class Publications extends SiteController
 		$id = '';
 
 		// Retrieves the ID from alias
-		if (substr(strtolower($this->_alias), -4) == '.rdf')
+		if (substr(strtolower($this->_alias), -4) == ".rdf")
 		{
-			$lastSlash = strrpos($this->_alias, '/');
-			$lastDot = strrpos($this->_alias, '.rdf');
+			$lastSlash = strrpos($this->_alias, "/");
+			$lastDot = strrpos($this->_alias, ".rdf");
 			$id = substr($this->_alias, $lastSlash, $lastDot);
 		}
 
@@ -537,6 +520,8 @@ class Publications extends SiteController
 	 */
 	public function pageTask()
 	{
+		$this->view->setName('view');
+
 		// Incoming
 		$tab      = Request::getString('active', '');   // The active tab (section)
 		$no_html  = Request::getInt('no_html', 0);   // No-html display?
@@ -544,9 +529,7 @@ class Publications extends SiteController
 		// Ensure we have an ID or alias to work with
 		if (!$this->_identifier)
 		{
-			App::redirect(
-				Route::url('index.php?option=' . $this->_option, false)
-			);
+			App::redirect(Route::url('index.php?option=' . $this->_option));
 			return;
 		}
 
@@ -564,7 +547,7 @@ class Publications extends SiteController
 			{
 				// Go to last public release
 				App::redirect(
-					Route::url($this->_route . '&v=' . $lastPubRelease->version_number, false)
+					Route::url($this->_route . '&v=' . $lastPubRelease->version_number)
 				);
 				return;
 			}
@@ -573,10 +556,10 @@ class Publications extends SiteController
 		// Make sure we got a result from the database
 		if (!$this->model->exists() || $this->model->isDeleted())
 		{
-			Notify::error(Lang::txt('COM_PUBLICATIONS_RESOURCE_NOT_FOUND'));
-
 			App::redirect(
-				Route::url('index.php?option=' . $this->_option, false)
+				Route::url('index.php?option=' . $this->_option),
+				Lang::txt('COM_PUBLICATIONS_RESOURCE_NOT_FOUND'),
+				'error'
 			);
 			return;
 		}
@@ -588,7 +571,7 @@ class Publications extends SiteController
 			{
 				// Go to last public release
 				App::redirect(
-					Route::url($this->_route . '&v=' . $lastPubRelease->version_number, false)
+					Route::url($this->_route . '&v=' . $lastPubRelease->version_number)
 				);
 				return;
 			}
@@ -727,9 +710,7 @@ class Publications extends SiteController
 		}
 
 		// Output HTML
-		$this->view
-			->setName('view')
-			->display();
+		$this->view->display();
 
 		// Insert .rdf link in the header
 		\ResourceMapGenerator::putRDF($this->model->publication->id);
@@ -758,10 +739,10 @@ class Publications extends SiteController
 
 		if (!$this->model->exists() || $this->model->isDeleted())
 		{
-			Notify::error(Lang::txt('COM_PUBLICATIONS_RESOURCE_NOT_FOUND'));
-
 			App::redirect(
-				Route::url('index.php?option=' . $this->_option, false)
+				Route::url('index.php?option=' . $this->_option),
+				Lang::txt('COM_PUBLICATIONS_RESOURCE_NOT_FOUND'),
+				'error'
 			);
 			return;
 		}
@@ -793,6 +774,7 @@ class Publications extends SiteController
 			else
 			{
 				throw new Exception(Lang::txt('COM_PUBLICATIONS_ERROR_FINDING_ATTACHMENTS'), 404);
+				return;
 			}
 		}
 
@@ -816,6 +798,7 @@ class Publications extends SiteController
 			else
 			{
 				throw new Exception(Lang::txt('COM_PUBLICATIONS_ERROR_FINDING_ATTACHMENTS'), 404);
+				return;
 			}
 		}
 
@@ -826,8 +809,8 @@ class Publications extends SiteController
 			if (!file_exists($this->model->path('data', true) . DS . trim($file)))
 			{
 				throw new Exception(Lang::txt('COM_PUBLICATIONS_ERROR_FINDING_ATTACHMENTS'), 404);
+				return;
 			}
-
 			// Initiate a new content server and serve up the file
 			$server = new \Hubzero\Content\Server();
 			$server->filename($this->model->path('data', true) . DS . trim($file));
@@ -840,8 +823,10 @@ class Publications extends SiteController
 				// Should only get here on error
 				throw new Exception(Lang::txt('COM_PUBLICATIONS_SERVER_ERROR'), 404);
 			}
-
-			exit;
+			else
+			{
+				exit;
+			}
 		}
 
 		$this->model->attachments();
@@ -865,6 +850,7 @@ class Publications extends SiteController
 			|| empty($this->model->_attachments['elements'][$elementId]))
 		{
 			throw new Exception(Lang::txt('COM_PUBLICATIONS_ERROR_FINDING_ATTACHMENTS'), 404);
+			return;
 		}
 
 		// Get element manifest to deliver content as intended
@@ -929,10 +915,10 @@ class Publications extends SiteController
 
 		if (!$this->model->exists() || $this->model->isDeleted())
 		{
-			Notify::error(Lang::txt('COM_PUBLICATIONS_RESOURCE_NOT_FOUND'));
-
 			App::redirect(
-				Route::url('index.php?option=' . $this->_option, false)
+				Route::url('index.php?option=' . $this->_option),
+				Lang::txt('COM_PUBLICATIONS_RESOURCE_NOT_FOUND'),
+				'error'
 			);
 			return;
 		}
@@ -940,14 +926,18 @@ class Publications extends SiteController
 		// get license details
 		$this->model->license();
 
+		$this->view->option      = $this->_option;
+		$this->view->config      = $this->config;
+		$this->view->publication = $this->model;
+		$this->view->title       = stripslashes($this->model->version->get('title')) . ': ' . Lang::txt('COM_PUBLICATIONS_LICENSE');
+
 		// Output HTML
-		$this->view
-			->set('option', $this->_option)
-			->set('config', $this->config)
-			->set('publication', $this->model)
-			->set('title', stripslashes($this->model->version->get('title')) . ': ' . Lang::txt('COM_PUBLICATIONS_LICENSE'))
-			->setErrors($this->getErrors())
-			->display();
+		if ($this->getError())
+		{
+			$this->view->setError($this->getError());
+		}
+
+		$this->view->display();
 	}
 
 	/**
@@ -966,10 +956,10 @@ class Publications extends SiteController
 		// Make sure we got a result from the database
 		if (!$this->model->exists() || $this->model->isDeleted())
 		{
-			Notify::error(Lang::txt('COM_PUBLICATIONS_RESOURCE_NOT_FOUND'));
-
 			App::redirect(
-				Route::url('index.php?option=' . $this->_option, false)
+				Route::url('index.php?option=' . $this->_option),
+				Lang::txt('COM_PUBLICATIONS_RESOURCE_NOT_FOUND'),
+				'error'
 			);
 			return;
 		}
@@ -1209,9 +1199,7 @@ class Publications extends SiteController
 		// Redirect if publishing is turned off
 		if (!$this->_contributable)
 		{
-			App::redirect(
-				Route::url('index.php?option=' . $this->_option, false)
-			);
+			App::redirect(Route::url('index.php?option=' . $this->_option));
 			return;
 		}
 
@@ -1257,9 +1245,7 @@ class Publications extends SiteController
 
 			if (!$project->exists())
 			{
-				App::redirect(
-					Route::url('index.php?option=' . $this->_option . '&task=submit', false)
-				);
+				App::redirect(Route::url('index.php?option=' . $this->_option . '&task=submit'));
 				return;
 			}
 
@@ -1274,7 +1260,7 @@ class Publications extends SiteController
 			if (!$project->isProvisioned())
 			{
 				App::redirect(
-					Route::url($project->link('publications') . '&pid=' . $pid . '&action=' . $action, false)
+					Route::url($project->link('publications') . '&pid=' . $pid . '&action=' . $action)
 				);
 				return;
 			}
@@ -1284,11 +1270,7 @@ class Publications extends SiteController
 		if ($action == 'start' && !$project->access('create'))
 		{
 			$this->_buildPathway(null);
-
-			$this->view = new \Hubzero\Component\View(array(
-				'name'   => 'error',
-				'layout' => 'restricted'
-			));
+			$this->view = new \Hubzero\Component\View(array('name'=>'error', 'layout' =>'restricted'));
 			$this->view->error  = Lang::txt('COM_PUBLICATIONS_ERROR_NOT_FROM_CREATOR_GROUP');
 			$this->view->title  = $this->title;
 			$this->view->option = $this->_option;
@@ -1823,7 +1805,7 @@ class Publications extends SiteController
 							// Let's try an alternate file name
 							if (!file_exists($from . $file2))
 							{
-								Notify::error(Lang::txt('File does not exist: %s', $from . $file2));
+								Notify::error('File does not exist: ' . $from . $file2);
 								continue;
 							}
 							// Found it
@@ -1884,7 +1866,7 @@ class Publications extends SiteController
 					{
 						if ($type == 'main')
 						{
-							Notify::warning(Lang::txt('File does not exist: %s', $from . $filename));
+							Notify::warning('File does not exist: ' . $from . $filename);
 						}
 						continue;
 					}
@@ -1898,7 +1880,7 @@ class Publications extends SiteController
 						// will point to the un-suffixed filename. DB: foo.jpg (in project space) = foo-123.jpg (in publication space)
 						if (!Filesystem::copy($from . $filename, $toProj . $orig)) //$filename
 						{
-							App::abort(500, Lang::txt('Failed to copy file "%s" to "%s"', $from . $filename, $toProj . $orig));
+							App::abort(500, Lang::txt('Failed to copy file "' . $from . $filename . '" to "' . $toProj . $orig . '"'));
 						}
 
 						if ($pid && $project->params->get('versionTracking'))
@@ -1942,7 +1924,7 @@ class Publications extends SiteController
 					// Copy to the publication space
 					if (!Filesystem::copy($from . $filename, $to))
 					{
-						App::abort(500, Lang::txt('Failed to copy file "%s" to "%s"', $from . $filename, $to));
+						App::abort(500, Lang::txt('Failed to copy file "' . $from . $filename . '" to "' . $to . '"'));
 					}
 				}
 			}
@@ -1963,7 +1945,7 @@ class Publications extends SiteController
 			// Copy to the publication space
 			if (!Filesystem::copy($from . $filename, $to . $filename))
 			{
-				App::abort(500, Lang::txt('Failed to copy file "%s" to "%s"', $from . $filename, $to . $filename));
+				App::abort(500, Lang::txt('Failed to copy file "' . $from . $filename . '" to "' . $to . $filename . '"'));
 			}
 		}
 
@@ -1999,13 +1981,13 @@ class Publications extends SiteController
 		if ($pid)
 		{
 			App::redirect(
-				Route::url($project->link('publications') . '&pid=' . $version->get('publication_id') . '&version=' . $version->get('version_number'), false)
+				Route::url($project->link('publications') . '&pid=' . $version->get('publication_id') . '&version=' . $version->get('version_number'))
 			);
 		}
 
 		// Redirect to the publication submission page
 		App::redirect(
-			Route::url('index.php?option=' . $this->_option . '&task=submit&pid=' . $version->get('publication_id') . '&version=' . $version->get('version_number'), false)
+			Route::url('index.php?option=' . $this->_option . '&task=submit&pid=' . $version->get('publication_id') . '&version=' . $version->get('version_number'))
 		);
 	}
 
@@ -2163,7 +2145,8 @@ class Publications extends SiteController
 	/**
 	 * Block access to restricted publications
 	 *
-	 * @return  void
+	 * @param   object  $publication
+	 * @return  string
 	 */
 	protected function _blockAccess()
 	{
@@ -2183,10 +2166,10 @@ class Publications extends SiteController
 			return $this->_login();
 		}
 
-		Notify::error(Lang::txt('COM_PUBLICATIONS_RESOURCE_NO_ACCESS'));
-
 		App::redirect(
-			Route::url('index.php?option=' . $this->_option, false)
+			Route::url('index.php?option=' . $this->_option),
+			Lang::txt('COM_PUBLICATIONS_RESOURCE_NO_ACCESS'),
+			'error'
 		);
 	}
 }
