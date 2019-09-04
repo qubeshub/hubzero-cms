@@ -377,8 +377,11 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 			}
 			else
 			{
-				// Instantiate a vew
-				$view = $this->view('cards', 'results');
+				// Instantiate a view
+
+				//$view = $this->view('cards', 'results');
+				$view = $this->view('default', 'results');
+
 				include_once(PATH_APP . '/plugins/content/qubesmacros/publications.php');
 				$pubmacro = new \Plugins\Content\Formathtml\Macros\Publications();
 			  $pubmacro->args = "group=bhar,view=list";
@@ -386,6 +389,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 
 
 				// Pass the view some info
+        $view->html = $html;
 				$view->option = $option;
 				$view->group = $group;
 				$view->authorized = $authorized;
@@ -406,7 +410,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 
 				// Return the output
 				$arr['metadata']['count'] = count($results[0]); // We need to clean this up - was $total, which should work
-        $arr['html'] = $html;
+        $arr['html'] = $view;
 			}
 			break;
 

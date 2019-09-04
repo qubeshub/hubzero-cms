@@ -38,13 +38,14 @@
   font-size: 0.875rem;
   justify-content: flex-end;
   position: absolute;
-  padding: .2em .5em .1em;
+  padding: .2em .1em .1em;
   width: 100%;
   top: 14em;
 }
 
 .addons div {
- margin: 0 1em;
+ margin: 0 .1em;
+ margin-right: 0 .1em;
 }
 
 .addons div:first-child {

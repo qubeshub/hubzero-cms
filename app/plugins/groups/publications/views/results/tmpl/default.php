@@ -9,12 +9,19 @@
 defined('_HZEXEC_') or die();
 $this->css()
      ->css('publications.css', 'com_publications')
+     ->css('resource_plugin.min.css');
 
-     ->js('publications.js', 'com_publications');
+$this->js()
+     ->js('publications.js', 'com_publications')
+     ->js('resource_plugin.js');
+
+//<group:include type="stylesheet" source="/uploads/css/resource_plugin.min.css" />
+//<group:include type="stylesheet" source="/uploads/css/list_view.css" />
+//<group:include type="script" source="/uploads/js/resource_plugin.js" />
 $config = Component::params('com_publications');
 // An array for storing all the links we make
 $links = array();
-$html = '';
+//$html = '';
 if ($this->cats)
 {
 	// Loop through each category
@@ -64,101 +71,123 @@ if ($this->cats)
 }
 ?>
 
-<?php if ($this->group->published == 1) { ?>
-	<ul id="page_options">
-		<li>
-			<a class="icon-add add btn" href="<?php echo Route::url('index.php?option=com_publications&task=draft&group=' . $this->group->get('cn')); ?>"><?php echo Lang::txt('PLG_GROUPS_PUBLICATIONS_START_A_CONTRIBUTION'); ?></a>
-		</li>
-	</ul>
-<?php } ?>
+<div class="group_resources">
+  <h2>Resources</h2>
 
-<section class="section">
-	<form method="get" action="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications'); ?>">
+  <ul id="page_options">
+    <li><a href= "#" class="icon-add add btn">Submit a Resource</a></li>
+    <li><a href="#" class="icon-config config btn">Settings</a></li>
+  </ul>
 
-		<input type="hidden" name="area" value="<?php echo $this->escape($this->active); ?>" />
+<main class="main section">
+  <div class="filter">
+     Filter
+     <form>
+       <div class="filter-category">
+         <span>Type</span>
 
-		<div class="container">
-			<nav class="entries-filters">
-				<ul class="entries-menu filter-options">
-					<?php if (count($links) > 0) { ?>
-						<li class="filter-categories">
-							<a href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&area=' . urlencode(stripslashes($this->active)) . '&sort=' . $this->sort . '&access=' . $this->active); ?>"><?php echo Lang::txt('PLG_GROUPS_PUBLICATIONS_CATEGORIES'); ?></a>
-							<ul>
-								<?php echo implode("\n", $links); ?>
-							</ul>
-						</li>
-					<?php } ?>
-					<li>
-						<a<?php echo ($this->access == 'all') ? ' class="active"' : ''; ?> href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&area=' . urlencode(stripslashes($this->active)) . '&sort=' . $this->sort . '&access=all'); ?>">
-							<?php echo Lang::txt('PLG_GROUPS_PUBLICATIONS_ACCESS_ALL'); ?>
-						</a>
-					</li>
-					<li>
-						<a<?php echo ($this->access == 'public') ? ' class="active"' : ''; ?> href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&area=' . urlencode(stripslashes($this->active)) . '&sort=' . $this->sort . '&access=public'); ?>">
-							<?php echo Lang::txt('PLG_GROUPS_PUBLICATIONS_ACCESS_PUBLIC'); ?>
-						</a>
-					</li>
-					<li>
-						<a<?php echo ($this->access == 'protected') ? ' class="active"' : ''; ?> href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&area=' . urlencode(stripslashes($this->active)) . '&sort=' . $this->sort . '&access=protected'); ?>">
-							<?php echo Lang::txt('PLG_GROUPS_PUBLICATIONS_ACCESS_PROTECTED'); ?>
-						</a>
-					</li>
-					<li>
-						<a<?php echo ($this->access == 'private') ? ' class="active"' : ''; ?> href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&area=' . urlencode(stripslashes($this->active)) . '&sort=' . $this->sort . '&access=private'); ?>">
-							<?php echo Lang::txt('PLG_GROUPS_PUBLICATIONS_ACCESS_PRIVATE'); ?>
-						</a>
-					</li>
-				</ul>
+         <div>
+           <input type="checkbox" id="teaching_material" name="type" value="teaching_material" checked>
+           <label for="teaching_material">Teaching Material</label>
+         </div>
 
-				<ul class="entries-menu">
-					<li><a<?php echo ($this->sort == 'date') ? ' class="active"' : ''; ?> href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&area=' . urlencode(stripslashes($this->active)) . '&sort=date&access=' . $this->access); ?>" title="Sort by newest to oldest">&darr; <?php echo Lang::txt('PLG_GROUPS_PUBLICATIONS_SORT_BY_DATE'); ?></a></li>
-					<li><a<?php echo ($this->sort == 'title') ? ' class="active"' : ''; ?> href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&area=' . urlencode(stripslashes($this->active)) . '&sort=title&access=' . $this->access); ?>" title="Sort by title">&darr; <?php echo Lang::txt('PLG_GROUPS_PUBLICATIONS_SORT_BY_TITLE'); ?></a></li>
+         <div>
+           <input type="checkbox" id="reference_material" name="type" value="reference_material" checked>
+           <label for="reference_material">Reference Material</label>
+         </div>
 
-				</ul>
-			</nav>
+         <div>
+           <input type="checkbox" id="software" name="type" value="software" checked>
+           <label for="software">Software</label>
+         </div>
+       </div>
 
-			<div class="container-block">
-				<?php
-				$html = '';
-				$k = 0;
-				foreach ($this->results as $category)
-				{
-					$amt = count($category);
-					if ($amt > 0)
-					{
-						$html .= '<ol class="publications results">'."\n";
-						foreach ($category as $row)
-						{
-							$k++;
-							$html .= $this->view('_item') //calling _item view here
-										->set('row', $row)
-										->set('authorized', $this->authorized)
-										->loadTemplate();
-						}
-						$html .= '</ol>'."\n";
-					}
-				}
-				echo $html;
-				if (!$k)
-				{
-					echo '<p class="warning">' . Lang::txt('PLG_GROUPS_PUBLICATIONS_NONE') . '</p>';
-				}
-				?>
-			</div><!-- / .container-block -->
-			<?php
-			$pageNav = $this->pagination(
-				$this->total,
-				$this->limitstart,
-				$this->limit
-			);
-			$pageNav->setAdditionalUrlParam('cn', $this->group->get('cn'));
-			$pageNav->setAdditionalUrlParam('active', 'publications');
-			$pageNav->setAdditionalUrlParam('area', urlencode(stripslashes($this->active)));
-			$pageNav->setAdditionalUrlParam('sort', $this->sort);
-			$pageNav->setAdditionalUrlParam('access', $this->access);
-			echo $pageNav->render();
-			?>
-			<div class="clearfix"></div>
-		</div><!-- / .container -->
-	</form>
-</section>
+       <div class="filter-category">
+         <span>Tags</span>
+
+         <div>
+           <input type="checkbox" id="tag1" name="tag" value="tag1" checked>
+           <label for="tag1">Tag 1</label>
+         </div>
+
+         <div>
+           <input type="checkbox" id="tag2" name="tag" value="tag2" checked>
+           <label for="tag2">Tag 2</label>
+         </div>
+
+         <div>
+           <input type="checkbox" id="tag3" name="tag" value="tag3" checked>
+           <label for="tag3">Tag 3</label>
+         </div>
+
+         <div>
+           <input type="checkbox" id="tag4" name="tag" value="tag4" checked>
+           <label for="tag4">Tag 4</label>
+         </div>
+       </div>
+
+       <button type="submit" name="submit">Filter</button>
+       <button type="reset" name="reset">Reset</button>
+     </form>
+   </div>
+
+   <div class="resource_contents">
+     <div class="resource_header">
+       <nav class="entries-filter">
+         Sort by:
+         <ul class="sort-option entries-menu filter-options">
+           <li class="active" ><a>Newest</a></li>
+           <li><a>Activity</a></li>
+         </ul>
+       </nav>
+
+       <ul class="entries-menu view-option">
+         <li><a href="<?php Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&view='. $this->view) ?>" class="info-th">Card View</a></li>
+         <li class="active"><a href="<?php Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&view='. $this->view) ?>" class="info-th-list">List View</a></li>
+       </ul>
+     </div>
+
+     <div class="resource_content">
+       <ul class="img-option entries-menu filter-options">
+         Images:
+         <li><a>On</a></li>
+         <li class="active"><a>Off</a></li>
+       </ul>
+
+		 <div class="container-block">
+			 <?php
+       //$html='';
+			 if ($this->html)
+			 {
+				 echo $this->html;
+			 }
+
+       else
+       {
+         echo '<p class="warning">' . Lang::txt('PLG_GROUPS_PUBLICATIONS_NONE') . '</p>';
+       }
+			 ?>
+		 </div><!-- / .container-block -->
+
+     <?php
+
+     $pageNav = $this->pagination(
+			 $this->total,
+			 $this->limitstart,
+			 $this->limit
+		 );
+		 $pageNav->setAdditionalUrlParam('cn', $this->group->get('cn'));
+		 $pageNav->setAdditionalUrlParam('active', 'publications');
+		 $pageNav->setAdditionalUrlParam('area', urlencode(stripslashes($this->active)));
+		 $pageNav->setAdditionalUrlParam('sort', $this->sort);
+		 $pageNav->setAdditionalUrlParam('access', $this->access);
+		 echo $pageNav->render();
+
+     ?>
+
+		 <div class="clearfix"></div>
+
+     </div>
+   </div>
+ </main>
+</div>

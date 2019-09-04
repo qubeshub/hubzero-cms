@@ -672,6 +672,7 @@ public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $spon
 			WHERE `publication_id`=" . $this->_db->quote($pub->id) . " AND `publication_version_id`=" . $this->_db->quote($pub->version->id) . "
 			ORDER BY `year` ASC, `month` ASC"
 		);
+
 		$views = (int) $this->_db->loadResult();
 
 		$html .= '      <div class="views">';
