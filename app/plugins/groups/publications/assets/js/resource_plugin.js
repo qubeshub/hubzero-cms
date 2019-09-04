@@ -12,10 +12,22 @@ $(document).ready(function() {
     $sortBy.not(this).removeClass('active');
   });
 
-  $viewOption.on('click', function() {
+  $viewOption.click(function () {
+    $(this).siblings().removeClass('active');
     $(this).addClass('active');
-    $viewOption.not(this).removeClass('active');
+
+    var activeIndex = $(this).index() + 1;
+    localStorage.setItem('mySelectValue', activeIndex);
   });
+
+  var activeIndex = localStorage.getItem('mySelectValue');
+  if (isNaN(activeIndex)) {
+       console.log('nothing stored');
+      }
+  else {
+        $('.view-option li').removeClass('active');
+        $('.view-option li:nth-child(' + activeIndex + ')').addClass('active');
+      }
 
   $imgOption.on('click', function() {
     $(this).addClass('active');

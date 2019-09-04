@@ -384,7 +384,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 
 				include_once(PATH_APP . '/plugins/content/qubesmacros/publications.php');
 				$pubmacro = new \Plugins\Content\Formathtml\Macros\Publications();
-			  $pubmacro->args = "group=bhar,view=list";
+			  $pubmacro->args = "group=" . $this->group->get('cn') . ",view=list";
 				$html = $pubmacro->render();
 
 
@@ -410,7 +410,7 @@ class plgGroupsPublications extends \Hubzero\Plugin\Plugin
 
 				// Return the output
 				$arr['metadata']['count'] = count($results[0]); // We need to clean this up - was $total, which should work
-        $arr['html'] = $view;
+        $arr['html'] = $arr;
 			}
 			break;
 
