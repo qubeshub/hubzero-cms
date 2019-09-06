@@ -1,35 +1,30 @@
 $(document).ready(function() {
 
   // Display active filter status
-
   var $sortBy = $('.sort-option li'),
       $viewOption = $('.view-option li'),
       $imgOption = $('.img-option li');
-
 
   $sortBy.on('click', function() {
     $(this).addClass('active');
     $sortBy.not(this).removeClass('active');
   });
 
-  $viewOption.click(function () {
+$viewOption.click(function () {
     $(this).siblings().removeClass('active');
     $(this).addClass('active');
+});
 
-    var activeIndex = $(this).index() + 1;
-    localStorage.setItem('mySelectValue', activeIndex);
-  });
+if(window.location.search.endsWith("card"))
+{
+  $('.view-option li:nth-child(1)').addClass('active');
+}
+  else  {
+      $('.view-option li:nth-child(2)').addClass('active');
+  }
 
-  var activeIndex = localStorage.getItem('mySelectValue');
-  if (isNaN(activeIndex)) {
-       console.log('nothing stored');
-      }
-  else {
-        $('.view-option li').removeClass('active');
-        $('.view-option li:nth-child(' + activeIndex + ')').addClass('active');
-      }
 
-  $imgOption.on('click', function() {
+$imgOption.on('click', function() {
     $(this).addClass('active');
     $imgOption.not(this).removeClass('active');
   });

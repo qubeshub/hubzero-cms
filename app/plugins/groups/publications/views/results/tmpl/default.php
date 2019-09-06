@@ -142,8 +142,8 @@ if ($this->cats)
        </nav>
 
        <ul class="entries-menu view-option">
-         <li><a href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&view=card') ?>" class="info-th">Card View</a></li>
-         <li class="active"><a href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&view=list') ?>" class="info-th-list">List View</a></li>
+         <li><a href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&viewType=card') ?>" class="info-th">Card View</a></li>
+         <li><a href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=publications&viewType=list') ?>" class="info-th-list">List View</a></li>
        </ul>
      </div>
 

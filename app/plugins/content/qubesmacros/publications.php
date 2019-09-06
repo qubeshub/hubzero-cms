@@ -61,7 +61,7 @@ class Publications extends Macro
 		$txt['html'] .= '<p>Examples:</p>
 							<ul>
 								<li><code>[[Publications()]]</code> - Shows all publications.</li>
-								<li><code>[[Publications(view=list)]]</code> - Display publications in list format.</li>
+								<li><code>[[Publications(viewType=list)]]</code> - Display publications in list format.</li>
 								<li><code>[[Publications(limit=5, style=legacy)]]</code> - Show the 5 most recent publications using the legacy style.</li>
 								<li><code>[[Publications(sponsor=mygroup, sponsorbgcol=cb48b7)]]</code> - Display a sponsor ribbon with each publication, linking to Group "mygroup" (multiple sponsors are allowed if separated by a semicolon).  Background color of ribbon is given in hexidecimal without # (default is cb48b7).</li>
 								<li><code>[[Publications(group=mygroup1;mygroup2, project=myproject, id=2;6;8)]]</code> - Display all publications from Groups "mygroup1" and "mygroup2", Project "myproject", and Publications with ids 2, 6, and 8.</li>
@@ -1129,7 +1129,7 @@ public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $spon
 	{
 		foreach ($args as $k => $arg)
 		{
-			if (preg_match('/view=(\blist\b)/i', $arg, $matches))
+			if (preg_match('/viewType=(\blist\b)/i', $arg, $matches))
 			{
 				$viewType = (isset($matches[1]) ? $matches[1] : '');
 				unset($args[$k]);
