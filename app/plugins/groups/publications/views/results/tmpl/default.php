@@ -133,7 +133,7 @@ if ($this->cats)
 
    <div class="resource_contents">
      <div class="resource_header">
-       <nav class="entries-filter">
+       <nav class="dis-in-bl entries-filter">
          Sort by:
          <ul class="sort-option entries-menu filter-options">
            <li class="active" ><a>Newest</a></li>

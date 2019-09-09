@@ -523,17 +523,16 @@ public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $spon
 	$this->items = $this->_getPublications($this->mastertype, $this->group, $this->project, $this->pubid, $this->tags,
 	$this->limit, $this->sortby, $this->sortdir);
 	$this->base = rtrim(str_replace(PATH_ROOT, '', __DIR__));
-	\Document::addStyleSheet($this->base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'publists.css');
-  \Document::addStyleSheet($this->base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'colorbrewer.css');
-	$html = '<section class="main-section">';
-	$html .= ' <div class="section-inner">';
-	$html .= '  <div class="subject">';
-	$html .= '   <div class="container">';
-	$html .= '    <ol class="results" id="publications">';
+	\Document::addStyleSheet($this->base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'list_view.min.css');
+  //\Document::addStyleSheet($this->base . DS . 'assets' . DS . 'publications' . DS . 'css' . DS . 'colorbrewer.css');
+
+	$html = '<main class="main section">';
+	$html .= ' <div class="resource_contents">';
+	$html .= '  <div class="resource_content">';
+
 
 	foreach ($this->items as $pub)
 	{
-		$html .= '  <li class="pubListView">';
 
 		// Featured ROW
 		// For some reason, featured is not stored in model so we need to grab it
@@ -580,7 +579,9 @@ public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $spon
 		}
 
 		// Citation info
-		$html .= '	  <div class="title">';
+		$html .= '	 <div class="resource-wrapper">';
+		$html .= '	  <div class="resource-info-wrapper">';
+		$html .= '	   <div class="resource-info">';
 
 		// Title
 		$html .= '      <h3>';
@@ -589,13 +590,13 @@ public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $spon
 
 		// Authors
 		$authors = implode(', ', array_map(function ($author) {return $author->name; }, $pub->authors()));
-		$html .= '      <p class="authors" title= "' . $authors . '">';
+		$html .= '      <p class="author" title= "' . $authors . '">';
 		$html .= '        ' . $authors;
 		$html .= '      </p>';
 
 		// Version info
 		$html .= '      <p class="hist">';
-		$html .= '        <span class="versions">';
+		$html .= '        <span class="version">';
 		$html .= '          Version: ' . $pub->version->get('version_label');
 		$html .= '        </span>';
 		if ($v = $pub->forked_from) {
@@ -605,15 +606,15 @@ public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $spon
 			$p = $this->_db->loadResult();
 			$ancestor = new \Components\Publications\Models\Publication($p, 'default', $v);
 
-			$html .= '        <span class="adapted">';
+			$html .= '        <span class="adaptations">';
 			$html .= '          Adapted From: <a href="' . $ancestor->link('version') . '">' . $ancestor->version->get('title') . '</a> v' . $ancestor->version->get('version_label');
 			$html .= '        </span>';
 		}
 		$html .= '      </p>';
-		$html .= '    </div>'; // End title
 		$html .= '      <div class="abstract">';
 		$html .= '        ' . $pub->get('abstract');
 		$html .= '      </div>';
+		$html .= '    </div>'; // End resource-info
 
 		// Watch
 		// Code pulled from: plugins/publications/watch
@@ -624,45 +625,20 @@ public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $spon
 			User::get('id')
 		);
 
-		// Sub-menu
-
-		$html .= '    <div class="listView">';
-		$html .= '      <a aria-label="Full Record" title= "Full Record" href="' . $pub->link() . '">';
-		$html .= '        <span class="menu-iconlist">' . file_get_contents("core/assets/icons/arrow-right.svg") . '</span>';
-		$html .= '        Full Record';
-		$html .= '      </a>';
-		$html .= '      <a aria-label="Download" title= "Download" href="' . $pub->link('serve') . '?render=archive">';
-		$html .= '        <span class="menu-iconlist">' . file_get_contents("core/assets/icons/download-alt.svg") . '</span>';
-		$html .= '      </a>';
-
-		$url = $pub->link() . '/forks/' . $pub->version->get('version_number') . '?action=fork';
-		$html .= '      <a aria-label="Adapt" title= "Adapt" href="' . $url . '">';
-		$html .= '        <span class="menu-iconlist">' . file_get_contents("core/assets/icons/code-fork.svg") . '</span>';
-		$html .= '      </a>';
-		if ($watching) {
-			$html .= '      <a aria-label="Watch" title= "Click to unsubscribe from this resource\'s notifications" href="' . \Route::url($pub->link()) . DS . 'watch' . DS . $pub->version->get('version_number') . '?confirm=1&action=unsubscribe">';
-			$html .= '        <span class="menu-iconlist">' . file_get_contents("app/plugins/content/qubesmacros/assets/icons/feed-off.svg") . '</span>';
-			$html .= '      </a>';
-		} else {
-			$html .= '      <a aria-label="Watch" title= "Click to receive notifications when a new version is released" href="' . \Route::url($pub->link()) . DS . 'watch' . DS . $pub->version->get('version_number') . '?confirm=1&action=subscribe">';
-			$html .= '        <span class="menu-iconlist">' . file_get_contents("core/assets/icons/feed.svg") . '</span>';
-			$html .= '      </a>';
-		}
-		$html .= '    </div>'; // End sub-menu
-
 		// Meta
-		$this->tags = $pub->getTags()->toArray();
-		$nonAdminTags = array_filter(array_map(function ($tag) {return (!$tag['admin'] ? $tag['raw_tag'] : NULL); }, $this->tags), 'strlen');
-		$tagsTitle = implode(', ', $nonAdminTags);
-		$html .= '    <div class="addons">';
-		$html .= '      <div aria-label="Tags" title= "' . $tagsTitle . '" class="tag-wrap">';
-		$html .= '        <span class="icons">' . file_get_contents("core/assets/icons/tags.svg") . '</span>';
-		$html .= '        <span>';
-		if ($nonAdminTags) {
-			$html .= '          <span class="tags">' . implode(', </span><span class="tags">', $nonAdminTags);
-		}
+
+		// Publish Date
+		$html .= '    <div class="meta-wrap">';
+
+
+		$html .= '     <div class="date">';
+		$html .= '  Published on <span class="pub-date" aria-label="Publish Date" title= "Publish Date">';
+		$html .= '         ' . Date::of($pub->version->get('published_up'))->toLocal('m.d.Y');
 		$html .= '        </span>';
-		$html .= '      </div>'; // End tags
+		$html .= '     </div>'; // End publish date
+
+
+		$html .= '     <div class="meta">';
 
 		// Views Information
 		// Code pulled from: plugins/publications/usage/usage.php (onPublication)
@@ -677,8 +653,9 @@ public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $spon
 
 		$html .= '      <div class="views">';
 		$html .= '        <span aria-label="Views" title= "Views">';
-		$html .= '          <span class="icons">' . file_get_contents("core/assets/icons/eye-open.svg") . '</span>';
-		$html .= '          ' . $views;
+		$html .= '          <span class="count">' . $views . '</span>';
+		$html .= '          <span class="ic eye-icon">' . file_get_contents("core/assets/icons/eye-open.svg") . '</span>';
+	  $html .= '          <span class="meta-descripter">Views</span';
 		$html .= '        </span>';
 		$html .= '      </div>'; // End views
 
@@ -694,8 +671,9 @@ public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $spon
 
 		$html .= '      <div class="downloads">';
 		$html .= '        <span aria-label="Downloads" title= "Downloads">';
-		$html .= '          <span class="icons">' . file_get_contents("core/assets/icons/download-alt.svg") . '</span>';
-		$html .= '          ' . $downloads;
+		$html .= '          <span class="count">' . $downloads . '</span>';
+		$html .= '          <span class="ic download-icon">' . file_get_contents("core/assets/icons/download-alt.svg") . '</span>';
+	  $html .= '          <span class="meta-descripter">Downloads</span';
 		$html .= '        </span>';
 		$html .= '      </div>'; // End downloads
 
@@ -709,29 +687,35 @@ public $limit, $sponsors, $group, $project, $pubid, $focusTags, $fascheme, $spon
 
 		$html .= '      <div class="forks">';
 		$html .= '        <span aria-label="Adaptations" title= "Adaptations">';
-		$html .= '          <span class="icons">' . file_get_contents("core/assets/icons/code-fork.svg") . '</span>';
-		$html .= '          ' . $forks;
+		$html .= '          <span class="count">' . $forks . '</span>';
+		$html .= '          <span class="ic fork-icon">' . file_get_contents("core/assets/icons/code-fork.svg") . '</span>';
+		$html .= '          <span class="meta-descripter">Adaptations</span';
 		$html .= '        </span>';
 		$html .= '      </div>'; // End adaptations
 
-		// Publish Date
-		$html .= '      <div class="date">';
-		$html .= '        <span aria-label="Publish Date" title= "Publish Date">';
-		$html .= '          <span class="icons">' . file_get_contents("core/assets/icons/calendar-alt.svg") . '</span>';
-		$html .= '         ' . Date::of($pub->version->get('published_up'))->toLocal('m.d.Y');
+		$html .= '     </div>'; // End meta
+		$html .= '    </div>'; // End meta-wrap
+		$html .= '   </div>';  // End resource-info-wrapper
+
+		$this->tags = $pub->getTags()->toArray();
+		$nonAdminTags = array_filter(array_map(function ($tag) {return (!$tag['admin'] ? $tag['raw_tag'] : NULL); }, $this->tags), 'strlen');
+		$tagsTitle = implode(', ', $nonAdminTags);
+
+		$html .= '      <div aria-label="Tags" title= "' . $tagsTitle . '" class="tags-wrapper">';
+		$html .= '        <span class="icons">' . file_get_contents("core/assets/icons/tags.svg") . '</span>';
+		$html .= '        <span>';
+		if ($nonAdminTags) {
+			$html .= '          <span class="tags">' . implode(', </span><span class="tags">', $nonAdminTags);
+		}
 		$html .= '        </span>';
-		$html .= '      </div>'; // End publish date
+		$html .= '      </div>'; // End tags
 
-		$html .= '    </div>'; // End meta
-
-		$html .= '  </li>'; // End list
+		$html .= '  </div>'; // End resource-wrapper
 	}
 
-	$html .= '    </ol>'; // End card list
-	$html .= '   </div>';
-	$html .= '  </div>';
-	$html .= ' </div>';
-	$html .= '</section>';
+	$html .= '  </div>'; //End resource_content
+	$html .= ' </div>';  //End resource_contents
+	$html .= '</main>'; //End main section
 
 	return $html;
  }

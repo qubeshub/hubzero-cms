@@ -47,3 +47,4 @@ button:hover {
 .mobile-panel .subpanel.search .label {
   font-size: 3rem;
 }
+.dis-in-bl { display:inline-block !important; }
