@@ -76,60 +76,9 @@ if ($this->cats)
 
   <ul id="page_options">
     <li><a href= "#" class="icon-add add btn">Submit a Resource</a></li>
-    <li><a href="#" class="icon-config config btn">Settings</a></li>
   </ul>
 
 <main class="main section">
-  <div class="filter">
-     Filter
-     <form>
-       <div class="filter-category">
-         <span>Type</span>
-
-         <div>
-           <input type="checkbox" id="teaching_material" name="type" value="teaching_material" checked>
-           <label for="teaching_material">Teaching Material</label>
-         </div>
-
-         <div>
-           <input type="checkbox" id="reference_material" name="type" value="reference_material" checked>
-           <label for="reference_material">Reference Material</label>
-         </div>
-
-         <div>
-           <input type="checkbox" id="software" name="type" value="software" checked>
-           <label for="software">Software</label>
-         </div>
-       </div>
-
-       <div class="filter-category">
-         <span>Tags</span>
-
-         <div>
-           <input type="checkbox" id="tag1" name="tag" value="tag1" checked>
-           <label for="tag1">Tag 1</label>
-         </div>
-
-         <div>
-           <input type="checkbox" id="tag2" name="tag" value="tag2" checked>
-           <label for="tag2">Tag 2</label>
-         </div>
-
-         <div>
-           <input type="checkbox" id="tag3" name="tag" value="tag3" checked>
-           <label for="tag3">Tag 3</label>
-         </div>
-
-         <div>
-           <input type="checkbox" id="tag4" name="tag" value="tag4" checked>
-           <label for="tag4">Tag 4</label>
-         </div>
-       </div>
-
-       <button type="submit" name="submit">Filter</button>
-       <button type="reset" name="reset">Reset</button>
-     </form>
-   </div>
 
    <div class="resource_contents">
      <div class="resource_header">
@@ -148,11 +97,6 @@ if ($this->cats)
      </div>
 
      <div class="resource_content">
-       <ul class="img-option entries-menu filter-options">
-         Images:
-         <li><a>On</a></li>
-         <li class="active"><a>Off</a></li>
-       </ul>
 
 		 <div class="container-block">
 			 <?php
