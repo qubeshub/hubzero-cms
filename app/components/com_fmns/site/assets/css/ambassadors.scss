@@ -150,19 +150,37 @@
   @include btn-border-drawing($color-link, $color-link-hover, 1px, bottom, right);
 }
 
-span.link {
-  a {
-    font-family: $font-body;
-    font-weight: normal;
-
-    &::after {
-      display: none;
-    }
-  }
-}
-
 .center {
   text-align: center;
+}
+
+//Current and Former
+.current {
+  @include grid(1 / span 4, null);
+  padding: 2.5em;
+}
+
+.current-ambassador-wrap {
+  @include flexbox(wrap);
+  justify-content: center;
+}
+
+.current-ambassador {
+  margin: 1em 1.5em;
+  width: 9rem;
+
+  img {
+    border-radius: 100%;
+    height: 9rem;
+    margin-bottom: .5em;
+    object-fit: cover;
+    width: 9rem;
+  }
+
+  p {
+    margin: 0;
+    text-align: left;
+  }
 }
 
 //Current and Former

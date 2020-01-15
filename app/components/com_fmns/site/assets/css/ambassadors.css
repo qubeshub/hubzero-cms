@@ -174,7 +174,7 @@
 }
 
 .participate ul li a:hover {
-  color: #393c3d;
+  color: #008099;
 }
 
 @media only screen and (min-width: 56.3125em) {
@@ -224,11 +224,11 @@
 }
 
 .link:hover {
-  color: #393c3d;
+  color: #008099;
 }
 
 .link:hover::before, .link:hover::after {
-  border-color: #393c3d;
+  border-color: #008099;
   border-radius: 2px;
   height: 100%;
   transition: border-color 0s, width 0.25s, height 0.25s;
@@ -243,17 +243,37 @@
   transition-delay: 0s, 0.25s, 0s;
 }
 
-span.link a {
-  font-family: "open_sansregular", Helvetica Neue, Helvetica, sans-serif;
-  font-weight: normal;
-}
-
-span.link a::after {
-  display: none;
-}
-
 .center {
   text-align: center;
+}
+
+.current {
+  grid-column: 1/span 4;
+  padding: 2.5em;
+}
+
+.current-ambassador-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.current-ambassador {
+  margin: 1em 1.5em;
+  width: 9rem;
+}
+
+.current-ambassador img {
+  border-radius: 100%;
+  height: 9rem;
+  margin-bottom: .5em;
+  object-fit: cover;
+  width: 9rem;
+}
+
+.current-ambassador p {
+  margin: 0;
+  text-align: left;
 }
 
 .current {
