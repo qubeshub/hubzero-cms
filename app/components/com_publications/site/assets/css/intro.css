@@ -549,6 +549,7 @@
   .submit-resource-wrap {
     display: flex;
     flex-wrap: nowrap;
+    display: none;
     padding-top: 0;
   }
 }
