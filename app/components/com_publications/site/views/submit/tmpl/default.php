@@ -11,7 +11,8 @@ defined('_HZEXEC_') or die();
 $this->css()
      ->css('jquery.fancybox.css', 'system')
      ->css('intro')
-     ->js();
+     ->js()
+     ->js('intro');
 
 // Add projects stylesheet
 \Hubzero\Document\Assets::addComponentStylesheet('com_projects');
@@ -20,6 +21,12 @@ $this->css()
 \Hubzero\Document\Assets::addPluginScript('projects', 'files', 'jquery.fileuploader.js');
 \Hubzero\Document\Assets::addPluginScript('projects', 'files', 'jquery.queueuploader.js');
 
+$submit_url = Route::url('index.php?option=com_publications&task=submit&action=choose');
+if (User::isGuest())
+{
+  // Could be a problem here - imagining possible issue with this
+	$submit_url = Route::url('index.php?option=com_users&view=login&return=' . base64_encode($submit_url));
+}
 ?>
 
 <div class="submit-resource-wrap">
@@ -41,7 +48,7 @@ $this->css()
 
   <div class="submit-a-resource-wrap">
     <h3>Quick and Easy. Get started today!</h3>
-    <a href="#" class="btn submit-resource-btn">Submit a Resource</a>
+    <a id="#submit-resource" href="<?php echo $submit_url;?>" class="btn submit-resource-btn">Submit a Resource</a>
   </div>
 
   <div class="submit-partner-resource-wrap">
