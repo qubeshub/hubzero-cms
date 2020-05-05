@@ -9,15 +9,15 @@
 defined('_HZEXEC_') or die();
 ?>
 <form class="submit-options" method="post" action=""> <?php // echo Route::url($this->publication->link() . '&active=fork&action=fork'); ?>
-	<h3><?php echo Lang::txt('PLG_PUBLICATIONS_FORKS_FORK_PUBLICATION'); ?></h3>
+	<h3><?php echo Lang::txt('COM_PUBLICATIONS_ADD_NEW_PUB'); ?></h3>
 	<div class="grid">
 		<div class="col span5 submit-new">
-			<h4><?php echo Lang::txt('PLG_PUBLICATIONS_FORKS_FORK_NO_PROJECT'); ?></h4>
-			<p><?php echo Lang::txt('PLG_PUBLICATIONS_FORKS_FORK_NO_PROJECT_EXPLANATION'); ?></p>
-			<p><a class="btn btn-success" href="<?php echo Route::url('publications/submit?action=publication&base=qubesresource'); ?>"><?php echo Lang::txt('PLG_PUBLICATIONS_FORKS_CREATE'); ?></a></p>
+			<h4><?php echo Lang::txt('COM_PUBLICATIONS_NEW_PUB_NO_PROJECT'); ?></h4>
+			<p><?php echo Lang::txt('COM_PUBLICATIONS_NEW_PUB_NO_PROJECT_EXPLANATION'); ?></p>
+			<p><a class="btn btn-success" href="<?php echo Route::url('publications/submit?action=publication&base=qubesresource'); ?>"><?php echo Lang::txt('COM_PUBLICATIONS_NEW_PUB_CREATE'); ?></a></p>
 		</div>
 		<div class="col span7 omega submit-to-project">
-			<h4><?php echo Lang::txt('PLG_PUBLICATIONS_FORKS_FORK_EXISTING_PROJECT'); ?></h4>
+			<h4><?php echo Lang::txt('COM_PUBLICATIONS_NEW_PUB_EXISTING_PROJECT'); ?></h4>
 			<?php if (count($this->projects) > 0) { ?>
 				<ul>
 					<?php foreach ($this->projects as $project) { ?>
@@ -29,13 +29,13 @@ defined('_HZEXEC_') or die();
 								<?php echo $this->escape($project->get('title')); ?>
 							</span>
 							<a class="btn btn-success icon-plus" href="<?php echo Route::url('projects/' . $this->escape($project->get('alias')) . '/publications/publication?base=qubesresource'); ?>" />
-								<?php echo Lang::txt('PLG_PUBLICATIONS_FORKS_ADD'); ?>
+								<?php echo Lang::txt('COM_PUBLICATIONS_NEW_PUB_ADD'); ?>
 							</a>
 						</li>
 					<?php } ?>
 				</ul>
 			<?php } else { ?>
-				<p><?php echo Lang::txt('PLG_PUBLICATIONS_FORKS_NO_PROJECTS'); ?></p>
+				<p><?php echo Lang::txt('COM_PUBLICATIONS_NEW_PUB_NO_PROJECTS'); ?></p>
 			<?php } ?>
 		</div>
 	</div>

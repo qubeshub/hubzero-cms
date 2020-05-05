@@ -11,8 +11,7 @@ defined('_HZEXEC_') or die();
 $this->css()
      ->css('jquery.fancybox.css', 'system')
      ->css('intro')
-     ->js()
-     ->js('intro');
+     ->js();
 
 // Add projects stylesheet
 \Hubzero\Document\Assets::addComponentStylesheet('com_projects');
@@ -48,7 +47,7 @@ if (User::isGuest())
 
   <div class="submit-a-resource-wrap">
     <h3>Quick and Easy. Get started today!</h3>
-    <a id="#submit-resource" href="<?php echo $submit_url;?>" class="btn submit-resource-btn">Submit a Resource</a>
+    <a id="submit-resource" href="<?php echo $submit_url;?>" class="btn submit-resource-btn">Submit a Resource</a>
   </div>
 
   <div class="submit-partner-resource-wrap">
