@@ -46,11 +46,11 @@ if (User::isGuest())
 
 			<div class="resource-type-wrap">
 				<a href="/qubesresources/publications/submit?action=publication&base=niblseresource" class="resource-type">
-					<img src="/app/site/media/images/partners/NIBLSEGraphic.png" alt="Partner logo" class="partner-resource-logo">
+					<img src="/app/site/media/images/partners/NIBLSEGraphic.png" alt="NIBLSE logo" class="partner-resource-logo">
 				</a>
 
 				<a href="/qubesresources/publications/submit?action=publication&base=mmhubresource" class="resource-type">
-					<img src="/app/site/media/images/partners/math_modeling_hub_logotype.png" alt="Partner logo" class="partner-resource-logo">
+					<img src="/app/site/media/images/partners/math_modeling_hub_logotype.png" alt="Math Modeling Hub logo" class="partner-resource-logo">
 				</a>
 			</div>
 		</div>
