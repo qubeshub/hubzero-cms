@@ -5,7 +5,7 @@
 	@keyframes @name { @arguments(); }
 }
 */
-@import url("/core/components/com_groups/site/assets/css/groups.css");
+@import url("/app/components/com_groups/site/assets/css/groups.css");
 #page_menu li {
   border-bottom-color: #494a5a;
 }
@@ -24,6 +24,44 @@
 #page_menu li a,
 #page_menu li span {
   color: #d2d2d2;
+}
+.menuItem button {
+  background-color: transparent;
+  border: none;
+  color: #d2d2d2;
+  font-family: 'montserratregular', Helvetica Neue, Helvetica, sans-serif;
+  position: relative;
+  text-align: left;
+  width: 100%;
+}
+.menuItem button::before {
+  background-color: #494a5a;
+  content: '';
+  width: 0.8em;
+  height: 1px;
+  position: absolute;
+  top: 45%;
+  left: 0;
+}
+.menuItem button:hover {
+  background-color: transparent;
+}
+.menuItem .menu-icon {
+  filter: invert(100%) sepia(0%) saturate(4918%) hue-rotate(247deg) brightness(83%) contrast(95%);
+  height: 16px;
+  padding: 0.2em 0.4em;
+  position: absolute;
+  right: 0.5em;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.menuItem ul {
+  max-height: 0;
+  overflow: hidden;
+}
+.menuItem .subMenuExpand {
+  max-height: 60rem;
+  transition: max-height 0.3s ease;
 }
 #page_sidebar {
   background: #222b37;
@@ -121,7 +159,7 @@
 .btn-info {
   color: #fff;
   border-color: inherit;
-  background: #6E9C39;
+  background: #597F2F;
 }
 .form-controls .save .btn {
   border: 1px solid #fff;
