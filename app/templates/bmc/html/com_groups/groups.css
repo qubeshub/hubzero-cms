@@ -34,7 +34,7 @@
   text-align: left;
   width: 100%;
 }
-.menuItem button::before {
+.menuItem button::after {
   background-color: #494a5a;
   content: '';
   width: 0.8em;
@@ -42,6 +42,10 @@
   position: absolute;
   top: 45%;
   left: 0;
+}
+.menuItem button::before {
+  position: absolute;
+  right: 0.5em;
 }
 .menuItem button:hover {
   background-color: transparent;
