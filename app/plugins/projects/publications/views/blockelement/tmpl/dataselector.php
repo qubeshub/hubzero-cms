@@ -69,6 +69,7 @@ $elementUrl = Route::url($this->pub->link('editversion') . '&section=' . $this->
 ?>
 
 <div id="<?php echo $elName; ?>" class="blockelement <?php
+	echo ' el-' . $this->type;
 	echo $required ? ' el-required' : ' el-optional';
 	echo $complete == 1 ? ' el-complete' : ' el-incomplete';
 	if ($coming)

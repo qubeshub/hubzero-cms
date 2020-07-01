@@ -91,7 +91,7 @@ HUB.ProjectPublicationsSelector = {
 						}
 
 						// Perform the search
-						$.get($('.item-add').attr('href') + '&search=' + input.val(), {}, function(data){
+						$.get($('.el-publication .item-add').attr('href') + '&search=' + input.val(), {}, function(data){
 							var results = $(data).find('#pub-selector-results').html();
 
 							if (results && jQuery().infinitescroll) {
@@ -269,6 +269,7 @@ HUB.ProjectPublicationsSelector = {
 		$('#pub-selector').selectable({
 			items: ".allowed",
 			cancel: 'a',
+			filter: 'li', // https://stackoverflow.com/questions/4365251/jquerys-selectable-plugins-very-slow
 			selected: function (event, ui)
 			{
 				if ($(ui.selected).hasClass('allowed')) { // This shouldn't be necessary as items is set to allowed
