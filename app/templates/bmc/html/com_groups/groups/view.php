@@ -10,6 +10,7 @@
 defined('_HZEXEC_') or die();
 
 $this->css()
+	->css('system' . '/fonts/fontcons.css' )
 	->js();
 
 //get no_html request var

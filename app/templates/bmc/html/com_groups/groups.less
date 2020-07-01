@@ -43,7 +43,7 @@
         text-align: left;
         width: 100%;
 
-        &::before {
+        &::after {
             background-color: @colorSidebarLine;
             content: '';
             width: 0.8em;
@@ -51,6 +51,11 @@
             position: absolute;
             top: 45%;
             left: 0;
+        }
+
+        &::before {
+            position: absolute;
+            right: .5em;
         }
 
         &:hover {
