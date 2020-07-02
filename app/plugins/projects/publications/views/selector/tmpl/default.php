@@ -12,7 +12,7 @@ defined('_HZEXEC_') or die();
 $manifest = $this->publication->curation('blocks', $this->blockId, 'manifest');
 ?>
 <script src="<?php echo rtrim(Request::base(true), '/'); ?>/app/plugins/projects/publications/assets/js/jquery.infinitescroll.min.js"></script>
-<script src="<?php echo rtrim(Request::base(true), '/'); ?>/app/plugins/projects/publications/assets/js/selector.js"></script>
+<script src="<?php echo rtrim(Request::base(true), '/'); ?>/app/plugins/projects/publications/assets/js/selector.js?v=<?php echo filemtime(PATH_APP . '/plugins/projects/publications/assets/js/selector.js'); ?>"></script>
 <div id="abox-content">
 	<h3>
 		<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_SELECTOR_' . strtoupper($this->block)); ?>
