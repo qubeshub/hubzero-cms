@@ -68,8 +68,10 @@ class Publications extends Macro
 								<li><code>[[Publications(limit=5, style=legacy)]]</code> - Show the 5 most recent publications using the legacy style.</li>
 								<li><code>[[Publications(sponsor=mygroup, sponsorbgcol=cb48b7)]]</code> - Display a sponsor ribbon with each publication, linking to Group "mygroup" (multiple sponsors are allowed if separated by a semicolon).  Background color of ribbon is given in hexidecimal without # (default is cb48b7).</li>
 								<li><code>[[Publications(group=mygroup1;mygroup2, project=myproject, id=2;6;8)]]</code> - Display all publications from Groups "mygroup1" and "mygroup2", Project "myproject", and Publications with ids 2, 6, and 8.</li>
+								<li><code>[[Publications(group=mygroup1;mygroup2, id_exclude=3;4)]]</code> - Display all publications from Groups "mygroup1" and "mygroup2", excluding Publications with ids 3 and 4.</li>
 								<li><code>[[Publications(group=mygroup, focusarea=myfa, fascheme=Dark2)]]</code> - Display all publications from Group "mygroup", using the children tags of the "myfa" tag as the primary categories.  Color scheme used is <a href="http://colorbrewer2.org/#type=qualitative&scheme=Dark2">Dark2 (default) from http://colorbrewer2.org</a>.</li>
 								<li><code>[[Publications(pubtype=qubesresource, tag=ecology;genetics)]]</code> - Display all QUBES publications that are tagged "ecology" <i>or</i> "genetics".</li>
+								<li><code>[[Publications(pubtype=qubesresource, tag=ecology*genetics)]]</code> - Display all QUBES publications that are tagged "ecology" <i>and</i> "genetics".  Users can include combinations of <i>or</i> (";") and <i>and</i> ("*"), with <i>and</i> taking precedence.</li>
 								<li><code>[[Publications(id=2;1;3, sortby=id, sortdir=none)]]</code> - Override the default sort by publish date and display publications in order given by id.</li>
 								<li><code>[[Publications(group=mygroup, sortby=date, sortdir=asc)]]</code> - Display publications in mygroup from oldest to newest (rather than default newest to oldest).</li>
 							</ul>';
@@ -108,6 +110,7 @@ class Publications extends Macro
 		$this->group = $this->_getGroup($args);
 		$this->project = $this->_getProject($args);
 		$this->id = $this->_getId($args);
+		$this->id_exclude = $this->_getIdExclude($args);
 		$this->focusTags = $this->_getFocusTags($args);
 		$this->fascheme = $this->_getFaScheme($args);
 		$this->sponsorbgcol = $this->_getSponsorBGCol($args);
@@ -763,8 +766,16 @@ class Publications extends Macro
 			$sql .= ' AND ' . ($nargs == 1 ? $sql_args : '(' . $sql_args . ')');
 		}
 
+		if ($this->id_exclude) {
+			$sql .= ' AND (C.id NOT IN (' . $this->id_exclude . '))';
+		}
+
 		if ($this->tags) {
-			$sql .= ' AND (V.id IN (SELECT DISTINCT(objectid) FROM #__tags_object O WHERE O.tagid IN (SELECT T.id FROM #__tags T WHERE T.tag IN (' . $this->tags . ')) AND O.tbl="publications"))';
+			$sql .= ' AND (V.id IN (SELECT objectid FROM (SELECT DISTINCT(objectid) FROM #__tags_object O WHERE O.tagid IN (SELECT T.id FROM #__tags T WHERE T.tag IN (' . implode(',', $this->tags) . ')) AND O.tbl="publications") as Z';
+			if (count($this->tags > 1)) {
+				$sql .= ' WHERE ' . implode(' AND ', array_map(function($t) {return 'objectid IN (SELECT DISTINCT(objectid) FROM #__tags_object O WHERE O.tagid IN (SELECT T.id FROM #__tags T WHERE T.tag IN (' . $t . ')) AND O.tbl="publications")';}, $this->tags));
+			}
+			$sql .= '))';
 		}
 
 		$sql .= ' AND V.state = 1 GROUP BY C.id ORDER BY';
@@ -1005,6 +1016,27 @@ class Publications extends Macro
 	}
 
 	/**
+	 * Exclude publication id
+	 *
+	 * @param  	$args Macro Arguments
+	 * @return 	mixed
+	 */
+	private function _getIdExclude(&$args)
+	{
+		foreach ($args as $k => $arg)
+		{
+			if (preg_match('/id_exclude=([\w;]*)/', $arg, $matches))
+			{
+				$pid = str_replace(';',',',(isset($matches[1])) ? $matches[1] : '');
+				unset($args[$k]);
+				return $pid;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get publications by tag (uses OR for multiple tags)
 	 *
 	 * @param  	$args Macro Arguments
@@ -1014,9 +1046,11 @@ class Publications extends Macro
 	{
 		foreach ($args as $k => $arg)
 		{
-			if (preg_match('/tag=([\w;]*)/', $arg, $matches))
+			if (preg_match('/tag=([\w;*]*)/', $arg, $matches))
 			{
-				$tags = implode(',', array_map(array($this->_db, 'quote'), explode(';', (isset($matches[1])) ? $matches[1] : '')));
+				$tags = array_map(function($str) {
+					return implode(',', array_map(array($this->_db, 'quote'), explode(';', $str)));
+				}, explode('*', (isset($matches[1]) ? $matches[1] : '')));
 				unset($args[$k]);
 				return $tags;
 			}
