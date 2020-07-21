@@ -294,6 +294,7 @@ class Items extends AdminController
 				if ($pContent->load($attachId))
 				{
 					$pContent->title = $attach['title'];
+					$pContent->access = (array_key_exists('access', $attach) ? 5 : 0);
 					$pContent->store();
 				}
 			}

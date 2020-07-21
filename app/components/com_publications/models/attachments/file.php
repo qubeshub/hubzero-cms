@@ -432,6 +432,7 @@ class File extends Base
 				$html .= $file->exists() && $authorized
 						? '<a href="' . Route::url($pub->link('serve') . '&el=' . $elementId . '&a=' . $attach->id . '&download=1') . '" title="' . $pop . '">' . $icon . ' ' . $title . '</a>'
 						: $icon . ' ' . $title . $notice;
+				$html .= $attach->access ? ' (<em>Instructors only</em>)' : '';
 				$html .= '<span class="extras">';
 				$html .= $file->get('ext') ? '(' . strtoupper($file->get('ext')) : '';
 				$html .= $file->getSize() ? ' | ' . $file->getSize('formatted') : '';
