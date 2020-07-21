@@ -5,7 +5,7 @@
 	@keyframes @name { @arguments(); }
 }
 */
-@import url('/core/plugins/projects/publications/assets/css/curation.css');
+@import url('/app/plugins/projects/publications/assets/css/curation.css');
 .button-wrapper:before,
 .disabled .button-wrapper.bw-previous:before {
   color: #fff;
@@ -13,7 +13,6 @@
   z-index: 10;
 }
 .item-add:before {
-  margin: -0.1rem 0 0 -1.2em;
   line-height: 1em;
 }
 .blockelement input.btn {
@@ -35,4 +34,12 @@ div.item-new {
 }
 .item-options {
   display: block;
+}
+.item-access {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  font-size: 14px;
+  font-style: italic;
+  color: red;
 }

@@ -94,3 +94,8 @@ ol.steps li {
   margin: 2em 1em;
   padding-bottom: 2em;
 }
+#abox-content #hubForm-ajax label[for='access'] {
+  clear: both;
+  margin-bottom: 3em;
+  padding-top: 0;
+}

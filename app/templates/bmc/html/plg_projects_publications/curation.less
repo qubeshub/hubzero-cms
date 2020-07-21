@@ -3,7 +3,7 @@
 @import "../../less/_mixins/mixins";
 @import "../../less/_vars/vars";
 
-@import url('/core/plugins/projects/publications/assets/css/curation.css');
+@import url('/app/plugins/projects/publications/assets/css/curation.css');
 
 .button-wrapper:before,
 .disabled .button-wrapper.bw-previous:before {
@@ -13,7 +13,6 @@
 }
 
 .item-add:before {
-	margin: -0.1rem 0 0 -1.2em;
 	line-height: 1em;
 }
 
@@ -40,4 +39,13 @@ ul.itemlist li.item-new, div.item-new {
 
 .item-options {
 	display: block;
+}
+
+.item-access {
+	position: absolute;
+	right: 10px;
+	bottom: 8px;
+	font-size: 14px;
+	font-style: italic;
+	color: red;
 }

@@ -1124,6 +1124,7 @@ class File extends Base
 	{
 		// Incoming
 		$title = Request::getString('title', '');
+		$access = (Request::getInt('access', 0) ? 5 : 0);
 		$name  = Request::getString('filename', '');
 		$thumb = Request::getInt('makedefault', 0);
 
@@ -1140,6 +1141,7 @@ class File extends Base
 
 		// Update label
 		$row->title       = $title;
+		$row->access      = $access;
 		$row->modified_by = User::get('id');
 		$row->modified    = Date::toSql();
 
@@ -1601,6 +1603,7 @@ class File extends Base
 		$data->set('ordering', $i);
 		$data->set('pub', $view->pub);
 		$data->set('id', $att->id);
+		$data->set('access', $att->access);
 		$data->set('hash', $att->vcs_hash);
 		$data->set('md5Hash', $att->content_hash);
 		$data->set('viewer', $view->viewer);
