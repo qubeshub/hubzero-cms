@@ -37,6 +37,12 @@
 		<field name="documentation" type="text" menu="hide" default="" label="COM_PUBLICATIONS_CONFIG_DOCUMENTATION_PATH" description="COM_PUBLICATIONS_CONFIG_DOCUMENTATION_PATH_DESC" />
 		<field name="deposit_terms" type="text" menu="hide" default="" label="COM_PUBLICATIONS_CONFIG_TERMS_URL" description="COM_PUBLICATIONS_CONFIG_TERMS_URL_DESC" />
 
+		<field name="instructor_only" type="list" default="0" label="COM_PUBLICATIONS_CONFIG_INSTRUCTOR_ONLY" description="COM_PUBLICATIONS_CONFIG_INSTRUCTOR_ONLY_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		<field name="instructor_group" type="text" default="" label="COM_PUBLICATIONS_CONFIG_INSTRUCTOR_GROUP" description="COM_PUBLICATIONS_CONFIG_INSTRUCTOR_GROUP_DESC" />
+
 		<field name="include_author_name_in_search" type="list" default="0" label="COM_PUBLICATIONS_CONFIG_SEARCH_AUTHOR_NAME" description="COM_PUBLICATIONS_CONFIG_SEARCH_AUTHOR_NAME_DESC">
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
