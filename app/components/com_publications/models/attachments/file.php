@@ -303,8 +303,9 @@ class File extends Base
 		foreach ($attachments as $attach)
 		{
 			$filePath = $this->getFilePath($attach->path, $attach->id, $configs, $attach->params);
+			$instructors_only = Component::params('com_publications')->get('instructor_only') && $attach->access;
 
-			if (file_exists($filePath))
+			if (file_exists($filePath) && (!$instructors_only || $pub->access('instructor')))
 			{
 				$fileinfo = pathinfo($filePath);
 				$a_dir  = $fileinfo['dirname'];
@@ -371,7 +372,7 @@ class File extends Base
 				return $html;
 			}
 		}
-		$notice = $authorized ? ' (' . Lang::txt('unavailable')  . ')' : '';
+		$notice = '';
 
 		// Draw bundles
 		if ($configs->multiZip && $attachments && count($attachments) > 1)
@@ -428,11 +429,12 @@ class File extends Base
 				$pop   = Lang::txt('Download') . ' ' . $title;
 				$icon  = '<img height="16" src="' . $file->getIcon() . '" alt="' . $file->get('ext') . '" />';
 
+				$instructors_only = Component::params('com_publications')->get('instructor_only') && $attach->access;
 				$html .= '<li>';
-				$html .= $file->exists() && $authorized
+				$html .= $file->exists() && $authorized && (!$instructors_only || $pub->access('instructor'))
 						? '<a href="' . Route::url($pub->link('serve') . '&el=' . $elementId . '&a=' . $attach->id . '&download=1') . '" title="' . $pop . '">' . $icon . ' ' . $title . '</a>'
 						: $icon . ' ' . $title . $notice;
-				$html .= $attach->access ? ' (<em>Instructors only</em>)' : '';
+				$html .= $instructors_only ? ' (<em>Instructors only</em>)' : '';
 				$html .= '<span class="extras">';
 				$html .= $file->get('ext') ? '(' . strtoupper($file->get('ext')) : '';
 				$html .= $file->getSize() ? ' | ' . $file->getSize('formatted') : '';

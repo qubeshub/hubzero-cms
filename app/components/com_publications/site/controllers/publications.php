@@ -893,6 +893,13 @@ class Publications extends SiteController
 			$elementId = $attachmentTable->element_id;
 			$type = $attachmentTable->type;
 			$role = $attachmentTable->role;
+			$access = $attachmentTable->access;
+		}
+
+		// Is this allowed?
+		// Note: If happening someone is being sneaky!!
+		if (Component::params('com_publications')->get('instructor_only') && $access && !$this->model->access('instructor')) {
+			throw new Exception('This is an instructor-only attachment.  Shame on you!', 404);
 		}
 
 		// We do need attachments

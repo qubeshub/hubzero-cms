@@ -1188,6 +1188,9 @@ class Publication extends Obj
 
 			// May curate
 			$this->params->set('access-curator-publication', true);
+
+			// Insructor access
+			$this->params->set('access-instructor-publication', true);
 		}
 
 		// Get user groups
@@ -1247,6 +1250,14 @@ class Publication extends Obj
 			if (count($common) > 1)
 			{
 				$this->params->set('access-curator-publication', true);
+			}
+		}
+
+		// Instructor from group
+		if ($this->params->get('instructor_only')) {
+			if ($this->params->get('instructor_group') &&
+				in_array($this->params->get('instructor_group'), $usersgroups)) {
+				$this->params->set('access-instructor-publication', true); 
 			}
 		}
 

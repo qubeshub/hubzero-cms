@@ -36,5 +36,5 @@ if ($data->get('viewer') != 'freeze')
 			<?php echo $data::drawIcon($data->get('ext')); ?> <?php echo $data->get('title'); ?>
 		</span>
 		<span class="item-details"><?php echo $details; ?></span>
-		<span class="item-access"><?php echo $data->get('access') ? Lang::txt('PLG_PROJECTS_PUBLICATIONS_FILE_ACCESS') : ''; ?></span>
+		<span class="item-access<?php echo (Component::params('com_publications')->get('instructor_only') ? '' : ' hidden'); ?>"><?php echo $data->get('access') ? Lang::txt('PLG_PROJECTS_PUBLICATIONS_FILE_ACCESS') : ''; ?></span>
 	</li>
