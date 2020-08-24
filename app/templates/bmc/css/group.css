@@ -352,7 +352,7 @@ body.panel-open .hub-overlay {
   font-size: 1rem;
   left: 0;
   line-height: 44px;
-  padding: 0 .5em;
+  padding: 0 0.5em;
   position: absolute;
   top: -44px;
   transition: top 0.3s ease-out;
@@ -479,6 +479,12 @@ body.panel-open .hub-overlay {
 /* REMOVE LATER */
 /* Sidebar nav */
 /* !important is so I don't have to update every supergroup */
+.group_overview h2 {
+  display: block !important;
+}
+.group_wiki h2 {
+  display: block !important;
+}
 .sidebar-nav li a:before,
 .sidebar-nav li span:before {
   margin-top: -0.5em !important;

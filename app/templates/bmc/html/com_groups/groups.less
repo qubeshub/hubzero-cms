@@ -6,6 +6,56 @@
 @import url("/app/components/com_groups/site/assets/css/groups.css");
 
 #page_menu {
+    .menuItem {
+        button {
+            background-color: transparent;
+            border: none;
+            color: @colorSidebarText;
+            font-family: @fontGeometric;
+            position: relative;
+            text-align: left;
+            width: 100%;
+
+            &::after {
+                background-color: @colorSidebarLine;
+                content: '';
+                width: 0.8em;
+                height: 1px;
+                position: absolute;
+                top: 45%;
+                left: 0;
+            }
+
+            &::before {
+                position: absolute;
+                right: .5em;
+            }
+
+            &:hover {
+                background-color: transparent;
+            }
+        }
+
+        .menu-icon {
+            filter: invert(100%) sepia(0%) saturate(4918%) hue-rotate(247deg) brightness(83%) contrast(95%);
+            height: 16px;
+            padding: .2em .4em;
+            position: absolute;
+            right: .5em;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        ul {
+            max-height: 0;
+            overflow: hidden;
+        }
+
+        .subMenuExpand {
+            max-height: 60rem;
+            transition: max-height .3s ease;
+        }
+    }
 
     li {
         border-bottom-color: @colorSidebarLine;
@@ -30,57 +80,6 @@
     li a,
     li span {
         color: @colorSidebarText;
-    }
-}
-
-.menuItem {
-    button {
-        background-color: transparent;
-        border: none;
-        color: @colorSidebarText;
-        font-family: @fontGeometric;
-        position: relative;
-        text-align: left;
-        width: 100%;
-
-        &::after {
-            background-color: @colorSidebarLine;
-            content: '';
-            width: 0.8em;
-            height: 1px;
-            position: absolute;
-            top: 45%;
-            left: 0;
-        }
-
-        &::before {
-            position: absolute;
-            right: .5em;
-        }
-
-        &:hover {
-            background-color: transparent;
-        }
-    }
-
-    .menu-icon {
-        filter: invert(100%) sepia(0%) saturate(4918%) hue-rotate(247deg) brightness(83%) contrast(95%);
-        height: 16px;
-        padding: .2em .4em;
-        position: absolute;
-        right: .5em;
-        top: 50%;
-        transform: translateY(-50%);
-    }
-
-    ul {
-        max-height: 0;
-        overflow: hidden;
-    }
-
-    .subMenuExpand {
-        max-height: 60rem;
-        transition: max-height .3s ease;
     }
 }
 
