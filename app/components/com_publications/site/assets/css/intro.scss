@@ -539,11 +539,11 @@
 }
 
 .resource-type {
+  display: flex;
   padding: 1em;
   width: 10rem;
 
   img {
-    height: 100%;
     object-fit: contain;
     width: 100%;
   }
