@@ -69,39 +69,44 @@ html {
   padding: 1em;
   position: relative;
   transition: 1s ease-out;
-
-  h2 {
-    color: $white;
-    font-size: 1.5rem;
-    text-align: center;
-    text-transform: uppercase;
-  }
   @include respond-at(43.8125em) {
-    padding: 7em;
+    padding: 4em;
   }
 }
 
 .no-webp .bcg-mission,
 .no-jpeg2000 .bcg-mission,
 .no-jpegxr .bcg-mission {
-  @include bcg-img('/app/site/media/images/conference.jpg');
+  background-image: url('/app/site/media/images/31Z_nov32_Converted.png');
+  background-position: center right;
+  background-repeat: no-repeat;
+  background-size: auto 100%;
 }
 
 .webp {
   .bcg-mission {
-    @include bcg-img('/app/site/media/images/conference.webp');
+    background-image: url('/app/site/media/images/31Z_nov32_Converted.webp');
+    background-position: center right;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
   }
 }
 
 .jpeg2000 {
   .bcg-mission {
-    @include bcg-img('/app/site/media/images/conference.jp2');
+    background-image: url('/app/site/media/images/31Z_nov32_Converted.jp2');
+    background-position: center right;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
   }
 }
 
 .jpegxr {
   .bcg-mission {
-    @include bcg-img('/app/site/media/images/conference.jxr');
+    background-image: url('/app/site/media/images/31Z_nov32_Converted.jxr');
+    background-position: center right;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
   }
 }
 
@@ -116,23 +121,17 @@ html {
 }
 
 .mission-statement {
-  border: 1px solid $white;
-  border-radius: 2px;
-  line-height: 1.2;
-  margin: 0 auto;
-  max-width: 54rem;
+  @include respond-at(73.75em) {
+    background-color: transparent;
+    width: 60%;
+  }
+  background-color: rgba(255, 255, 255, 0.6);
+  padding: 1em;
+  width: 100%;
   visibility: hidden;
   z-index: 2;
 
   h4 {
-    @include respond-at(43.8125em) {
-      padding: 3em;
-    }
-    color: $white;
-
-    margin: 0 auto;
-    padding: 1em;
-    text-align: center;
     z-index: 3;
   }
 }
@@ -219,6 +218,12 @@ html {
     margin: 0 auto;
     max-width: 55rem;
     padding: 2em;
+  }
+
+  .attribution {
+    font-size: .8rem;
+    margin: 0;
+    text-align: left;
   }
 }
 

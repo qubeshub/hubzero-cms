@@ -1,3 +1,4 @@
+@charset "UTF-8";
 html {
   overflow-y: hidden;
 }
@@ -8,21 +9,19 @@ html {
 
 @media only screen and (min-width: 600px) {
   .section,
-  .subject {
+.subject {
     padding: 0 !important;
   }
 }
-
 @media only screen and (min-width: 900px) {
   .section,
-  .subject {
+.subject {
     padding: 0 !important;
   }
 }
-
 @media only screen and (min-width: 1200px) {
   .section,
-  .subject {
+.subject {
     padding: 0 !important;
   }
 }
@@ -41,16 +40,15 @@ html {
   border-radius: 2px;
   box-shadow: inset 0 0 0 1px #597f2f;
   color: #597f2f;
-  padding: .25em .75em;
+  padding: 0.25em 0.75em;
   position: relative;
   text-transform: capitalize;
-  transition: color 0.25s 0.08333s;
+  transition: color 0.25s 0.0833333333s;
 }
-
 .link::before, .link::after {
   border: 0 solid transparent;
   box-sizing: border-box;
-  content: '';
+  content: "";
   height: 0;
   pointer-events: none;
   position: absolute;
@@ -58,21 +56,17 @@ html {
   bottom: 0;
   right: 0;
 }
-
 .link::before {
   border-bottom-width: 1px;
   border-left-width: 1px;
 }
-
 .link::after {
   border-top-width: 1px;
   border-right-width: 1px;
 }
-
 .link:hover {
   color: #008099;
 }
-
 .link:hover::before, .link:hover::after {
   border-color: #008099;
   border-radius: 2px;
@@ -80,11 +74,9 @@ html {
   transition: border-color 0s, width 0.25s, height 0.25s;
   width: 100%;
 }
-
 .link:hover::before {
   transition-delay: 0s, 0s, 0.25s;
 }
-
 .link:hover::after {
   transition-delay: 0s, 0.25s, 0s;
 }
@@ -96,48 +88,40 @@ html {
   position: relative;
   transition: 1s ease-out;
 }
-
-.mission h2 {
-  color: #fff;
-  font-size: 1.5rem;
-  text-align: center;
-  text-transform: uppercase;
-}
-
 @media only screen and (min-width: 43.8125em) {
   .mission {
-    padding: 7em;
+    padding: 4em;
   }
 }
 
 .no-webp .bcg-mission,
 .no-jpeg2000 .bcg-mission,
 .no-jpegxr .bcg-mission {
-  background: url("/app/site/media/images/conference.jpg");
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%), url("/app/site/media/images/conference.jpg");
+  background-image: url("/app/site/media/images/31Z_nov32_Converted.png");
+  background-position: center right;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: auto 100%;
 }
 
 .webp .bcg-mission {
-  background: url("/app/site/media/images/conference.webp");
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%), url("/app/site/media/images/conference.webp");
+  background-image: url("/app/site/media/images/31Z_nov32_Converted.webp");
+  background-position: center right;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: auto 100%;
 }
 
 .jpeg2000 .bcg-mission {
-  background: url("/app/site/media/images/conference.jp2");
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%), url("/app/site/media/images/conference.jp2");
+  background-image: url("/app/site/media/images/31Z_nov32_Converted.jp2");
+  background-position: center right;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: auto 100%;
 }
 
 .jpegxr .bcg-mission {
-  background: url("/app/site/media/images/conference.jxr");
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%), url("/app/site/media/images/conference.jxr");
+  background-image: url("/app/site/media/images/31Z_nov32_Converted.jxr");
+  background-position: center right;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: auto 100%;
 }
 
 .bcg-mission {
@@ -151,37 +135,28 @@ html {
 }
 
 .mission-statement {
-  border: 1px solid #fff;
-  border-radius: 2px;
-  line-height: 1.2;
-  margin: 0 auto;
-  max-width: 54rem;
+  background-color: rgba(255, 255, 255, 0.6);
+  padding: 1em;
+  width: 100%;
   visibility: hidden;
   z-index: 2;
 }
-
-.mission-statement h4 {
-  color: #fff;
-  margin: 0 auto;
-  padding: 1em;
-  text-align: center;
-  z-index: 3;
-}
-
-@media only screen and (min-width: 43.8125em) {
-  .mission-statement h4 {
-    padding: 3em;
+@media only screen and (min-width: 73.75em) {
+  .mission-statement {
+    background-color: transparent;
+    width: 60%;
   }
+}
+.mission-statement h4 {
+  z-index: 3;
 }
 
 .about {
   background-color: #f1f1f1;
 }
-
 .about .pane-1 {
   padding: 1em;
 }
-
 .about .pane-1 h6 {
   font-size: 1.2rem;
   line-height: 1.5;
@@ -190,42 +165,34 @@ html {
   padding: 1em;
   text-align: center;
 }
-
 @media only screen and (min-width: 43.8125em) {
   .about .pane-1 h6 {
     padding: 3em;
   }
 }
-
 .about .pane-1 img {
   height: 5rem;
   width: 5rem;
 }
-
 .about .pane-2, .about .pane-3 {
   padding: 0 3em 3em;
 }
-
 .about .pane-2 p, .about .pane-3 p {
   align-self: center;
   margin: 1.5em auto;
   max-width: 65%;
 }
-
 .about .pane-3 {
   padding: 0 3em;
 }
-
 .about .pane-3 .img-container {
   order: -1;
 }
-
 @media only screen and (min-width: 62.5625em) {
   .about .pane-3 .img-container {
     order: 1;
   }
 }
-
 @media only screen and (min-width: 43.8125em) {
   .about .pane-3 {
     padding: 7em 3em;
@@ -236,12 +203,17 @@ html {
 .contact-us {
   padding: 7em 0;
 }
-
 .post-docs p,
 .contact-us p {
   margin: 0 auto;
   max-width: 55rem;
   padding: 2em;
+}
+.post-docs .attribution,
+.contact-us .attribution {
+  font-size: 0.8rem;
+  margin: 0;
+  text-align: left;
 }
 
 .contact-us {
@@ -252,7 +224,6 @@ html {
 .funders h2 {
   text-align: center;
 }
-
 .citations p,
 .funders p {
   margin: 1em auto;
@@ -265,7 +236,6 @@ html {
   flex-wrap: nowrap;
   margin: 0;
 }
-
 @media only screen and (min-width: 60em) {
   .funder-wrapper {
     margin: 0 2em;
@@ -279,14 +249,12 @@ html {
   padding: 1.5em;
   width: 50%;
 }
-
 .funder-info .funder-logo {
   display: flex;
   flex-wrap: nowrap;
   height: 9.375em;
   object-fit: contain;
 }
-
 .funder-info .funder-logo img {
   align-self: center;
   display: block;
@@ -297,58 +265,48 @@ html {
 .citations {
   padding: 7em 0;
 }
-
 .citations h4 {
   margin-top: 2em;
   text-align: center;
 }
-
 .citations .example {
   text-align: left;
 }
-
 .citations .citation-pub {
   font-style: italic;
 }
-
 .citations .issue {
   font-weight: bold;
 }
-
 .citations .module-citations {
   display: flex;
   flex-wrap: wrap;
 }
-
 .citations .module-citations .billboard {
   border: 1px solid #597f2f;
   border-radius: 5px;
   flex: 1 1 21.875em;
-  margin: .635em;
-  padding: .5em;
+  margin: 0.635em;
+  padding: 0.5em;
 }
-
 .citations .module-citations .billboard p {
   margin: 0;
   text-align: left;
 }
-
 .citations .module-citations .billboard .billboard-image {
   margin-bottom: 1em;
   max-height: 13.5rem;
   overflow: hidden;
 }
-
 .citations .module-citations .billboard .billboard-image img {
   height: 100%;
   object-fit: cover;
   width: 100%;
 }
-
 .citations .module-citations .billboard .billboard-content {
   border-top: 1px solid #393c3d;
   display: block;
-  margin-top: .5em;
+  margin-top: 0.5em;
 }
 
 .team {
@@ -358,7 +316,6 @@ html {
 .advisors {
   padding-bottom: 7em;
 }
-
 .advisors .header {
   margin-bottom: 3em;
 }
@@ -366,54 +323,44 @@ html {
 .header {
   text-align: center;
 }
-
 .header p {
   margin: 0 auto;
   max-width: 55rem;
 }
-
 .header a {
   margin: 1em;
-  transition: .3s;
+  transition: 0.3s;
 }
-
 .header .contact-team {
   margin-bottom: 1em;
 }
-
 .header .aof-btn {
   background-color: #fff;
   border: 1px solid #597f2f;
   color: #597f2f;
 }
-
 .header .aof-btn:hover {
   background-color: #008099;
   border: 1px solid #008099;
   color: #fff;
 }
-
 .header .aof-btn.focus {
   background-color: #008099;
   border: 1px solid #008099;
   color: #fff;
 }
-
 .header .aof-description-wrapper {
   height: 13rem;
   margin-bottom: 1em;
   position: relative;
 }
-
 .header .aof-description-wrapper h4 {
   margin-top: 1em;
   padding: 0;
 }
-
 .header .aof-description-wrapper p {
   padding: 0;
 }
-
 .header .aof-description {
   left: 0;
   margin-left: auto;
@@ -423,14 +370,12 @@ html {
   right: 0;
   top: 50%;
   transform: translateY(-50%);
-  transition: visibility 0s, opacity .5s linear;
+  transition: visibility 0s, opacity 0.5s linear;
   visibility: hidden;
 }
-
 .header .aof-description a {
   margin: 0;
 }
-
 .header .aof-description.focus {
   opacity: 1;
   visibility: visible;
@@ -445,19 +390,17 @@ html {
   justify-content: center;
   margin-top: 1em;
 }
-
 @media only screen and (min-width: 680px) {
   .team-wrapper,
-  .wrapper {
+.wrapper {
     display: grid;
     grid-gap: 50px;
     grid-template-columns: repeat(2, 300px);
   }
 }
-
 @media only screen and (min-width: 1310px) {
   .team-wrapper,
-  .wrapper {
+.wrapper {
     display: grid;
     grid-gap: 50px;
     grid-template-columns: repeat(3, 300px);
@@ -465,8 +408,8 @@ html {
 }
 
 .icon-spinner {
-  -webkit-animation: spin-animation .2s infinite linear;
-  animation: spin-animation .2s infinite linear;
+  -webkit-animation: spin-animation 0.2s infinite linear;
+  animation: spin-animation 0.2s infinite linear;
   display: inline-block;
 }
 
@@ -478,65 +421,56 @@ html {
     transform: rotate(359deg);
   }
 }
-
 .card {
   height: 0;
   margin-bottom: 6.6em;
   padding-bottom: calc(100% - 1em);
   position: relative;
 }
-
 .card h2 {
   color: #fff;
   font-size: 1.4em;
   left: 0;
   line-height: 1.6em;
   margin: 0;
-  padding: .625em 1em;
+  padding: 0.625em 1em;
   position: absolute;
   top: calc(100% - 1em);
-  transition: .3s;
+  transition: 0.3s;
   width: 100%;
   z-index: 10;
 }
-
 .card h2 span {
   display: block;
 }
-
 .card h2 strong {
   display: block;
   font-size: 1.03rem;
   font-weight: 400;
 }
-
 .card h2:before, .card h2:after {
   border: 8px solid;
-  content: '';
+  content: "";
   left: 0;
   position: absolute;
-  top: -.7em;
-  transition: .3s;
+  top: -0.7em;
+  transition: 0.3s;
   width: 0;
 }
-
 .card h2:after {
   bottom: 0;
   top: auto;
 }
-
 @media only screen and (min-width: 47.9375em) {
   .card.active {
     height: auto;
     padding-bottom: 0;
   }
 }
-
 .card.active h2 {
-  padding: .5em 1em .5em 4em;
+  padding: 0.5em 1em 0.5em 4em;
   top: 0;
 }
-
 .card.active h2 span {
   display: block;
   /* Fallback for non-webkit */
@@ -551,7 +485,6 @@ html {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .card.active h2 strong {
   display: block;
   /* Fallback for non-webkit */
@@ -566,25 +499,20 @@ html {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .card.active h2:before {
   top: 0;
 }
-
 .card.active h2:after {
-  bottom: -.7em;
+  bottom: -0.7em;
 }
-
 .card.focus {
-  transition: .5s;
+  transition: 0.5s;
 }
-
 .card.unfocus {
-  opacity: .4 !important;
+  opacity: 0.4 !important;
   transform: scale(0.9) !important;
-  transition: .5s;
+  transition: 0.5s;
 }
-
 .card .card-content {
   bottom: 1em;
   height: 21.875rem;
@@ -592,9 +520,8 @@ html {
   position: absolute;
   right: 0;
   top: 0;
-  transition: .3s;
+  transition: 0.3s;
 }
-
 .card .btn-action {
   border: 5px solid;
   border-radius: 50%;
@@ -604,19 +531,16 @@ html {
   right: 1em;
   text-align: center;
   top: 0.9375em;
-  transition: .3s;
+  transition: 0.3s;
   width: 3.375rem;
   z-index: 20;
 }
-
 .card .btn-action i {
   font-size: inherit;
 }
-
 .card.active .btn-action {
   top: 3.875em;
 }
-
 .card .description {
   bottom: 3.375em;
   left: 1.875em;
@@ -627,7 +551,6 @@ html {
   top: 100%;
   transition: 1.2s;
 }
-
 .card .description p {
   display: block;
   /* Fallback for non-webkit */
@@ -642,39 +565,33 @@ html {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .card .menu:before {
-  content: '\f039';
-  font-family: 'Fontcons';
+  content: "";
+  font-family: "Fontcons";
   font-style: normal;
 }
-
 .card .arrow-left:before {
-  content: '\2190';
-  font-family: 'Fontcons';
+  content: "←";
+  font-family: "Fontcons";
   font-style: normal;
 }
-
 .card .profile:before {
-  content: '\f007';
-  font-family: 'Fontcons';
+  content: "";
+  font-family: "Fontcons";
   font-style: normal;
-  padding: 0 .5em;
+  padding: 0 0.5em;
 }
-
 .card .contact:before {
-  content: '\2709';
-  font-family: 'Fontcons';
+  content: "✉";
+  font-family: "Fontcons";
   font-style: normal;
-  padding: 0 .5em;
+  padding: 0 0.5em;
 }
-
 .card .card-footer {
   height: 0;
   overflow: hidden;
-  transition: .3s;
+  transition: 0.3s;
 }
-
 .card .card-footer a {
   color: #fff;
   display: block;
@@ -682,70 +599,61 @@ html {
   font-size: 1.75rem;
   height: 3.3125rem;
   line-height: 3.25rem;
-  margin-bottom: .9375em;
-  margin-left: .3125em;
+  margin-bottom: 0.9375em;
+  margin-left: 0.3125em;
   position: relative;
   text-decoration: none;
   top: 200px;
   width: 3.25rem;
 }
-
 .card .card-footer a:nth-child(1) {
-  transition: .5s;
+  transition: 0.5s;
 }
-
 .card .card-footer a:nth-child(2) {
-  transition: .6s;
+  transition: 0.6s;
 }
-
 .card .img-container {
   height: 100%;
   left: 0;
   overflow: hidden;
   position: absolute;
   top: 0;
-  transition: .3s;
+  transition: 0.3s;
   width: 100%;
   z-index: 3;
 }
-
 .card.active .img-container {
   border-radius: 50%;
   height: 3.75rem;
   left: 0;
-  top: .75em;
+  top: 0.75em;
   width: 3.75rem;
   z-index: 20;
 }
-
 .card.active .card-content {
   padding-top: 5.6em;
 }
-
 @media only screen and (min-width: 767px) {
   .card.active .card-content {
     margin-right: 1em;
     position: relative;
   }
 }
-
 .card.active .description {
   opacity: 1;
   padding-top: 5em;
   top: 3.125em;
 }
-
 .card.active .card-footer {
   height: 5.125rem;
   left: 1em;
   overflow: visible;
   padding-left: 1.5625em;
-  padding-top: .9375em;
+  padding-top: 0.9375em;
   position: absolute;
   right: 0;
   top: calc(100% - -2em);
 }
-
 .card.active .card-footer a {
   top: 0;
 }
@@ -753,60 +661,49 @@ html {
 .green h2 {
   background-color: #248232;
 }
-
 .green h2:after {
   border-bottom-color: transparent;
   border-left-color: transparent;
   border-right-color: #248232;
   border-top-color: #248232;
 }
-
 .green h2:before {
   border-bottom-color: #030a04;
   border-left-color: transparent;
   border-right-color: #030a04;
   border-top-color: transparent;
 }
-
 .green.active h2:before {
   border-bottom-color: #248232;
   border-left-color: transparent;
   border-right-color: #248232;
   border-top-color: transparent;
 }
-
 .green.active h2:after {
   border-bottom-color: transparent;
   border-left-color: transparent;
   border-right-color: #030a04;
   border-top-color: #030a04;
 }
-
 .green .btn-action {
   background-color: #248232;
 }
-
 .green .btn-action:hover {
   background-color: #0e3213;
 }
-
 .green .card-footer h4 {
   color: #030a04;
 }
-
 .green .card-footer a {
   background-color: #0e3213;
   color: #fff;
 }
-
 .green .card-footer a:hover {
   background-color: black;
 }
-
 .green.active .card-content {
   background-color: #cdf1d3;
 }
-
 .green.active .card-footer {
   background-color: #2faa41;
 }
@@ -814,60 +711,49 @@ html {
 .dark-blue h2 {
   background-color: #222b37;
 }
-
 .dark-blue h2:after {
   border-bottom-color: transparent;
   border-left-color: transparent;
   border-right-color: #222b37;
   border-top-color: #222b37;
 }
-
 .dark-blue h2:before {
   border-bottom-color: black;
   border-left-color: transparent;
   border-right-color: black;
   border-top-color: transparent;
 }
-
 .dark-blue.active h2:before {
   border-bottom-color: #222b37;
   border-left-color: transparent;
   border-right-color: #222b37;
   border-top-color: transparent;
 }
-
 .dark-blue.active h2:after {
   border-bottom-color: transparent;
   border-left-color: transparent;
   border-right-color: black;
   border-top-color: black;
 }
-
 .dark-blue .btn-action {
   background-color: #222b37;
 }
-
 .dark-blue .btn-action:hover {
   background-color: black;
 }
-
 .dark-blue .card-footer h4 {
   color: black;
 }
-
 .dark-blue .card-footer a {
   background-color: black;
   color: #fff;
 }
-
 .dark-blue .card-footer a:hover {
   background-color: black;
 }
-
 .dark-blue.active .card-content {
   background-color: #a8b6c9;
 }
-
 .dark-blue.active .card-footer {
   background-color: #354457;
 }
