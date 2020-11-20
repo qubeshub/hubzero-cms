@@ -14,40 +14,36 @@
   }
 }
 
-.no-webp .intro,
-.no-jpeg2000 .intro,
-.no-jpegxr .intro {
-  @include bcg-img('/app/site/media/images/idea-2000.jpg');
-}
+// .no-webp .intro,
+// .no-jpeg2000 .intro,
+// .no-jpegxr .intro {
+//   @include bcg-img('/app/site/media/images/bg_spheres.jpg');
+// }
 
-.webp {
-  .intro {
-    @include bcg-img('/app/site/media/images/idea-2000.webp');
-  }
-}
+// .webp {
+//   .intro {
+//     @include bcg-img('/app/site/media/images/bg_spheres.jpg');
+//   }
+// }
 
-.jpeg2000 {
-  .intro {
-    @include bcg-img('/app/site/media/images/idea-2000.jp2');
-  }
-}
+// .jpeg2000 {
+//   .intro {
+//     @include bcg-img('/app/site/media/images/bg_spheres.jpg');
+//   }
+// }
 
-.jpegxr {
-  .intro {
-    @include bcg-img('/app/site/media/images/idea-2000.jxr');
-  }
-}
+// .jpegxr {
+//   .intro {
+//     @include bcg-img('/app/site/media/images/bg_spheres.jpg');
+//   }
+// }
 
 .intro {
-  @include bcg($black, $white);
-  color: $white;
+  background-image: url('/app/site/media/images/bg_spheres.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
   flex-direction: column;
   width: 100%;
-
-  h2,
-  h4 {
-    color: $white;
-  }
 
   h5 {
     text-align: center;
@@ -65,6 +61,19 @@
 
   h4 {
     margin-top: 2em;
+  }
+}
+
+.advert-img {
+  @include flexbox;
+
+  img {
+    margin-right: 1em;
+    width: 10rem;
+  }
+
+  h2 {
+    align-self: center;
   }
 }
 

@@ -22,11 +22,14 @@
 						<a href="#three" class="link">Services</a>
 					</div>
 				</div> -->
-                <h2>Looking for online teaching ideas for Spring semester?</h2>
-                <p>Visit the <a href="/community/groups/quant_bio_online">Teaching Quantitative Biology Online</a> group to find QUBES-curated resources easily portable to online environments.</p>
-                <div class="anchor-link">
-                    <a href="/community/groups/quant_bio_online" class="link">Visit Quant Bio Online</a>
+                <div class="advert-img">
+                    <img src="https://qubeshub.org/community/groups/partnerprojectsupport/File:/uploads/PartnersAtQUBES_logo52_short.png" alt="Logo: Partners at QUBES">
+
+                    <h2>Partners@QUBES Leadership Summit</h2>
                 </div>
+                <h3>December 14, 2020, 1:30-3:30 PM (EST)</h3>
+                <p>To celebrate our partners’ accomplishments, to make their work and QUBES’s role more visible, and to strengthen and connect our communities, we’re inviting partner leaders to the Partners@QUBES Leadership Summit. Join us to learn about the benefits of partnering with QUBES and meet fellow project leaders.</p>
+                <p><a href="https://qubeshub.org/community/groups/partnerprojectsupport/activities/partnerssummit">Please register by November 30th</a></p>
             </div>
         </div>
 
