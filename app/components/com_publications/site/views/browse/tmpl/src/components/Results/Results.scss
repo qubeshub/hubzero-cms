@@ -1,0 +1,28 @@
+@import '../../../../../../templates/bmc/css/pages/mixins';
+
+#results-container {
+  @include respond-at(44.0625em) {
+    padding-left: 1.875em;
+  }
+  @include respond-at(53.75em) {
+    @include grid(2 / span 1, auto);
+  }
+  @include grid(1 / span 2, 2);
+  // @include grid-template(repeat(3, 1fr), auto, 1em);
+  padding: 0 2.5em;
+}
+
+#publications {
+  @include grid(1 / span 3, auto);
+
+  .publication {
+    &::before {
+      content: none;
+    }
+  }
+}
+
+.pagination {
+  @include grid(1 / span 3, auto);
+  height: auto;
+}

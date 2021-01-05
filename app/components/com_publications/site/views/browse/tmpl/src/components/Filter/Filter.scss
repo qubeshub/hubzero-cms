@@ -1,0 +1,107 @@
+@import '../../../../../../templates/bmc/css/pages/mixins';
+@import '../../../../../../templates/bmc/css/pages/variables';
+
+.page-filter-wrapper {
+  @include respond-at(53.75em) {
+    @include grid(1 / span 1, auto);
+  }
+  @include grid(1 / span 2, 1);
+
+  &.sticky {
+    left: 0;
+    z-index: 100;
+
+    .page-filter {
+      background-color: $white;
+      -webkit-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.3);
+      -moz-box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.3);
+      box-shadow: 0px 5px 5px 0px rgba(0,0,0,0.3);
+    }
+
+    .mobile-filter {
+      margin-bottom: 0;
+    }
+
+    .data-entry {
+      padding-top: 1em;
+    }
+  }
+}
+
+.entry-search-submit {
+  margin-top: 1em;
+}
+
+.page-filter {
+  @include grid-support {
+    width: auto;
+  }
+  @include respond-at(53.75em) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  max-height: calc(100vh - 160px);
+  overflow-y: scroll;
+  padding-bottom: 1.5em;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+  position: sticky;
+  position: -webkit-sticky; /* Safari */
+  top: 160px;
+  transition: .3s ease;
+  width: 25%;
+
+  .data-entry {
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+  }
+
+  &.collapsed {
+    padding-bottom: 0;
+  }
+}
+
+.filter-wrapper {
+  margin-bottom: 2em;
+
+  legend {
+    width: 100%;
+  }
+
+  h6 {
+    border-bottom: 1px solid $silver;
+    cursor: pointer;
+    margin-top: 1em;
+    position: relative;
+  }
+}
+
+.filter-icon {
+  display: inline-block;
+  height: .8rem;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  width: .8rem;
+}
+
+.filter-panel {
+  max-height: 18.75rem;
+  overflow: hidden;
+  transition: .3s ease;
+}
+
+.collapsed {
+  max-height: 0;
+}
+
+.mobile-filter {
+  @include respond-at(53.75em) {
+    display: none;
+  }
+  display: block;
+  margin-bottom: 1em;
+  text-align: left;
+  width: 100%;
+}
