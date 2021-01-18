@@ -28,8 +28,8 @@
                     <h2>Partners@QUBES Leadership Summit</h2>
                 </div>
                 <h3>December 14, 2020, 1:30-3:30 PM (EST)</h3>
-                <p>To celebrate our partners’ accomplishments, to make their work and QUBES’s role more visible, and to strengthen and connect our communities, we’re inviting partner leaders to the Partners@QUBES Leadership Summit. Join us to learn about the benefits of partnering with QUBES and meet fellow project leaders.</p>
-                <p><a href="https://qubeshub.org/community/groups/partnerprojectsupport/activities/partnerssummit">Please register by November 30th</a></p>
+                <p>Thank you to our partners for attending the first Partners@QUBES Leadership Summit. We loved having so many representatives--over 40 participants--from our partner organizations in the same (Zoom) room and to hear how integral QUBES has become to advancing our partners' goals. If you haven't already, join the QUBES Support Community for Partner Projects below.</p>
+                <p><a href="https://qubeshub.org/community/groups/partnerprojectsupport">QUBES Support Community for Partner Projects</a></p>
             </div>
         </div>
 
