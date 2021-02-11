@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -79,7 +79,6 @@ $this->js();
 					<?php echo Html::select('booleanlist', 'fields[open]', 'class="inputbox"', $this->poll->get('open')); ?>
 				</div>
 			</fieldset>
-			<p class="warning"><?php echo Lang::txt('COM_POLL_WARNING'); ?></p>
 		</div>
 		<div class="col span6">
 			<fieldset class="adminform">

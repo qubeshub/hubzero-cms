@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -19,17 +19,5 @@ class Access_Group_Membership_Subscription extends BaseSubscription
 	public function __construct($pId, $uId)
 	{
 		parent::__construct($pId, $uId);
-	}
-
-	/**
-	 * Get expiration info.
-	 *
-	 * @return  void
-	 * @throws  Exception
-	 */
-	public function _getExpiration()
-	{
-		// This will get expiration from the correct place
-		throw new Exception('not implemented');
 	}
 }

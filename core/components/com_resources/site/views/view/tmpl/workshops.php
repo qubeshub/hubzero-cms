@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -272,7 +272,11 @@ if ($mode != 'preview')
 			'start'  => Request::getInt('limitstart', 0),
 			'id'     => $this->model->id
 		);
-
+		// Prevent SQL injection vulnerability by doing input validation on sortby
+		if (!in_array($filters['sortby'], array('date', 'date_published', 'date_created', 'date_modified', 'title', 'rating', 'ranking', 'random')))
+		{
+			App::abort(403, Lang::txt('Invalid sort value'));
+		}
 		// Get children
 		$children = $this->model->children()
 			->whereEquals('standalone', 1)
@@ -339,4 +343,4 @@ if ($mode != 'preview')
 			</section>
 		</form>
 	<?php } ?>
-<?php } 
+<?php }

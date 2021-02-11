@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -212,7 +212,7 @@ class Resources extends SiteController
 			'search' => Request::getString('search', ''),
 			'tag'    => trim(Request::getString('tag', '', 'request', 'none', 2)),
 			'tag_ignored' => array(),
-			'access' => array(0)
+			'access' => [0, 3]
 		);
 		if (!in_array($filters['sortby'], array('date', 'date_published', 'date_created', 'date_modified', 'title', 'rating', 'ranking', 'random')))
 		{
@@ -275,19 +275,30 @@ class Resources extends SiteController
 			}
 		}
 
-		$query = Entry::all();
-			/*->including(['type', function ($type){
-				$type->select('*');
-			}]);*/
+		$query = Entry::all()
+			->select('#__resources.id')
+			->select('title')
+			->select('params')
+			->select('access')
+			->select('ranking')
+			->select('type')
+			->select('rating')
+			->select('#__resources.created')
+			->select('#__resources.modified')
+			->select('publish_up')
+			->select('introtext')
+			->select('fulltxt');
 
 		$r = $query->getTableName();
-		//$t = Type::blank()->getTableName();
 
 		$query->whereEquals($r . '.standalone', 1);
 		$query->whereIn($r . '.access', $filters['access']);
 
 		if ($filters['tag'] != '')
 		{
+			// Aliased to avoid ID collisions
+			$query->select('#__tags.id', 'tag_id');
+
 			$to = \Components\Tags\Models\Objct::blank()->getTableName();
 			$tg = \Components\Tags\Models\Tag::blank()->getTableName();
 

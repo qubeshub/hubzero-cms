@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -418,7 +418,19 @@ class Tag extends Relational
 		$this->set('id', $objectAttributes['id']);
 		$this->set('raw_tag', $objectAttributes['raw_tag']);
 
-		return $this->save();
+		$result = $this->save();
+
+		if ($result)
+		{
+			$arr = array('object_id' => $to->get('id'), 'tagger_id' => $tagger);
+			$log = Log::blank();
+			$log->set('tag_id', $this->get('id'));
+			$log->set('action', 'tag_removed');
+			$log->set('comments', json_encode($arr));
+			$log->save();
+		}
+
+		return $result;
 	}
 
 	/**
@@ -468,7 +480,19 @@ class Tag extends Relational
 			$this->set('objects', $this->purgeCache()->objects()->total());
 		}
 
-		return $this->save();
+		$result = $this->save();
+
+		if ($result)
+		{
+			$arr = array('object_id' => $to->get('id'), 'tagger_id' => $tagger);
+			$log = Log::blank();
+			$log->set('tag_id', $this->get('id'));
+			$log->set('action', 'tag_added');
+			$log->set('comments', json_encode($arr));
+			$log->save();
+		}
+
+		return $result;
 	}
 
 	/**

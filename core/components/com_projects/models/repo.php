@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -1268,7 +1268,12 @@ class Repo extends Obj
 			Checks to see if the first entity is a file. If no '.' is found assume directory.
 			If no directory is found, create a unique one for the project to contain the files.
 			***/
-			$topLevelDirectory = shell_exec("unzip -qql " .  $tmp_name . " | head -n1 | tr -s ' ' | cut -d' ' -f5-");
+			$matches = [];
+			$firstArchiveEntry = shell_exec("unzip -qql " .  $tmp_name . " | head -n1 | tr -s ' ' | cut -d' ' -f5-");
+			preg_match("/(^.*?\/)/", $firstArchiveEntry, $matches);
+
+			$topLevelDirectory = isset($matches[0]) ? $matches[0] : $firstArchiveEntry;
+
 			if (strpos($topLevelDirectory, '.') !== false)
 			{
 				$extractPath = $extractPath . DS . 'archive-' . time() . DS;
