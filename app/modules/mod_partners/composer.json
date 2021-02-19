@@ -1,0 +1,8 @@
+{
+	"name": "qubeshub/mod_partners",
+	"description": "This module will display a grid of QUBES Partner logos with links to their QUBES communities.",
+	"type": "hubzero-module",
+	"extra": {
+	    "install-directory": "/modules/mod_partners"
+	}
+}
