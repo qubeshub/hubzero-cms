@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -194,6 +194,7 @@ class Modules extends AdminController
 		// clean title & position
 		$module['title']    = preg_replace("/[^-_ a-zA-Z0-9]+/", '', $module['title']);
 		$module['position'] = preg_replace("/[^-_a-zA-Z0-9]+/", '', $module['position']);
+		$module['id']       = isset($module['id']) && $module['id'] ? intval($module['id']) : null;
 
 		// get the category object
 		$this->module = new Module($module['id']);
@@ -208,7 +209,7 @@ class Modules extends AdminController
 
 		// if this is new module or were changing position,
 		// get next order possible for position
-		if (!isset($module['id']) || ($module['id'] == '')
+		if (!isset($module['id']) || !$module['id']
 			|| ($module['position'] != $this->module->get('position')))
 		{
 			$ordering = null;
@@ -216,7 +217,7 @@ class Modules extends AdminController
 		}
 
 		// bind request vars to module model
-		if (!$this->module->bind( $module ))
+		if (!$this->module->bind($module))
 		{
 			Notify::error($this->module->getError());
 			return $this->editTask();
@@ -307,11 +308,15 @@ class Modules extends AdminController
 			// load modules
 			$module = new Module($moduleid);
 
+			// Disable content checks
+			// We're only changing state, so it's unnecessary processing
+			$module->set('page_trusted', 1);
+
 			//set to deleted state
 			$module->set('state', $module::APP_STATE_DELETED);
 
 			// save module
-			if (!$module->store(true))
+			if (!$module->store(true, true))
 			{
 				App::redirect(
 					Route::url('index.php?option=' . $this->_option . '&controller=' . $this->_controller . '&gid=' . $this->gid, false),

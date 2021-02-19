@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -50,7 +50,12 @@ if (($pagePrivacy== 'registered' && User::isGuest())
 	||($pagePrivacy == 'members' && !in_array(User::get('id'), $this->group->get('members'))))
 {
 	$displayComments = 0;
-	$this->version->set('content', '<p class="info">' . Lang::txt('COM_GROUPS_PAGES_PAGE_UNABLE_TO_VIEW') . '</p>');
+
+	if (User::isGuest()) {
+		$this->version->set('content', '<p class="info">' . Lang::txt('COM_GROUPS_PAGES_PAGE_LOG_IN') . '</p>');
+	} else {
+		$this->version->set('content', '<p class="info">' . Lang::txt('COM_GROUPS_PAGES_PAGE_UNABLE_TO_VIEW') . '</p>');
+	}
 }
 ?>
 
@@ -217,4 +222,4 @@ if (($pagePrivacy== 'registered' && User::isGuest())
 			echo implode("\n", $comments);
 		?>
 	</div>
-<?php endif; 
+<?php endif;
