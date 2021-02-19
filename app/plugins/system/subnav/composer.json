@@ -1,6 +1,6 @@
 {
 	"name": "qubeshub/plg_system_subnav",
-	"description": "System plugin to handle sub-navigation menu.",
+	"description": "Component/URL to subnavigation mapping",
 	"type": "hubzero-plugin",
 	"keywords": ["hubzero", "qubeshub"],
 	"homepage": "https://qubeshub.org",
