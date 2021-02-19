@@ -1,4 +1,10 @@
 <?php
+/**
+ * @package    hubzero-cms
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
+ * @license    http://opensource.org/licenses/MIT MIT
+ */
+
 $this->css('ambassadors');
 $this->css("https://fonts.googleapis.com/css?family=Martel");
 $this->js('ambassadors');
