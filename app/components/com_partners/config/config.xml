@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--
+@package    hubzero-cms
+@copyright  Copyright (c) 2005-2020 The Regents of the University of California.
+@license    http://opensource.org/licenses/MIT MIT
+-->
+
 <config>
 	<fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field name="rules" type="rules" label="JCONFIG_PERMISSIONS_LABEL" class="inputbox" validate="rules" filter="rules" component="com_partners" section="component" />
