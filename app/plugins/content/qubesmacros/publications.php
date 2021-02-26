@@ -1,33 +1,8 @@
 <?php
 /**
- * HUBzero CMS
- *
- * Copyright 2005-2015 HUBzero Foundation, LLC.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * HUBzero is a registered trademark of Purdue University.
- *
- * @package   hubzero-cms
- * @author    Shawn Rice <zooley@purdue.edu>
- * @copyright Copyright 2005-2015 HUBzero Foundation, LLC.
- * @license   http://opensource.org/licenses/MIT MIT
+ * @package    hubzero-cms
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
+ * @license    http://opensource.org/licenses/MIT MIT
  */
 
 namespace Plugins\Content\Formathtml\Macros;
@@ -68,8 +43,10 @@ class Publications extends Macro
 								<li><code>[[Publications(limit=5, style=legacy)]]</code> - Show the 5 most recent publications using the legacy style.</li>
 								<li><code>[[Publications(sponsor=mygroup, sponsorbgcol=cb48b7)]]</code> - Display a sponsor ribbon with each publication, linking to Group "mygroup" (multiple sponsors are allowed if separated by a semicolon).  Background color of ribbon is given in hexidecimal without # (default is cb48b7).</li>
 								<li><code>[[Publications(group=mygroup1;mygroup2, project=myproject, id=2;6;8)]]</code> - Display all publications from Groups "mygroup1" and "mygroup2", Project "myproject", and Publications with ids 2, 6, and 8.</li>
+								<li><code>[[Publications(group=mygroup1;mygroup2, id_exclude=3;4)]]</code> - Display all publications from Groups "mygroup1" and "mygroup2", excluding Publications with ids 3 and 4.</li>
 								<li><code>[[Publications(group=mygroup, focusarea=myfa, fascheme=Dark2)]]</code> - Display all publications from Group "mygroup", using the children tags of the "myfa" tag as the primary categories.  Color scheme used is <a href="http://colorbrewer2.org/#type=qualitative&scheme=Dark2">Dark2 (default) from http://colorbrewer2.org</a>.</li>
 								<li><code>[[Publications(pubtype=qubesresource, tag=ecology;genetics)]]</code> - Display all QUBES publications that are tagged "ecology" <i>or</i> "genetics".</li>
+								<li><code>[[Publications(pubtype=qubesresource, tag=ecology*genetics)]]</code> - Display all QUBES publications that are tagged "ecology" <i>and</i> "genetics".  Users can include combinations of <i>or</i> (";") and <i>and</i> ("*"), with <i>and</i> taking precedence.</li>
 								<li><code>[[Publications(id=2;1;3, sortby=id, sortdir=none)]]</code> - Override the default sort by publish date and display publications in order given by id.</li>
 								<li><code>[[Publications(group=mygroup, sortby=date, sortdir=asc)]]</code> - Display publications in mygroup from oldest to newest (rather than default newest to oldest).</li>
 							</ul>';
@@ -108,6 +85,7 @@ class Publications extends Macro
 		$this->group = $this->_getGroup($args);
 		$this->project = $this->_getProject($args);
 		$this->id = $this->_getId($args);
+		$this->id_exclude = $this->_getIdExclude($args);
 		$this->focusTags = $this->_getFocusTags($args);
 		$this->fascheme = $this->_getFaScheme($args);
 		$this->sponsorbgcol = $this->_getSponsorBGCol($args);
@@ -121,8 +99,11 @@ class Publications extends Macro
 		$this->base = rtrim(str_replace(PATH_ROOT, '', __DIR__));
 
 		$view = $this->_getView($args);
-    if($view =='card') {
-      return $this->_getCardView();
+		if (count($this->items) == 0) {
+			return('<div>No resources found.</div>');
+		}
+        if ($view =='card') {
+        	return $this->_getCardView();
 		} else {
 			return $this->_getListView();
 		}
@@ -351,18 +332,18 @@ class Publications extends Macro
 				// $html .= '      </div>';
 
 				// Citation info
-	  		$html .= '	  <div class="title">';
+	  			$html .= '	  <div class="title">';
 
 				// Title
-	  		$html .= '      <h3>';
-	  		$html .= '        <a href="' . $pub->link() . '">' . $pub->get('title') . '</a>';
-	  		$html .= '      </h3>';
+	  			$html .= '      <h3>';
+	  			$html .= '        <a href="' . $pub->link() . '">' . $pub->get('title') . '</a>';
+	  			$html .= '      </h3>';
 
 				// Authors
 				$authors = implode(', ', array_map(function ($author) {return $author->name; }, $pub->authors()));
 				$html .= '      <p class="authors" title= "' . $authors . '">';
 				$html .= '        ' . $authors;
-	  		$html .= '      </p>';
+	  			$html .= '      </p>';
 
 				// Version info
 				$html .= '      <p class="hist">';
@@ -398,27 +379,32 @@ class Publications extends Macro
 				// Sub-menu
 				$html .= '    <div class="sub-menu">';
 				$html .= '      <a aria-label="Full Record" title= "Full Record" href="' . $pub->link() . '" aria-hidden="true" tabindex="-1">';
-		    $html .= '        <span class="menu-icon">' . file_get_contents(PATH_ROOT . DS . "core/assets/icons/arrow-right.svg") . '</span>';
-		    $html .= '        Full Record';
-		    $html .= '      </a>';
-		    $html .= '      <a aria-label="Download" title= "Download" href="' . $pub->link('serve') . '?render=archive" aria-hidden="true" tabindex="-1">';
-		    $html .= '        <span class="menu-icon">' . file_get_contents(PATH_ROOT . DS . "core/assets/icons/download-alt.svg") . '</span>';
-		    $html .= '      </a>';
+				$html .= '        <span class="menu-icon">' . file_get_contents(PATH_ROOT . DS . "core/assets/icons/arrow-right.svg") . '</span>';
+				$html .= '        Full Record';
+				$html .= '      </a>';
+				$html .= '      <a aria-label="Download" title= "Download" href="' . $pub->link('serve') . '?render=archive" aria-hidden="true" tabindex="-1">';
+				$html .= '        <span class="menu-icon">' . file_get_contents(PATH_ROOT . DS . "core/assets/icons/download-alt.svg") . '</span>';
+				$html .= '      </a>';
 
 				$url = $pub->link() . '/forks/' . $pub->version->get('version_number') . '?action=fork';
 				$html .= '      <a aria-label="Adapt" title= "Adapt" href="' . $url . '" aria-hidden="true" tabindex="-1">';
-		    $html .= '        <span class="menu-icon">' . file_get_contents(PATH_ROOT . DS . "core/assets/icons/code-fork.svg") . '</span>';
-		    $html .= '      </a>';
+				$html .= '        <span class="menu-icon">' . file_get_contents(PATH_ROOT . DS . "core/assets/icons/code-fork.svg") . '</span>';
+				$html .= '      </a>';
+
+				$url = Route::url($pub->link('version') . '&active=comments#commentform');
+				$html .= '      <a aria-label="Comment" title= "Comment" href="' . $url . '" aria-hidden="true" tabindex="-1">';
+				$html .= '        <span class="menu-icon">' . file_get_contents(PATH_ROOT . DS . "core/assets/icons/comments.svg") . '</span>';
+				$html .= '      </a>';				
 				if ($watching) {
-  		    $html .= '      <a aria-label="Watch" title= "Click to unsubscribe from this resource\'s notifications" href="' . \Route::url($pub->link()) . DS . 'watch' . DS . $pub->version->get('version_number') . '?confirm=1&action=unsubscribe" aria-hidden="true" tabindex="-1">';
-  		    $html .= '        <span class="menu-icon">' . file_get_contents("app/plugins/content/qubesmacros/assets/icons/feed-off.svg") . '</span>';
-  		    $html .= '      </a>';
+					$html .= '      <a aria-label="Watch" title= "Click to unsubscribe from this resource\'s notifications" href="' . \Route::url($pub->link()) . DS . 'watch' . DS . $pub->version->get('version_number') . '?confirm=1&action=unsubscribe" aria-hidden="true" tabindex="-1">';
+					$html .= '        <span class="menu-icon">' . file_get_contents("app/plugins/content/qubesmacros/assets/icons/feed-off.svg") . '</span>';
+					$html .= '      </a>';
 				} else {
 					$html .= '      <a aria-label="Watch" title= "Click to receive notifications when a new version is released" href="' . \Route::url($pub->link()) . DS . 'watch' . DS . $pub->version->get('version_number') . '?confirm=1&action=subscribe" aria-hidden="true" tabindex="-1">';
-  		    $html .= '        <span class="menu-icon">' . file_get_contents(PATH_ROOT . DS . "core/assets/icons/feed.svg") . '</span>';
-  		    $html .= '      </a>';
+					$html .= '        <span class="menu-icon">' . file_get_contents(PATH_ROOT . DS . "core/assets/icons/feed.svg") . '</span>';
+					$html .= '      </a>';
 				}
-		    $html .= '    </div>'; // End sub-menu
+				$html .= '    </div>'; // End sub-menu
 				$html .= '    </div>'; // End content
 
 				// Sponsors
@@ -435,7 +421,7 @@ class Publications extends Macro
 				// More information button
 				$html .= '    <button aria-label="More Information" title="More Information" href="#" class="btn-action">';
 				$html .= '      <i class="menu"></i>';
-		    $html .= '    </button>';
+				$html .= '    </button>';
 
 				// Meta
 				$this->tags = $pub->getTags()->toArray();
@@ -443,7 +429,7 @@ class Publications extends Macro
 				$tagsTitle = implode(', ', $nonAdminTags);
 				$html .= '    <div class="meta">';
 				$html .= '      <div aria-label="Tags" title= "' . $tagsTitle . '" class="tag-wrap">';
-	      $html .= '        <span class="icons">' . file_get_contents(PATH_ROOT . DS . "core/assets/icons/tags.svg") . '</span>';
+				$html .= '        <span class="icons">' . file_get_contents(PATH_ROOT . DS . "core/assets/icons/tags.svg") . '</span>';
 				$html .= '        <span>';
 				if ($nonAdminTags) {
 					$html .= '          <span class="tags">' . implode(', </span><span class="tags">', $nonAdminTags);
@@ -480,7 +466,6 @@ class Publications extends Macro
 				$downloads = (int) $this->_db->loadResult();
 				$downloads = number_format_short($downloads);
 
-
 				$html .= '      <div class="downloads">';
 				$html .= '        <span aria-label="Downloads" title= "Downloads">';
 				$html .= '          <span class="icons">' . file_get_contents(PATH_ROOT . DS . "core/assets/icons/download-alt.svg") . '</span>';
@@ -505,13 +490,33 @@ class Publications extends Macro
 				$html .= '        </span>';
 				$html .= '      </div>'; // End adaptations
 
+				// Comments
+				// Borrowed from _countComments() in plugins/publications/comments/comments.php
+				$ncomm = \Plugins\Publications\Comments\Models\Comment::all()
+					->whereEquals('item_type', 'publications')
+					->whereEquals('item_id', $pub->version->id)
+					->whereIn('state', array(
+						\Plugins\Publications\Comments\Models\Comment::STATE_PUBLISHED,
+						\Plugins\Publications\Comments\Models\Comment::STATE_FLAGGED,
+						\Plugins\Publications\Comments\Models\Comment::STATE_DELETED
+					))
+					->whereIn('access', User::getAuthorisedViewLevels())
+					->count();
+				
+				$html .= '      <div class="comments">';
+				$html .= '        <span aria-label="Comments" title= "Comments">';
+				$html .= '          <span class="icons">' . file_get_contents(PATH_ROOT . DS . "core/assets/icons/comments.svg") . '</span>';
+				$html .= '          ' . $ncomm;
+				$html .= '        </span>';
+				$html .= '      </div>';
+
 				// Publish Date
 				$html .= '      <div class="date">';
-	      $html .= '        <span aria-label="Publish Date" title= "Publish Date">';
-	      $html .= '          <span class="icons">' . file_get_contents(PATH_ROOT . DS . "core/assets/icons/calendar-alt.svg") . '</span>';
-	      $html .= '         ' . Date::of($pub->version->get('published_up'))->toLocal('m.Y');
-	      $html .= '        </span>';
-	      $html .= '      </div>'; // End publish date
+				$html .= '        <span aria-label="Publish Date" title= "Publish Date">';
+				$html .= '          <span class="icons">' . file_get_contents(PATH_ROOT . DS . "core/assets/icons/calendar-alt.svg") . '</span>';
+				$html .= '         ' . Date::of($pub->version->get('published_up'))->toLocal('m.Y');
+				$html .= '        </span>';
+				$html .= '      </div>'; // End publish date
 
 				$html .= '    </div>'; // End meta
 
@@ -763,8 +768,16 @@ class Publications extends Macro
 			$sql .= ' AND ' . ($nargs == 1 ? $sql_args : '(' . $sql_args . ')');
 		}
 
+		if ($this->id_exclude) {
+			$sql .= ' AND (C.id NOT IN (' . $this->id_exclude . '))';
+		}
+
 		if ($this->tags) {
-			$sql .= ' AND (V.id IN (SELECT DISTINCT(objectid) FROM #__tags_object O WHERE O.tagid IN (SELECT T.id FROM #__tags T WHERE T.tag IN (' . $this->tags . ')) AND O.tbl="publications"))';
+			$sql .= ' AND (V.id IN (SELECT objectid FROM (SELECT DISTINCT(objectid) FROM #__tags_object O WHERE O.tagid IN (SELECT T.id FROM #__tags T WHERE T.tag IN (' . implode(',', $this->tags) . ') OR T.raw_tag IN (' . implode(',', $this->tags) . ')) AND O.tbl="publications") as Z';
+			if (count($this->tags > 1)) {
+				$sql .= ' WHERE ' . implode(' AND ', array_map(function($t) {return 'objectid IN (SELECT DISTINCT(objectid) FROM #__tags_object O WHERE O.tagid IN (SELECT T.id FROM #__tags T WHERE T.tag IN (' . $t . ') OR T.raw_tag IN (' . $t . ')) AND O.tbl="publications")';}, $this->tags));
+			}
+			$sql .= '))';
 		}
 
 		$sql .= ' AND V.state = 1 GROUP BY C.id ORDER BY';
@@ -1005,6 +1018,27 @@ class Publications extends Macro
 	}
 
 	/**
+	 * Exclude publication id
+	 *
+	 * @param  	$args Macro Arguments
+	 * @return 	mixed
+	 */
+	private function _getIdExclude(&$args)
+	{
+		foreach ($args as $k => $arg)
+		{
+			if (preg_match('/id_exclude=([\w;]*)/', $arg, $matches))
+			{
+				$pid = str_replace(';',',',(isset($matches[1])) ? $matches[1] : '');
+				unset($args[$k]);
+				return $pid;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Get publications by tag (uses OR for multiple tags)
 	 *
 	 * @param  	$args Macro Arguments
@@ -1014,9 +1048,11 @@ class Publications extends Macro
 	{
 		foreach ($args as $k => $arg)
 		{
-			if (preg_match('/tag=([\w;]*)/', $arg, $matches))
+			if (preg_match('/tag=([\w;*\s]*)/', $arg, $matches))
 			{
-				$tags = implode(',', array_map(array($this->_db, 'quote'), explode(';', (isset($matches[1])) ? $matches[1] : '')));
+				$tags = array_map(function($str) {
+					return implode(',', array_map(function($str2) { return $this->_db->quote(trim($str2)); }, explode(';', $str)));
+				}, explode('*', (isset($matches[1]) ? $matches[1] : '')));
 				unset($args[$k]);
 				return $tags;
 			}

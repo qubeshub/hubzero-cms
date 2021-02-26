@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -268,6 +268,12 @@ class Posts extends SiteController
 	 */
 	public function savecommentTask()
 	{
+		// Error if comments are not allowed
+		if (!$this->config->get('allow_comments'))
+		{
+			App::abort(404, Lang::txt('COM_COLLECTIONS_ERROR_PAGE_NOT_FOUND'));
+		}
+
 		// Check for request forgeries
 		Request::checkToken();
 
@@ -339,6 +345,12 @@ class Posts extends SiteController
 	 */
 	public function deletecommentTask()
 	{
+		// Error if comments are not allowed
+		if (!$this->config->get('allow_comments'))
+		{
+			App::abort(404, Lang::txt('COM_COLLECTIONS_ERROR_PAGE_NOT_FOUND'));
+		}
+
 		// Ensure the user is logged in
 		if (User::isGuest())
 		{

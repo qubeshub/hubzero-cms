@@ -1,14 +1,16 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-// No direct access
-defined('_HZEXEC_') or die('Restricted access');
+namespace Components\Cart\Lib\Cartmessenger;
 
 include_once __DIR__ . '/LoggingLevel.php';
+
+// No direct access
+defined('_HZEXEC_') or die('Restricted access');
 
 /**
  * Logs cart activity and sends emails out as necessary

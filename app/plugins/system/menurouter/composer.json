@@ -1,6 +1,6 @@
 {
 	"name": "qubeshub/plg_system_menurouter",
-	"description": "System plugin to re-route urls to match menu and breadcrumbs.",
+	"description": "Prepend menu parent items to generated component URLs and route menu items appropriately.",
 	"type": "hubzero-plugin",
 	"keywords": ["hubzero", "qubeshub"],
 	"homepage": "https://qubeshub.org",

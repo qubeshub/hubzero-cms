@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -36,7 +36,7 @@ Toolbar::cancel();
 							<?php foreach ($this->availablePackages as $package): ?>
 								<option name="<?php echo $this->escape($package->getName()); ?>"value="<?php echo $this->escape($package->getName()); ?>"><?php echo $this->escape($package->getPrettyName()); ?></option>
 							<?php endforeach; ?>
-						</select> 
+						</select>
 					</div>
 				</fieldset>
 			</div>

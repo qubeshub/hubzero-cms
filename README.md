@@ -324,7 +324,7 @@ On the Thursday or Friday before QA push, do the following:
 
 ```
 git fetch --all
-git pull upstream 2.2
+git pull upstream dev
 ```
 
 This will pull in the new code into `/core`.  
@@ -408,10 +408,10 @@ For more info, check out the git docs:  https://git-scm.com/book/en/v2/Git-Tools
 
 # Fixing core issues
 
-Checkout a clone of `upstream/2.2`:
+Checkout a clone of `upstream/dev`:
 
 ```
-git checkout --track -b fix-core-bug upstream/2.2
+git checkout --track -b fix-core-bug upstream/dev
 ```
 
 Code the fix and then push the new branch to origin:

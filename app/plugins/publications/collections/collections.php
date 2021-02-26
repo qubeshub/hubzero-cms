@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -9,9 +9,9 @@
 defined('_HZEXEC_') or die();
 
 /**
- * Publications Plugin class for adding collections 
+ * Resources Plugin class for adding collections 
  */
-class plgPublicationsCollections extends \Hubzero\Plugin\Plugin
+class plgResourcesCollections extends \Hubzero\Plugin\Plugin
 {
 	/**
 	 * Affects constructor behavior. If true, language files will be loaded automatically.
@@ -21,42 +21,42 @@ class plgPublicationsCollections extends \Hubzero\Plugin\Plugin
 	protected $_autoloadLanguage = true;
 
 	/**
-	 * Return data on a publication sub view (this will be some form of HTML)
+	 * Return data on a resource sub view (this will be some form of HTML)
 	 *
-	 * @param   object   $publication  Current publication
+	 * @param   object   $resource  Current resource
 	 * @param   string   $option    Name of the component
 	 * @param   integer  $miniview  View style
 	 * @return  array
 	 */
-	public function onPublicationsSub($publication, $option, $miniview=0)
+	public function onResourcesSub($resource, $option, $miniview=0)
 	{
-		if (!$publication->type->params->get('plg_collections', 0))
+		if (!$resource->type->params->get('plg_collections', 0))
 		{
 			return;
 		}
-		$pparams = Plugin::params('publications', 'collections');
+		$pparams = Plugin::params('resources', 'collections');
 		$collectionType = $pparams->get('collection_alias');
 		$allowPublished = $pparams->get('collection_afterpublished');
-		$typeObj = Components\Publications\Models\Type::oneByAlias($collectionType);
+		$typeObj = Components\Resources\Models\Type::oneByAlias($collectionType);
 		if (!($typeObj) || !($typeObj->get('collection')))
 		{
 			return false;
 		}
-		$parentIds = $publication->parents->fieldsByKey('id');
-		$publications = Components\Publications\Models\Entry::all();
-		$publications->whereEquals('standalone', 1);
-		$publications->whereEquals('type', $typeObj->get('id'));
+		$parentIds = $resource->parents->fieldsByKey('id');
+		$resources = Components\Resources\Models\Entry::all();
+		$resources->whereEquals('standalone', 1);
+		$resources->whereEquals('type', $typeObj->get('id'));
 		if (!$allowPublished)
 		{
-			$publications->whereEquals('published', 2);
+			$resources->whereEquals('published', 2);
 		}
 		if (!empty($parentIds))
 		{
-			$publications->where('id', 'NOT IN', $parentIds);
+			$resources->where('id', 'NOT IN', $parentIds);
 		}
 		if (!User::authorize('core.admin', $option))
 		{
-			$publications->whereEquals('created_by', User::get('id'), 1);
+			$resources->whereEquals('created_by', User::get('id'), 1);
 			// Get the groups the user has access to
 			$xgroups = \Hubzero\User\Helper::getGroups(User::get('id'), 'all');
 			$usersgroups = array();
@@ -66,7 +66,7 @@ class plgPublicationsCollections extends \Hubzero\Plugin\Plugin
 				{
 					if ($group->regconfirmed)
 					{
-						$publications->orWhereLike('group_owner', $group->cn, 1);
+						$resources->orWhereLike('group_owner', $group->cn, 1);
 					}
 				}
 			}
@@ -74,8 +74,8 @@ class plgPublicationsCollections extends \Hubzero\Plugin\Plugin
 		// Instantiate a view
 		$view = $this->view('default', 'index');
 		$view
-			->set('publication', $publication)
-			->set('publications', $publications)
+			->set('resource', $resource)
+			->set('resources', $resources)
 			->set('type', $typeObj)
 			->js('collections.js')
 			->css('collections.css');

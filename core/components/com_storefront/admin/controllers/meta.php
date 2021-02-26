@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -126,8 +126,11 @@ class Meta extends AdminController
 		// See what layout to load
 		if ($this->view->row->getTypeInfo()->name == 'Software Download')
 		{
-			// Software
 			$layout = 'edit-software';
+		}
+		elseif ($this->view->row->getTypeInfo()->name == 'Group Membership')
+		{
+			$layout = 'edit-group-membership';
 		}
 		else
 		{

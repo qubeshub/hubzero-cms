@@ -1,6 +1,6 @@
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -11,6 +11,24 @@
 	-- -- -- -- -- -- --
 
 */
+
+.sort-options button {
+	border: none;
+	background: transparent;
+	display: block;
+	cursor: pointer;
+	font-weight: normal;
+	line-height: 1em;
+	border: none;
+	margin: 0;
+	padding: 0.4em 0.75em;
+}
+
+.sort-options button:before {
+	content: "\2193";
+	font-family: "Fontcons";
+	margin-right: 0.2em;
+}
 
 /* Comments */
 	/* Header */

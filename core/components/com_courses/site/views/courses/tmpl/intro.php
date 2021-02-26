@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -88,6 +88,17 @@ if (count($this->notifications) > 0)
 					}
 				}
 				?>
+			<?php if ($this->more_courses): ?>
+				<div class="grid">
+					<div class="col span4"></div>
+					<div class="col span4">
+						<p>
+							<a class="btn" href="/courses/browse">More courses »</a>
+						</p>
+					</div>
+					<div class="col span4 omega"></div>
+				</div>
+			<?php endif ?>
 			</div><!-- / .popularcourses clearfix top -->
 		<?php } else { ?>
 			<p class="info"><?php echo Lang::txt('COM_COURSES_NO_POPULAR_COURSES'); ?></p>

@@ -1,6 +1,6 @@
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -38,3 +38,39 @@ Hubzero.submitbutton = function(task) {
 		}
 	}
 }
+
+jQuery(document).ready(function($){
+	$("#toolbar-unblock a").on('click', function(e){
+		e.preventDefault();
+
+		if (document.adminForm.boxchecked.value==0){
+			alert('Please first make a selection from the list');
+		}else{
+			var serialized = '';
+			$('input[type=checkbox]').each(function() {
+				if (this.checked) {
+					serialized += '&'+this.name+'='+this.value;
+				}
+			});
+			if (serialized) {
+				$.fancybox({
+					arrows: false,
+					type: 'iframe',
+					autoSize: false,
+					width: 400,
+					height: 400,
+					fitToView: true,
+					href: $(this).attr('href') + serialized
+				});
+			}
+		}
+	});
+
+	$("#btn-save").on('click', function(e){
+		Hubzero.submitbutton('save');
+	});
+
+	$("#btn-cancel").on('click', function(e){
+		Hubzero.submitbutton('cancel');
+	});
+});

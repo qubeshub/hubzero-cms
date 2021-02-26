@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -24,7 +24,16 @@ Html::behavior('tooltip');
 $this->css();
 
 ?>
-
+<nav role="navigation" class="sub sub-navigation">
+	<ul>
+		<li>
+			<a<?php if ($this->controller == 'manage') { echo ' class="active"'; } ?> href="<?php echo Route::url('index.php?option=' . $this->option . '&controller=manage'); ?>"><?php echo Lang::txt('COM_INSTALLER_SUBMENU_CORE'); ?></a>
+		</li>
+		<li>
+			<a<?php if ($this->controller == 'migrations') { echo ' class="active"'; } ?> href="<?php echo Route::url('index.php?option=' . $this->option . '&controller=migrations'); ?>"><?php echo Lang::txt('COM_INSTALLER_SUBMENU_MIGRATIONS'); ?></a>
+		</li>
+	</ul>
+</nav>
 <form action="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller); ?>" method="post" name="adminForm" id="updateRepositoryForm">
 	<?php if (!empty($this->breadcrumb)): ?>
 		<fieldset id="filter-bar">

@@ -1,10 +1,11 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
- * @purpose  	 The override adds the alias data attribute to the navigation items to be used with the tempalte's lookup code to map the current page to the main navigation subnav
  */
+
+// @purpose  	 The override adds the alias data attribute to the navigation items to be used with the tempalte's lookup code to map the current page to the main navigation subnav
 
 // No direct access.
 defined('_HZEXEC_') or die;

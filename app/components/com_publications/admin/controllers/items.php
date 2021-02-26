@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -690,7 +690,6 @@ class Items extends AdminController
 		$title          = trim(Request::getString('title', '', 'post'));
 		$title          = htmlspecialchars($title);
 		$abstract       = trim(Request::getString('abstract', '', 'post'));
-		$abstract       = htmlspecialchars(\Hubzero\Utility\Sanitize::clean($abstract));
 		$description    = trim(Request::getString('description', '', 'post'));
 		$release_notes  = stripslashes(trim(Request::getString('release_notes', '', 'post')));
 		$group_owner    = Request::getInt('group_owner', 0, 'post');
@@ -750,9 +749,21 @@ class Items extends AdminController
 			}
 		}
 
+		$db = \App::get('db');
+		$db->setQuery("select params
+		               from #__extensions
+		               where folder = 'projects' and element = 'publications'");
+		$result = $db->loadRow();
+		$params = isset($result[0]) ? json_decode($result[0]) : null;
+
+		if (!!$params && isset($params->new_pubs) && !$params->new_pubs)
+		{
+			$abstract = htmlspecialchars(\Hubzero\Utility\Sanitize::clean($abstract));
+		}
+
 		// Save incoming
 		$this->model->version->title        = $title;
-		$this->model->version->abstract     = \Hubzero\Utility\Str::truncate($abstract, 250);
+		$this->model->version->abstract     = \Hubzero\Utility\Str::truncate($abstract, 64000, ["html" => true]);
 		$this->model->version->description  = $description;
 		$this->model->version->metadata     = $metadata;
 		$this->model->version->release_notes= $release_notes;

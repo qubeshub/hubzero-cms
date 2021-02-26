@@ -1,4 +1,10 @@
 <?php
+/**
+ * @package    hubzero-cms
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
+ * @license    http://opensource.org/licenses/MIT MIT
+ */
+
 // this is a very basic table display for the partners, needs to be edited before it is pushed to the real world
 // Push CSS to the document
 //

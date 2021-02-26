@@ -39,17 +39,20 @@ html {
 
 .link {
   border-radius: 2px;
-  box-shadow: inset 0 0 0 1px #597f2f;
+  -webkit-box-shadow: inset 0 0 0 1px #597f2f;
+          box-shadow: inset 0 0 0 1px #597f2f;
   color: #597f2f;
   padding: .25em .75em;
   position: relative;
   text-transform: capitalize;
+  -webkit-transition: color 0.25s 0.08333s;
   transition: color 0.25s 0.08333s;
 }
 
 .link::before, .link::after {
   border: 0 solid transparent;
-  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
   content: '';
   height: 0;
   pointer-events: none;
@@ -77,16 +80,19 @@ html {
   border-color: #008099;
   border-radius: 2px;
   height: 100%;
+  -webkit-transition: border-color 0s, width 0.25s, height 0.25s;
   transition: border-color 0s, width 0.25s, height 0.25s;
   width: 100%;
 }
 
 .link:hover::before {
-  transition-delay: 0s, 0s, 0.25s;
+  -webkit-transition-delay: 0s, 0s, 0.25s;
+          transition-delay: 0s, 0s, 0.25s;
 }
 
 .link:hover::after {
-  transition-delay: 0s, 0.25s, 0s;
+  -webkit-transition-delay: 0s, 0.25s, 0s;
+          transition-delay: 0s, 0.25s, 0s;
 }
 
 .mission {
@@ -94,50 +100,44 @@ html {
   overflow: hidden;
   padding: 1em;
   position: relative;
+  -webkit-transition: 1s ease-out;
   transition: 1s ease-out;
-}
-
-.mission h2 {
-  color: #fff;
-  font-size: 1.5rem;
-  text-align: center;
-  text-transform: uppercase;
 }
 
 @media only screen and (min-width: 43.8125em) {
   .mission {
-    padding: 7em;
+    padding: 4em;
   }
 }
 
 .no-webp .bcg-mission,
 .no-jpeg2000 .bcg-mission,
 .no-jpegxr .bcg-mission {
-  background: url("/app/site/media/images/conference.jpg");
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%), url("/app/site/media/images/conference.jpg");
+  background-image: url("/app/site/media/images/31Z_nov32_Converted.png");
+  background-position: center right;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: auto 100%;
 }
 
 .webp .bcg-mission {
-  background: url("/app/site/media/images/conference.webp");
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%), url("/app/site/media/images/conference.webp");
+  background-image: url("/app/site/media/images/31Z_nov32_Converted.webp");
+  background-position: center right;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: auto 100%;
 }
 
 .jpeg2000 .bcg-mission {
-  background: url("/app/site/media/images/conference.jp2");
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%), url("/app/site/media/images/conference.jp2");
+  background-image: url("/app/site/media/images/31Z_nov32_Converted.jp2");
+  background-position: center right;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: auto 100%;
 }
 
 .jpegxr .bcg-mission {
-  background: url("/app/site/media/images/conference.jxr");
-  background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.7) 100%), url("/app/site/media/images/conference.jxr");
+  background-image: url("/app/site/media/images/31Z_nov32_Converted.jxr");
+  background-position: center right;
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: auto 100%;
 }
 
 .bcg-mission {
@@ -151,27 +151,22 @@ html {
 }
 
 .mission-statement {
-  border: 1px solid #fff;
-  border-radius: 2px;
-  line-height: 1.2;
-  margin: 0 auto;
-  max-width: 54rem;
+  background-color: rgba(255, 255, 255, 0.6);
+  padding: 1em;
+  width: 100%;
   visibility: hidden;
   z-index: 2;
 }
 
-.mission-statement h4 {
-  color: #fff;
-  margin: 0 auto;
-  padding: 1em;
-  text-align: center;
-  z-index: 3;
+@media only screen and (min-width: 73.75em) {
+  .mission-statement {
+    background-color: transparent;
+    width: 60%;
+  }
 }
 
-@media only screen and (min-width: 43.8125em) {
-  .mission-statement h4 {
-    padding: 3em;
-  }
+.mission-statement h4 {
+  z-index: 3;
 }
 
 .about {
@@ -207,7 +202,9 @@ html {
 }
 
 .about .pane-2 p, .about .pane-3 p {
-  align-self: center;
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
   margin: 1.5em auto;
   max-width: 65%;
 }
@@ -217,12 +214,16 @@ html {
 }
 
 .about .pane-3 .img-container {
-  order: -1;
+  -webkit-box-ordinal-group: 0;
+      -ms-flex-order: -1;
+          order: -1;
 }
 
 @media only screen and (min-width: 62.5625em) {
   .about .pane-3 .img-container {
-    order: 1;
+    -webkit-box-ordinal-group: 2;
+        -ms-flex-order: 1;
+            order: 1;
   }
 }
 
@@ -244,6 +245,13 @@ html {
   padding: 2em;
 }
 
+.post-docs .attribution,
+.contact-us .attribution {
+  font-size: .8rem;
+  margin: 0;
+  text-align: left;
+}
+
 .contact-us {
   background-color: #f1f1f1;
 }
@@ -261,8 +269,11 @@ html {
 }
 
 .funder-wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+      flex-wrap: nowrap;
   margin: 0;
 }
 
@@ -273,22 +284,34 @@ html {
 }
 
 .funder-info {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  flex-wrap: nowrap;
-  flex-direction: column;
+  -ms-flex-wrap: nowrap;
+      flex-wrap: nowrap;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
   padding: 1.5em;
   width: 50%;
 }
 
 .funder-info .funder-logo {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  flex-wrap: nowrap;
+  -ms-flex-wrap: nowrap;
+      flex-wrap: nowrap;
   height: 9.375em;
-  object-fit: contain;
+  -o-object-fit: contain;
+     object-fit: contain;
 }
 
 .funder-info .funder-logo img {
-  align-self: center;
+  -ms-flex-item-align: center;
+      -ms-grid-row-align: center;
+      align-self: center;
   display: block;
   margin: 0 auto;
   max-height: 100%;
@@ -316,14 +339,19 @@ html {
 }
 
 .citations .module-citations {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
-  flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
 }
 
 .citations .module-citations .billboard {
   border: 1px solid #597f2f;
   border-radius: 5px;
-  flex: 1 1 21.875em;
+  -webkit-box-flex: 1;
+      -ms-flex: 1 1 21.875em;
+          flex: 1 1 21.875em;
   margin: .635em;
   padding: .5em;
 }
@@ -341,7 +369,8 @@ html {
 
 .citations .module-citations .billboard .billboard-image img {
   height: 100%;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
   width: 100%;
 }
 
@@ -374,6 +403,7 @@ html {
 
 .header a {
   margin: 1em;
+  -webkit-transition: .3s;
   transition: .3s;
 }
 
@@ -422,7 +452,9 @@ html {
   position: absolute;
   right: 0;
   top: 50%;
-  transform: translateY(-50%);
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);
+  -webkit-transition: visibility 0s, opacity .5s linear;
   transition: visibility 0s, opacity .5s linear;
   visibility: hidden;
 }
@@ -438,29 +470,37 @@ html {
 
 .team-wrapper,
 .wrapper {
+  display: -ms-grid;
   display: grid;
   grid-gap: 50px;
-  grid-template-columns: 300px;
+  -ms-grid-columns: 300px;
+      grid-template-columns: 300px;
   grid-auto-rows: 350px;
-  justify-content: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
   margin-top: 1em;
 }
 
 @media only screen and (min-width: 680px) {
   .team-wrapper,
   .wrapper {
+    display: -ms-grid;
     display: grid;
     grid-gap: 50px;
-    grid-template-columns: repeat(2, 300px);
+    -ms-grid-columns: (300px)[2];
+        grid-template-columns: repeat(2, 300px);
   }
 }
 
 @media only screen and (min-width: 1310px) {
   .team-wrapper,
   .wrapper {
+    display: -ms-grid;
     display: grid;
     grid-gap: 50px;
-    grid-template-columns: repeat(3, 300px);
+    -ms-grid-columns: (300px)[3];
+        grid-template-columns: repeat(3, 300px);
   }
 }
 
@@ -470,12 +510,25 @@ html {
   display: inline-block;
 }
 
-@keyframes spin-animation {
+@-webkit-keyframes spin-animation {
   0% {
-    transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
   }
   100% {
-    transform: rotate(359deg);
+    -webkit-transform: rotate(359deg);
+            transform: rotate(359deg);
+  }
+}
+
+@keyframes spin-animation {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(359deg);
+            transform: rotate(359deg);
   }
 }
 
@@ -495,6 +548,7 @@ html {
   padding: .625em 1em;
   position: absolute;
   top: calc(100% - 1em);
+  -webkit-transition: .3s;
   transition: .3s;
   width: 100%;
   z-index: 10;
@@ -516,6 +570,7 @@ html {
   left: 0;
   position: absolute;
   top: -.7em;
+  -webkit-transition: .3s;
   transition: .3s;
   width: 0;
 }
@@ -576,12 +631,15 @@ html {
 }
 
 .card.focus {
+  -webkit-transition: .5s;
   transition: .5s;
 }
 
 .card.unfocus {
   opacity: .4 !important;
-  transform: scale(0.9) !important;
+  -webkit-transform: scale(0.9) !important;
+          transform: scale(0.9) !important;
+  -webkit-transition: .5s;
   transition: .5s;
 }
 
@@ -592,6 +650,7 @@ html {
   position: absolute;
   right: 0;
   top: 0;
+  -webkit-transition: .3s;
   transition: .3s;
 }
 
@@ -604,6 +663,7 @@ html {
   right: 1em;
   text-align: center;
   top: 0.9375em;
+  -webkit-transition: .3s;
   transition: .3s;
   width: 3.375rem;
   z-index: 20;
@@ -625,6 +685,7 @@ html {
   position: absolute;
   right: 1.875em;
   top: 100%;
+  -webkit-transition: 1.2s;
   transition: 1.2s;
 }
 
@@ -672,6 +733,7 @@ html {
 .card .card-footer {
   height: 0;
   overflow: hidden;
+  -webkit-transition: .3s;
   transition: .3s;
 }
 
@@ -691,10 +753,12 @@ html {
 }
 
 .card .card-footer a:nth-child(1) {
+  -webkit-transition: .5s;
   transition: .5s;
 }
 
 .card .card-footer a:nth-child(2) {
+  -webkit-transition: .6s;
   transition: .6s;
 }
 
@@ -704,6 +768,7 @@ html {
   overflow: hidden;
   position: absolute;
   top: 0;
+  -webkit-transition: .3s;
   transition: .3s;
   width: 100%;
   z-index: 3;
@@ -871,3 +936,4 @@ html {
 .dark-blue.active .card-footer {
   background-color: #354457;
 }
+/*# sourceMappingURL=about.css.map */

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -115,6 +115,8 @@ class Curation extends Obj
 	 * @var  string
 	 */
 	var $_message = null;
+
+	var $readmeFileName = 'hubREADME.txt';
 
 	/**
 	 * Constructor
@@ -2049,7 +2051,7 @@ class Curation extends Obj
 		}
 		$contents .= '<li>';
 		$contents .= '<span class="item-icon">' . \Components\Projects\Models\File::drawIcon('txt') . '</span>';
-		$contents .= '<span class="item-title">README.txt</span>';
+		$contents .= "<span class=\"item-title\">$this->readmeFileName</span>";
 		$contents .= '</li>';
 		$contents .= '</ul>';
 
@@ -2214,7 +2216,7 @@ class Curation extends Obj
 		$tarname    = $this->getBundleName();
 		$tarpath    = $this->_pub->path('base', true) . DS . $tarname;
 		$licFile    = $this->_pub->path('base', true) . DS . 'LICENSE.txt';
-		$readmeFile = $this->_pub->path('base', true) . DS . 'README.txt';
+		$readmeFile = $this->_pub->path('base', true) . DS . $this->readmeFileName;
 
 		// If we're NOT overwriting and the file already exists
 		// then we're done!

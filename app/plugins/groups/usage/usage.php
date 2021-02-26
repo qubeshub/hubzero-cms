@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -165,7 +165,7 @@ class plgGroupsUsage extends \Hubzero\Plugin\Plugin
 			//$this->js('datepicker.js');
 
 			//get the page id if we want to view stats on a specific page
-			$pid = Request::getString('pid', '');
+			$pid = Request::getInt('pid', '');
 
 			//get start and end dates
 			$start = Request::getString('start', gmdate("Y-m-d", strtotime('-30 DAYS')));
