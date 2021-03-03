@@ -1237,6 +1237,7 @@ class File extends Base
 			$objPA->created_by             = $uid;
 			$objPA->created                = Date::toSql();
 			$objPA->role                   = $element->role;
+			$objPA->access                 = 0;
 
 			// Reflect the update in curation record
 			$this->_parent->set('_update', 1);
