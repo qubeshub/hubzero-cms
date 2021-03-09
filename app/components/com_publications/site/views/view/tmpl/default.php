@@ -91,6 +91,15 @@ else
 							// Show version information
 							echo \Components\Publications\Helpers\Html::showVersionInfo($this->publication);
 
+							if ($this->publication->params->get('instructor_only') && 
+							    $this->publication->hasInstructorAttachments() &&
+								!$this->publication->access('instructor')) {
+									$request  = '<a class="btn instructor-access" href="' . Route::url('index.php?option=com_groups&cn=' . $this->publication->params->get('instructor_group')) . DS . 'join">';
+									$request .= Lang::txt('COM_PUBLICATIONS_REQUEST_INSTRUCTOR_ACCESS');
+									$request .= '</a>';
+									echo $request;
+								}
+
 							// Show license information
 							if ($this->publication->license() && $this->publication->license()->name != 'standard')
 							{
