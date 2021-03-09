@@ -1821,8 +1821,15 @@ class Publication extends Obj
 		{
 			return false;
 		}
+
+		// Set curation
+		$this->setCuration();
+
+		// Get bundle name
+		$tarname = $this->_curationModel->getBundleName(false, $instructorBundle);
+
 		// Archival package
-		$tarname  = Lang::txt('Resource') . '_' . $this->get('id') . ($instructorBundle ? '_instructors' : '') . '.zip';
+		// $tarname  = Lang::txt('Resource') . '_' . $this->get('id') . ($instructorBundle ? '_instructors' : '') . '.zip';
 		return Helpers\Html::buildPubPath($this->get('id'), $this->get('version_id'), '', '', 1) . DS . $tarname;
 	}
 

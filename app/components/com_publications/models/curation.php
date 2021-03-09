@@ -2013,7 +2013,8 @@ class Curation extends Obj
 		// Get attachment type model
 		$attModel = new Attachments($this->_db);
 
-		$bundle = $this->_pub->bundlePath();
+		$instructor = $this->_pub->params->get('instructor_only') && $this->_pub->hasInstructorAttachments() && $this->_pub->access('instructor');
+		$bundle = $this->_pub->bundlePath($instructor);
 
 		$contents = '<div class="bundle-data">';
 		if (file_exists($bundle))

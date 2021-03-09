@@ -802,7 +802,7 @@ class Publications extends SiteController
 		}
 
 		// Requesting instructor materials? (no request falls back on access privileges)
-		$instructor = Request::getInt('instructor', Component::params('com_publications')->get('instructor_only') && $this->model->access('instructor'));
+		$instructor = Request::getInt('instructor', Component::params('com_publications')->get('instructor_only') && $this->model->hasInstructorAttachments() && $this->model->access('instructor'));
 
 		// Is the visitor authorized to view content?
 		if (!$this->model->access('view-all') || 
