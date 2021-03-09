@@ -743,9 +743,10 @@ class Publication extends Base
 	 * @param   object   $blockParams
 	 * @param   object   $readme
 	 * @param   string   $bundleDir
+	 * @param	boolean  $instructorBundle
 	 * @return  boolean
 	 */
-	public function addToBundle($zip, $attachments, $element, $elementId, $pub, $blockParams, &$readme, $bundleDir)
+	public function addToBundle($zip, $attachments, $element, $elementId, $pub, $blockParams, &$readme, $bundleDir, $instructorBundle=false)
 	{
 		if (!$attachments)
 		{

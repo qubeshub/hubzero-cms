@@ -64,6 +64,8 @@ $status  = $this->model->getStatusName();
 $rating = $this->model->get('master_rating') == 9.9 ? 0.0 : $this->model->get('master_rating');
 $params = $this->model->params;
 
+$instructor = $params->get('instructor_only') && $this->model->hasInstructorAttachments();
+
 // Available panels and default config
 $typeParams = $this->model->masterType()->_params;
 $panels = array(
@@ -356,12 +358,24 @@ $panels = array(
 								<td class="paramlist_key"><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_BUNDLE'); ?></td>
 								<td>
 									<?php if (file_exists($this->model->bundlePath())) { ?>
-										<a href="<?php echo trim($site, DS) . '/publications/' . $this->model->get('id') . DS . 'serve' . DS . $this->model->get('version_number') . '/?render=archive'; ?>" class="archival"><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_BUNDLE'); ?></a> &nbsp;&nbsp;<a href="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller . '&task=archive&pid=' . $this->model->get('id') . '&vid=' . $this->model->get('version_id') . '&version=' . $this->model->versionAlias(), false); ?>">[<?php echo Lang::txt('COM_PUBLICATIONS_REPACKAGE'); ?>]</a>
+										<a href="<?php echo trim($site, DS) . '/publications/' . $this->model->get('id') . DS . 'serve' . DS . $this->model->get('version_number') . '/?render=archive&instructor=0'; ?>" class="archival"><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_BUNDLE'); ?></a> &nbsp;&nbsp;<a href="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller . '&task=archive&pid=' . $this->model->get('id') . '&vid=' . $this->model->get('version_id') . '&version=' . $this->model->versionAlias(), false); ?>">[<?php echo Lang::txt('COM_PUBLICATIONS_REPACKAGE'); ?>]</a>
 									<?php  }  else { ?>
-									<a href="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller . '&task=archive&pid=' . $this->model->get('id') . '&vid=' . $this->model->get('version_id') . '&version=' . $this->model->versionAlias(), false); ?>" class="archival"><?php echo Lang::txt('COM_PUBLICATIONS_PRODUCE_ARCHIVAL'); ?></a>
+										<a href="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller . '&task=archive&instructor=0&pid=' . $this->model->get('id') . '&vid=' . $this->model->get('version_id') . '&version=' . $this->model->versionAlias(), false); ?>" class="archival"><?php echo Lang::txt('COM_PUBLICATIONS_PRODUCE_ARCHIVAL'); ?></a>
 									<?php } ?>
 								</td>
 							</tr>
+							<?php if ($instructor) { ?>
+								<tr>
+									<td class="paramlist_key"><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_BUNDLE_INSTRUCTORS'); ?></td>
+									<td>
+										<?php if (file_exists($this->model->bundlePath(true))) { ?>
+											<a href="<?php echo trim($site, DS) . '/publications/' . $this->model->get('id') . DS . 'serve' . DS . $this->model->get('version_number') . '/?render=archive&instructor=1'; ?>" class="archival"><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_BUNDLE'); ?></a> &nbsp;&nbsp;<a href="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller . '&task=archive&instructor=1&pid=' . $this->model->get('id') . '&vid=' . $this->model->get('version_id') . '&version=' . $this->model->versionAlias(), false); ?>">[<?php echo Lang::txt('COM_PUBLICATIONS_REPACKAGE'); ?>]</a>
+										<?php  }  else { ?>
+											<a href="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller . '&task=archive&instructor=1&pid=' . $this->model->get('id') . '&vid=' . $this->model->get('version_id') . '&version=' . $this->model->versionAlias(), false); ?>" class="archival"><?php echo Lang::txt('COM_PUBLICATIONS_PRODUCE_ARCHIVAL'); ?></a>
+										<?php } ?>
+									</td>
+								</tr>
+							<?php } ?>
 						</tbody>
 					</table>
 				</div>

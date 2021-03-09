@@ -52,6 +52,12 @@
 	color: #999;
 	float: right;
 }
+.filelist .item-access {
+	color: red;
+	position: absolute;
+	right: 100px;
+	font-style: italic;
+}
 .filelist li {
 	padding: 1em 1em;
 	margin: 0;

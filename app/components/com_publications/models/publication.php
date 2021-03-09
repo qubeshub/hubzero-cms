@@ -1812,22 +1812,18 @@ class Publication extends Obj
 	/**
 	 * Get path to archival bundle
 	 *
+	 * @param   boolean  $instructor_only
 	 * @return  mixed
 	 */
-	public function bundlePath()
+	public function bundlePath($instructorBundle = false)
 	{
 		if (!$this->exists())
 		{
 			return false;
 		}
-		if (!isset($this->_bundlePath))
-		{
-			// Archival package
-			$tarname  = Lang::txt('Resource') . '_' . $this->get('id') . '.zip';
-			$this->_bundlePath = Helpers\Html::buildPubPath($this->get('id'), $this->get('version_id'), '', '', 1) . DS . $tarname;
-		}
-
-		return $this->_bundlePath;
+		// Archival package
+		$tarname  = Lang::txt('Resource') . '_' . $this->get('id') . ($instructorBundle ? '_instructors' : '') . '.zip';
+		return Helpers\Html::buildPubPath($this->get('id'), $this->get('version_id'), '', '', 1) . DS . $tarname;
 	}
 
 	/**
@@ -1911,6 +1907,44 @@ class Publication extends Obj
 		}
 
 		return $root ? PATH_APP . $path : $path;
+	}
+
+	public function hasInstructorAttachments() {
+		// Instructor attachments not allowed (abort)
+		if (!Component::params('com_publications')->get('instructor_only')) {
+			return false;
+		}
+
+		// Set curation
+		$this->setCuration();
+
+		// Get elements
+		$prime    = $this->_curationModel->getElements(1);
+		$second   = $this->_curationModel->getElements(2);
+		$gallery  = $this->_curationModel->getElements(3);
+		$elements = array_merge($prime, $second, $gallery);
+
+		// No elements (abort)
+		if (empty($elements)) {
+			return false;
+		}
+
+		// Go through elements until instructor only attachment found (or none)
+		$instructor = false;
+		foreach ($elements as $element)
+		{
+			$attachments = $this->attachments();
+			$attachments = isset($attachments['elements'][$element->id])
+						 ? $attachments['elements'][$element->id] : null;
+
+			$instructor = in_array(true, array_map(function($attach) {
+				return ($attach->access ? true : false);
+			}, (array)$attachments));
+
+			if ($instructor) { break; }
+		}
+
+		return $instructor;
 	}
 
 	/**
