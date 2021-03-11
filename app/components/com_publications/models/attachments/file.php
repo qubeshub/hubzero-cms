@@ -159,9 +159,10 @@ class File extends Base
 	 * @param   object   $blockParams
 	 * @param   string   $readme
 	 * @param   boolean  $bundleDir
+	 * @param	boolean	 $instructorBundle
 	 * @return  boolean
 	 */
-	public function addToBundle($zip, $attachments, $element, $elementId, $pub, $blockParams, &$readme, $bundleDir)
+	public function addToBundle($zip, $attachments, $element, $elementId, $pub, $blockParams, &$readme, $bundleDir, $instructorBundle=false)
 	{
 		// Get configs
 		$configs  = $this->getConfigs($element->params, $elementId, $pub, $blockParams);
@@ -175,6 +176,7 @@ class File extends Base
 		// Add inside bundles
 		if ($configs->multiZip == 1 && $attachments && count($attachments) > 1)
 		{
+			// REFACTOR: NEED TO HANDLE BUNDLED BLOCKS
 			$filePath = $this->bundle($attachments, $configs, $configs->bundleOverwrite);
 			$bPath    = $configs->pubBase . DS . 'bundles';
 			if (is_file($filePath))
@@ -204,44 +206,46 @@ class File extends Base
 			// Add separately
 			foreach ($attachments as $attach)
 			{
-				$filePath = $this->getFilePath($attach->path, $attach->id, $configs, $attach->params);
+				if ($instructorBundle || !$attach->access) {
+					$filePath = $this->getFilePath($attach->path, $attach->id, $configs, $attach->params);
 
-				$fileinfo = pathinfo($filePath);
-				$a_dir  = $fileinfo['dirname'];
-				$a_dir  = trim(str_replace($configs->pubPath, '', $a_dir), DS);
+					$fileinfo = pathinfo($filePath);
+					$a_dir  = $fileinfo['dirname'];
+					$a_dir  = trim(str_replace($configs->pubPath, '', $a_dir), DS);
 
-				$fPath  = $a_dir && $a_dir != '.' ? $a_dir . DS : '';
-				$fPath .= basename($filePath);
-				if (!$configs->bundleDirHierarchy)
-				{
-					$fPath = basename($filePath);
-					if (in_array($fPath, $added))
+					$fPath  = $a_dir && $a_dir != '.' ? $a_dir . DS : '';
+					$fPath .= basename($filePath);
+					if (!$configs->bundleDirHierarchy)
 					{
-						$num   = \Components\Projects\Helpers\Html::getAppendedNumber($fPath);
-						$num   = $num ? $num : 1;
-						$fPath = \Components\Projects\Helpers\Html::fixFileName($fPath, '-' . $num);
+						$fPath = basename($filePath);
+						if (in_array($fPath, $added))
+						{
+							$num   = \Components\Projects\Helpers\Html::getAppendedNumber($fPath);
+							$num   = $num ? $num : 1;
+							$fPath = \Components\Projects\Helpers\Html::fixFileName($fPath, '-' . $num);
+						}
+						else
+						{
+							$added[] = $fPath;
+						}
 					}
-					else
+
+					$where = $bundleDir;
+					if ($configs->bundleDirectory)
 					{
-						$added[] = $fPath;
+						$where .= DS . $configs->bundleDirectory;
 					}
-				}
+					if ($configs->directory && strtolower($configs->bundleDirectory) != strtolower($configs->directory))
+					{
+						$where .= $configs->directory != $pub->secret ? DS . $configs->directory : '';
+					}
+					$where .= $configs->subdir ? DS . $configs->subdir : '';
+					$where .= DS . $fPath;
 
-				$where = $bundleDir;
-				if ($configs->bundleDirectory)
-				{
-					$where .= DS . $configs->bundleDirectory;
-				}
-				if ($configs->directory && strtolower($configs->bundleDirectory) != strtolower($configs->directory))
-				{
-					$where .= $configs->directory != $pub->secret ? DS . $configs->directory : '';
-				}
-				$where .= $configs->subdir ? DS . $configs->subdir : '';
-				$where .= DS . $fPath;
-
-				if ($zip->addFile($filePath, $where))
-				{
-					$readme .= '>>> ' . str_replace($bundleDir . DS, '', $where) . "\n";
+					if ($zip->addFile($filePath, $where))
+					{
+						$readme .= '>>> ' . str_replace($bundleDir . DS, '', $where) . ($attach->access ? ' (instructors only)' : '') . "\n";
+					}
 				}
 			}
 		}
@@ -303,6 +307,7 @@ class File extends Base
 		foreach ($attachments as $attach)
 		{
 			$filePath = $this->getFilePath($attach->path, $attach->id, $configs, $attach->params);
+			$instructors_only = Component::params('com_publications')->get('instructor_only') && $attach->access;
 
 			if (file_exists($filePath))
 			{
@@ -333,6 +338,7 @@ class File extends Base
 				$list .= '<li class="' . $class . '">';
 				$list .= '<span class="item-icon">' . $file::drawIcon($file->get('ext')). '</span>';
 				$list .= '<span class="item-title" id="file-' . $attach->id . '">' . trim($where, DS) . '</span>';
+				$list .= '<span class="item-access">' . ($instructors_only ? 'Instructors only' : '') . '</span>';
 				//$list .= '<span class="item-details">' . $attach->path . '</span>';
 				$list .= '<span class="item-details">' . trim(\Hubzero\Utility\Number::formatBytes(filesize($filePath))) . '</span>';
 				$list .= '</li>';
@@ -371,7 +377,7 @@ class File extends Base
 				return $html;
 			}
 		}
-		$notice = $authorized ? ' (' . Lang::txt('unavailable')  . ')' : '';
+		$notice = '';
 
 		// Draw bundles
 		if ($configs->multiZip && $attachments && count($attachments) > 1)
@@ -428,10 +434,12 @@ class File extends Base
 				$pop   = Lang::txt('Download') . ' ' . $title;
 				$icon  = '<img height="16" src="' . $file->getIcon() . '" alt="' . $file->get('ext') . '" />';
 
+				$instructors_only = Component::params('com_publications')->get('instructor_only') && $attach->access;
 				$html .= '<li>';
-				$html .= $file->exists() && $authorized
+				$html .= $file->exists() && $authorized && (!$instructors_only || $pub->access('instructor'))
 						? '<a href="' . Route::url($pub->link('serve') . '&el=' . $elementId . '&a=' . $attach->id . '&download=1') . '" title="' . $pop . '">' . $icon . ' ' . $title . '</a>'
 						: $icon . ' ' . $title . $notice;
+				$html .= $instructors_only ? ' (<em>Instructors only</em>)' : '';
 				$html .= '<span class="extras">';
 				$html .= $file->get('ext') ? '(' . strtoupper($file->get('ext')) : '';
 				$html .= $file->getSize() ? ' | ' . $file->getSize('formatted') : '';
@@ -1123,6 +1131,7 @@ class File extends Base
 	{
 		// Incoming
 		$title = Request::getString('title', '');
+		$access = (Request::getInt('access', 0) ? 5 : 0);
 		$name  = Request::getString('filename', '');
 		$thumb = Request::getInt('makedefault', 0);
 
@@ -1139,6 +1148,7 @@ class File extends Base
 
 		// Update label
 		$row->title       = $title;
+		$row->access      = $access;
 		$row->modified_by = User::get('id');
 		$row->modified    = Date::toSql();
 
@@ -1232,6 +1242,7 @@ class File extends Base
 			$objPA->created_by             = $uid;
 			$objPA->created                = Date::toSql();
 			$objPA->role                   = $element->role;
+			$objPA->access                 = 0;
 
 			// Reflect the update in curation record
 			$this->_parent->set('_update', 1);
@@ -1600,6 +1611,7 @@ class File extends Base
 		$data->set('ordering', $i);
 		$data->set('pub', $view->pub);
 		$data->set('id', $att->id);
+		$data->set('access', $att->access);
 		$data->set('hash', $att->vcs_hash);
 		$data->set('md5Hash', $att->content_hash);
 		$data->set('viewer', $view->viewer);

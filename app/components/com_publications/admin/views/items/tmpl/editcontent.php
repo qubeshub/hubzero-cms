@@ -93,6 +93,8 @@ if ($tmpl != 'component')
 								<p>[<?php echo $attach->type; ?>] <?php echo $attach->path; ?></p>
 								<label><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_ATTACHMENT_TITLE'); ?>:</label>
 								<input type="text" name="attachments[<?php echo $attach->id; ?>][title]" maxlength="250" value="<?php echo $attach->title; ?>" />
+								<label><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_ATTACHMENT_ACCESS'); ?>:</label>
+								<input type="checkbox" name="attachments[<?php echo $attach->id; ?>][access]" title="Instructors only" <?php echo ($attach->access ? "checked" : ""); ?>/>
 							</div>
 						<?php } ?>
 					<?php } else { ?>

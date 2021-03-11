@@ -294,6 +294,7 @@ class Items extends AdminController
 				if ($pContent->load($attachId))
 				{
 					$pContent->title = $attach['title'];
+					$pContent->access = (array_key_exists('access', $attach) ? 5 : 0);
 					$pContent->store();
 				}
 			}
@@ -1578,6 +1579,7 @@ class Items extends AdminController
 		// Incoming
 		$pid     = Request::getInt('pid', 0);
 		$vid     = Request::getInt('vid', 0);
+		$instructorBundle = Request::getInt('instructor', 0);
 		$version = Request::getString('version', 'default');
 
 		// Load publication
@@ -1600,7 +1602,7 @@ class Items extends AdminController
 		$pub->setCuration();
 
 		// Produce archival package
-		if (!$pub->_curationModel->package(true))
+		if (!$pub->_curationModel->package(true, $instructorBundle))
 		{
 			// Create symlink
 			$pub->_curationModel->createSymLink();

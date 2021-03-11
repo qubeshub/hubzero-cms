@@ -5,12 +5,15 @@
 	@keyframes @name { @arguments(); }
 }
 */
-@import url('/core/plugins/projects/publications/assets/css/curation.css');
+@import url('/app/plugins/projects/publications/assets/css/curation.css');
 .button-wrapper:before,
 .disabled .button-wrapper.bw-previous:before {
   color: #fff;
   margin-left: 0.5rem;
   z-index: 10;
+}
+.item-add:before {
+  line-height: 1em;
 }
 .blockelement input.btn {
   width: auto;
@@ -28,4 +31,15 @@ div.item-new {
 }
 .draft-review .element-instructions:before {
   margin: -0.3em 0 0 -70px;
+}
+.item-options {
+  display: block;
+}
+.item-access {
+  position: absolute;
+  right: 10px;
+  bottom: 8px;
+  font-size: 14px;
+  font-style: italic;
+  color: red;
 }

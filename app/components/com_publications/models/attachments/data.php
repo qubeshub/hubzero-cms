@@ -740,9 +740,10 @@ class Data extends Base
 	 * @param   array    $blockParams
 	 * @param   string   $readme
 	 * @param   string   $bundledir
+	 * @param	boolean  $instructorBundle
 	 * @return  boolean
 	 */
-	public function addToBundle($zip, $attachments, $element, $elementId, $pub, $blockParams, &$readme, $bundleDir)
+	public function addToBundle($zip, $attachments, $element, $elementId, $pub, $blockParams, &$readme, $bundleDir, $instructorBundle=false)
 	{
 		if (!$attachments)
 		{

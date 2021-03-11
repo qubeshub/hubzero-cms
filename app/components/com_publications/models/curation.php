@@ -2013,7 +2013,8 @@ class Curation extends Obj
 		// Get attachment type model
 		$attModel = new Attachments($this->_db);
 
-		$bundle = $this->_pub->bundlePath();
+		$instructor = $this->_pub->params->get('instructor_only') && $this->_pub->hasInstructorAttachments() && $this->_pub->access('instructor');
+		$bundle = $this->_pub->bundlePath($instructor);
 
 		$contents = '<div class="bundle-data">';
 		if (file_exists($bundle))
@@ -2063,10 +2064,11 @@ class Curation extends Obj
 	/**
 	 * Get bundle package name
 	 *
-	 * @param	boolean	$includeVersionNum
+	 * @param	boolean	$symLinkName
+	 * @param	boolean $instructorBundle
 	 * @return  mixed  False on error, string on success
 	 */
-	public function getBundleName($symLinkName = false)
+	public function getBundleName($symLinkName = false, $instructorBundle = false)
 	{
 		if (empty($this->_pub))
 		{
@@ -2087,25 +2089,26 @@ class Curation extends Obj
 				$bundleName .= '_' . $this->_pub->version->get('version_number');
 			}
 		}
-		return $bundleName . '.zip';
+		return $bundleName . ($instructorBundle ? '_instructors' : '') . '.zip';
 	}
 
 	/**
 	 * Serve publication package
-	 *
+	 * 
+	 * @param 	boolean	$instructorBundle
 	 * @return  boolean
 	 */
-	public function serveBundle()
+	public function serveBundle($instructorBundle = false)
 	{
 		if (empty($this->_pub))
 		{
 			throw new Exception(Lang::txt('COM_PUBLICATIONS_FILE_NOT_FOUND'), 404);
 		}
 
-		$bundle = $this->_pub->path('base', true) . DS . $this->getBundleName();
+		$bundle = $this->_pub->path('base', true) . DS . $this->getBundleName(false, $instructorBundle);
 
 		// Already contains a '.zip' on the end.
-		$serveas = $this->getBundleName();
+		$serveas = $this->getBundleName(false, $instructorBundle);
 
 		if (!is_file($bundle))
 		{
@@ -2182,7 +2185,7 @@ class Curation extends Obj
 	 *
 	 * @return  boolean
 	 */
-	public function package($bundleOverwrite = false)
+	public function package($bundleOverwrite = false, $instructorBundle = false)
 	{
 		if (empty($this->_pub))
 		{
@@ -2201,7 +2204,7 @@ class Curation extends Obj
 			return false;
 		}
 
-		// Set overwrite flag in case when are generating a new bundle
+		// Set overwrite flag in case we are generating a new bundle
 		$this->_pub->params->set('bundleOverwrite', $bundleOverwrite);
 
 		if (!is_dir($this->_pub->path('base', true)))
@@ -2209,11 +2212,11 @@ class Curation extends Obj
 			return false;
 		}
 
-		$bundleName = rtrim($this->getBundleName(), '.zip');
+		$bundleName = rtrim($this->getBundleName(false, $instructorBundle), '.zip');
 
 		// Set archival properties
 		$bundleDir  = $bundleName;
-		$tarname    = $this->getBundleName();
+		$tarname    = $this->getBundleName(false, $instructorBundle);
 		$tarpath    = $this->_pub->path('base', true) . DS . $tarname;
 		$licFile    = $this->_pub->path('base', true) . DS . 'LICENSE.txt';
 		$readmeFile = $this->_pub->path('base', true) . DS . $this->readmeFileName;
@@ -2357,6 +2360,7 @@ class Curation extends Obj
 				$zip,
 				$elements,
 				$this->_pub,
+				$instructorBundle,
 				$readme,
 				$bundleDir
 			);

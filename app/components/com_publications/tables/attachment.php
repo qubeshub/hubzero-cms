@@ -559,6 +559,7 @@ class Attachment extends Table
 		$pAttach = new self($this->_db);
 		$pAttach->publication_id         = $att->publication_id;
 		$pAttach->title                  = $att->title;
+		$pAttach->access                 = $att->access;
 		$pAttach->role                   = $att->role;
 		$pAttach->element_id             = $elementId;
 		$pAttach->path                   = $att->path;

@@ -1689,3 +1689,10 @@
 .project-icon {
 	display: none;
 }
+
+/* Instructor access button */
+a.instructor-access {
+	width: 100%;
+	margin-bottom: 1em;
+	background: #7f2f31;
+}

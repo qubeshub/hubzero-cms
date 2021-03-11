@@ -545,11 +545,12 @@ class Attachments extends Obj
 	 * @param   object  $zip
 	 * @param   array   $elements
 	 * @param   object  $pub
+	 * @param	boolean $instructorBundle
 	 * @param   string  $readme
 	 * @param   string  $bundleDir
 	 * @return  mixed   object or bool
 	 */
-	public function bundleItems($zip = null, $elements = null, $pub = null, &$readme, $bundleDir)
+	public function bundleItems($zip = null, $elements = null, $pub = null, $instructorBundle = false, &$readme, $bundleDir)
 	{
 		if ($zip === null || empty($elements) || $pub === null)
 		{
@@ -579,7 +580,8 @@ class Attachments extends Obj
 				$pub,
 				$element->block,
 				$readme,
-				$bundleDir
+				$bundleDir,
+				$instructorBundle
 			);
 		}
 		return;

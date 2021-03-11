@@ -801,8 +801,12 @@ class Publications extends SiteController
 			return;
 		}
 
+		// Requesting instructor materials? (no request falls back on access privileges)
+		$instructor = Request::getInt('instructor', Component::params('com_publications')->get('instructor_only') && $this->model->hasInstructorAttachments() && $this->model->access('instructor'));
+
 		// Is the visitor authorized to view content?
-		if (!$this->model->access('view-all'))
+		if (!$this->model->access('view-all') || 
+			($instructor && !$this->model->access('instructor')))
 		{
 			$this->_blockAccess();
 			return true;
@@ -815,14 +819,14 @@ class Publications extends SiteController
 		if ($render == 'archive')
 		{
 			// Produce archival package
-			if ($this->model->_curationModel->package())
+			if ($this->model->_curationModel->package(false, $instructor))
 			{
 				// Log access
 				if ($this->model->isPublished())
 				{
 					$this->model->logAccess('primary');
 				}
-				$this->model->_curationModel->serveBundle();
+				$this->model->_curationModel->serveBundle($instructor);
 				return;
 			}
 			else
@@ -835,7 +839,7 @@ class Publications extends SiteController
 		if ($render == 'showcontents')
 		{
 			// Produce archival package
-			if ($this->model->_curationModel->package())
+			if ($this->model->_curationModel->package(false, $instructor))
 			{
 				// Build the HTML of the "about" tab
 				$view = new \Hubzero\Component\View([
@@ -893,6 +897,14 @@ class Publications extends SiteController
 			$elementId = $attachmentTable->element_id;
 			$type = $attachmentTable->type;
 			$role = $attachmentTable->role;
+			$access = $attachmentTable->access;
+		}
+
+		// Is this allowed?
+		// Note: If happening someone is being sneaky!!
+		if (Component::params('com_publications')->get('instructor_only') && $access && !$this->model->access('instructor')) {
+			$this->_blockAccess();
+			return true;
 		}
 
 		// We do need attachments
