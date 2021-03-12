@@ -548,9 +548,9 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 		// Email settings data
 		$recvEmailOptionID = 0;
 		$recvEmailOptionValue = 0;
-		if (file_exists(__DIR__ . DS . 'models' . DS . 'memberoption.php'))
+		if (file_exists(PATH_APP . DS . 'plugins' . DS . 'groups' . DS . 'memberoptions' . DS . 'models' . DS . 'memberoption.php'))
 		{
-			include_once __DIR__ . DS . 'models' . DS . 'memberoption.php';
+			include_once PATH_APP . DS . 'plugins' . DS . 'groups' . DS . 'memberoptions' . DS . 'models' . DS . 'memberoption.php';
 
 			$recvEmailOption = Plugins\Groups\Memberoptions\Models\Memberoption::oneByUserAndOption(
 				$this->group->get('gidNumber'),
@@ -1692,9 +1692,9 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 	{
 		$memberoptions = false;
 
-		if (file_exists(__DIR__ . DS . 'models' . DS . 'memberoption.php'))
+		if (file_exists(PATH_APP . DS . 'plugins' . DS . 'groups' . DS . 'memberoptions' . DS . 'models' . DS . 'memberoption.php'))
 		{
-			include_once __DIR__ . DS . 'models' . DS . 'memberoption.php';
+			include_once PATH_APP . DS . 'plugins' . DS . 'groups' . DS . 'memberoptions' . DS . 'models' . DS . 'memberoption.php';
 			$memberoptions = true;
 		}
 
@@ -2235,7 +2235,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 		}
 
 		// neede member option lib
-		include_once __DIR__ . DS . 'models' . DS . 'memberoption.php';
+		include_once PATH_APP . DS . 'plugins' . DS . 'groups' . DS . 'memberoptions' . DS . 'models' . DS . 'memberoption.php';
 
 		// Find the user's group settings, do they want to get email (0 or 1)?
 		$groupMemberOption = Plugins\Groups\Memberoptions\Models\Memberoption::oneByUserAndOption(
