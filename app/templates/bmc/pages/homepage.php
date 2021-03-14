@@ -23,13 +23,16 @@
 					</div>
 				</div> -->
                 <div class="advert-img">
-                    <img src="https://qubeshub.org/community/groups/partnerprojectsupport/File:/uploads/PartnersAtQUBES_logo52_short.png" alt="Logo: Partners at QUBES">
+                    <img src="https://qubeshub.org/app/site/media/images/from_pieces_to_patternslogo.png" alt="Logo: 2021 BIOME Institute">
 
-                    <h2>Partners@QUBES Leadership Summit</h2>
+                    <h2>Apply for the 2021 BIOME Institute!</h2>
                 </div>
-                <h3>December 14, 2020, 1:30-3:30 PM (EST)</h3>
-                <p>Thank you to our partners for attending the first Partners@QUBES Leadership Summit. We loved having so many representatives--over 40 participants--from our partner organizations in the same (Zoom) room and to hear how integral QUBES has become to advancing our partners' goals. If you haven't already, join the QUBES Support Community for Partner Projects below.</p>
-                <p><a href="https://qubeshub.org/community/groups/partnerprojectsupport">QUBES Support Community for Partner Projects</a></p>
+                <h3>From Pieces to Patterns: Building a Scientific Worldview</h3>
+                <p>Summer Session: July 19 - August 6, 2021</p>
+                <p>Fall Working Groups: September 6 - November 19, 2021</p>
+                <p>During the <a href="https://qubeshub.org/community/groups/summer2021">2021 BIOME Institute</a>, participants will explore how pedagogy can guide students to see the forest and the trees--we’ll focus on practices and resources that help learners incorporate detailed understandings into a meaningful framework, a scientific worldview, that will enable them to make predictions, solve problems, and use science to inform policy. </p>
+                <p>The Institute will have a parallel emphasis on inclusive teaching practices and how our scientific worldviews are enriched by the diversity of our communities. </p>
+                <p><a href="https://qubeshub.org/community/groups/summer2021">Find the full description, schedule, and application on the BIOME webpage</a></p>
             </div>
         </div>
 
@@ -38,11 +41,11 @@
 
             {xhub:module position="mainFeature"}
 
-            <h2>Resource of the Week</h2>
+            <h2>QUBES Community Spotlight</h2>
 
             {xhub:module position="mainRow"}
 
-            <a href="/news/newsletter/row" class="link">Visit ROW</a>
+            <a href="/news/newsletter/row" class="link">See More Community Spotlights</a>
         </div>
 
         <div class="latest-tweet">
