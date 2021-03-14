@@ -141,4 +141,18 @@ class Seasons extends SiteController
 		$this->view
 			->display();
 	}
+
+	/**
+	 * Display test
+	 *
+	 * @return  void
+	 */
+	public function testTask()
+	{
+		// Set the pathway
+		$this->_buildPathway();
+
+		$this->view
+			->display();
+	}
 }
