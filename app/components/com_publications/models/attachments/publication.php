@@ -485,6 +485,7 @@ class Publication extends Base
 			$objPA->title       = $title;
 			$objPA->object_id   = $id;
 			$objPA->object_name = $this->_name;
+			$objPA->access      = 0;
 
 			// Reflect the update in curation record
 			$this->_parent->set('_update', 1);
@@ -558,6 +559,7 @@ class Publication extends Base
 	{
 		// Incoming
 		$title = Request::getString('title', '');
+		$access = (Request::getInt('access', 0) ? 5 : 0);
 		$thumb = Request::getInt('makedefault', 0);
 
 		// Get configs
@@ -571,6 +573,7 @@ class Publication extends Base
 
 		// Update label
 		$row->title       = $title;
+		$row->access      = $access;
 		$row->modified_by = User::get('id');
 		$row->modified    = Date::toSql();
 
@@ -725,6 +728,7 @@ class Publication extends Base
 		$data->ordering = $i;
 		$data->editUrl  = $view->pub->link('editversion');
 		$data->id       = $att->id;
+		$data->access   = $att->access;
 		$data->props    = $view->master->block . '-' . $view->master->blockId . '-' . $view->elementId;
 		$data->viewer   = $view->viewer;
 		$data->version  = $view->pub->version_number;

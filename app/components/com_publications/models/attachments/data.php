@@ -492,6 +492,7 @@ class Data extends Base
 			$objPA->created_by             = $uid;
 			$objPA->created                = Date::toSql();
 			$objPA->role                   = $element->role;
+			$objPA->access                 = 0;
 			$new = 1;
 
 			// Reflect the update in curation record
@@ -603,6 +604,7 @@ class Data extends Base
 	{
 		// Incoming
 		$title = Request::getString('title', '');
+		$access = (Request::getInt('access', 0) ? 5 : 0);
 		$thumb = Request::getInt('makedefault', 0);
 		$uid   = User::get('id');
 
@@ -617,6 +619,7 @@ class Data extends Base
 
 		// Update label
 		$row->title       = $title;
+		$row->access      = $access;
 		$row->modified_by = $uid;
 		$row->modified    = Date::toSql();
 
@@ -695,6 +698,7 @@ class Data extends Base
 		$data->ordering = $i;
 		$data->editUrl  = $view->pub->link('editversion');
 		$data->id       = $att->id;
+		$data->access   = $att->access;
 		$data->props    = $view->master->block . '-' . $view->master->blockId . '-' . $view->elementId;
 		$data->viewer   = $view->viewer;
 		$data->version  = $view->pub->version_number;
