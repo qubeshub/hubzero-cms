@@ -1261,6 +1261,12 @@ class Publication extends Obj
 			}
 		}
 
+		// Authors and submitter of resource can access instructor files
+		if (in_array(User::get('id'), array_map(function ($author) { return $author->user_id; }, $this->authors())) ||
+		    (User::get('id') == $this->submitter()->user_id)) {
+			$this->params->set('access-instructor-publication', true);
+		}
+
 		// Curators have full view access and approval controls
 		if ($this->params->get('access-curator-publication'))
 		{
