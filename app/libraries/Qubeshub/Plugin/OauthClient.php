@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Plugin;
+namespace Qubeshub\Plugin;
 
 /**
  * Extended Plugin for OAuth clients

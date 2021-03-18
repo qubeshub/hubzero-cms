@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Plugin\Loader;
+namespace Qubeshub\Plugin\Loader;
 
 /**
  * This class acts as a pseudo-JDispatcher to
