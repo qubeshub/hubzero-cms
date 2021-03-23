@@ -174,12 +174,10 @@ if ($this->publication->access('view-all'))
 		<div class="subject tabbed">
 			<?php
 			echo \Components\Publications\Helpers\Html::tabs(
-				$this->option,
-				$this->publication->id,
+				$this->base_url,
 				$this->cats,
-				$this->tab,
-				$this->publication->alias,
-				$this->version
+				$this->active_key,
+				$this->tab
 			);
 
 			echo \Components\Publications\Helpers\Html::sections($this->sections, $this->cats, $this->tab, 'hide', 'main');

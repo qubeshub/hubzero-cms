@@ -249,15 +249,13 @@ class Html
 	/**
 	 * Output tab controls for resource plugins (sub views)
 	 *
-	 * @param   string  $option   Component name
-	 * @param   string  $id       Publication ID
-	 * @param   array   $cats     Active plugins' names
-	 * @param   string  $active   Current plugin name
-	 * @param   string  $alias    Publication alias
-	 * @param   string  $version  Publication version
+	 * @param   string  $base_url    Base url for tabs
+	 * @param   array   $cats        Active plugins' names
+	 * @param   string  $active_key  Key of url for active area ("tab_active" for group publication plugin)
+	 * @param   string  $active      Current active area
 	 * @return  string  HTML
 	 */
-	public static function tabs($option, $id, $cats, $active = 'about', $alias = '', $version = '')
+	public static function tabs($base_url, $cats, $active_key = 'active', $active = 'about')
 	{
 		$html  = '';
 		$html .= "\t" . '<ul class="sub-menu">' . "\n";
@@ -271,18 +269,7 @@ class Html
 			}*/
 			if ($name != '')
 			{
-				if ($alias)
-				{
-					$url = Route::url('index.php?option=' . $option . '&alias=' . $alias . '&active=' . $name);
-				}
-				else
-				{
-					$url = Route::url('index.php?option=' . $option . '&id=' . $id . '&active=' . $name);
-				}
-				if ($version && $version != 'default')
-				{
-					$url .= '?v=' . $version;
-				}
+				$url = Route::url($base_url . '&' . $active_key . '=' . $name);
 				if (strtolower($name) == $active)
 				{
 					Pathway::append($cat[$name], $url);

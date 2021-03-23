@@ -37,6 +37,29 @@ use App;
 class Publications extends SiteController
 {
 	/**
+	 * Constructor
+	 *
+	 * @param   array  $config  Optional configurations
+	 * @return  void
+	 */
+	public function __construct($config=array())
+	{
+		$this->_base_path = dirname(__DIR__);
+		if (isset($config['base_path']))
+		{
+			$this->_base_path = $config['base_path'];
+		}
+
+		$this->_group = false;
+		if (isset($config['group']))
+		{
+			$this->_group = $config['group'];
+		}
+
+		parent::__construct($config);
+	}
+
+	/**
 	 * Determines task being called and attempts to execute it
 	 *
 	 * @return  void
@@ -565,7 +588,7 @@ class Publications extends SiteController
 	public function pageTask()
 	{
 		// Incoming
-		$tab      = Request::getString('active', '');   // The active tab (section)
+		$tab      = Request::getWord('active', 'about');   // The active tab (section)
 		$no_html  = Request::getInt('no_html', 0);   // No-html display?
 
 		// Ensure we have an ID or alias to work with
@@ -576,6 +599,9 @@ class Publications extends SiteController
 			);
 			return;
 		}
+
+		// Modify this route if coming from supergroup (base_url should point to supergroup_cn/publications)
+		$this->_route = (Request::getString('base_url') ? Request::getString('base_url') . '&id=' . $this->_identifier . '&tab_active=' . $tab : $this->_route);
 
 		// Get our model and load publication data
 		$this->model = new Models\Publication($this->_identifier, $this->_version);
@@ -642,7 +668,6 @@ class Publications extends SiteController
 		// Start sections
 		$sections = array();
 		$cats = array();
-		$tab = $tab ? $tab : 'about';
 
 		// Show extended pub info like reviews, questions etc.
 		$extended = $lastPubRelease && $lastPubRelease->id == $this->model->version->id ? true : false;
@@ -697,7 +722,8 @@ class Publications extends SiteController
 			// Build the HTML of the "about" tab
 			$view = new \Hubzero\Component\View(array(
 				'name'   => 'about',
-				'layout' => 'default'
+				'layout' => 'default',
+				'base_path' => $this->_base_path
 			));
 			$view->option      = $this->_option;
 			$view->controller  = $this->_controller;
@@ -742,6 +768,11 @@ class Publications extends SiteController
 		// Set the pathway
 		$this->_buildPathway();
 
+		// Set base_url for tabs
+		$base_url = (Request::getString('base_url') ? 
+		             Request::getString('base_url') : 
+					 'index.php?option=' . $this->_option) . '&id=' . $this->_identifier . '&v=' . $this->_version;
+
 		$this->view->version        = $this->model->versionAlias;
 		$this->view->config         = $this->config;
 		$this->view->option         = $this->_option;
@@ -755,10 +786,18 @@ class Publications extends SiteController
 		$this->view->filters        = $filters;
 		$this->view->lastPubRelease = $lastPubRelease;
 		$this->view->contributable  = $this->_contributable;
+		$this->view->base_url       = $base_url;
+		$this->view->active_key     = (Request::getString('base_url') ? 'tab_active' : 'active');
 
 		if ($this->getError())
 		{
 			$this->view->setError($this->getError());
+		}
+
+		// Output HTML
+		if (Request::get('noview', null))
+		{
+			return $this->view->setName('view');
 		}
 
 		// Output HTML
