@@ -11,7 +11,9 @@ $componentPath = Component::path('com_publications');
 
 require_once "$componentPath/models/bundle.php";
 
-use Hubzero\Component\SiteController;
+include_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'SiteController.php';
+
+use Qubeshub\Component\SiteController;
 use Hubzero\Pagination\Paginator;
 use Components\Projects\Tables\Project;
 use Components\Publications\Tables;
