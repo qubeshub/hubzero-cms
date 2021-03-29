@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Document\Type\Opensearch;
+namespace Qubeshub\Document\Type\Opensearch;
 
 use Hubzero\Base\Obj;
 

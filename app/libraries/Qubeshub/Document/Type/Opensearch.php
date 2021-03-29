@@ -5,11 +5,11 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Document\Type;
+namespace Qubeshub\Document\Type;
 
-use Hubzero\Document\Type\Opensearch\Image;
-use Hubzero\Document\Type\Opensearch\Url;
-use Hubzero\Document\Base;
+use Qubeshub\Document\Type\Opensearch\Image;
+use Qubeshub\Document\Type\Opensearch\Url;
+use Qubeshub\Document\Base;
 use Request;
 use Route;
 use App;

@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Document;
+namespace Qubeshub\Document;
 
 use Closure;
 use InvalidArgumentException;

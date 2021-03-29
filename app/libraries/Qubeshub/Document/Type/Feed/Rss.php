@@ -5,9 +5,9 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Document\Type\Feed;
+namespace Qubeshub\Document\Type\Feed;
 
-use Hubzero\Document\Renderer;
+use Qubeshub\Document\Renderer;
 use Hubzero\Utility\Date;
 
 /**

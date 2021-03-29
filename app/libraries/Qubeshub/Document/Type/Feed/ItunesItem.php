@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Document\Type\Feed;
+namespace Qubeshub\Document\Type\Feed;
 
 /**
  * Item is an internal class that stores feed item information

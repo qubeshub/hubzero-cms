@@ -5,9 +5,9 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Document\Type;
+namespace Qubeshub\Document\Type;
 
-use Hubzero\Document\Base;
+use Qubeshub\Document\Base;
 
 /**
  * JSON document class for parsing and displaying JSON data

@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Document\Asset;
+namespace Qubeshub\Document\Asset;
 
 /**
  * Asset class for Javascript

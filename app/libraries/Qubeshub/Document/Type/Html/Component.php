@@ -5,9 +5,9 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Document\Type\Html;
+namespace Qubeshub\Document\Type\Html;
 
-use Hubzero\Document\Renderer;
+use Qubeshub\Document\Renderer;
 
 /**
  * Component renderer

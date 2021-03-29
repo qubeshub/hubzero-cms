@@ -5,11 +5,11 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Document\Type;
+namespace Qubeshub\Document\Type;
 
-use Hubzero\Document\Type\Feed\Item;
-use Hubzero\Document\Renderer;
-use Hubzero\Document\Base;
+use Qubeshub\Document\Type\Feed\Item;
+use Qubeshub\Document\Renderer;
+use Qubeshub\Document\Base;
 
 /**
  * Feed document class for parsing and displaying an XML feed

@@ -5,10 +5,10 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Document;
+namespace Qubeshub\Document;
 
-use Hubzero\Document\Asset\Javascript;
-use Hubzero\Document\Asset\Stylesheet;
+use Qubeshub\Document\Asset\Javascript;
+use Qubeshub\Document\Asset\Stylesheet;
 use Exception;
 use Request;
 use lessc;
