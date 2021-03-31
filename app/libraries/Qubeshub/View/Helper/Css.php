@@ -7,6 +7,10 @@
 
 namespace Qubeshub\View\Helper;
 
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'View' . DS . 'Helper' . DS . 'AbstractHelper.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Document' . DS . 'Asset' . DS . 'Stylesheet.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'View.php';
+
 use Qubeshub\Document\Asset\Stylesheet;
 use Qubeshub\Plugin\View as PluginView;
 use Document;
