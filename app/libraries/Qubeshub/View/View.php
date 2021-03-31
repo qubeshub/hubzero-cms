@@ -5,10 +5,10 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\View;
+namespace Qubeshub\View;
 
 use Hubzero\Base\Obj;
-use Hubzero\View\Exception\InvalidLayoutException;
+use Qubeshub\View\Exception\InvalidLayoutException;
 use Exception;
 
 /**

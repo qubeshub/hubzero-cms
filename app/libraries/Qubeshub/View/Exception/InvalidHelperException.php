@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\View\Exception;
+namespace Qubeshub\View\Exception;
 
 /**
  * Invalid helper exception

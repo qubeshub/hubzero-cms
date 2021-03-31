@@ -5,9 +5,9 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\View\Helper;
+namespace Qubeshub\View\Helper;
 
-use Hubzero\View\View;
+use Qubeshub\View\View;
 
 /**
  * Abstract view helper class

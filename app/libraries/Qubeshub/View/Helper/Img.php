@@ -5,10 +5,10 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\View\Helper;
+namespace Qubeshub\View\Helper;
 
-use Hubzero\Document\Asset\Image;
-use Hubzero\Plugin\View;
+use Qubeshub\Document\Asset\Image;
+use Qubeshub\Plugin\View;
 use Request;
 
 /**

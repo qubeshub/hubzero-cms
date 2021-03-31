@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\View\Helper;
+namespace Qubeshub\View\Helper;
 
 /**
  * Instantiate and return a form field for autocompleting some value

@@ -5,10 +5,10 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\View\Helper;
+namespace Qubeshub\View\Helper;
 
-use Hubzero\Document\Asset\Stylesheet;
-use Hubzero\Plugin\View as PluginView;
+use Qubeshub\Document\Asset\Stylesheet;
+use Qubeshub\Plugin\View as PluginView;
 use Document;
 use Request;
 

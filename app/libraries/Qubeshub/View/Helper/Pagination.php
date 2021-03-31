@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\View\Helper;
+namespace Qubeshub\View\Helper;
 
 use Hubzero\Pagination\Paginator;
 use Config;
