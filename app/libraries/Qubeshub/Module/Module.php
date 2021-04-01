@@ -5,10 +5,10 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Module;
+namespace Qubeshub\Module;
 
 use Hubzero\Base\Obj;
-use Hubzero\Document\Assets;
+use Qubeshub\Document\Assets;
 use Hubzero\Utility\Date;
 use App;
 

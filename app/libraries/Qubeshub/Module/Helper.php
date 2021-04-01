@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Module;
+namespace Qubeshub\Module;
 
 /**
  * Helper Class to render and display modules as needed.

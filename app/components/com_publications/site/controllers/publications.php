@@ -11,7 +11,8 @@ $componentPath = Component::path('com_publications');
 
 require_once "$componentPath/models/bundle.php";
 
-include_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'SiteController.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'SiteController.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Module' . DS . 'Helper.php';
 
 use Qubeshub\Component\SiteController;
 use Hubzero\Pagination\Paginator;
@@ -696,7 +697,7 @@ class Publications extends SiteController
 			array(
 				"name" => "collect",
 				"html" => "",
-				"metadata" => \Hubzero\Module\Helper::renderModule('mod_collect')
+				"metadata" => \Qubeshub\Module\Helper::renderModule('mod_collect')
 		));
 
 		$available = array('play');
