@@ -7,6 +7,8 @@
 
 namespace Qubeshub\Module;
 
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Module' . DS . 'Loader.php';
+
 use Hubzero\Base\Obj;
 use Qubeshub\Document\Assets;
 use Hubzero\Utility\Date;
@@ -65,7 +67,8 @@ class Module extends Obj
 	 */
 	public function getLayoutPath($layout='default')
 	{
-		return App::get('module')->getLayoutPath($this->module->module, $layout);
+		$loader = new \Qubeshub\Module\Loader(App::get('app'), App::get('profiler'));
+		return $loader->getLayoutPath($this->module->module, $layout);
 	}
 
 	/**

@@ -360,7 +360,7 @@ class Loader
 
 		// Build the template from a supergroup (if applicable)
 		$gPath = '';
-		if ((\App::get('scope') == 'com_groups') && (Request::getCmd('cn'))) {
+		if (Request::getCmd('cn')) {
 			$group = \Hubzero\User\Group::getInstance(Request::getCmd('cn'));
 			if ($group && $group->isSuperGroup()) {
 				$gPath = PATH_APP . DS . 'site' . DS . 'groups' . DS . $group->get('gidNumber') . DS . 'template' . DS . 'html' . DS . $module . DS . $layout . '.php';
