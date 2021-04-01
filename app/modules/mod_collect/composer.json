@@ -1,0 +1,21 @@
+{
+	"name": "qubeshub/mod_collect",
+	"description": "This module will display a button to collect an item in the HUBzero CMS",
+	"type": "hubzero-module",
+	"keywords": ["hubzero", "qubeshub"],
+	"homepage": "https://qubeshub.org",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "HUBzero",
+			"email": "support@hubzero.org"
+		},
+		{
+			"name": "QUBESHub",
+			"email": "qubeshub@gmail.com"
+		}
+	],
+	"extra": {
+	    "install-directory": "/modules/mod_collect"
+	}
+}
