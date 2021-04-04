@@ -8,6 +8,7 @@
 namespace Qubeshub\Module;
 
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Module' . DS . 'Loader.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Base' . DS . 'Traits' . DS . 'AssetAware.php';
 
 use Hubzero\Base\Obj;
 use Qubeshub\Document\Assets;
@@ -19,7 +20,7 @@ use App;
  */
 class Module extends Obj
 {
-	use \Hubzero\Base\Traits\AssetAware;
+	use \Qubeshub\Base\Traits\AssetAware;
 	use \Hubzero\Base\Traits\Escapable;
 
 	/**

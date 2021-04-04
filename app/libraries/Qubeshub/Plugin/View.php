@@ -7,7 +7,9 @@
 
 namespace Qubeshub\Plugin;
 
-use Hubzero\View\View as AbstractView;
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'View' . DS . 'View.php';
+
+use Qubeshub\View\View as AbstractView;
 use Hubzero\Document\Assets;
 use ReflectionClass;
 use Exception;

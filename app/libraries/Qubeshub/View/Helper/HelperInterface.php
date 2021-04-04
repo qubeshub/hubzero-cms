@@ -7,6 +7,8 @@
 
 namespace Qubeshub\View\Helper;
 
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'View' . DS . 'View.php';
+
 use Qubeshub\View\View;
 
 /**

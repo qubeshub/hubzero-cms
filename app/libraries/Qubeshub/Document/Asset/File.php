@@ -354,7 +354,7 @@ class File extends Obj
 			$suffix = $this->extensionName() . DS . ($this->extensionType() == 'system' ? $this->type() . DS : '') . $this->file();
 			$overridePaths = array();
 
-			if ((\App::get('scope') == 'com_groups') && (Request::getCmd('cn'))) {
+			if (Request::getCmd('cn')) {
 				$group = \Hubzero\User\Group::getInstance(Request::getCmd('cn'));
 				if ($group && $group->isSuperGroup()) {
 					$this->paths['override'][] = PATH_APP . DS . 'site' . DS . 'groups' . DS . $group->get('gidNumber') . DS . 'template' . DS . 'html' . DS . $suffix;

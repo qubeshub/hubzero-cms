@@ -7,9 +7,10 @@
 
 namespace Qubeshub\Plugin;
 
-include_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'View.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'View.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Base' . DS . 'Traits' . DS . 'AssetAware.php';
 
-use Hubzero\Document\Assets;
+use Qubeshub\Document\Assets;
 use Hubzero\Config\Registry;
 use Hubzero\Base\Obj;
 
@@ -18,7 +19,7 @@ use Hubzero\Base\Obj;
  */
 class Plugin extends Obj
 {
-	use \Hubzero\Base\Traits\AssetAware;
+	use \Qubeshub\Base\Traits\AssetAware;
 
 	/**
 	 * Event object to observe.

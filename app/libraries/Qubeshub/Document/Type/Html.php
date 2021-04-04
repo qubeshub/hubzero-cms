@@ -7,6 +7,8 @@
 
 namespace Qubeshub\Document\Type;
 
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Document' . DS . 'Base.php';
+
 use Qubeshub\Document\Base;
 use Hubzero\Config\Registry;
 
