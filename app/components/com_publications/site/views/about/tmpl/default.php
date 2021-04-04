@@ -33,6 +33,7 @@ $category = $this->publication->_category;
 $customFields = $this->publication->_curationModel->getMetaSchema();
 
 include_once Component::path('com_publications') . DS . 'models' . DS . 'elements.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Document' . DS . 'Assets.php';
 
 $metaElements = new \Components\Publications\Models\Elements($data, $customFields);
 $schema = $metaElements->getSchema();
@@ -63,7 +64,7 @@ $schema = $metaElements->getSchema();
 			? $this->publication->_curationModel->_manifest->params->list_label
 			: Lang::txt('COM_PUBLICATIONS_CONTENT_LIST');
 	// Add plugin style
-	\Hubzero\Document\Assets::addPluginStylesheet('publications', 'supportingdocs');
+	\Qubeshub\Document\Assets::addPluginStylesheet('publications', 'supportingdocs');
 
 	if ($listAll)
 	{

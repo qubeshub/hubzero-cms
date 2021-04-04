@@ -9,11 +9,12 @@
 defined('_HZEXEC_') or die();
 
 require_once __DIR__ . '/helpers/publicationUsageHelper.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Plugin.php';
 
 /**
  * Publications Plugin class for usage
  */
-class plgPublicationsUsage extends \Hubzero\Plugin\Plugin
+class plgPublicationsUsage extends \Qubeshub\Plugin\Plugin
 {
 	/**
 	 * Affects constructor behavior. If true, language files will be loaded automatically.

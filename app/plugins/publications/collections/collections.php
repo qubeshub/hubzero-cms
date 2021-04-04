@@ -8,10 +8,12 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Plugin.php';
+
 /**
  * Resources Plugin class for adding collections 
  */
-class plgResourcesCollections extends \Hubzero\Plugin\Plugin
+class plgResourcesCollections extends \Qubeshub\Plugin\Plugin
 {
 	/**
 	 * Affects constructor behavior. If true, language files will be loaded automatically.
