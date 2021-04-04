@@ -5,10 +5,10 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Base\Tests;
+namespace Qubeshub\Base\Tests;
 
 use Hubzero\Test\Basic;
-use Hubzero\Base\Traits\ErrorBag;
+use Qubeshub\Base\Traits\ErrorBag;
 use Exception;
 
 /**

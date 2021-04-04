@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Base;
+namespace Qubeshub\Base;
 
 /**
  * Manager for application client types

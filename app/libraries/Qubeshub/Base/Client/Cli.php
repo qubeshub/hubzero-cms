@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Base\Client;
+namespace Qubeshub\Base\Client;
 
 use Hubzero\Console\Arguments;
 use Hubzero\Console\Output;

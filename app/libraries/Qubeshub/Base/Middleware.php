@@ -5,9 +5,9 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Base;
+namespace Qubeshub\Base;
 
-use Hubzero\Base\ServiceProvider;
+use Qubeshub\Base\ServiceProvider;
 use Hubzero\Http\Request;
 
 /**

@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Base\Traits;
+namespace Qubeshub\Base\Traits;
 
 use Exception;
 

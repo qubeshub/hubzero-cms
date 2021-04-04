@@ -5,14 +5,14 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Base\Traits;
+namespace Qubeshub\Base\Traits;
 
-use Hubzero\Document\Asset\Image;
-use Hubzero\Document\Asset\Javascript;
-use Hubzero\Document\Asset\Stylesheet;
-use Hubzero\Component\ControllerInterface;
-use Hubzero\Plugin\Plugin;
-use Hubzero\Module\Module;
+use Qubeshub\Document\Asset\Image;
+use Qubeshub\Document\Asset\Javascript;
+use Qubeshub\Document\Asset\Stylesheet;
+use Qubeshub\Component\ControllerInterface;
+use Qubeshub\Plugin\Plugin;
+use Qubeshub\Module\Module;
 
 /**
  * Asset Aware trait.

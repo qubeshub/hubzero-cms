@@ -5,12 +5,12 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Base\Model;
+namespace Qubeshub\Base\Model;
 
 /**
  * Extended Iterator class
  */
-class ItemList extends \Hubzero\Base\ItemList
+class ItemList extends \Qubeshub\Base\ItemList
 {
 	/**
 	 * Fetch Item with key equal to value

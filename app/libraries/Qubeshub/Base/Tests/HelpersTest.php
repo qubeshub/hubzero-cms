@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Base\Tests;
+namespace Qubeshub\Base\Tests;
 
 use Hubzero\Test\Basic;
 

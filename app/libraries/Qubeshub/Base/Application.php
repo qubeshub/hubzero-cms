@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Base;
+namespace Qubeshub\Base;
 
 use Hubzero\Container\Container;
 use Hubzero\Error\Exception\NotAuthorizedException;

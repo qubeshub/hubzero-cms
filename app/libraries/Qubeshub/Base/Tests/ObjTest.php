@@ -5,10 +5,10 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Base\Tests;
+namespace Qubeshub\Base\Tests;
 
 use Hubzero\Test\Basic;
-use Hubzero\Base\Obj;
+use Qubeshub\Base\Obj;
 
 /**
  * Obj test
