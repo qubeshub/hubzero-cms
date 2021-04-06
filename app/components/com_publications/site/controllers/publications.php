@@ -13,6 +13,7 @@ require_once "$componentPath/models/bundle.php";
 
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'SiteController.php';
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Module' . DS . 'Helper.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'View.php';
 
 use Qubeshub\Component\SiteController;
 use Hubzero\Pagination\Paginator;
@@ -723,7 +724,7 @@ class Publications extends SiteController
 				'publication_version_id' => $publicationVersionId
 			]);
 			// Build the HTML of the "about" tab
-			$view = new \Hubzero\Component\View(array(
+			$view = new \Qubeshub\Component\View(array(
 				'name'   => 'about',
 				'layout' => 'default',
 				'base_path' => $this->_base_path
@@ -884,7 +885,7 @@ class Publications extends SiteController
 			if ($this->model->_curationModel->package(false, $instructor))
 			{
 				// Build the HTML of the "about" tab
-				$view = new \Hubzero\Component\View([
+				$view = new \Qubeshub\Component\View([
 					'name'   => 'view',
 					'layout' => '_contents'
 				]);
@@ -1309,7 +1310,7 @@ class Publications extends SiteController
 		Lang::load('com_projects', Component::path('com_projects') . DS . 'site');
 
 		// Instantiate a new view
-		$this->view  = new \Hubzero\Component\View(array(
+		$this->view  = new \Qubeshub\Component\View(array(
 			'name'   => 'submit',
 			'layout' => 'default'
 		));
@@ -1437,7 +1438,7 @@ class Publications extends SiteController
 		{
 			$this->_buildPathway(null);
 
-			$this->view = new \Hubzero\Component\View(array(
+			$this->view = new \Qubeshub\Component\View(array(
 				'name'   => 'error',
 				'layout' => 'restricted'
 			));

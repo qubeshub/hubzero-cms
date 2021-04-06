@@ -51,6 +51,7 @@ class plgPublicationsGroups extends \Qubeshub\Plugin\Plugin
 	public function onPublicationSub($publication, $option, $miniview=0)
 	{
 		$arr = array(
+			'name'     => 'groups',
 			'html'     => '',
 			'metadata' => ''
 		);

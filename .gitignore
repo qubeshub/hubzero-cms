@@ -1,6 +1,5 @@
 app/cache/**
 app/config/**
-app/libraries/**
 app/language/**
 app/logs/**
 app/site/**

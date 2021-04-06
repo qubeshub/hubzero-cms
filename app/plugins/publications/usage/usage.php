@@ -57,8 +57,9 @@ class plgPublicationsUsage extends \Qubeshub\Plugin\Plugin
 	public function onPublication($publication, $option, $areas, $rtrn='all', $version = 'default', $extended = true)
 	{
 		$arr = array(
+			'name'    => 'usage',
 			'html'    => '',
-			'metadata'=>''
+			'metadata'=> ''
 		);
 		$rtrn = 'all';
 

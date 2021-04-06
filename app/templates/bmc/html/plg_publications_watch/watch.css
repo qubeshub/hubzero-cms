@@ -1,0 +1,23 @@
+/**
+ * @package    hubzero-cms
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
+ * @license    http://opensource.org/licenses/MIT MIT
+ */
+
+/*
+
+	-- -- -- -- -- -- --
+	Publications Watch plugin CSS
+	-- -- -- -- -- -- --
+
+*/
+
+.item-watch p:first-child {
+	margin-top: 0;
+}
+.item-watch p:last-child {
+	margin-bottom: 0;
+}
+.item-watch.watching {
+	background-color: #f8ffff;
+}

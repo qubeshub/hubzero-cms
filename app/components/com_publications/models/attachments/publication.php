@@ -120,22 +120,11 @@ class Publication extends Base
 				$title = $publication->title ? $publication->title . ' (v' . $version->version_label . ')' : $configs->title;
 				$title = $title ? $title : $attach->path;
 
-				$description = '';
-				if ($publication->get('abstract'))
-				{
-					$description = \Hubzero\Utility\Str::truncate(stripslashes($publication->get('abstract')), 300) . "\n";
-				}
-				else if ($publication->get('description'))
-				{
-					$description = \Hubzero\Utility\Str::truncate(stripslashes($publication->get('description')), 300) . "\n";
-				}
-
 				$pop = Lang::txt('View link') . ' ' . $title;
 
 				$html .= '<li>';
 				$html .= $authorized === 'administrator' ? '[' . $this->_name . '] ' : '';
-				$html .= '<p><a href="' . $itemUrl . '" title="' . $pop . '" rel="noopener" target="_blank" class="link-type">' . $title . '</a></p>';
-				$html .= '<p>' . $description . '</p>';
+				$html .= '<a href="' . $itemUrl . '" title="' . $pop . '" rel="noopener" target="_blank" class="link-type">' . $title . '</a>';
 				$html .= '</li>';
 			}
 		}

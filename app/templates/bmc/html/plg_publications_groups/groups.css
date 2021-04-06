@@ -5,3 +5,6 @@
 .group-withlogo a:hover {
   color: #8cc540;
 }
+#group-owner .group-content {
+  margin: 2em 0 2em 0;
+}
