@@ -11,7 +11,7 @@
 
                 <p>QUBES is home to hundreds of communities focusing on particular aspects of quantitative biology education. In our monthly QUBES Community Spotlight, we celebrate and make visible the incredible work of our groups and partners, the vast library of open educational resources, and the individual members of our community that make it all possible.</p>
 
-                <a href="https://qubeshub.org/community" class="btn">Learn About Our Community</a> <a class="btn" href="https://qubeshub.org/qubesresources">Explore QUBES Resources</a> <a class="btn" href="https://qubeshub.org/qubesresources#one">OER on QUBES</a>
+                <a href="https://qubeshub.org/community" class="btn">Learn About Our Community</a> <a class="btn" href="https://qubeshub.org/publications/browse">Explore QUBES Resources</a> <a class="btn" href="https://qubeshub.org/publications/oer">OER on QUBES</a>
             </div>
 
 
