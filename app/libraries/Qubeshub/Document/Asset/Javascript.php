@@ -7,6 +7,8 @@
 
 namespace Qubeshub\Document\Asset;
 
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Document' . DS . 'Asset' . DS . 'File.php';
+
 /**
  * Asset class for Javascript
  */

@@ -7,6 +7,13 @@
 
 namespace Qubeshub\Base\Traits;
 
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Document' . DS . 'Asset' . DS . 'Image.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Document' . DS . 'Asset' . DS . 'Javascript.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Document' . DS . 'Asset' . DS . 'Stylesheet.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'ControllerInterface.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Plugin.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Module' . DS . 'Module.php';
+
 use Qubeshub\Document\Asset\Image;
 use Qubeshub\Document\Asset\Javascript;
 use Qubeshub\Document\Asset\Stylesheet;
