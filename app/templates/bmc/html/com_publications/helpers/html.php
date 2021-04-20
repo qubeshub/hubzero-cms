@@ -345,7 +345,7 @@ class Html
 				$html .= "\t\t" . '<li id="sm-' . $i . '"';
 				$html .= (strtolower($name) == $active) ? ' class="active"' : '';
 				$html .= '><a class="tab" href="' . $url . '">' . "\n";
-				$html .= (strtolower($name) == $active) ? ' <span class="fc fc-caret-right">&#xf0da</span>' : '';
+				$html .= (strtolower($name) == $active) ? ' <span class="fc fc-caret-right">' . file_get_contents(PATH_CORE . DS . "assets/icons/caret-right.svg") . '</span>' : ''; 
 				$html .= '<span>' . $cname . '</span></a></li>' . "\n";
 				$i++;
 			}
@@ -426,7 +426,7 @@ class Html
     {
         $values = array_values(
             array_filter($sections, function($section) use($which) {
-                return array_key_exists("name", $section) && $section['name'] == $which;
+                return is_array($section) && array_key_exists("name", $section) && $section['name'] == $which;
             }
         ));
         return ($values ? $values[0][$type] : '');

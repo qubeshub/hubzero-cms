@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    hubzero-cms
  * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
@@ -12,8 +13,8 @@ defined('_HZEXEC_') or die();
 include_once PATH_APP . DS . 'templates' . DS . 'bmc' . DS . 'html' . DS . 'com_publications' . DS . 'helpers' . DS . 'html.php';
 
 $this->css()
-	 ->css('jquery.fancybox.css', 'system')
-	 ->js();
+	->css('jquery.fancybox.css', 'system')
+	->js();
 
 // Load select publication information
 $this->publication->authors();
@@ -34,80 +35,91 @@ $tabOverrides = array(
 
 <div class="wrapper">
 	<div class="title-wrapper">
+		<img alt="Resource Image" src="<?php echo Route::url($this->publication->link('masterimage')) ?>" />
 		<div class="title">
 			<?php echo \Templates\Bmc\Publications\Helpers\Html::title($this->publication); ?>
 
 			<?php if ($this->publication->params->get('show_authors') && $this->publication->_authors) { ?>
 				<?php echo \Templates\Bmc\Publications\Helpers\Html::showContributors($this->publication->_authors, true, false, false, false, $this->publication->params->get('format_authors', 0)); ?>
 			<?php }	?>
+		</div>
 
+		<div class="cta-wrapper">
+			<div class="views">
+				<?php
+				// Show usage statistics
+				echo \Templates\Bmc\Publications\Helpers\Html::showSection($this->sections, "usage", "metadata");
+				?>
+			</div>
+
+			<div class="cta-buttons">
+				<?php
+				// Show download and adaptation buttons
+				echo \Templates\Bmc\Publications\Helpers\Html::primaryButton($this->publication, "icon-download");
+				echo \Templates\Bmc\Publications\Helpers\Html::showSection($subSections, "forks", "html");
+				?>
+			</div>
 		</div>
 	</div>
 
 	<div class="content-top">
 		<div class="image-wrapper">
-			<img alt="Resource Image" src="<?php echo Route::url($this->publication->link('masterimage')) ?>" />
 			<div class="share">
-				<?php 
-					// Show share, collect, and watch
-					echo \Templates\Bmc\Publications\Helpers\Html::showSection($this->sections, "share", "metadata");
-					echo \Templates\Bmc\Publications\Helpers\Html::showSection($this->sections, "collect", "metadata");
-					echo \Templates\Bmc\Publications\Helpers\Html::showSection($subSections, "watch", "html");
+				<?php
+				// Show share, collect, and watch
+				echo \Templates\Bmc\Publications\Helpers\Html::showSection($this->sections, "collect", "metadata");
+				echo \Templates\Bmc\Publications\Helpers\Html::showSection($subSections, "watch", "html");
+				echo \Templates\Bmc\Publications\Helpers\Html::showSection($this->sections, "share", "metadata");
 				?>
 			</div>
+			<?php
+			// Show group owner (if exists)
+			echo \Templates\Bmc\Publications\Helpers\Html::showSection($subSections, "groups", "html");
+			?>
 		</div>
 
 		<div class="abstract-wrapper">
 			Summary:
 			<p>
 				<?php
-					$abstractSnippet = \Hubzero\Utility\Str::truncate(stripslashes(strip_tags($this->publication->abstract)), 250);
-					echo $this->publication->abstract ?  $abstractSnippet : '';
+				$abstractSnippet = \Hubzero\Utility\Str::truncate(stripslashes(strip_tags($this->publication->abstract)), 250);
+				echo $this->publication->abstract ?  $abstractSnippet : '';
 				?>
 			</p>
 
 			<div class="meta-top">
 				<?php
-					// Show license information
-					if ($this->publication->license() && $this->publication->license()->name != 'standard')
-					{
-						echo \Templates\Bmc\Publications\Helpers\Html::showLicense($this->publication, 'play');
-					}
+				// Show license information
+				if ($this->publication->license() && $this->publication->license()->name != 'standard') {
+					echo \Templates\Bmc\Publications\Helpers\Html::showLicense($this->publication, 'play');
+				}
 
-					// Show version information
-					echo \Templates\Bmc\Publications\Helpers\Html::showVersionInfo($this->publication);
+				// Show version information
+				echo \Templates\Bmc\Publications\Helpers\Html::showVersionInfo($this->publication);
 
-					// Show fork attribution
-					echo \Templates\Bmc\Publications\Helpers\Html::showForkAttribution($this->publication);
+				// Show fork attribution
+				echo \Templates\Bmc\Publications\Helpers\Html::showForkAttribution($this->publication);
 				?>
+
+				<div class="tags">
+					<?php
+					// Show tags
+					echo \Templates\Bmc\Publications\Helpers\Html::showTags($this->publication);
+					?>
+				</div>
 			</div>
 		</div>
 
-		<div class="cta-wrapper">
-			<div class="views">
-				<?php
-					// Show usage statistics
-					echo \Templates\Bmc\Publications\Helpers\Html::showSection($this->sections, "usage", "metadata");
-				?>
-			</div>
-
-			<div class="cta-buttons">
-				<?php
-					// Show download and adaptation buttons
-					echo \Templates\Bmc\Publications\Helpers\Html::primaryButton($this->publication, "icon-download");
-					echo \Templates\Bmc\Publications\Helpers\Html::showSection($subSections, "forks", "html");
-				?>
-        	</div>
-
+		<div class="files-wrapper">
 			<div class="files">
 				Contents:
 				<div class="file">
 					<?php
-						echo \Templates\Bmc\Publications\Helpers\Html::drawAllItems($this->publication);
+					echo \Templates\Bmc\Publications\Helpers\Html::drawAllItems($this->publication);
 					?>
 					<div class="more-files">
 						<?php
-							echo '<a href="' . Route::url('index.php?option=com_publications&id=' . $this->publication->get('id') . '&v=' . $this->publication->version->get('version_number') . '&active=supportingdocs') . '">view all files</a>';
+						echo '<a href="' . Route::url('index.php?option=com_publications&id=' . $this->publication->get('id') . '&v=' . $this->publication->version->get('version_number') . '&active=supportingdocs') . '">view all files</a>';
 						?>
 					</div>
 				</div>
@@ -116,38 +128,30 @@ $tabOverrides = array(
 	</div>
 
 	<div class="content-bottom">
-		<div class="meta-bottom">
-			<?php 
-				// Show group owner (if exists)
-				echo \Templates\Bmc\Publications\Helpers\Html::showSection($subSections, "groups", "html"); 
-			?>
-
-			<div class="tags">
+		<div class="content-menu">
+			<nav>
 				<?php
-					// Show tags
-					echo \Templates\Bmc\Publications\Helpers\Html::showTags($this->publication);
+				echo \Templates\Bmc\Publications\Helpers\Html::tabs(
+					$this->base_url,
+					$this->cats,
+					$this->active_key,
+					$this->tab,
+					$tabOverrides
+				);
 				?>
-			</div>
+			</nav>
 		</div>
 
 		<div class="content-wrapper">
 			<div class="content-display">
-				<?php 
-					echo \Templates\Bmc\Publications\Helpers\Html::sections($this->sections, $this->cats, $this->tab, 'hide', 'main');
+				<?php
+				echo \Templates\Bmc\Publications\Helpers\Html::sections($this->sections, $this->cats, $this->tab, 'hide', 'main');
 				?>
 			</div>
 		</div>
-
-		<div class="content-menu">
-		<?php
-			echo \Templates\Bmc\Publications\Helpers\Html::tabs(
-				$this->base_url,
-				$this->cats,
-				$this->active_key,
-				$this->tab,
-				$tabOverrides
-			);
-		?>
-		</div>
 	</div>
 </div>
+<!-- 
+<?php
+	echo '<script src="/app/templates/bmc/html/com_publications/sticky_header.js" type="text/javascript></script>';
+?> -->

@@ -1,0 +1,318 @@
+@use '../../css/pages/variables.scss' as v;
+@use '../../css/pages/mixins.scss' as m;
+
+.wrapper {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, auto);
+  background-color: v.$white;
+  padding: 1em;
+}
+.title-wrapper {
+  background: v.$white;
+  grid-column: 1 / span 4;
+  grid-row: 1;
+  display: flex;
+  flex-flow: row;
+  display: grid;
+  grid-template-columns: 12rem auto 19rem;
+  position: sticky;
+  top: 3.5rem;
+  transition: .2s;
+  .back {
+    grid-column: 1 / span 1;
+    font-size: .9em;
+    svg {
+      margin-right: 1rem;
+    }
+  }
+  img {
+      width: 100%;
+      max-height: 10rem;
+      object-fit: cover;
+      padding: 0 1em;
+    }
+  .title {
+    @include m.respond-at(60.25em) {
+      grid-column: 2 / span 1;
+    }
+    grid-column: 1 / span 4;
+    padding: 0 1em;
+    p {
+      font-size: .8em;
+    }
+    .affiliation {
+      font-style: italic;
+    }
+  }
+  .cta-wrapper {
+    @include m.respond-at(60.25em) {
+      grid-column: 3 / span 1;
+      grid-row: 1;
+    }
+    grid-column: 2 / span 2;
+    grid-row: 1;
+    width: 25%;
+    .views {
+      font-style: italic;
+      font-size: .85em;
+      text-align: center;
+      margin: .5em 0;
+    }
+    .cta-buttons {
+      text-align: center;
+      
+      p {
+        display: inline-block;
+        margin: 0;
+      }
+    }
+  }
+}
+.isSticky {
+  box-shadow: 0px 5px 5px -3px rgba(0,0,0,0.5);
+  font-size: .8rem;
+  padding-top: 2em;
+  z-index: 10;
+
+  h2 {
+    font-size: 1.7rem;
+  }
+
+  .orgs,
+  .usage {
+    display: none;
+  }
+
+  img {
+    max-height: 5rem;
+    object-fit: contain;
+    padding-bottom: .5em;
+  }
+}
+.content-top {
+  @include m.respond-at(60.25em) {
+    grid-template-columns: 12rem auto 19rem;
+    grid-template-rows: auto;
+  }
+  grid-column: 1 / span 4;
+  grid-row: 2;
+  display:  flex;
+  flex-flow: row;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows:  repeat(2, auto);
+
+  .image-wrapper {
+    @include m.respond-at(60.25em) {
+      grid-column: 1 / span 1;
+      grid-row: 1
+    }
+    grid-column: 1 / span 1;
+    grid-row: 2;
+    flex-flow: column;
+    padding: 1em;
+    width: 20%;
+    img {
+      width: 100%;
+      max-height: 10rem;
+      object-fit: cover;
+    }
+    .share {
+      .fa {
+        margin-right: .2em;
+      }
+
+      .icon-collect:before {
+        content: '\f005';
+        font-family: 'Fontcons';
+      }
+
+      a {
+        margin: .5em 0;
+      }
+    }
+  }
+  .abstract-wrapper {
+    @include m.respond-at(60.25em) {
+      grid-column: 2 / span 1;
+    }
+    grid-column: 1 / span 2;
+    grid-row: 1;
+    width: 60%;
+    padding: 1em;
+    .meta-top {
+      font-size: .8em;
+      img {
+        width: 5rem;
+      }
+    }
+
+    .tags {
+      h4 {
+        font-size: 1rem;
+      }
+    }
+    .high-level-tag-wrapper {
+      margin-top: 1em;
+
+      .high-level-tag {
+        display: inline-block;
+        font-size: .9rem;
+        background-color: v.$midnight;
+        color: v.$white;
+        padding: 3px 6px;
+        border-radius: 3px;
+        border: 1px solid v.$midnight;
+        transition: .2s ease;
+
+        &:hover {
+          color: v.$midnight;
+          background-color: v.$white;
+        }
+      }
+
+      .secondary {
+        background-color: v.$white;
+        color: v.$midnight;
+
+        &:hover {
+          color: v.$white;
+          background-color: v.$midnight;
+        }
+      }
+    }
+  }
+  .files-wrapper {
+    @include m.respond-at(60.25em) {
+      grid-column: 3 / span 1;
+      grid-row: 1;
+    }
+    grid-column: 2 / span 1;
+    border-left: 1px solid v.$silver;
+    width: 25%;
+    .files {
+      padding: 1em;
+    }
+    ul {
+      list-style-type: none;
+      margin: 0 0 0 1em;
+      li {
+        @include m.truncate(.9em, 2, 1);
+        img {
+          margin-right: .2em;
+        }
+      }
+    }
+    .more-files {
+      margin: .5em;
+      text-align: center;
+    }
+  }
+}
+.content-bottom {
+  @include m.respond-at(60.25em) {
+    grid-template-columns: 19rem auto;
+    grid-template-rows: auto;
+  }
+  grid-column: 1 / span 4;
+  grid-row: 3;
+  display: flex;
+  flex-flow: row;
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: repeat(3, auto);
+  border-top: 1px solid v.$silver;
+  margin: 1em 0;
+  .content-wrapper {
+    @include m.respond-at(60.25em) {
+      grid-column: 2 / span 1;
+      grid-row: 1;
+    }
+    display: flex;
+    flex-flow: row;
+    grid-row: 2;
+    background-color: v.$white;
+    width: 60%;
+  }
+  .content-display {
+    padding: 1em;
+  }
+  .content-menu {
+    @include m.respond-at(60.25em) {
+      grid-column: 1 / span 1;
+      grid-row: 1;
+    }
+    grid-row: 1;
+    width: 25%;
+    border-left: 1px solid v.$silver;
+    border-right: 1px solid v.$silver;
+    margin-top: 1em;
+    nav {
+      position: sticky;
+      top: 9rem;
+    }
+    ul {
+      list-style-type: none;
+      margin: 0 2em;
+      li {
+        border-bottom: 1px solid v.$silver;
+        padding-bottom: 0.5em;
+        .active {
+          font-weight: bold;
+
+          &:hover {
+            margin-left: 1em;
+          }
+        }
+
+        .fc-caret-right {
+          svg {
+            fill: v.$mine-shaft;
+            height: .9rem;
+          }
+        }
+
+        a {
+          color: v.$mine-shaft;
+          margin-left: 1em;
+          transition: .2s ease;
+
+          &:hover {
+            margin-left: 1.5em;
+          }
+        }
+      }
+    }
+  }
+}
+//Reset widths if css grid is supported
+@supports (display:grid) {
+  .title-wrapper {
+    .cta-wrapper {
+      width: auto;
+    }
+  }
+  .content-top {
+    .image-wrapper {
+      width: auto;
+    }
+    .abstract-wrapper {
+      width: auto;
+    }
+    .files-wrapper {
+      width: auto;
+    }
+  }
+  .content-bottom {
+    .content-wrapper {
+      width: auto;
+      .content-display {
+        width: auto;
+      }
+    }
+    .content-menu {
+      width: auto;
+    }
+  }
+}
