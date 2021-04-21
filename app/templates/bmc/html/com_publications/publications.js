@@ -1,3 +1,4 @@
+// Sticky Header
 window.addEventListener("DOMContentLoaded", function () {
     // get the sticky element
     const stickyElm = document.querySelector('.title-wrapper')
@@ -12,6 +13,17 @@ window.addEventListener("DOMContentLoaded", function () {
     
 
     observer.observe(stickyElm)
-        
+})
+
+// Shorten list of content files
+$(document).ready(function () {
+    const $list = $('.file > .pub-content > .element-list').children();
+    
+    if ($list.length > 3) {
+        const $thirdItem = $('.file > .pub-content > .element-list >li:nth-child(3)')
+        const $moreLink = $('.more-files')
+        $thirdItem.nextAll().addClass('hide')
+        $moreLink.removeClass('hide')
+    }
 })
 

@@ -196,23 +196,19 @@
 .content-top .files-wrapper .files {
   padding: 1em;
 }
+.content-top .files-wrapper .element-list {
+  height: 6.5rem;
+  overflow: hidden;
+}
 .content-top .files-wrapper ul {
   list-style-type: none;
   margin: 0 0 0 1em;
 }
 .content-top .files-wrapper ul li {
-  display: block;
-  /* Fallback for non-webkit */
-  display: -webkit-box;
-  height: 1.8em;
-  /* Fallback for non-webkit */
-  margin: 0 auto;
-  font-size: 0.9em;
-  line-height: 2;
-  -webkit-line-clamp: 1;
-  -webkit-box-orient: vertical;
+  max-width: 12.5em;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .content-top .files-wrapper ul li img {
   margin-right: 0.2em;

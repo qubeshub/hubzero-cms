@@ -194,11 +194,18 @@
     .files {
       padding: 1em;
     }
+    .element-list {
+      height: 6.5rem;
+      overflow: hidden;
+    }
     ul {
       list-style-type: none;
       margin: 0 0 0 1em;
       li {
-        @include m.truncate(.9em, 2, 1);
+        max-width: 12.5em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
         img {
           margin-right: .2em;
         }
