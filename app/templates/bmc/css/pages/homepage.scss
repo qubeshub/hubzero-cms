@@ -68,6 +68,7 @@
   @include flexbox;
 
   img {
+    height: 10rem;
     margin-right: 1em;
     width: 10rem;
   }
@@ -200,10 +201,6 @@
   @include grid(col / span 4, row 2);
   @include grid-template(1fr, repeat(4, auto));
   @include bcg($white-smoke, null);
-}
-
-@include respond-at(56.3125em) {
-  @include grid-template(repeat(4, 1fr), repeat(2, minmax(23rem, auto)));
 }
 
 .resources {

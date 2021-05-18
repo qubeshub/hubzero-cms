@@ -162,6 +162,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 			$this->params->def('allow_anonymous', 1);
 			$this->params->def('threading', 'list');
 			$this->params->def('threading_depth', 3);
+			$this->params->def('discussion_email_autosubscribe', 0);
 			$this->params->set('access-plugin', $group_plugin_acl);
 
 			//option and paging vars

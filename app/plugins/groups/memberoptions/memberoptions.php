@@ -173,8 +173,10 @@ class plgGroupsMemberOptions extends \Hubzero\Plugin\Plugin
 		// get group
 		$group = Hubzero\User\Group::getInstance($gidNumber);
 
+		$params = \Hubzero\Plugin\Params::getParams($group->get('gidNumber'), 'groups', 'forum');
+
 		// is auto-subscribe on for discussion forum
-		$autosubscribe = $group->get('discussion_email_autosubscribe');
+		$autosubscribe = $params->get('discussion_email_autosubscribe');
 
 		// log variable
 		Log::debug('$discussion_email_autosubscribe' . $autosubscribe);
@@ -201,7 +203,7 @@ class plgGroupsMemberOptions extends \Hubzero\Plugin\Plugin
 		$row->set('gidNumber', $gidNumber);
 		$row->set('userid', $userid);
 		$row->set('optionname', 'receive-forum-email');
-		$row->set('optionvalue', 1);
+		$row->set('optionvalue', $autosubscribe);
 		$row->save();
 	}
 }

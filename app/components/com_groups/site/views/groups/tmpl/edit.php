@@ -263,32 +263,6 @@ endif;
 					</fieldset>
 				</fieldset>
 
-				<?php if ($allowEmailResponses) : ?>
-					<fieldset>
-						<legend><?php echo Lang::txt('COM_GROUPS_EMAIL_SETTINGS_TITLE'); ?></legend>
-						<p><?php echo Lang::txt('COM_GROUPS_EMAIL_SETTINGS_DESC'); ?></p>
-
-						<fieldset>
-							<legend><?php echo Lang::txt('COM_GROUPS_EMAIL_SETTING_FORUM_SECTION_LEGEND'); ?> <span class="optional"><?php echo Lang::txt('COM_GROUPS_OPTIONAL'); ?></span></legend>
-
-							<div class="form-group form-check">
-								<label for="discussion_email_autosubscribe" class="form-check-label">
-									<input type="checkbox" class="option form-check-input" name="discussion_email_autosubscribe" id="discussion_email_autosubscribe" value="1" <?php
-										if ($this->group->get('discussion_email_autosubscribe', null) == 1
-										 || ($this->group->get('discussion_email_autosubscribe', null) == null && $autoEmailResponses)):
-											echo ' checked="checked"';
-										endif;
-										?> />
-									<strong><?php echo Lang::txt('COM_GROUPS_EMAIL_SETTING_FORUM_AUTO_SUBSCRIBE'); ?></strong> <br />
-									<span class="indent">
-										<?php echo Lang::txt('COM_GROUPS_EMAIL_SETTINGS_FORUM_AUTO_SUBSCRIBE_NOTE'); ?>
-									</span>
-								</label>
-							</div>
-						</fieldset>
-					</fieldset>
-				<?php endif; ?>
-
 				<fieldset id="page-settings">
 					<legend><?php echo Lang::txt('COM_GROUPS_PAGES_SETTINGS_TITLE'); ?></legend>
 
