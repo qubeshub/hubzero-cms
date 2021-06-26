@@ -98,6 +98,22 @@ class MasterType extends Table
 	}
 
 	/**
+	 * Get owner group
+	 *
+	 * @return  array
+	 */
+	public function getOwnerGroup()
+	{
+		$query = "SELECT ownergroup FROM $this->_tbl WHERE contributable=1
+				  AND ownergroup !=0 AND ownergroup IS NOT null";
+
+		$this->_db->setQuery($query);
+		$group = $this->_db->loadResult();
+
+		return $group;
+	}
+
+	/**
 	 * Get curator groups
 	 *
 	 * @return  array

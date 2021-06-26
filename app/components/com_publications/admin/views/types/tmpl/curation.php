@@ -19,6 +19,12 @@ Toolbar::cancel();
 
 $params = new \Hubzero\Config\Registry($this->row->params);
 
+// Get owner group cn
+$ownerGroup = '';
+if ($this->row->ownergroup && $group = \Hubzero\User\Group::getInstance($this->row->ownergroup))
+{
+	$ownerGroup = $group->get('cn');
+}
 // Get curator group cn
 $curatorGroup = '';
 if ($this->row->curatorgroup && $group = \Hubzero\User\Group::getInstance($this->row->curatorgroup))
@@ -77,6 +83,10 @@ foreach ($this->blocks as $b)
 						<option value="0" <?php echo $this->row->contributable == 0 ? ' selected="selected"' : ''; ?>><?php echo Lang::txt('JNO'); ?></option>
 						<option value="1" <?php echo $this->row->contributable == 1 ? ' selected="selected"' : ''; ?>><?php echo Lang::txt('JYES'); ?></option>
 					</select>
+				</div>
+				<div class="input-wrap" data-hint="<?php echo Lang::txt('COM_PUBLICATIONS_MTYPE_OWNER_HINT'); ?>">
+					<label for="field-ownergroup"><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_OWNER_GROUP'); ?>:</label>
+					<input type="text" name="ownergroup" id="field-ownergroup" maxlength="255" value="<?php echo $ownerGroup; ?>" />
 				</div>
 			</fieldset>
 		</div>

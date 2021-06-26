@@ -874,6 +874,16 @@ class Types extends AdminController
 				$row->curatorGroup = 0;
 			}
 
+			$ownerGroup = Request::getString('ownergroup', '');
+			if ($group = \Hubzero\User\Group::getInstance($ownerGroup))
+			{
+				$row->ownerGroup = $group->get('gidNumber');
+			}
+			if (!$ownerGroup)
+			{
+				$row->ownerGroup = 0;
+			}
+
 			$objC = new \Components\Publications\Models\Curation($row->curation);
 			$manifest = $objC->_manifest;
 
