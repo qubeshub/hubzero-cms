@@ -221,21 +221,21 @@ class Description extends Base
 					$changed++;
 
 					// Record update time
-					$data = new stdClass;
-					$data->updated    = Date::toSql();
-					$data->updated_by = $actor;
+					$update = new stdClass;
+					$update->updated    = Date::toSql();
+					$update->updated_by = $actor;
 
 					// Unmark as skipped
 					if ($lastRecord && $lastRecord->review_status == 3)
 					{
-						$data->review_status = 0;
-						$data->update = '';
+						$update->review_status = 0;
+						$update->update = '';
 					}
 					if ($value)
 					{
-						$data->update = ''; // remove dispute message if requirement satisfied
+						$update->update = ''; // remove dispute message if requirement satisfied
 					}
-					$pub->_curationModel->saveUpdate($data, $id, $this->_name, $pub, $blockId);
+					$pub->_curationModel->saveUpdate($update, $id, $this->_name, $pub, $blockId);
 				}
 				$row->$field = $value;
 			}
