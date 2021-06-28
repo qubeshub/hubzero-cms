@@ -7,6 +7,8 @@
 
 namespace Components\Publications\Helpers;
 
+use Components\Publications\Tables\MasterType;
+
 /**
  * Publication Recommended Tagging class
  */
@@ -14,6 +16,7 @@ namespace Components\Publications\Helpers;
 class RecommendedTags extends \Hubzero\Base\Obj
 {
   public $_db  = null;
+  public $_sg_db = null;
 
   public $has_focus_area = false;
 
@@ -41,7 +44,9 @@ class RecommendedTags extends \Hubzero\Base\Obj
   //   Example:  array ( 'Thanksgiving' => array ( 'raw_tag' => 'Thanksgiving', 'id' => '6', 'tag_id' => '8', 'mandatory_depth' => NULL, 'multiple_depth' => '1', ), )
   private $fa_properties = array();
 
-  private $master_type = null;
+  private $master_type_id = null;
+
+  private $master_type_cn = null;
 
 	const ENDORSED_TAG = 2;
 	const REGULAR_TAG  = 1;
@@ -56,12 +61,19 @@ class RecommendedTags extends \Hubzero\Base\Obj
 		$this->_db = $db;
 
     // Need to make sure we actually need to worry about focus areas
+	require_once \Component::path('publications') . DS . 'tables' . DS . 'master.type.php';
     $this->_db->setQuery(
       'SELECT master_type
        FROM #__publications
        WHERE id = ' . $pid
     );
-    $this->master_type = (int) $this->_db->loadResult();
+	$master_type = new MasterType($db);
+	$this->master_type_id = (int) $this->_db->loadResult();
+	if ($ownergroup = (int) $master_type->getType($this->master_type_id)->ownergroup) {
+    	$this->master_type_cn = \Hubzero\User\Group::getInstance($ownergroup)->cn;
+		$this->_sg_db = \Hubzero\User\Group\Helper::getDBO(array(), $this->master_type_cn);
+	}
+
     $this->has_focus_area = !empty($this->loadFocusAreas());
 
 		$this->_db->setQuery(
@@ -69,7 +81,7 @@ class RecommendedTags extends \Hubzero\Base\Obj
        FROM #__focus_area_publication_master_type_rel fp
        INNER JOIN #__focus_areas f ON f.id = fp.focus_area_id
        INNER JOIN #__tags t ON t.id = f.tag_id
-       WHERE fp.master_type_id = ' . $this->_db->quote($this->master_type)
+       WHERE fp.master_type_id = ' . $this->_db->quote($this->master_type_id)
 		);
 		$this->fa_properties = $this->_db->loadAssocList('raw_tag');
 
@@ -178,7 +190,7 @@ class RecommendedTags extends \Hubzero\Base\Obj
 			$multiple = !is_null($props['multiple_depth']) && $props['multiple_depth'] <= $depth;
 			echo '<div class="fa'.($depth === 1 ? ' top-level' : '').'">';
 			echo '<input class="option" class="'.($multiple ? 'checkbox' : 'radio').'" type="'.($multiple ? 'checkbox' : 'radio').'" '.(isset($existing[strtolower($fa['raw_tag'])]) ? 'checked="checked" ' : '' ).'id="tagfa-'.$idx.'-'.$fa['tag'].'" name="tagfa-'.$idx.($parent ? '-'.$parent : '').'[]" value="' . $fa['tag'] . '"';
-			echo ' /><label style="display: inline;" for="tagfa-'.$idx.'-'.$fa['tag'].'"' . ($fa['description'] ? ' title="' . htmlentities($fa['description']) . '" class="tooltips"' : '') . '>'.$fa['raw_tag'].'</label>';
+			echo ' /><label style="display: inline;" for="tagfa-'.$idx.'-'.$fa['tag'].'"' . ($fa['description'] ? ' title="' . htmlentities($fa['description']) . '" class="tooltips"' : '') . '>'.$fa['name'].'</label>';
 			if ($fa['children'])
 			{
 				echo $this->fa_controls($idx, $fa['children'], $fa_props, $existing, $fa['tag'], $depth + 1);
@@ -240,7 +252,7 @@ class RecommendedTags extends \Hubzero\Base\Obj
         FROM #__focus_area_publication_master_type_rel fp
         INNER JOIN #__focus_areas f ON f.id = fp.focus_area_id
         INNER JOIN #__tags t ON t.id = f.tag_id
-        WHERE fp.master_type_id = ' . $this->master_type
+        WHERE fp.master_type_id = ' . $this->master_type_id
       );
 
       if (!($labels = $this->_db->loadColumn()))
@@ -279,9 +291,40 @@ class RecommendedTags extends \Hubzero\Base\Obj
     $fas = $this->_db->loadAssocList('raw_tag');
     foreach ($fas as &$fa)
     {
-      $fa['children'] = $this->loadFocusAreas($labels, $fa['id'], $fa['label']);
+		// Get label override (if exists)
+		$name = $this->get_name($fa['id']);
+		$fa['name'] = ($name ? $name : $fa['raw_tag']);
+    	$fa['children'] = $this->loadFocusAreas($labels, $fa['id'], $fa['label']);
     }
     return $fas;
+  }
+
+  /**
+   * Gets name override for tag (if exists)
+   *
+   * @param   integer  $tagid	Tag id
+   * @return  string
+   */
+  public function get_name($tagid)
+  {
+	  // Master type needs to have an owner group for overrides
+	if ($this->master_type_cn) {
+		$this->_db->setQuery( // Attempting a short-circuit query since LIKE is slow
+			'SELECT objectid AS id, tbl, substring(label, 7) AS `column` FROM 
+			(SELECT objectid, tbl, label FROM `jos_tags_object` WHERE tagid = ' . $tagid . ') sc
+			WHERE sc.tbl LIKE \'sg_' . $this->master_type_cn . '%\' AND sc.label LIKE \'label:%\''
+		);
+		
+		if ($override = $this->_db->loadAssoc()) {
+			$this->_sg_db->setQuery(
+				'SELECT ' . $override["column"] . ' FROM ' . $override["tbl"] . ' WHERE id = ' . $override["id"]
+			);
+			if ($name = $this->_sg_db->loadResult()) {
+				return $name;
+			}
+		}
+	}  
+	return '';
   }
 
   public function flatten($array, $filter = 'tag')
