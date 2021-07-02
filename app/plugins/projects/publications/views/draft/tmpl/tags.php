@@ -76,7 +76,7 @@ $this->css('tags.css')
 				?>
 							<fieldset value="<?php echo ($fa_props[$label]['mandatory_depth'] ? $fa_props[$label]['mandatory_depth'] : 0) ?>">
 								<legend>
-									<span class="tooltips" title='<?php echo $fa_props[$label]['about']; ?>'><?php echo ($fa_props[$label]['label'] ? $fa_props[$label]['label'] : $label) ?></span>
+									<span class="tooltips" title="<?php echo $fa_props[$label]['about']; ?>"><?php echo ($fa_props[$label]['label'] ? $fa_props[$label]['label'] : $label) ?></span>
 									<?php echo ($fa_props[$label]['mandatory_depth'] ? '<span class="required">required</span>' : '<span class="optional">optional</span>'); ?>
 								</legend>
 								<?php $recommended->fa_controls(++$idx, $fas, $fa_props, $fa_existing); ?>
