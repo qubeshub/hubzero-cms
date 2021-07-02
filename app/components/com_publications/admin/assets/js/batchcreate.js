@@ -115,7 +115,12 @@ jQuery(document).ready(function(jq){
 			           success: function(response)
 			           {
 							self.handleResults(response);
-			           }
+			           },
+					   error: function (xhr, ajaxOptions, thrownError) {
+					   		console.log(xhr.status);
+							console.log(xhr.responseText);
+							console.log(thrownError);
+					   }
 			     });
 
 			    return false;
