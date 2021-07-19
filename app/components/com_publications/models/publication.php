@@ -1263,7 +1263,7 @@ class Publication extends Obj
 
 		// Authors and submitter of resource can access instructor files
 		if (in_array(User::get('id'), array_map(function ($author) { return $author->user_id; }, $this->authors())) ||
-		    (User::get('id') == $this->submitter()->user_id)) {
+		    ($this->submitter() && (User::get('id') == $this->submitter()->user_id))) {
 			$this->params->set('access-instructor-publication', true);
 		}
 

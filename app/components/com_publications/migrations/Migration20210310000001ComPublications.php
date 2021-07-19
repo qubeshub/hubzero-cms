@@ -23,10 +23,20 @@ class Migration20210310000001ComPublications extends Base
 	public function up()
 	{
 		$from_group = \Hubzero\User\Group::getInstance(self::$from_group_cn);
-		$from_members = $from_group->get('members');
+		if ($from_group) {
+			$from_members = $from_group->get('members');
+		} else {
+			$this->log(self::$from_group_cn . ' group does not exist!');
+			return;
+		}
 
 		$to_group = \Hubzero\User\Group::getInstance(self::$to_group_cn);
-		$to_members = $to_group->get('members');
+		if ($to_group) {
+			$to_members = $to_group->get('members');
+		} else {
+			$this->log(self::$to_group_cn . ' group does not exist!');
+			return;
+		}
 
 		$add_members = array_diff($from_members, $to_members); // Don't add members already in group
 
@@ -40,9 +50,14 @@ class Migration20210310000001ComPublications extends Base
 	public function down()
 	{
 		$to_group = \Hubzero\User\Group::getInstance(self::$to_group_cn);
-		$remove_members = array_diff($to_group->get('members'), $to_group->get('managers')); // Don't remove managers
+		if ($to_group) {
+			$remove_members = array_diff($to_group->get('members'), $to_group->get('managers')); // Don't remove managers
 
-		$to_group->remove('members', $remove_members);
-		$to_group->update();
+			$to_group->remove('members', $remove_members);
+			$to_group->update();
+		} else {
+			$this->log(self::$to_group_cn . ' group does not exist!');
+			return;
+		}
 	}
 }
