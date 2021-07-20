@@ -56,4 +56,3 @@ class Migration20210310000001ComPublications extends Base
 		}
 	}
 }
-{"mode":"full","isActive":false}
