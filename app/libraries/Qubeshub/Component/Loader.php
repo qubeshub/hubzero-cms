@@ -62,6 +62,7 @@ class Loader
 	 * @return  boolean
 	 */
 	public function isEnabled($option, $strict = false)
+	// Consider changing the default to true to prevent using component names that haven't been registered in the db and are therefore invalid
 	{
 		$result = $this->load($option, $strict);
 
@@ -126,10 +127,23 @@ class Loader
 		{
 			$option = implode('', $option);
 		}
-		$option = preg_replace('/[^A-Z0-9_\.-]/i', '', $option);
-		if (substr($option, 0, strlen('com_')) != 'com_')
+		// do not allow dots in component name to avoid directory traversal issues
+		$option = preg_replace('/[^A-Z0-9_-]/i', '', $option);
+		// if option became empty due to the filtering, return an empty string
+		if (strlen($option) > 0) 
 		{
-			$option = 'com_' . $option;
+			if (substr($option, 0, strlen('com_')) == 'com_')
+			{
+				// if option is just the prefix, make it empty because it's invalid
+				if ($option == 'com_')
+				{
+					$option = '';
+				}
+				// else it's presumably a good name and return that
+			} else {
+				// prepend com_ to the name if it doesn't start with com_
+				$option = 'com_' . $option;
+			}
 		}
 		return $option;
 	}
@@ -155,13 +169,13 @@ class Loader
 			$lang->load('tpl_' . $template, $this->app['template']->path, null, false, true);
 		}
 
+		$option = $this->canonical($option);
+
 		if (empty($option))
 		{
 			// Throw 404 if no component
 			$this->app->abort(404, $lang->translate('JLIB_APPLICATION_ERROR_COMPONENT_NOT_FOUND'));
 		}
-
-		$option = $this->canonical($option);
 
 		// Record the scope
 		$scope = $this->app->has('scope') ? $this->app->get('scope') : null;
