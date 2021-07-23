@@ -10,8 +10,10 @@ core/vendor/**
 .DS_Store
 administrator/cache/**
 logs/**
+js_apps/**
+google*.html
 bans
 configuration.php
 hubconfiguration.php
 robots.txt
-.idea/
+

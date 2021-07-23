@@ -12,6 +12,7 @@ use Component;
 use Lang;
 use User;
 use Log;
+use Hubzero\User\Group;
 
 include_once dirname(__DIR__) . DS . 'helpers' . DS . 'version.php';
 
@@ -151,7 +152,7 @@ class Tool
 
 		foreach ($cvars as $key => $value)
 		{
-			if ($key{0} != '_')
+			if ($key[0] != '_')
 			{
 				unset($this->$key);
 
@@ -464,7 +465,7 @@ class Tool
 
 		foreach ($classvars as $property => $value)
 		{
-			if (($property{0} == '_') || in_array($property, $this->_list_keys))
+			if (($property[0] == '_') || in_array($property, $this->_list_keys))
 			{
 				continue;
 			}
@@ -735,7 +736,7 @@ class Tool
 	 */
 	public function __get($property = null)
 	{
-		if (!property_exists(__CLASS__, $property) || $property{0} == '_')
+		if (!property_exists(__CLASS__, $property) || $property[0] == '_')
 		{
 			if (empty($property))
 			{
@@ -805,7 +806,7 @@ class Tool
 	 */
 	public function __set($property = null, $value = null)
 	{
-		if (!property_exists(__CLASS__, $property) || $property{0} == '_')
+		if (!property_exists(__CLASS__, $property) || $property[0] == '_')
 		{
 			if (empty($property))
 			{
@@ -841,7 +842,7 @@ class Tool
 	 */
 	public function __isset($property = null)
 	{
-		if (!property_exists(__CLASS__, $property) || $property{0} == '_')
+		if (!property_exists(__CLASS__, $property) || $property[0] == '_')
 		{
 			if (empty($property))
 			{
@@ -865,7 +866,7 @@ class Tool
 	 */
 	public function __unset($property = null)
 	{
-		if (!property_exists(__CLASS__, $property) || $property{0} == '_')
+		if (!property_exists(__CLASS__, $property) || $property[0] == '_')
 		{
 			if (empty($property))
 			{
@@ -1574,8 +1575,10 @@ class Tool
 		// check member groups
 		if (!empty($tool['membergroups']))
 		{
+			$tool['membergroups'] = trim($tool['membergroups'],",");
 			foreach (array_map('trim', explode(',', $tool['membergroups'])) as $k => $groupName)
 			{
+				Log::debug("-----" . $groupName);
 				$grp = Group::getInstance($groupName);
 				if (!is_object($grp) || !$grp->get('gidNumber'))
 				{
@@ -1587,6 +1590,7 @@ class Tool
 		// check developers
 		if (!empty($tool['developers']))
 		{
+			$tool['developers'] = trim($tool['developers'],",");
 			foreach (array_map('trim', explode(',', $tool['developers'])) as $k => $developerName)
 			{
 				$dev = User::getInstance($developerName);
