@@ -445,100 +445,77 @@ class Tags extends \Hubzero\Base\Obj
 	 * Get all publications associated with a tag
 	 *
 	 * @param      string  $tag      Tag to find data for
-	 * @param      integer $id       Resource ID
-	 * @param      integer $type     Publication category
+	 * @param      integer $type     Publication master type
 	 * @param      string  $sortby   Sort data by
 	 * @param      string  $tag2     Secondary tag
 	 * @param      array   $filterby Extra, optional filters
 	 * @return     array
 	 */
-	public function get_objects_on_tag($tag='', $id=0, $category=0, $sortby='title', $tag2='', $filterby=array())
+	public function get_objects_on_tag($tag='', $type=0, $sortby='title', $tag2='', $filterby=array())
 	{
 		$now  = Date::toSql();
 
+		$alias1 = is_numeric($tag) ? 'id' : 'tag';
+		$alias2 = is_numeric($tag2) ? 'id' : 'tag';
+
 		if ($tag || $tag2)
 		{
-			$query  = "SELECT C.id, TA.tag, COUNT(DISTINCT TA.tag) AS uniques, V.title ";
-			switch ($sortby)
-			{
-				case 'users':
-					$query .= ", (SELECT rs.users FROM #__resource_stats AS rs WHERE rs.resid=C.id AND rs.period=14 ORDER BY rs.datetime DESC LIMIT 1) AS users ";
-				break;
-				case 'jobs':
-					$query .= ", (SELECT rs.jobs FROM #__resource_stats AS rs WHERE rs.resid=C.id AND rs.period=14 ORDER BY rs.datetime DESC LIMIT 1) AS jobs ";
-				break;
-			}
-			$query .= "FROM #__publications AS C ";
-			$query .= "JOIN #__publication_versions as V ON V.publication_id = C.id AND V.main = 1 ";
-			$query .= " LEFT JOIN #__publication_audience AS TTA ON C.id=TTA.rid ";
-			$query .= ", $this->_obj_tbl AS RTA INNER JOIN #__tags AS TA ON (RTA.tagid = TA.id) ";
+			$query  = "SELECT V.id, V.title, COUNT(DISTINCT TA.tag) AS uniques ";
+			$query .= "FROM #__publications as C ";
+			$query .= "JOIN #__publication_versions as V ON C.id=V.publication_id ";
+			$query .= "LEFT JOIN #__publication_audience AS TTA ON V.id=TTA.publication_version_id ";
+			$query .= "INNER JOIN $this->_obj_tbl AS RTA ON RTA.objectid=V.id ";
+			$query .= "INNER JOIN #__tags AS TA ON RTA.tagid=TA.id ";
 		}
 		else
 		{
-			$query  = "SELECT C.id, V.title  ";
-			switch ($sortby)
-			{
-				case 'users':
-					$query .= ", (SELECT rs.users FROM #__resource_stats AS rs WHERE rs.resid=C.id AND rs.period=12 ORDER BY rs.datetime DESC LIMIT 1) AS users ";
-				break;
-				case 'jobs':
-					$query .= ", (SELECT rs.jobs FROM #__resource_stats AS rs WHERE rs.resid=C.id AND rs.period=12 ORDER BY rs.datetime DESC LIMIT 1) AS jobs ";
-				break;
-			}
-			$query .= "FROM #__publications AS C ";
-			$query .= "JOIN #__publication_versions as V ON V.publication_id = C.id AND V.main = 1 ";
-			$query .= " LEFT JOIN #__publication_audience AS TTA ON C.id=TTA.rid ";
+			$query  = "SELECT V.id, V.title ";
+			$query .= "FROM #__publication_versions as V ";
+			$query .= "LEFT JOIN #__publication_audience AS TTA ON V.id=TTA.rid ";
 		}
 
-		$query .= "WHERE V.state = 1 ";
-		if ($category) {
-			$query .= "AND C.category=" . $category . " ";
+		$query .= "WHERE V.state = 1 AND V.main = 1 ";
+		if ($type) {
+			$query .= "AND C.master_type=$type ";
 		}
 		$query .= "AND (V.published_up IS NULL OR V.published_up = '0000-00-00 00:00:00' OR V.published_up <= '" . $now . "') ";
 		$query .= "AND (V.published_down IS NULL OR V.published_down = '0000-00-00 00:00:00' OR V.published_down >= '" . $now . "') AND ";
 
-		$query .= (!User::isGuest())
-			   ? "(C.access=0 OR C.access=1) "
-			   : "(C.access=0) ";
-
+		$query .= (!User::isGuest()) ? "(V.access=0 OR V.access=1) " : "(V.access=0) ";
+		$query .= "AND RTA.tbl='$this->_tbl' ";
 		if ($tag || $tag2)
 		{
 			if ($tag && !$tag2)
 			{
-				$query .= "AND RTA.objectid=C.id AND RTA.tbl='$this->_tbl' AND (TA.tag IN ('" . $tag . "'))";
-				$query .= " GROUP BY C.id HAVING uniques=1";
+				$query .= "AND (TA.$alias1=$tag) ";
+				$query .= "GROUP BY V.id HAVING uniques=1 ";
 			}
 			else if ($tag2 && !$tag)
 			{
-				$query .= "AND RTA.objectid=C.id AND RTA.tbl='$this->_tbl' AND (TA.tag IN ('" . $tag2 . "'))";
-				$query .= " GROUP BY C.id HAVING uniques=1";
+				$query .= "AND (TA.$alias2=$tag2) ";
+				$query .= "GROUP BY V.id HAVING uniques=1 ";
 			}
 			else if ($tag && $tag2)
 			{
-				$query .= "AND RTA.objectid=C.id AND RTA.tbl='$this->_tbl' AND (TA.tag IN ('" . $tag . "','" . $tag2 . "'))";
-				$query .= " GROUP BY C.id HAVING uniques=2";
+				$query .= "AND (TA.$alias1=$tag) ";
+				$query .= "AND (TA.$alias2=$tag2) ";
+				$query .= "GROUP BY V.id HAVING uniques=2 ";
 			}
 		}
 		switch ($sortby)
 		{
 			case 'ranking':
-				$sort = "C.ranking DESC";
+				$sort = "V.ranking DESC";
 			break;
 			case 'date':
 				$sort = "V.published_up DESC";
-			break;
-			case 'users':
-				$sort = "users DESC";
-			break;
-			case 'jobs':
-				$sort = "jobs DESC";
 			break;
 			default:
 			case 'title':
 				$sort = "V.title ASC";
 			break;
 		}
-		$query .= " ORDER BY " . $sort . ", V.published_up";
+		$query .= "ORDER BY " . $sort . ", V.published_up";
 
 		$this->_db->setQuery($query);
 		return $this->_db->loadObjectList();
