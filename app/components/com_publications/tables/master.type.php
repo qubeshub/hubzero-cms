@@ -98,19 +98,23 @@ class MasterType extends Table
 	}
 
 	/**
-	 * Get owner group
+	 * Get master type with a specified owner group
 	 *
 	 * @return  array
 	 */
-	public function getOwnerGroup()
+	public function loadByOwnerGroup($group_id, $contributable=0)
 	{
-		$query = "SELECT ownergroup FROM $this->_tbl WHERE contributable=1
-				  AND ownergroup !=0 AND ownergroup IS NOT null";
+		$keys = array(
+			'ownergroup' => $group_id
+		);
+		if ($contributable == 1) {
+			$keys['contributable'] = 1;
+		}
 
-		$this->_db->setQuery($query);
-		$group = $this->_db->loadResult();
+		$this->load($keys);
+		$this->_params = new \Hubzero\Config\Registry($this->params);
 
-		return $group;
+		return $this;
 	}
 
 	/**
