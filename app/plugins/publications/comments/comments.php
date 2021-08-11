@@ -70,11 +70,12 @@ class plgPublicationsComments extends \Qubeshub\Plugin\Plugin
 		// Check if our area is in the array of areas we want to return results for
 		if (is_array($areas))
 		{
-			if (!array_intersect($areas, $this->onPublicationAreas($publication))
-			 && !array_intersect($areas, array_keys($this->onPublicationAreas($publication))))
-			{
-				$rtrn = 'metadata';
-			}
+			// For now, always return html to allow for embedding
+			//  if (!array_intersect($areas, $this->onPublicationAreas($publication))
+			//  && !array_intersect($areas, array_keys($this->onPublicationAreas($publication))))
+			// {
+			// 	$rtrn = 'metadata';
+			// }
 		}
 		if (!$publication->_category->_params->get('plg_comments') || !$extended)
 		{
