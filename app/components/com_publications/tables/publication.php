@@ -265,6 +265,10 @@ class Publication extends Table
 			$query .= " OR V.curator = " . User::get('id') . ") ";
 		}
 
+		if (isset($filters['group_owner'])) {
+			$query .= " AND C.group_owner = " . $filters['group_owner'] . " ";
+		}
+
 		if (isset($filters['minranking']) && $filters['minranking'] != '' && $filters['minranking'] > 0)
 		{
 			$query .= " AND C.ranking > " . $filters['minranking']." ";
