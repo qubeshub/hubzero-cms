@@ -2030,7 +2030,13 @@ class Publication extends Obj
 	{
 		if (!isset($this->_base))
 		{
-			$this->_base  = 'index.php?option=com_publications';
+			$this->masterType();
+			if ($this->_type->ownergroup) {
+				$group = \Hubzero\User\Group::getInstance($this->_type->ownergroup);
+				$this->_base = 'index.php?option=com_groups&cn=' . $group->cn . '&active=publications';
+			} else {
+				$this->_base = 'index.php?option=com_publications';
+			}
 			$this->_base .= $this->get('alias') ? '&alias=' . $this->get('alias') : '&id=' . $this->get('id');
 		}
 		if (!isset($this->_editBase) && strpos($type, 'edit') !== false)
