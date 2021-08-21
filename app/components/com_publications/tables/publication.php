@@ -262,7 +262,22 @@ class Publication extends Table
 			{
 				$query .= " AND (1=1";
 			}
-			$query .= " OR V.curator = " . User::get('id') . ") ";
+
+			// Individual assigned curator?
+			// $query .= " OR V.curator = " . User::get('id') . ") ";
+			if (isset($filters['curator']))
+			{
+				if ($filters['curator'] == 'owner')
+				{
+					$query .=" OR V.curator = " . User::get('id') . ") ";
+				}
+				if ($filters['curator'] == 'other')
+				{
+					$query .=" OR V.curator != " . User::get('id') . ") ";
+				}
+			} else {
+				$query .=") ";
+			}
 		}
 
 		if (isset($filters['group_owner'])) {
