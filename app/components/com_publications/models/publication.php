@@ -2024,10 +2024,11 @@ class Publication extends Obj
 	 * Link will vary depending upon action desired, such as edit, delete, etc.
 	 *
 	 * @param   string   $type  The type of link to return
-	 * @return  boolean
+	 * @return  string
 	 */
 	public function link($type = '')
 	{
+		$id = $this->get('alias') ? '&alias=' . $this->get('alias') : '&id=' . $this->get('id');
 		if (!isset($this->_base))
 		{
 			$this->masterType();
@@ -2037,7 +2038,7 @@ class Publication extends Obj
 			} else {
 				$this->_base = 'index.php?option=com_publications';
 			}
-			$this->_base .= $this->get('alias') ? '&alias=' . $this->get('alias') : '&id=' . $this->get('id');
+			$this->_base .= $id;
 		}
 		if (!isset($this->_editBase) && strpos($type, 'edit') !== false)
 		{
@@ -2059,15 +2060,19 @@ class Publication extends Obj
 			break;
 
 			case 'masterimage':
-				$link = 'index.php?option=com_publications&id=' . $this->get('id') . '&v=' . $this->get('version_id') . '&media=Image:master';
+				$link = 'index.php?option=com_publications' . $id . '&v=' . $this->get('version_id') . '&media=Image:master';
+			break;
+
+			case 'image':
+				$link = 'index.php?option=com_publications' . $id . '&v=' . $this->get('version_id') . '&media=Image:';
 			break;
 
 			case 'serve':
-				$link = $this->_base . '&task=serve' . '&v=' . $this->get('version_number');
+				$link = 'index.php?option=com_publications' . $id . '&task=serve' . '&v=' . $this->get('version_number');
 			break;
 
 			case 'data':
-				$link = $this->_base . '&task=serve' . '&vid=' . $this->get('version_id');
+				$link = 'index.php?option=com_publications' . $id . '&task=serve' . '&vid=' . $this->get('version_id');
 			break;
 
 			case 'citation':

@@ -274,12 +274,12 @@ class ImageViewer extends Base
 				$ext = Filesystem::extension(PATH_APP . DS . $fpath);
 
 				$title = $attach->title ? $attach->title : basename($attach->path);
-				$link  = Route::url($pub->link('versionid')) . '/Image:' . basename($fpath);
+				$link  = Route::url($pub->link('image') . basename($fpath));
 				$rel   = ($ext == 'swf' || $ext == 'mov') ? '' : ' rel="lightbox"';
 				$class = ($ext == 'swf' || $ext == 'mov') ? ' class="video"' : '';
 
 				$html .= ' <a ' . $class . ' ' . $rel . '  href="' . $link . '" title="' . $title . '">';
-				$html .= '<img src="' . Route::url($pub->link('versionid')) . '/Image:' . $thumbName . '" alt="' . $title . '" class="thumbima" /></a>';
+				$html .= '<img src="' . Route::url($pub->link('image') . $thumbName) . '" alt="' . $title . '" class="thumbima" /></a>';
 
 				$i++;
 			}

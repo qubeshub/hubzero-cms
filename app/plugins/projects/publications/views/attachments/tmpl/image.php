@@ -27,8 +27,8 @@ $format = isset($this->config->params->thumbFormat) && $this->config->params->th
 
 $thumbName = \Components\Projects\Helpers\Html::createThumbName(basename($data->get('fpath')), $suffix, $format);
 
-$filePath = Route::url($pub->link('versionid')) . '/Image:' . urlencode(basename($data->get('fpath')));
-$thumbSrc = Route::url($pub->link('versionid')) . '/Image:' . urlencode($thumbName);
+$filePath = Route::url($pub->link('image') . urlencode(basename($data->get('fpath'))));
+$thumbSrc = Route::url($pub->link('image') . urlencode($thumbName));
 
 // Is this image used for publication thumbail?
 $class = $data->get('pubThumb') == 1 ? ' starred' : '';
