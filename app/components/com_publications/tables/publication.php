@@ -123,6 +123,15 @@ class Publication extends Table
 					LEFT JOIN #__publication_categories AS t ON t.id = C.category
 					";
 
+		if (isset($filters['search']) && $filters['search'] != '')
+		{
+			$query .= "LEFT JOIN (SELECT V.publication_id,
+			MATCH (V.title) AGAINST (" . $this->_db->quote($filters['search']) . ") AS title_match, 
+			MATCH (V.abstract, V.description) AGAINST (" . $this->_db->quote($filters['search']) . ") AS ad_match
+			FROM #__publication_versions AS V) R ON V.publication_id = R.publication_id
+			";
+		}
+
 		if (isset($filters['tag']) && $filters['tag'] != '')
 		{
 			$query .= "LEFT JOIN #__tags_object RTA ON RTA.objectid = V.id ";
@@ -303,29 +312,14 @@ class Publication extends Table
 		}
 		if (isset($filters['search']) && $filters['search'] != '')
 		{
-				$componentParams = Component::params('com_publications');
-				$words = array();
-				$ws = explode(' ', $filters['search']);
-				foreach ($ws as $w)
-				{
-					$w = trim($w);
-					if (strlen($w) > 2)
-					{
-						$words[] = $w;
-					}
-				}
-				$text = implode(' +', $words);
-				$text = addslashes($text);
-				$text2 = str_replace('+', '', $text);
-
-				$query .= " AND ((MATCH(V.title) AGAINST ('+$text -\"$text2\"') > 0) OR"
-						 . " (MATCH(V.abstract,V.description) AGAINST ('+$text -\"$text2\"') > 0)) ";
-
-				if ($componentParams->get('include_author_name_in_search'))
-				{
-					$query .= " OR (V.id in (SELECT publication_version_id"
-						.	" from jos_publication_authors as A where lower(A.name) like '%$text%'))";
-				}
+			$query .= "AND (MATCH (V.title) AGAINST (" . $this->_db->quote($filters['search']) . ") OR MATCH (V.abstract, V.description) AGAINST (" . $this->_db->quote($filters['search']) . ")) ";
+			
+			// $componentParams = Component::params('com_publications');
+			// if ($componentParams->get('include_author_name_in_search'))
+			// {
+			// 	$query .= " OR (V.id in (SELECT publication_version_id"
+			// 		.	" from jos_publication_authors as A where lower(A.name) like '%$text%'))";
+			// }
 		}
 
 		// Do not show deleted
@@ -478,6 +472,10 @@ class Publication extends Table
 				t.url_alias as cat_url, PP.alias as project_alias, PP.title as project_title,
 				PP.state as project_status, PP.private as project_private,
 				PP.provisioned as project_provisioned, MT.alias as base, MT.params as type_params";
+		if (isset($filters['search']) && $filters['search'] != '')
+		{
+			$sql .= ", R.title_match + R.ad_match AS relevance";
+		}
 		$sql .= ", (SELECT vv.version_label FROM `#__publication_versions` as vv WHERE vv.publication_id=C.id AND vv.state=3 ORDER BY ID DESC LIMIT 1) AS dev_version_label ";
 		$sql .= ", (SELECT COUNT(*) FROM `#__publication_versions` WHERE publication_id=C.id AND state!=3) AS versions ";
 
