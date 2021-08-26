@@ -113,7 +113,7 @@ class Publication extends Table
 		$projects = isset($filters['projects']) && !empty($filters['projects']) ? $filters['projects'] : array();
 		$mine     = isset($filters['mine']) && $filters['mine'] ? $filters['mine'] : 0;
 		$featured = isset($filters['featured']) && $filters['featured'] ? 1 : 0;
-		$sortby   = isset($filters['sortby']) ? $filters['sortby'] : 'title';
+		$sortby   = isset($filters['sortby']) ? $filters['sortby'] : 'date';
 
 		$query  = " FROM
 					#__publication_versions V
@@ -394,6 +394,18 @@ class Publication extends Table
 					$query .= "C.ranking DESC";
 					break;
 
+				case 'relevance':
+					$query .= "relevance DESC, V.published_up DESC";
+					break;
+
+				case 'views':
+					$query .= "views DESC, V.published_up DESC";
+					break;
+
+				case 'downloads':
+					$query .= "downloads DESC, V.published_up DESC";
+					break;
+
 				case 'project':
 					$query .= "PP.title " . $sortdir;
 					break;
@@ -478,13 +490,10 @@ class Publication extends Table
 		}
 		$sql .= ", (SELECT vv.version_label FROM `#__publication_versions` as vv WHERE vv.publication_id=C.id AND vv.state=3 ORDER BY ID DESC LIMIT 1) AS dev_version_label ";
 		$sql .= ", (SELECT COUNT(*) FROM `#__publication_versions` WHERE publication_id=C.id AND state!=3) AS versions ";
+		$sql .= ", (SELECT SUM(page_views) FROM `#__publication_logs` WHERE publication_version_id=V.id) AS views ";
+		$sql .= ", (SELECT SUM(primary_accesses + support_accesses) FROM `#__publication_logs` WHERE publication_version_id=V.id) AS downloads ";
 
-		$sortby  = isset($filters['sortby']) ? $filters['sortby'] : 'title';
-
-		if ($sortby == 'popularity')
-		{
-			$sql .= ", (SELECT S.users FROM `#__publication_stats` AS S WHERE S.publication_id=C.id AND S.period=14 ORDER BY S.datetime DESC LIMIT 1) as stat ";
-		}
+		$sortby  = isset($filters['sortby']) ? $filters['sortby'] : 'date';
 
 		$sql .= (isset($filters['tag']) && $filters['tag'] != '') ? ", TA.tag, COUNT(DISTINCT TA.tag) AS uniques " : " ";
 		$sql .= $this->buildQuery($filters, $admin);
