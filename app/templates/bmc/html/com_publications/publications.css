@@ -127,6 +127,9 @@
   -o-object-fit: cover;
      object-fit: cover;
 }
+.content-top .image-wrapper .share {
+  margin: 1em 0;
+}
 .content-top .image-wrapper .share .fa {
   margin-right: 0.2em;
 }
