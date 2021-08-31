@@ -44,7 +44,7 @@ class PublicationUsageHelper
 	 */
 	public function totalDownloads()
 	{
-		$totalDownloadsQuery = $this->_generateColumnSumQuery('primary_accesses');
+		$totalDownloadsQuery = $this->_generateColumnSumQuery('primary_accesses + support_accesses');
 
 		return (int) $this->_runQuery($totalDownloadsQuery);
 	}
