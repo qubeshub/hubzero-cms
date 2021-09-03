@@ -20,28 +20,6 @@
     <h6>It also provides exciting opportunities for new collaborations and professional development that leverage BioQUEST's long track record of community building with the QUBES platform’s broad reach and functionality. For more information about QUBES' history, visit our <a href="/qubeshistory">archived page</a>.</h6>
   </section>
 
-  <section class="funders">
-    <h2 id="funder">Funders</h2>
-
-    <div class="funder-wrapper">
-      <div class="funder-info">
-        <div class="funder-logo">
-          <img src="/app/site/media/images/partners/NSF.png" alt="Logo: National Science Foundation">
-        </div>
-        <p>This material is based upon work supported by the <a href="www.nsf.gov" target="_blank">National Science Foundation</a> under Grant No. 1446258, 1446269, and 1446284.</p>
-      </div>
-
-      <div class="funder-info">
-        <div class="funder-logo">
-          <img src="/app/site/media/images/partners/Hewlett_Logo_RGB__full.png" alt="Logo: Hewlett Foundation">
-        </div>
-        <p>On April 1, 2020 the <a href="https://hewlett.org" target="_blank">Hewlett Foundation</a> approved Grant No. 2020-1363 to <a href="https://www.bates.edu/" target="_blank">Bates College</a> for supporting more equitable and sustainable open education in undergraduate biology.</p>
-      </div>
-    </div>
-
-    <p>Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.</p>
-  </section>
-
   <section class="citations">
     <h2 id="citations">QUBES Papers and Products</h2>
 

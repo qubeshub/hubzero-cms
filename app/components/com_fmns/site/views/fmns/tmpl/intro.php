@@ -26,7 +26,7 @@ Pathway::append(
     <h3>What is an FMN?</h3>
     <p>Imagine meeting biweekly over a semester with a small group of educators around a common interest - exploring new ideas or classroom activities, sharing what has worked and what hasn’t, and gaining some credit for your teaching scholarship. That is the Faculty Mentoring Network model. </p>
     <p>Faculty Mentoring Networks (FMNs) are designed to fit into the busy schedules of college faculty, and provide support and guidance &quot;just in time &quot; during the implementation of course changes.  By capitalizing on the experience of a mentor and peers, FMNs provide a bridge between pedagogical theory and actionable classroom practice.
-		<h4>Subscribe to our newsletter to stay informed about all FMNs happening on QUBES.</h4>
+		<h4>Subscribe to our newsletter to stay informed about all BioQUEST FMNs.</h4>
 		<?php \Hubzero\Module\Helper::displayModules('news'); ?>
 </p>
 
@@ -38,7 +38,7 @@ Pathway::append(
       <div class="anchor-wrap">
         <h4>Current and Upcoming</h4>
         <hr>
-        <p>Check out current FMNs that are happening right now or see what is comming up and apply!</p>
+        <p>Check out current FMNs that are happening right now or see what is coming up and apply!</p>
       </div>
     </a>
 
@@ -103,7 +103,7 @@ Pathway::append(
         <li>Discover new activities, lab modules, or educational resources</li>
         <li>Get expert advice from mentors with experience in pedagogy, content and quantitative skills</li>
         <li>Exchange &quot;teaching stories&quot; with faculty peers across the country as they implement new approaches in their classrooms</li>
-        <li>Develop more comfort teaching challenging quantitative topics to your students</li>
+        <li>Develop more comfort teaching challenging topics to your students</li>
         <li>Engage with participating professional societies, gaining recognition for your scholarship of teaching</li>
         <li>Work with colleagues to adapt or produce new open educational resources, with a citable Digital Object Identifier (DOI) and web metrics that track use</li>
         <li>Find support to travel to a professional conference to share the products of your FMN work</li>
@@ -163,8 +163,8 @@ Pathway::append(
       </div>
 
       <div class="bridge-wrap">
-        <h4>QUBES Ambassador</h4>
-        <p class="ambassador-text">Are you interested in sharing what you learned and developed in your QUBES FMN with a wider audience? Apply to be a QUBES Ambassador!</p>
+        <h4>FMN Ambassador</h4>
+        <p class="ambassador-text">Are you interested in sharing what you learned and developed in your FMN with a wider audience? Apply to be an Ambassador!</p>
         <a href="/fmns/ambassadors" class="link">Learn More</a>
         <!-- <div class="participant-wrap">
           <div class="participant">

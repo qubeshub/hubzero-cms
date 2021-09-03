@@ -4,32 +4,17 @@
     <div class="intro-container">
         <div class="intro">
             <div class="tagline-wrap">
-                <!-- <h2 class="tagline">The Power of Math <span class="green">&times;</span> Biology <span class="green">&times;</span> Community</h2> -->
-
-                <!-- <p class="mission">QUBES is a community of math and biology educators who share resources and methods for preparing students to tackle real, complex, biological problems</p> -->
-
-                <!-- <h4>Learn more about QUBES</h4>
-				<div class="anchor-link-wrap">
-					<div class="anchor-link">
-						<a href="#one" class="link">Resources</a>
-					</div>
-
-					<div class="anchor-link">
-						<a href="#two" class="link">Community</a>
-					</div>
-
-					<div class="anchor-link">
-						<a href="#three" class="link">Services</a>
-					</div>
-				</div> -->
                 <div class="advert-img">
-                    <img src="https://qubeshub.org/community/groups/partnerprojectsupport/File:/uploads/PartnersAtQUBES_logo52_short.png" alt="Logo: Partners at QUBES">
+                    <img src="https://qubeshub.org/app/site/media/images/art-board-network.jpg" alt="Fall FMNs 2021" style="object-fit: cover;">
 
-                    <h2>Partners@QUBES Leadership Summit</h2>
+                    <h2>Our 2020-2021 Faculty Mentoring Networks</h2>
                 </div>
-                <h3>December 14, 2020, 1:30-3:30 PM (EST)</h3>
-                <p>Thank you to our partners for attending the first Partners@QUBES Leadership Summit. We loved having so many representatives--over 40 participants--from our partner organizations in the same (Zoom) room and to hear how integral QUBES has become to advancing our partners' goals. If you haven't already, join the QUBES Support Community for Partner Projects below.</p>
-                <p><a href="https://qubeshub.org/community/groups/partnerprojectsupport">QUBES Support Community for Partner Projects</a></p>
+                
+                <p>Over the 2020-2021 school year--one of the most difficult years for educators--the QUBES project ran 13 Faculty Mentoring Networks, bringing together more than 150 faculty to connect over a broad common goal: to improve the student experience in today’s STEM classrooms. </p>
+                <p>Participants explored how they could incorporate and teach new skill sets, how they could give students hands-on research experiences, how the data and models used could be made more relevant, inclusive, data-driven, and much, much more. </p>
+                <p>We look forward to the next cohort of FMNs and can't wait to see what they accomplish. </p>
+                <p>Explore the <a href="https://qubeshub.org/news/newsletter/july-community-spotlight?no_html=1#Products">Open Educational Resources that came from these groups</a> and check out our <a href="https://qubeshub.org/news/newsletter/august2021?no_html=1#FMNs">fall FMN offerings</a>.</p>
+                
             </div>
         </div>
 
@@ -38,7 +23,7 @@
 
             {xhub:module position="mainFeature"}
 
-            <h2>Resource of the Week</h2>
+            <h2>Community Spotlight</h2>
 
             {xhub:module position="mainRow"}
 
@@ -55,9 +40,9 @@
 				c1.6,0,3.2,0.3,4.7,1s2.8,1.6,3.9,2.8C54.3,4,56.8,3,59.1,1.6c-0.9,2.8-2.6,5-5.2,6.5c2.4-0.2,4.7-0.9,6.8-1.8
 				C59.1,8.7,57.2,10.7,54.9,12.4z" />
             </svg>
-            <h2>Latest Tweet <span><a href="https://twitter.com/qubeshub" target="_blank">@qubeshub</a></span></h2>
-            <a class="twitter-timeline" data-theme="light" data-link-color="#597F2F" data-chrome="noheader nofooter" data-tweet-limit="1" href="https://twitter.com/qubeshub?ref_src=twsrc%5Etfw">Tweets by qubeshub</a>
-            <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+            <h2>Latest Tweet <span><a href="https://twitter.com/BioQUESTed" target="_blank" rel="noopener">@BioQUESTed</a></span></h2>
+
+            <a class="twitter-timeline" data-theme="light" data-link-color="#597F2F" data-chrome="noheader nofooter" data-tweet-limit="1" href="https://twitter.com/BioQUESTed?ref_src=twsrc%5Etfw">Tweets by BioQUESTed</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
             <a href="/news" class="link">Visit News &amp; Activities</a>
 
