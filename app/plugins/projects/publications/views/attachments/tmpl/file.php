@@ -18,10 +18,13 @@ if ($data->get('viewer') != 'freeze')
 	$details.= !$data->exists() ? ' | ' . Lang::txt('PLG_PROJECTS_PUBLICATIONS_MISSING_FILE') : '';
 }
 ?>
-	<li>
+	<li class="reorder pick" id="pick-<?php echo $data->get('id'); ?>">
 		<span class="item-options">
 			<?php if ($data->get('viewer') == 'edit') { ?>
-			<span>
+			<span class="item-options">
+				<?php if ($data->total > 1) { ?>
+				<a href="#" class="item-reorder handle" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_REORDER'); ?>">&nbsp;</a>
+				<?php } ?>
 				<?php if ($data->exists()) { ?>
 				<a href="<?php echo $data->get('downloadUrl'); ?>" class="item-download" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_DOWNLOAD'); ?>">&nbsp;</a>
 				<?php } ?>
@@ -32,6 +35,9 @@ if ($data->get('viewer') != 'freeze')
 				<span><a href="<?php echo $data->get('downloadUrl'); ?>" class="item-download" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_DOWNLOAD'); ?>">&nbsp;</a></span>
 			<?php } ?>
 		</span>
+		<?php if ($data->total > 1) { ?>
+		<span class="item-order"><?php echo $data->get('ordering'); ?></span>
+		<?php } ?>
 		<span class="item-title" id="<?php echo 'file-'.$data->get('id'); ?>">
 			<?php echo $data::drawIcon($data->get('ext')); ?> <?php echo $data->get('title'); ?>
 		</span>

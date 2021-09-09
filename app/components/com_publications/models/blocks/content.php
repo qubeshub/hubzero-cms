@@ -181,6 +181,51 @@ class Content extends Base
 		return true;
 	}
 
+    /**
+	 * Reorder attachments
+	 *
+	 * @param   object   $manifest
+	 * @param   integer  $blockId
+	 * @param   object   $pub
+	 * @param   integer  $actor
+	 * @param   integer  $elementId
+	 * @return  string   HTML
+	 */
+	public function reorder($manifest = null, $blockId = 0, $pub = null, $actor = 0, $elementId = 0)
+	{
+		// Set block manifest
+		if ($this->_manifest === null)
+		{
+			$this->_manifest = $manifest ? $manifest : self::getManifest();
+		}
+
+		// Incoming
+		$list = Request::getString('list', '');
+		$attachments = explode("-", $list);
+
+		$o = 1;
+		foreach ($attachments as $id)
+		{
+			if (!trim($id))
+			{
+				continue;
+			}
+
+			$pAttachment = new \Components\Publications\Tables\Attachment($this->_parent->_db);
+			if ($pAttachment->loadElementAttachment($pub->version_id, array('id' => $id), $elementId))
+			{
+				$pAttachment->ordering = $o;
+				$o++;
+
+				$pAttachment->store();
+			}
+		}
+
+		$this->set('_message', Lang::txt('New attachment order saved'));
+
+		return true;
+	}
+
 	/**
 	 * Transfer data from one version to another
 	 *

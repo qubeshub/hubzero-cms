@@ -35,12 +35,15 @@ $class = $data->get('pubThumb') == 1 ? ' starred' : '';
 $over  = $data->get('pubThumb') == 1 ? ' title="' . Lang::txt('PLG_PROJECTS_PUBLICATIONS_IMAGE_DEFAULT') . '"' : '';
 
 ?>
-	<li class="image-container">
+	<li class="image-container reorder pick" id="pick-<?php echo $data->get('id'); ?>">
 		<span class="item-options">
 			<?php if ($data->get('viewer') == 'edit') { ?>
 			<span>
 				<?php if (!$data->get('pubThumb')) { ?>
 				<a href="<?php echo Route::url($pub->link('editversion') . '&action=saveitem&aid=' . $data->get('id') . '&p=' . $data->get('props') . '&makedefault=1'); ?>" class="item-default" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_IMAGE_MAKE_DEFAULT'); ?>">&nbsp;</a>
+				<?php } ?>
+				<?php if ($data->total > 1) { ?>
+				<a href="#" class="item-reorder handle" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_REORDER'); ?>">&nbsp;</a>
 				<?php } ?>
 				<a href="<?php echo Route::url($pub->link('editversion') . '&action=edititem&aid=' . $data->get('id') . '&p=' . $data->get('props')); ?>" class="showinbox item-edit" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_RELABEL'); ?>">&nbsp;</a>
 				<a href="<?php echo Route::url($pub->link('editversion') . '&action=deleteitem&aid=' . $data->get('id') . '&p=' . $data->get('props')); ?>" class="item-remove" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_REMOVE'); ?>">&nbsp;</a>
@@ -48,6 +51,9 @@ $over  = $data->get('pubThumb') == 1 ? ' title="' . Lang::txt('PLG_PROJECTS_PUBL
 			<?php } ?>
 		</span>
 		<span class="item-image<?php echo $class; ?>" <?php echo $over; ?>><a class="more-content" href="<?php echo $filePath; ?>"><img alt="" src="<?php echo $thumbSrc; ?>" /></a></span>
+		<?php if ($data->total > 1) { ?>
+		<span class="item-order"><?php echo $data->get('ordering'); ?></span>
+		<?php } ?>
 		<span class="item-title">
 			<?php echo $data->get('title'); ?></span>
 		<span class="item-details"><?php echo $details; ?></span>

@@ -1618,6 +1618,7 @@ class File extends Base
 		$data->set('pubPath', $configs->pubPath);
 		$data->set('props', $view->master->block . '-' . $view->master->blockId . '-' . $view->elementId);
 		$data->set('downloadUrl', Route::url($view->pub->link('serve') . '&el=' . $view->elementId . '&a=' . $att->id . '&download=1'));
+		$data->set('total', count($view->attachments));
 
 		// Is attachment (image) also publication thumbnail
 		$params = new \Hubzero\Config\Registry($att->params);

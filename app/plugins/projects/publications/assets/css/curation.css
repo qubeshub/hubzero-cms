@@ -238,6 +238,9 @@
 		min-height: 40px;
 		border-top: 1px solid #E2E2E2;
 	}
+	ul.itemlist.ui-sortable {
+		max-height: unset;
+	}
 	ul.itemlist li {
 		padding: 1em;
 		border-bottom: 1px solid #dae6ec;
@@ -403,11 +406,6 @@
 		border: none;
 		content: "";
 	}
-	.hint-reorder {
-		color: #CCC;
-		margin-right: 1em;
-		font-size: 85%;
-	}
 	.item-options a:hover:before {
 		color: #5ec1da;
 	}
@@ -433,6 +431,15 @@
 	}
 	.item-options a.item-movedown:before {
 		content: "\2193";
+	}
+	.hint-reorder:before {
+		font-family: 'Fontcons';
+		font-size: 1.5em;
+		margin-right: 5px;
+	}
+	.item-options a.item-reorder:before,
+	.hint-reorder:before {
+		content: "\f047";
 	}
 	.item-options a.item-edit:before {
 		content: "\270D";

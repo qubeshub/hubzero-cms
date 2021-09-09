@@ -103,7 +103,7 @@ $elementUrl = Route::url($this->pub->link('editversion') . '&section=' . $this->
 			</label>
 			<?php echo $this->pub->_curationModel->drawCurationNotice($curatorStatus, $props, 'author', $elName); ?>
 			<div class="list-wrapper">
-				<ul class="itemlist">
+				<ul class="itemlist <?php echo $this->type; ?>-selector">
 					<?php
 					if (count($this->attachments) > 0)
 					{

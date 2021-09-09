@@ -66,7 +66,7 @@ $curatorStatus = $this->pub->_curationModel->getCurationStatus($this->pub, $this
 					<span class="item-options">
 						<span>
 							<?php if (count($this->pub->authors()) > 1) { ?>
-							<span class="hint-reorder"><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_DRAG_TO_REORDER'); ?></span>
+							<a href="#" class="item-reorder handle" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_REORDER'); ?>">&nbsp;</a>
 							<?php } ?>
 							<a href="<?php echo Route::url( $this->pub->link('editversionid') . '&active=publications&action=editauthor&aid=' . $author->id . '&p=' . $props); ?>" class="showinbox item-edit" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_EDIT'); ?>">&nbsp;</a>
 							<a href="<?php echo Route::url( $this->pub->link('editversion') . '&active=publications&action=deleteitem&aid=' . $author->id . '&p=' . $props); ?>" class="item-remove" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_REMOVE'); ?>">&nbsp;</a>
@@ -85,7 +85,7 @@ $curatorStatus = $this->pub->_curationModel->getCurationStatus($this->pub, $this
 		</div>
 
 		<?php if (count($this->pub->authors()) > 1) { ?>
-		<p class="hint">*<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_AUTHORS_HINT_DRAG'); ?></p>
+		<p class="hint-reorder"><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_AUTHORS_HINT_DRAG'); ?></p>
 		<?php } ?>
 
 		<?php

@@ -692,7 +692,7 @@ HUB.ProjectPublicationsDraft = {
 		}
 	},
 
-	getPubUrl: function(no_html, section)
+	getPubUrl: function(no_html, section, element_id=null)
 	{
 		var $ = this.jQuery;
 
@@ -702,6 +702,7 @@ HUB.ProjectPublicationsDraft = {
 		var section	 	= !section && $('#section').length ? $('#section').val() : section;
 		var version	 	= $('#version').length ? $('#version').val() : '';
 		var step	 	= $('#step').length ? $('#step').val() : 0;
+		// Note: Can't use #element input, in case multiple elements are in one block
 
 		if (provisioned == 1)
 		{
@@ -710,7 +711,7 @@ HUB.ProjectPublicationsDraft = {
 		else {
 			var url = '/projects/' + projectid + '/publications/';
 		}
-		url = url + pid + '/?version=' + version + '&p=' + section + '-' + step;
+		url = url + pid + '/?version=' + version + '&p=' + section + '-' + step + (element_id ? '-' + element_id : '');
 
 		if (no_html == 1)
 		{
@@ -753,6 +754,11 @@ HUB.ProjectPublicationsDraft = {
 		{
 			section = $('#section').val();
 		}
+
+		// Enable reordering for all file selectors
+		$('.file-selector').each(function(index) {
+			HUB.ProjectPublicationsDraft.reorder($(this));
+		});
 
 		if (section == 'authors')
 		{
@@ -801,15 +807,18 @@ HUB.ProjectPublicationsDraft = {
 		$(list).sortable(
 		{
 			items: "> li.reorder",
+			handle: ".handle",
 			update: function()
 			{
-			    HUB.ProjectPublicationsDraft.displayOrdering();
-				HUB.ProjectPublicationsDraft.saveOrder();
+				// Get block element id
+				blockelement_id = $(this).closest('div.blockelement').attr('id');
+			    HUB.ProjectPublicationsDraft.displayOrdering(blockelement_id);
+				HUB.ProjectPublicationsDraft.saveOrder(blockelement_id);
 		   	}
 		});
 	},
 
-	saveOrder: function()
+	saveOrder: function(blockelement_id)
 	{
 		var $ = this.jQuery;
 		var section = $('#section').length ? $('#section').val() : '';
@@ -820,11 +829,13 @@ HUB.ProjectPublicationsDraft = {
 		}
 
 		// Collect items in new order
-		var items = HUB.ProjectPublicationsDraft.gatherSelections('pick-');
+		var items = HUB.ProjectPublicationsDraft.gatherSelections('pick-', blockelement_id);
 
 		// Send AJAX request to save new order
-		var url = HUB.ProjectPublicationsDraft.getPubUrl(1, section);
+		element_id = (blockelement_id.includes('element') ? blockelement_id.substr(7) : null); // Strip off 'element'
+		var url = HUB.ProjectPublicationsDraft.getPubUrl(1, section, element_id);
 		url = url + '&action=reorder&list=' + items;
+		console.log(url);
 		$.post(url, {},
 			function (response) {
 
@@ -845,10 +856,10 @@ HUB.ProjectPublicationsDraft = {
 
 	},
 
-	displayOrdering: function()
+	displayOrdering: function(blockelement_id)
 	{
 		var $ = this.jQuery;
-		var nums = $('.item-order');
+		var nums = $('#' + blockelement_id + ' .item-order');
 		var o	 = 1;
 
 		if (nums.length > 0)
@@ -861,10 +872,10 @@ HUB.ProjectPublicationsDraft = {
 		}
 	},
 
-	gatherSelections: function(replacement)
+	gatherSelections: function(replacement, blockelement_id)
 	{
 		var $ = this.jQuery;
-		var items = $('.pick');
+		var items = $('#' + blockelement_id + ' .pick');
 		var selections = '';
 
 		if(items.length > 0) {
