@@ -767,7 +767,7 @@ class Publications extends SiteController
 		);
 
 		// Write title & build pathway
-		Document::setTitle(Lang::txt(strtoupper($this->_option)) . ': ' . stripslashes($this->model->version->title));
+		Document::setTitle(Lang::txt(strtoupper($this->_option)) . ': ' . stripslashes(strip_tags($this->model->version->title)));
 
 		// Set the pathway
 		$this->_buildPathway();
