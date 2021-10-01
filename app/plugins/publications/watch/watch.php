@@ -257,7 +257,7 @@ class plgPublicationsWatch extends \Qubeshub\Plugin\Plugin
 	private function _sendEmail($subscriber, $message, $subject, $url)
 	{
 		$eview = new \Hubzero\Mail\View(array(
-			'base_path' => PATH_CORE . DS . 'components' . DS . 'com_publications' . DS . 'site',
+			'base_path' => PATH_APP . DS . 'components' . DS . 'com_publications' . DS . 'site',
 			'name'   => 'emails',
 			'layout' => 'watch_plain'
 		));
@@ -270,7 +270,7 @@ class plgPublicationsWatch extends \Qubeshub\Plugin\Plugin
 		$name = Config::get('sitename') . ' ' . Lang::txt('PLG_PUBLICATIONS_WATCH_SUBSCRIBER');
 		$email = $subscriber->email;
 
-		$eview->unsubscribeLink = Route::url($this->publication->link() . '&active=watch&action=unsubscribe&confirm=1&email=' . $email);
+		$eview->unsubscribeLink = Route::url($this->publication->link('version') . '&active=watch&action=unsubscribe&confirm=1&email=' . $email);
 
 		// Get profile information
 		if ($subscriber->created_by)

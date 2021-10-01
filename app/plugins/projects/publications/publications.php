@@ -2318,7 +2318,7 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 	 */
 	public function onAfterChangeState($pub, $originalStatus = 3)
 	{
-		$notify = 1; // Notify administrators/curators?
+		$notify = 1; // Notify administrators/curators/watchers?
 
 		// Log activity in curation history
 		if (isset($pub->_curationModel))
@@ -2385,7 +2385,7 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 		$link    = rtrim(Request::base(), DS) . DS . trim($sef, DS);
 		$message = $actor . ' ' . html_entity_decode($action) . '  - ' . $link;
 
-		// Notify admin group
+		// Notify admin group, curators and watchers
 		if ($notify)
 		{
 			$admingroup = $this->model->config()->get('admingroup', '');
@@ -2436,6 +2436,9 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 				Lang::txt('PLG_PROJECTS_PUBLICATIONS_EMAIL_CURATORS'),
 				$curatorMessage
 			);
+
+			// Notify subscribers
+			Event::trigger('publications.onWatch', array($pub));
 		}
 
 		// Notify project managers (in all cases)
