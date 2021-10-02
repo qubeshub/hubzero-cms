@@ -120,7 +120,7 @@ $tabOverrides = array(
 					?>
 					<div class="more-files hide">
 						<?php
-						echo '<a href="' . Route::url('index.php?option=com_publications&id=' . $this->publication->get('id') . '&v=' . $this->publication->version->get('version_number') . '&active=supportingdocs') . '">view all files</a>';
+						echo '<a href="' . Route::url('index.php?option=com_publications&id=' . $this->publication->get('id') . '&v=' . $this->publication->version->get('version_number') . '&active=supportingdocs#supportingdocs') . '">view all files</a>';
 						?>
 					</div>
 				</div>
