@@ -199,6 +199,9 @@
     .element-list {
       height: 6.5rem;
       overflow: hidden;
+      .extras {
+        margin-left: 5px;
+      }
     }
     ul {
       list-style-type: none;

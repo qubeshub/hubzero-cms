@@ -82,8 +82,9 @@ $tabOverrides = array(
 			Summary:
 			<p>
 				<?php
-				$abstractSnippet = \Hubzero\Utility\Str::truncate(stripslashes(strip_tags($this->publication->abstract)), 250);
-				echo $this->publication->abstract ?  $abstractSnippet : '';
+				// $abstractSnippet = \Hubzero\Utility\Str::truncate(stripslashes(strip_tags($this->publication->abstract)), 250);
+				// echo $this->publication->abstract ?  $abstractSnippet : '';
+				echo stripslashes($this->publication->abstract);
 				?>
 			</p>
 
