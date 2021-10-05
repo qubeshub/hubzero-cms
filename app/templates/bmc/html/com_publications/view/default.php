@@ -81,6 +81,7 @@ $tabOverrides = array(
 		<div class="abstract-wrapper">
 			Summary:
 			<?php
+			$short = null;
 			if (strlen(strip_tags($this->publication->abstract)) > 250)
 			{
 				$short = Hubzero\Utility\Str::truncate($this->publication->abstract, 250, array('html' => true));
