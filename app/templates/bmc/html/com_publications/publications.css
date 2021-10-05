@@ -151,6 +151,11 @@
     grid-column: 2/span 1;
   }
 }
+.content-top .abstract-wrapper .more-content:before {
+  content: "⌄";
+  font-family: "Fontcons";
+  margin-right: 0.3em;
+}
 .content-top .abstract-wrapper .meta-top {
   font-size: 0.8em;
 }

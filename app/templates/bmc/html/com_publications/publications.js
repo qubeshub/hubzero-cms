@@ -25,5 +25,13 @@ $(document).ready(function () {
         $thirdItem.nextAll().addClass('hide')
         $moreLink.removeClass('hide')
     }
+
+    // Show more
+	$('a.more-content').on('click', function(e) {
+        e.preventDefault();
+
+        $(this).closest('.abstract-preview').addClass('hide');
+        $($(this).attr('href')).removeClass('hide');
+    })
 })
 

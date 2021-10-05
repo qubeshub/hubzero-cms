@@ -80,13 +80,25 @@ $tabOverrides = array(
 
 		<div class="abstract-wrapper">
 			Summary:
-			<p>
-				<?php
-				// $abstractSnippet = \Hubzero\Utility\Str::truncate(stripslashes(strip_tags($this->publication->abstract)), 250);
-				// echo $this->publication->abstract ?  $abstractSnippet : '';
-				echo stripslashes($this->publication->abstract);
+			<?php
+			if (strlen(strip_tags($this->publication->abstract)) > 250)
+			{
+				$short = Hubzero\Utility\Str::truncate($this->publication->abstract, 250, array('html' => true));
 				?>
-			</p>
+				<div class="abstract-preview">
+					<?php echo $short; ?>
+					<p>
+						<a class="more-content" href="#abstract-full">
+							more
+						</a>
+					</p>
+				</div>
+				<?php
+			}
+			?>
+			<div class="abstract-full<?php echo ($short) ? ' hide' : ''; ?>" id="abstract-full">
+				<?php echo $this->publication->abstract; ?>
+			</div>
 
 			<div class="meta-top">
 				<?php
