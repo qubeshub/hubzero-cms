@@ -45,10 +45,11 @@ $tabOverrides = array(
 		</div>
 
 		<div class="cta-wrapper">
-			<div class="views">
+			<div class="stats">
 				<?php
 				// Show usage statistics
 				echo \Templates\Bmc\Publications\Helpers\Html::showSection($this->sections, "usage", "metadata");
+				echo \Templates\Bmc\Publications\Helpers\Html::showSection($this->sections, "comments", "metadata");
 				?>
 			</div>
 

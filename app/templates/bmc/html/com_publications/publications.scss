@@ -53,11 +53,14 @@
     grid-column: 2 / span 2;
     grid-row: 1;
     width: 25%;
-    .views {
+    .stats {
       font-style: italic;
       font-size: .85em;
       text-align: center;
       margin: .5em 0;
+      p {
+        margin: 0;
+      }
     }
     .cta-buttons {
       text-align: center;

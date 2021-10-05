@@ -59,11 +59,14 @@
     grid-row: 1;
   }
 }
-.title-wrapper .cta-wrapper .views {
+.title-wrapper .cta-wrapper .stats {
   font-style: italic;
   font-size: 0.85em;
   text-align: center;
   margin: 0.5em 0;
+}
+.title-wrapper .cta-wrapper .stats p {
+  margin: 0;
 }
 .title-wrapper .cta-wrapper .cta-buttons {
   text-align: center;
