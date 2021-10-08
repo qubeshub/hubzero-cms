@@ -122,6 +122,15 @@ $tabOverrides = array(
 					echo \Templates\Bmc\Publications\Helpers\Html::showTags($this->publication);
 					?>
 				</div>
+
+
+				<?php 
+				// Show status for authorized users
+				if ($this->contributable)
+				{
+					echo \Templates\Bmc\Publications\Helpers\Html::showAccessMessage($this->publication);
+				}
+				?>
 			</div>
 		</div>
 

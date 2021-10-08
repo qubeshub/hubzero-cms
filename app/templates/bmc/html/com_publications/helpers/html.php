@@ -642,7 +642,7 @@ class Html
 					: ' <strong>';
 				$project .= \Hubzero\Utility\Str::truncate($publication->project()->get('title'), 50);
 				$project .= $publication->access('owner') ? '</a>' : '</strong>';
-				$msg .= ' <span class="fromproject">' . $project . '</span>';
+				$msg .= ' <span class="fromproject">' . $project . '.&nbsp;</span>';
 			}
 
 			$class= 'info';
