@@ -8,6 +8,11 @@
   background-color: v.$white;
   padding: 1em;
 }
+.title-wrapper-holder {
+  grid-column: 1 / span 4;
+  grid-row: 1;
+  height: 1rem;
+}
 .title-wrapper {
   background: v.$white;
   grid-column: 1 / span 4;
@@ -38,9 +43,7 @@
     }
     grid-column: 1 / span 4;
     padding: 0 1em;
-    p {
-      font-size: .8em;
-    }
+   
     .affiliation {
       font-style: italic;
     }
@@ -152,7 +155,6 @@
       margin-right: 0.3em;
     }
     .meta-top {
-      font-size: .8em;
       img {
         width: 5rem;
       }
