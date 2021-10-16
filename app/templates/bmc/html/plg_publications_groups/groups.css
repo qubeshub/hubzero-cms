@@ -1,4 +1,4 @@
-@import url('/app/plugins/publications/groups/assets/css/groups.css');
+@import url('/core/plugins/publications/groups/assets/css/groups.css');
 .group-withlogo a {
   color: #fff;
 }
@@ -6,5 +6,12 @@
   color: #8cc540;
 }
 #group-owner .group-content {
+  margin: 0;
+}
+.group-sponsorship {
+  font-size: 0.9rem;
+  font-style: italic;
+}
+.group-description {
   margin: 0;
 }

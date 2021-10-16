@@ -7,6 +7,12 @@
   padding: 1em;
 }
 
+.title-wrapper-holder {
+  grid-column: 1/span 4;
+  grid-row: 1;
+  height: 1rem;
+}
+
 .title-wrapper {
   background: #fff;
   grid-column: 1/span 4;
@@ -15,6 +21,7 @@
   flex-flow: row;
   display: grid;
   grid-template-columns: 12rem auto 19rem;
+  position: -webkit-sticky;
   position: sticky;
   top: 3.5rem;
   transition: 0.2s;
@@ -41,9 +48,6 @@
   .title-wrapper .title {
     grid-column: 2/span 1;
   }
-}
-.title-wrapper .title p {
-  font-size: 0.8em;
 }
 .title-wrapper .title .affiliation {
   font-style: italic;
@@ -158,9 +162,6 @@
   content: "⌄";
   font-family: "Fontcons";
   margin-right: 0.3em;
-}
-.content-top .abstract-wrapper .meta-top {
-  font-size: 0.8em;
 }
 .content-top .abstract-wrapper .meta-top img {
   width: 5rem;
@@ -279,6 +280,7 @@
   }
 }
 .content-bottom .content-menu nav {
+  position: -webkit-sticky;
   position: sticky;
   top: 9rem;
 }
