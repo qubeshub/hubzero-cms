@@ -924,11 +924,11 @@ class Publication extends Obj
 			$groups = array();
 			if ($this->_type->curatorgroup)
 			{
-				$groups[] = $this->_type->curatorgroup;
+				$groups[] = \Hubzero\User\Group::getInstance($this->_type->curatorgroup)->get('cn');
 			}
 			if ($this->params->get('curatorgroup'))
 			{
-				$groups[] = $this->params->get('curatorgroup');
+				$groups[] = \Hubzero\User\Group::getInstance($this->params->get('curatorgroup'))->get('cn');
 			}
 			$this->_curatorGroups = $groups;
 		}
