@@ -9,6 +9,7 @@ namespace Templates\Bmc\Publications\Helpers;
 
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'View.php';
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Document' . DS . 'Assets.php';
+require_once \Component::path('com_publications') . DS . 'helpers' . DS . 'recommendedTags.php';
 
 use Component;
 

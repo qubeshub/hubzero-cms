@@ -25,19 +25,19 @@ class RecommendedTags extends \Hubzero\Base\Obj
 
 	private $focus_areas_map = array();
 
-	// Ordered list of raw tags (no label in db).
+	// Ordered list of raw tags (keywords).
 	//   Example: array ( 0 => 'genetics', 1 => 'ecology', )
 	private $existing_tags = array();
 
-	// Boolean array of tags (no label in db).
+	// Boolean array of tags (keywords).
 	//   Example: array ( 'genetics' => true, 'ecology' => true, )
 	private $existing_map = array();
 
-	// Ordered list of recommended tags (label in db).
+	// Ordered list of recommended tags (ontology).
 	//   Example: array ( 0 => array ( 'id' => '9', 'raw_tag' => 'Gravy', 'label' => 'Thanksgiving', ), 1 => array ( 'id' => '11', 'raw_tag' => 'Turkey', 'label' => 'Thanksgiving', ), 2 => array ( 'id' => '14', 'raw_tag' => 'Thighs', 'label' => 'Thanksgiving', ), )
 	private $focus_areas = array();
 
-	// Boolean array of recommended tags (label in db)
+	// Boolean array of recommended tags (ontology) - lowercase of raw tag!!!
 	//   Example: array ( 'gravy' => true, 'turkey' => true, 'thighs' => true, )
 	private $existing_fa_map = array();
 
@@ -52,13 +52,8 @@ class RecommendedTags extends \Hubzero\Base\Obj
 	const ENDORSED_TAG = 2;
 	const REGULAR_TAG  = 1;
 
-	public function __construct($pid, $vid, $existing, $db, $opts = array())
+	public function __construct($pid, $vid, $db)
 	{
-		$opts = array_merge(array(
-			'min_len' => 4,
-			'count'   => 20
-		), $opts);
-
 		$this->_db = $db;
 
 		// Need to make sure we actually need to worry about focus areas
@@ -98,38 +93,15 @@ class RecommendedTags extends \Hubzero\Base\Obj
 			WHERE to1.tbl = \'publications\' AND to1.objectid = ' . $vid
 		);
 
-		if (!$existing) {
-			foreach ($this->_db->loadAssocList() as $tag) {
-				if ($this->fa_properties && $tag['is_focus_area']) {
-					$this->focus_areas[] = array_intersect_key($tag, array_flip(array('id', 'raw_tag', 'label')));
-					$this->existing_fa_map[strtolower($tag['raw_tag'])] = true;
-				} else {
-					$this->existing_tags[] = $tag['raw_tag'];
-					$this->existing_map[strtolower($tag['raw_tag'])] = true;
-				}
-			}
-		} else {
-			foreach ($existing as $tag) {
-				if (!is_null($tag[2])) {
-					$this->existing_fa_map[strtolower($tag[0])] = true;
-				} else {
-					$this->existing_tags[] = $tag[0];
-					$this->existing_map[strtolower($tag[0])] = true;
-				}
+		foreach ($this->_db->loadAssocList() as $tag) {
+			if ($this->fa_properties && $tag['is_focus_area']) {
+				$this->focus_areas[] = array_intersect_key($tag, array_flip(array('id', 'raw_tag', 'label')));
+				$this->existing_fa_map[strtolower($tag['raw_tag'])] = true;
+			} else {
+				$this->existing_tags[] = $tag['raw_tag'];
+				$this->existing_map[strtolower($tag['raw_tag'])] = true;
 			}
 		}
-
-		$this->_db->setQuery('SELECT lower(raw_tag) AS raw_tag, CASE WHEN to1.id IS NULL THEN 0 ELSE 1 END AS is_endorsed
-			FROM #__tags t
-			LEFT JOIN #__tags_object to1 ON to1.tbl = \'tags\' AND to1.objectid = t.id AND to1.label = \'label\' AND to1.tagid = (SELECT id FROM #__tags WHERE tag = \'endorsed\')');
-
-		$tags = array();
-		foreach ($this->_db->loadAssocList() as $row) {
-			$tags[\Hubzero\Utility\Inflector::singularize($row['raw_tag'])] = $row['is_endorsed'] ? self::ENDORSED_TAG : self::REGULAR_TAG;
-			$tags[\Hubzero\Utility\Inflector::pluralize($row['raw_tag'])] = $row['is_endorsed'] ? self::ENDORSED_TAG : self::REGULAR_TAG;
-		}
-
-		// $this->tags = array();
 	}
 
 	public function get_tags()
@@ -234,9 +206,10 @@ class RecommendedTags extends \Hubzero\Base\Obj
 	 * @param   array    $labels        Tags
 	 * @param   integer  $parent_id     Tag ID
 	 * @param   string   $parent_label  Tag
+	 * @param	array	 $subset		Existing tags
 	 * @return  void
 	 */
-	public function loadFocusAreas($labels = null, $parent_id = null, $parent_label = null)
+	public function loadFocusAreas($labels = null, $parent_id = null, $parent_label = null, $subset = null)
 	{
 		if (is_null($labels)) {
 			$this->_db->setQuery(
@@ -256,7 +229,7 @@ class RecommendedTags extends \Hubzero\Base\Obj
 		$this->_db->setQuery(
 			$parent_id
 				// get tags labeled focus area and parented by the tag identified by $parent_id
-				? 'SELECT DISTINCT t.raw_tag AS label, to2.ordering, t2.id, t2.tag, t2.raw_tag, t2.description
+				? 'SELECT DISTINCT t.raw_tag AS label, to2.ordering, t2.id, t2.tag, t2.raw_tag, t2.description, t2.admin
           FROM #__tags t
           INNER JOIN #__tags_object to1 ON to1.tbl = \'tags\' AND to1.tagid = t.id AND to1.label = \'label\'
           INNER JOIN #__tags_object to2 ON to2.tbl = \'tags\' AND to2.label = \'parent\' AND to2.objectid = to1.objectid
@@ -265,7 +238,7 @@ class RecommendedTags extends \Hubzero\Base\Obj
           WHERE t.raw_tag = ' . $this->_db->quote($parent_label) . '
           ORDER BY to2.ordering'
 				// get tags that are labeled focus areas that are not also a parent of another tag labeled as a focus area
-				: 'SELECT DISTINCT t.raw_tag AS label, to1.ordering, t2.id, t2.tag, t2.raw_tag, t2.description
+				: 'SELECT DISTINCT t.raw_tag AS label, to1.ordering, t2.id, t2.tag, t2.raw_tag, t2.description, t2.admin
           FROM #__tags t
           LEFT JOIN #__tags_object to1 ON to1.tagid = t.id AND to1.label = \'parent\' AND to1.tbl = \'tags\'
           INNER JOIN #__tags t2 ON t2.id = to1.objectid
@@ -280,11 +253,16 @@ class RecommendedTags extends \Hubzero\Base\Obj
           ORDER BY t.tag, CASE WHEN t2.raw_tag LIKE \'other%\' THEN 1 ELSE 0 END, t2.raw_tag'
 		);
 		$fas = $this->_db->loadAssocList('raw_tag');
+		if ($subset) {
+			$fas = array_filter($fas, function($k) use ($subset) {
+				return array_key_exists(strtolower($k), $subset);
+			}, ARRAY_FILTER_USE_KEY);
+		}
 		foreach ($fas as &$fa) {
 			// Get label override (if exists)
 			$name = $this->get_name($fa['id']);
 			$fa['name'] = ($name ? $name : $fa['raw_tag']);
-			$fa['children'] = $this->loadFocusAreas($labels, $fa['id'], $fa['label']);
+			$fa['children'] = $this->loadFocusAreas($labels, $fa['id'], $fa['label'], $subset);
 		}
 		return $fas;
 	}
@@ -402,7 +380,7 @@ class RecommendedTags extends \Hubzero\Base\Obj
 	{
 		$tags = preg_split('/,\s*/', $_POST['tags']);
 		$push = array();
-		$map  = array();
+		$map  = array(); // Duplicate ($push[1] is same)
 
 		$this->_db->setQuery(
 			'SELECT fa.tag_id, t.raw_tag, fa.mandatory_depth AS minimum_depth, 0 AS actual_depth
@@ -415,6 +393,7 @@ class RecommendedTags extends \Hubzero\Base\Obj
 		);
 		$fas = $this->_db->loadAssocList('raw_tag');
 
+		// $k is the parent with `tagfa` prefix; $vs are the selected (checked) children normalized tags
 		foreach ($_POST as $k => $vs) {
 			if (!preg_match('/^tagfa/', $k)) {
 				continue;
@@ -502,6 +481,10 @@ class RecommendedTags extends \Hubzero\Base\Obj
 				$push[$idx][0] = $raw_tag;
 			}
 		}
+		echo 'Push (added keywords)<br>----<br>';
+		echo '<pre>' . var_export($push, true) . '</pre>';
+		echo 'Map (added keywords)<br>----<br>';
+		echo '<pre>' . var_export($map, true) . '</pre>';
 
 		// Going to manually do this like in Resources by deleting and then re-adding.
 		// NOTE: This changes the time stamp!  Refactor:  Modify com_tags/models/cloud::setTags

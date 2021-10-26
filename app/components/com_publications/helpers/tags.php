@@ -7,12 +7,12 @@
 
 namespace Components\Publications\Helpers;
 
-use Components\Tags\Models\Cloud;
+use Components\Publications\Models\PubCloud;
 use Route;
 use Date;
 use Lang;
 
-require_once \Component::path('com_tags') . DS . 'models' . DS . 'cloud.php';
+require_once \Component::path('com_publications') . DS . 'models' . DS . 'cloud.php';
 
 /**
  * Publication Tagging class
@@ -80,7 +80,7 @@ class Tags extends \Hubzero\Base\Obj
 	 */
 	public function get_tags_on_object($object_id, $offset=0, $limit=10, $tagger_id=null, $strength=0, $admin=0, $label='')
 	{
-		$cloud = new Cloud($object_id, $this->_tbl);
+		$cloud = new PubCloud($object_id, $this->_tbl);
 		return $cloud->tags('list', [
 			'objectid' => $object_id,
 			'tbl' => $this->_tbl
@@ -108,7 +108,7 @@ class Tags extends \Hubzero\Base\Obj
 			return false;
 		}
 
-		$cloud = new Cloud($object_id, $this->_tbl);
+		$cloud = new PubCloud($object_id, $this->_tbl);
 		return $cloud->add($tag, $tagger_id, 0, $strength, $label);
 	}
 
@@ -246,7 +246,7 @@ class Tags extends \Hubzero\Base\Obj
 	 */
 	public function tag_object($tagger_id, $object_id, $tag_string, $strength, $admin=false, $label='')
 	{
-		$cloud = new Cloud($object_id, $this->_tbl);
+		$cloud = new PubCloud($object_id, $this->_tbl);
 		return $cloud->setTags($tag_string, $tagger_id, $admin, $strength, $label);
 	}
 
@@ -261,7 +261,7 @@ class Tags extends \Hubzero\Base\Obj
 	 */
 	public function remove_tag($tagger_id, $object_id, $tag, $admin)
 	{
-		$cloud = new Cloud($object_id, $this->_tbl);
+		$cloud = new PubCloud($object_id, $this->_tbl);
 		return $cloud->remove($tag, $tagger_id);
 	}
 
@@ -273,7 +273,7 @@ class Tags extends \Hubzero\Base\Obj
 	 */
 	public function remove_all_tags($object_id)
 	{
-		$cloud = new Cloud($object_id, $this->_tbl);
+		$cloud = new PubCloud($object_id, $this->_tbl);
 		return $cloud->removeAll();
 	}
 
@@ -350,7 +350,7 @@ class Tags extends \Hubzero\Base\Obj
 	 */
 	public function get_tag_cloud($showsizes=0, $admin=0, $objectid=null)
 	{
-		$cloud = new Cloud($objectid, $this->_tbl);
+		$cloud = new PubCloud($objectid, $this->_tbl);
 		return $cloud->render();
 	}
 
@@ -367,7 +367,7 @@ class Tags extends \Hubzero\Base\Obj
 	 */
 	public function get_tag_string($oid, $offset=0, $limit=0, $tagger_id=null, $strength=0, $admin=0, $label='')
 	{
-		$cloud = new Cloud($oid, $this->_tbl);
+		$cloud = new PubCloud($oid, $this->_tbl);
 		return $cloud->render('string');
 	}
 

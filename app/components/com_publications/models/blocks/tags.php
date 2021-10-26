@@ -191,7 +191,7 @@ class Tags extends Base
 			return false;
 		}
 
-		$recommendedTagsHelper = new \Components\Publications\Helpers\RecommendedTags( $pub->id, $pub->version->id, 0, $this->_parent->_db );
+		$recommendedTagsHelper = new \Components\Publications\Helpers\RecommendedTags( $pub->id, $pub->version->id, $this->_parent->_db );
 		$recommendedTagsHelper->processTags( $pub->id, $pub->version->id );
 
 		// Reflect the update in curation record
@@ -222,7 +222,7 @@ class Tags extends Base
 		$status = new \Components\Publications\Models\Status();
 
 		$tagsHelper  = new \Components\Publications\Helpers\Tags( $this->_parent->_db);
-		$recommendedTagsHelper = new \Components\Publications\Helpers\RecommendedTags( $pub->id, $pub->version->id, 0, $this->_parent->_db );
+		$recommendedTagsHelper = new \Components\Publications\Helpers\RecommendedTags( $pub->id, $pub->version->id, $this->_parent->_db );
 
 		// Required?
 		$required = $manifest->params->required;
