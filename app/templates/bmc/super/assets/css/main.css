@@ -124,7 +124,7 @@
 /* Fixed at top */
 .super-group-header-wrap,
 .super-group-bar {
-  position: fixed;
+  position: absolute;
   width: 100%;
 }
 
@@ -165,7 +165,9 @@
   font-size: 1.19em;
   height: 41px;
   padding: 0 20px;
-  position: relative;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
   z-index: 150;
   /* margin-bottom: -40px; */
   /* Set this with javascript, as should be height of menu */
@@ -382,15 +384,6 @@
   text-align: left;
 }
 
-.super-group-menu-scrolled {
-  position: fixed;
-  /* Same as .super-group-header-wrap */
-  top: 44px;
-  /* Same as .super-group-header-wrap */
-  width: 100%;
-  /* Same as .super-group-header-wrap */
-}
-
 /**
  * Sidebar CSS
  *
@@ -429,7 +422,7 @@
 .sidebar-wrapper-fixed-top {
   bottom: initial !important;
   position: fixed !important;
-  top: 5.3125em !important;
+  top: 2.3125em !important;
 }
 
 .sidebar-wrapper-fixed-bottom {
@@ -807,7 +800,12 @@ a:hover {
 }
 
 .super-group-footer a {
-  color: #8bc240;
+  color: #fff;
+  text-decoration: underline;
+}
+.super-group-footer a svg {
+  height: 2.875rem;
+  width: auto;
 }
 
 /* Home Page */
@@ -953,4 +951,4 @@ automatic element placement by the Hub. */
     margin-left: 0 !important;
     margin-right: 0 !important;
   }
-}
+}/*# sourceMappingURL=main.css.map */

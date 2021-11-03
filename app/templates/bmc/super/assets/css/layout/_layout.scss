@@ -97,7 +97,13 @@ a:hover {
 
 .super-group-footer {
   a {
-    color: #8bc240;
+    color: $white;
+	text-decoration: underline;
+
+	svg {
+		height: 2.875rem;
+		width: auto;
+	}
   }
 }
 

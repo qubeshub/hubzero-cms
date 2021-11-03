@@ -24,7 +24,8 @@ $white: #fff;
 	font-size: 1.19em;
 	height: 41px;
 	padding: 0 20px;
-	position: relative;
+	position: sticky;
+  top: 0;
 	z-index: 150;
 	/* margin-bottom: -40px; */  /* Set this with javascript, as should be height of menu */
 }
@@ -292,10 +293,4 @@ $white: #fff;
       }
     }
   }
-}
-
-.super-group-menu-scrolled {
-	position: fixed;	/* Same as .super-group-header-wrap */
-	top: 44px;			/* Same as .super-group-header-wrap */
-	width: 100%;		/* Same as .super-group-header-wrap */
 }
