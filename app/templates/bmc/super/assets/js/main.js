@@ -126,39 +126,6 @@ jQuery(document).ready(function(jq) {
 		}
 		scrollTop = windowTop;
 
-		// Fade effect for "poweredby QUBES"
-		startBarFade = bannerHeight - barHeight;
-		if (windowTop > startBarFade) {
-			poweredBy.style["opacity"] = Math.max(1 - (4/startBarFade)*(windowTop-startBarFade), 0);
-			poweredBy.style["cursor"] = "default";
-			poweredBy.style["pointerEvents"] = "none";
-		} else {
-			poweredBy.style["opacity"] = 1.0;
-			poweredBy.style["cursor"] = "inherit";	// Doesn't reset properly on Firefox
-			poweredBy.style["pointerEvents"] = "inherit";
-		}
-
-		// Replace "poweredby QUBES" with group logo and title
-		if (windowTop > bannerHeight - (barHeight/2)) {
-			$headerId.addClass("header-id-scrolled");
-
-		} else {
-			$headerId.removeClass("header-id-scrolled");
-		}
-
-		if ($headerId.hasClass('header-id-scrolled') && $moreMenu.is(':visible')) {
-			$('.header-id > a > span').addClass('hide');
-		} else {
-			$('.header-id > a > span').removeClass('hide');
-		}
-
-		// Fix menu directly under QUBES navbar
-		if (windowTop > bannerHeight) {
-			$menuWrap.addClass("super-group-menu-scrolled");
-		} else {
-			$menuWrap.removeClass("super-group-menu-scrolled");
-		}
-
 		// Negative padding on $menuWrap is a headache!
 		// Fix sidebar directly under menu after announcements
 		if ($scontainer.length) {
