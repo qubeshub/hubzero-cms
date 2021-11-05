@@ -46,5 +46,14 @@ $(document).ready(function () {
         $(this).closest('.abstract-preview').addClass('hide');
         $($(this).attr('href')).removeClass('hide');
     })
+
+    // Tags
+    const tags = $('.tag')
+    let counter = tags.length
+
+    tags.each(function () {
+        $(this).css('z-index', counter)
+        counter--
+    })
 })
 

@@ -253,7 +253,7 @@ class RecommendedTags extends \Hubzero\Base\Obj
           ORDER BY t.tag, CASE WHEN t2.raw_tag LIKE \'other%\' THEN 1 ELSE 0 END, t2.raw_tag'
 		);
 		$fas = $this->_db->loadAssocList('raw_tag');
-		if ($subset) {
+		if (!is_null($subset)) {
 			$fas = array_filter($fas, function($k) use ($subset) {
 				return array_key_exists(strtolower($k), $subset);
 			}, ARRAY_FILTER_USE_KEY);
@@ -293,6 +293,33 @@ class RecommendedTags extends \Hubzero\Base\Obj
 			}
 		}
 		return '';
+	}
+
+	public function flatten_paths(&$array, &$stack = array(), &$paths = array()) {
+		if (!array_key_exists('children', $array)) {
+			// Root case
+			array_walk($array, function($v) use (&$stack, &$paths) {
+				$this->flatten_paths($v, $stack, $paths);
+			});
+			return $paths;
+		} else {
+			// Add to stack if not admin
+			if (!$array['admin']) {
+				$stack[] = array($array['raw_tag'] => $array['tag']);
+			}
+			if (count($array['children']) == 0) {
+				// Store stack (if exists)
+				if ($stack) {
+					$paths[] = array_merge(...$stack);
+				}
+			} else {
+				// Call children
+				array_walk($array['children'], function($v) use (&$stack, &$paths) {
+					$this->flatten_paths($v, $stack, $paths);
+				});
+			}
+		}
+		array_pop($stack);
 	}
 
 	public function flatten($array, $filter = 'tag')
@@ -481,10 +508,6 @@ class RecommendedTags extends \Hubzero\Base\Obj
 				$push[$idx][0] = $raw_tag;
 			}
 		}
-		echo 'Push (added keywords)<br>----<br>';
-		echo '<pre>' . var_export($push, true) . '</pre>';
-		echo 'Map (added keywords)<br>----<br>';
-		echo '<pre>' . var_export($map, true) . '</pre>';
 
 		// Going to manually do this like in Resources by deleting and then re-adding.
 		// NOTE: This changes the time stamp!  Refactor:  Modify com_tags/models/cloud::setTags

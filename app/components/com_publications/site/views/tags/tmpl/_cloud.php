@@ -8,9 +8,6 @@
 // No direct access.
 defined('_HZEXEC_') or die();
 
-echo '<pre>' . var_export($this->tags, true) . '</pre>';
-die;
-
 if (!count($this->tags))
 {
     echo '';
@@ -19,24 +16,23 @@ if (!count($this->tags))
 
 // build HTML
 $tll = array();
-foreach ($this->tags as $tag => $tag_obj)
-{
-    $tll[$tag]  = '<li class="top-level' . (count($tag_obj['children']) ? ' sub-tags' : '') . '">';
-    $tll[$tag] .= '<a class="tag' . $link_class . '" href="' . Route::url('index.php?option=com_tags&tag=' . $tag->get('tag')) . '">' . $this->escape(stripslashes($tag->get('raw_tag')));
-    if ($this->config->get('show_tag_count', 0))
-    {
-        $tll[$tag->get('tag')] .= ' <span>' . $tag->get('count') . '</span>';
+foreach ($this->tags as $tag) {
+    $last_tag = end($tag);
+    $first_tag = reset($tag);
+    foreach($tag as $raw => $subtag) {
+        $classes = trim(implode(" ", array($subtag === $first_tag ? 'top-level' : null, $subtag !== $last_tag ? 'sub-tags' : null)));
+        // Opening...
+        $tll[] = '<li' . ($classes ? ' class="' . $classes . '"' : '') . '>';
+        $tll[] = '<a class="tag" href="' . Route::url('index.php?option=com_tags&tag=' . $last_tag) . '">' . $this->escape(stripslashes($raw)) . '</a>';
+        if ($subtag !== $last_tag) {
+            $tll[] = '<ol class="tags">';
+        }
     }
-    $tll[$tag->get('tag')] .= '</a>';
-    if ($this->config->get('show_sizes') == 1)
-    {
-        $tll[$tag->get('tag')] .= '</span>';
+    // ...Closing
+    $tll[] = '</li>';
+    for ($x = 2; $x <= count($tag); $x++) {
+        $tll = array_merge($tll, array('</ol>', '</li>'));
     }
-    $tll[$tag->get('tag')] .= '</li>';
-}
-if ($this->config->get('show_tags_sort', 'alpha') == 'alpha')
-{
-    ksort($tll);
 }
 
 $html  = '<ol class="tags top">' . "\n";

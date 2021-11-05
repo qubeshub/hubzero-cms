@@ -23,17 +23,6 @@ class PubCloud extends Cloud
      */  
     protected $_scope = 'publications';  
 
-    private function knowThyLeaves(&$tags) {
-        foreach ($tags as $tag => &$tag_obj) {
-            if (count($tag_obj['children'])) {
-                $tag_obj['leaf'] = $this->knowThyLeaves($tag_obj['children']);
-            } else {
-                $tag_obj['leaf'] = $tag_obj['tag'];
-                return $tag_obj['tag'];
-            }
-        }
-    }
-
     /**
 	 * Render a tag cloud
 	 *
@@ -95,15 +84,13 @@ class PubCloud extends Cloud
                         $fa_tree[$raw_tag] = $atag;
                     }
 
-                    $this->knowThyLeaves($fa_tree);
-        
 					$view = new View(array(
 						'base_path' => dirname(__DIR__) . '/site',
 						'name'      => 'tags',
 						'layout'    => '_cloud'
 					));
 					$view->set('config', \Component::params('com_tags'))
-					     ->set('tags', $fa_tree);
+					     ->set('tags', $recommendedTagsHelper->flatten_paths($fa_tree));
 
 					$this->_cache['tags.cloud'] = $view->loadTemplate();
 				}
