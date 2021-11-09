@@ -629,14 +629,21 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 	 */
 	public function link($type = '')
 	{
-		$base  = 'index.php?option=com_publications';
-		$base .= $this->publication->get('alias') ? '&alias=' . $this->publication->get('alias') : '&id=' . $this->get('publication_id');
-
 		if (strpos($type, 'edit') !== false)
 		{
 			$base = $this->publication->project->isProvisioned()
 				? 'index.php?option=com_publications&task=submit'
 				: 'index.php?option=com_projects&alias=' . $this->publication->project->get('alias') . '&active=publications';
+		} else {
+			$id = $this->publication->get('alias') ? '&alias=' . $this->publication->get('alias') : '&id=' . $this->get('publication_id');
+			$master_type = $this->publication->type;
+			if ($master_type->ownergroup) {
+				$group = \Hubzero\User\Group::getInstance($master_type->ownergroup);
+				$base = 'index.php?option=com_groups&cn=' . $group->cn . '&active=publications';
+			} else {
+				$base = 'index.php?option=com_publications';
+			}
+			$base .= $id;
 		}
 
 		switch (strtolower($type))
@@ -646,11 +653,13 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 			break;
 
 			case 'thumb':
-				$link = 'index.php?option=com_publications&id=' . $this->get('publication_id') . '&v=' . $this->get('id') . '&media=Image:thumb';
+				$src = Helpers\Html::getThumb($this->publication->get('id'), $this->get('id'), $this->publication->config());
+				$link = with(new \Hubzero\Content\Moderator($src, 'public'))->getUrl();
+				// $link = 'index.php?option=com_publications&id=' . $this->get('publication_id') . '&v=' . $this->get('id') . '&media=Image:thumb';
 			break;
 
 			case 'masterimage':
-				$link = 'index.php?option=com_publications&id=' . $this->get('publication_id') . '&v=' . $this->get('id') . '&media=Image:master';
+				$link = 'index.php?option=com_publications&v=' . $this->get('id') . '&media=Image:master';
 			break;
 
 			case 'serve':
@@ -787,7 +796,7 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 		$description = \Hubzero\Utility\Sanitize::stripAll($description);
 
 		$obj->description   = $description;
-		$obj->url = rtrim(Request::root(), '/') . Route::urlForClient('site', $this->link());
+		$obj->url = rtrim(Request::root(), '/') . Route::urlForClient('site', $this->link('version'));
 		$obj->doi = $this->get('doi');
 
 		$tags = $this->tags();
