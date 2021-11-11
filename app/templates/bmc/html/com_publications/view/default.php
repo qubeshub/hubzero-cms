@@ -177,7 +177,3 @@ $tabOverrides = array(
 		</div>
 	</div>
 </div>
-<!-- 
-<?php
-	echo '<script src="/app/templates/bmc/html/com_publications/sticky_header.js" type="text/javascript></script>';
-?> -->
