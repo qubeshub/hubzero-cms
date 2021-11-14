@@ -110,6 +110,62 @@ ul li {
   font-family: 'Roboto';
   font-weight: 300;
 }
+.account-details .component-button {
+  cursor: pointer;
+}
+.account-details .component-button .nav-icon-more {
+  float: right;
+}
+.account-details .component-button .nav-icon-more svg {
+  top: 0.2rem;
+  margin-left: 1rem;
+}
+.account-details .component-button .nav-icon-back svg {
+  margin-left: 0.5em;
+  width: 1rem;
+}
+.account-details [class^="nav-icon"] {
+  fill: #fff;
+}
+.account-details [class^="nav-icon"] svg {
+  margin-right: 0.5em;
+  width: 1.2rem;
+}
+.account-details .icon-plus::before,
+.account-details .icon-browse::before {
+  margin-right: 0.5em;
+}
+.account-details .component-panel {
+  background: #292929;
+  color: #fff;
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  margin-right: -400px;
+  max-width: 400px;
+  overflow-y: scroll;
+  padding: 20px;
+  -moz-transition: all ease 0.2s;
+  -o-transition: all ease 0.2s;
+  -webkit-transition: all ease 0.2s;
+  transition: all ease 0.2s;
+  -webkit-transition-delay: 0;
+  -moz-transition-delay: 0;
+  -ms-transition-delay: 0;
+  -o-transition-delay: 0;
+}
+.account-details .component-panel.show {
+  margin-right: 0;
+}
+.account-details .component-panel ul {
+  padding: 0;
+  margin: 1rem 0;
+  border-bottom: 1px solid #666;
+}
+.account-details .component-panel h2 {
+  color: #fff;
+}
 .account-details button {
   display: block;
   position: absolute;
