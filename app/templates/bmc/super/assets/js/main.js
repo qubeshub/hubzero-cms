@@ -126,6 +126,14 @@ jQuery(document).ready(function(jq) {
 		}
 		scrollTop = windowTop;
 
+		if (scrollingDown) {
+			$brandingBar.removeClass('brand-out')
+			$menuWrap.css('top', 0)
+		} else {
+			$brandingBar.addClass('brand-out')
+			$menuWrap.css('top', 44 + 'px')
+		}
+
 		// Negative padding on $menuWrap is a headache!
 		// Fix sidebar directly under menu after announcements
 		if ($scontainer.length) {

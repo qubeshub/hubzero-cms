@@ -70,7 +70,7 @@ $membership_control = $params->get('membership_control', 1);
 <body class="contentpane" id="group-body">
 <jdoc:include type="modules" name="notices" />
 
-<div class="super-group-bar">
+<div class="super-group-bar brand-out">
 	<div class="content cf">
 		<div class="skip-nav">
 			<a href="#maincontent">Skip to Main Content</a>

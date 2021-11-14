@@ -329,11 +329,13 @@ body.panel-open .hub-overlay {
 /* Group Bar */
 .super-group-bar {
   background: #000000;
-  z-index: 999;
+  z-index: 1001;
   /* Was 1001 */
-  height: 44px;
+  height: 0;
   font-family: 'Ubuntu', sans-serif;
   font-weight: 400;
+  overflow-y: hidden;
+  transition: 0.2s;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -474,6 +476,9 @@ body.panel-open .hub-overlay {
 }
 .super-group-bar .content .subnav li {
   list-style: none;
+}
+.brand-out {
+  height: 2.75rem;
 }
 /* BEGIN: Supergroup template fixes */
 /* REMOVE LATER */

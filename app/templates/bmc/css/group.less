@@ -225,10 +225,12 @@ body.panel-open {
 /* Group Bar */
 .super-group-bar {
 	background: #000000;
-	z-index: 999; /* Was 1001 */
-	height: 44px;
+	z-index: 1001; /* Was 1001 */
+	height: 0;
 	font-family: 'Ubuntu', sans-serif;
 	font-weight: 400;
+	overflow-y: hidden;
+	transition: .2s;
 
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
@@ -406,6 +408,10 @@ body.panel-open {
 
 		}
 	}
+}
+
+.brand-out {
+	height: 2.75rem;
 }
 
 /* BEGIN: Supergroup template fixes */
