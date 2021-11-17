@@ -130,7 +130,7 @@ $membership_control = $params->get('membership_control', 1);
 									<a href="<?php echo Route::url('index.php?option=com_members&id=' . User::get('id') . '&active=profile'); ?>"><span><?php echo Lang::txt('TPL_SYSTEM_ACCOUNT_PROFILE'); ?></span></a>
 								</li>
 								<li id="account-logout">
-									<a href="<?php echo Route::url('index.php?option=com_users&view=logout'); ?>"><span><?php echo Lang::txt('TPL_SYSTEM_LOGOUT'); ?></span></a>
+									<a href="<?php echo Route::url('index.php?option=com_users&view=logout&return=' . base64_encode($return)); ?>"><span><?php echo Lang::txt('TPL_SYSTEM_LOGOUT'); ?></span></a>
 								</li>
 							</ul>
 
