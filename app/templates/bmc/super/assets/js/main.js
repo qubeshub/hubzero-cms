@@ -126,11 +126,10 @@ jQuery(document).ready(function(jq) {
 		}
 		scrollTop = windowTop;
 
-		if (scrollingDown) {
-			$brandingBar.removeClass('brand-out')
+		// Adjust placement of navigation bar if branding bar is showing
+		if (scrollingDown && !$brandingBar.hasClass('brand-out')) {
 			$menuWrap.css('top', 0)
-		} else {
-			$brandingBar.addClass('brand-out')
+		} else if (!scrollingDown && $brandingBar.hasClass('brand-out')) {
 			$menuWrap.css('top', 44 + 'px')
 		}
 

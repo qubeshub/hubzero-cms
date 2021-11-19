@@ -110,6 +110,10 @@ ul li {
   font-family: 'Roboto';
   font-weight: 300;
 }
+.account-details .user-image img {
+  border-radius: 50%;
+  width: 2.889rem;
+}
 .account-details .component-button {
   cursor: pointer;
 }
@@ -390,8 +394,11 @@ body.panel-open .hub-overlay {
   height: 0;
   font-family: 'Ubuntu', sans-serif;
   font-weight: 400;
+  position: fixed;
   overflow-y: hidden;
+  top: 0;
   transition: 0.2s;
+  width: 100%;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

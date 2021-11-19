@@ -106,6 +106,13 @@ ul li {
 		}
 	}
 
+	.user-image {
+		img {
+			border-radius: 50%;
+			width: 2.889rem;
+		}
+	}
+
 	.component-button {
 		cursor: pointer;
 
@@ -296,8 +303,11 @@ body.panel-open {
 	height: 0;
 	font-family: 'Ubuntu', sans-serif;
 	font-weight: 400;
+	position: fixed;
 	overflow-y: hidden;
+	top: 0;
 	transition: .2s;
+	width: 100%;
 
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;

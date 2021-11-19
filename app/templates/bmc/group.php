@@ -112,7 +112,7 @@ $membership_control = $params->get('membership_control', 1);
 							<div class="user-info">
 								<a href="<?php echo Route::url('index.php?option=com_members&id=' . User::get('id')); ?>" class="cf">
 																<span class="user-image">
-																	<img src="<?php echo $profile->getPicture(); ?>"
+																	<img src="<?php echo User::picture(); ?>"
 																		 alt="<?php echo User::get('name'); ?>"/>
 																</span>
 
@@ -131,8 +131,7 @@ $membership_control = $params->get('membership_control', 1);
 									<a href="<?php echo Route::url('index.php?option=com_members&id=' . User::get('id') . '&active=dashboard'); ?>"><span class="nav-icon-dashboard"><?php echo file_get_contents(PATH_CORE . DS . "assets/icons/th-large.svg") ?></span><span><?php echo Lang::txt('TPL_SYSTEM_ACCOUNT_DASHBOARD'); ?></span></a>
 								</li>
 
-								<jdoc:include type="modules" name="sg_minidash" />
-								<!-- <jdoc:include type="modules" name="sg_minidash" /> -->
+								<jdoc:include type="modules" name="minidash" />
 
 								<li id="account-logout">
 									<a href="<?php echo Route::url('index.php?option=com_users&view=logout'); ?>"><span class="nav-icon-logout"><?php echo file_get_contents(PATH_CORE . DS . "assets/icons/signout.svg") ?></span><span><?php echo Lang::txt('TPL_SYSTEM_LOGOUT'); ?></span></a>

@@ -110,11 +110,6 @@
   bottom: 2px;
 }
 
-/* Bar needs to be at top */
-.super-group-bar {
-  top: 0;
-}
-
 /* Offset by height of bar, and make sure in the back */
 .super-group-header-wrap {
   top: 44px;
@@ -122,8 +117,7 @@
 }
 
 /* Fixed at top */
-.super-group-header-wrap,
-.super-group-bar {
+.super-group-header-wrap {
   position: absolute;
   width: 100%;
 }
