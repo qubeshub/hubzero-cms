@@ -42,9 +42,9 @@ jQuery(document).ready(function(jq){
 		scrollTop = windowTop;
 
 		if (scrollingDown) {
-			HUB.template.menuWrap.css('top', 0)
+			HUB.template.brandingBar.removeClass('brand-out')
 		} else {
-			HUB.template.menuWrap.css('top', 44 + 'px')
+			HUB.template.brandingBar.addClass('brand-out')
 		}
 	})
 
