@@ -143,7 +143,7 @@ class plgPublicationsShare extends \Qubeshub\Plugin\Plugin
 				break;
 
 			case 'twitter':
-				$link = 'http://twitter.com/home?status=' . urlencode(Lang::txt('PLG_PUBLICATION_SHARE_VIEWING', Config::get('sitename'), stripslashes($publication->title) . ' ' . $url));
+				$link = 'https://twitter.com/intent/tweet?text=' . urlencode(Lang::txt('PLG_PUBLICATION_SHARE_VIEWING', Config::get('sitename'), stripslashes($publication->title))) . '&url=' . urlencode($url);
 				break;
 
 			case 'google':

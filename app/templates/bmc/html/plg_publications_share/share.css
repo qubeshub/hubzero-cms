@@ -1,0 +1,14 @@
+@import url("/app/plugins/publications/share/assets/css/share.css");
+[class^=share_]:before, [class*=" share_"]:before {
+  font-size: 2rem;
+  height: 2rem;
+  width: 2rem;
+}
+
+.share_reddit {
+  background: url("./img/Reddit_Mark_OnWhite.png") no-repeat;
+  background-size: contain;
+  display: inline-block;
+  height: 2rem;
+  width: 2rem;
+}/*# sourceMappingURL=share.css.map */
