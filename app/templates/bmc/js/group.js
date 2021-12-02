@@ -130,6 +130,8 @@ jQuery(document).ready(function(jq){
 			wrap:'<div class="fancybox-wrap"><div class="fancybox-skin"><div class="fancybox-outer"><div id="fancybox-message-container"></div><div id="sbox-content" class="fancybox-inner"></div></div></div></div>'
 		},
 		beforeLoad: function() {
+			// Load some css and js files
+			
 			// Add login.css
 			var link = document.createElement('link');
 			link.setAttribute('id', 'login_css');
@@ -141,7 +143,14 @@ jQuery(document).ready(function(jq){
 			var link = document.createElement('link');
 			link.setAttribute('id', 'register_css');
 			link.setAttribute('rel', 'stylesheet');
-			link.setAttribute('href', '/core/components/com_members/site/assets/css/register.css');
+			link.setAttribute('href', '/app/components/com_members/site/assets/css/register.css');
+			document.head.appendChild(link);
+
+			// Add register.js
+			var link = document.createElement('script');
+			link.setAttribute('id', 'register_js');
+  			link.setAttribute('type', 'text/javascript');
+  			link.setAttribute('src', '/app/components/com_members/site/assets/js/register.js');
 			document.head.appendChild(link);
 
 			// Add providers.css
@@ -161,34 +170,52 @@ jQuery(document).ready(function(jq){
 			href = $(this).attr('href');
 			$(this).attr('href', href.nohtml());
 		},
-		beforeShow: function(current, upcoming) {
-			// Remove header (if needed)
-			// document.getElementById('content-header').remove();
-		},
 		afterClose: function () {
 			// Remove unnecessary css elements
-			document.getElementById('login_css').remove();
-			document.getElementById('register_css').remove();
-			document.getElementById('providers_css').remove();
-			document.getElementById('google_css').remove();
+			$('#login_css').remove();
+			$('#register_css').remove();
+			$('#register_js').remove();
+			$('#providers_css').remove();
+			$('#google_css').remove();
 		}
 	});
 
+	// Handle link navigation
 	$(document).on('click', '.fancybox-inner a:not(.primary):not(.google)', function(e) {
 		e.preventDefault();
-		$.get($(this).attr('href').nohtml(), {}, function(response) {
-			// Remove header (if needed)
-			// var doc = new DOMParser().parseFromString(response, "text/html");
-			// var header = doc.getElementsByTagName('header');
-			// header[0].parentNode.removeChild(header[0]);
-			// $('div#sbox-content').html(doc.body.innerHTML);
-			$('div#sbox-content').html(response);
-			$.fancybox.update();
-		});
+
+		var target = $(this);
+		// Need to add this back (only exists on new account page)
+		if (this.innerHTML === "Log in here.") {
+			// Add login.css
+			var link = document.createElement('link');
+			link.setAttribute('id', 'login_css');
+			link.setAttribute('rel', 'stylesheet');
+			link.setAttribute('href', '/app/templates/bmc/html/com_users/login.css');
+			document.head.appendChild(link);
+		}
+		if (this.innerHTML !== "support" && this.innerHTML !== "Terms of Use") {
+			// For most clicked links, render page in pop-up
+			$.get($(this).attr('href').nohtml(), {}, function(response) {
+				$('div#sbox-content').html(response);
+				$.fancybox.update();
+				
+				// For new accounts, need to remove some css and load some JS
+				if (target.hasClass('register')) {
+					// This css clashes with new account page (can add back later)
+					$('#login_css').remove();
+					HUB.Register.initialize();
+				}
+			});
+		} else {
+			// Open a new window for support and terms of use pages
+			window.open(this.href).focus();
+		} 
 	})
-	.on('submit', 'form', function(e) {
+	.on('submit', '.fancybox-inner form', function(e) {
 		e.preventDefault();
 
+		// Send forms via AJAX - if successful, close pop-up
 		var el = $(this);
 		var formData = new FormData(this);
 		$.ajax({
@@ -199,22 +226,14 @@ jQuery(document).ready(function(jq){
 			contentType: false,
 			dataType: "json",
 			success: function(response, status, xhr) {
-				// Need to refactor /community/members/reminding?controller=credentials
-				//  to return error message using TPL notifications (see comments.js)
 				console.log(response);
-				if (response.error) {
-					// Convert
-					message = { type: 'error', message: response.error };
-					HUB.template.renderMessages(message, Infinity, $container = $('#fancybox-message-container')); // This example makes the success messages sticky
+				if (response.error || !response.success) {
+					message = { type: 'error', message: (response.error ? response.error : response.message) };
+					HUB.template.renderMessages(message, Infinity, $container = $('#fancybox-message-container'));
 				} else if (response.success) {
 					$.fancybox.close(true);
 					location.href = response.redirect;
-				} // else {
-				// 	$.get(response.freturn, {}, function(response) {
-				// 		$('div#sbox-content').html(response);
-				// 		$.fancybox.update();
-				// 	});
-				// }
+				}
 			},
 			error: function(xhr, status, error) {
 				console.log("Error!");

@@ -503,7 +503,7 @@ body.panel-open .hub-overlay {
 }
 #fancybox-message-container {
   position: absolute;
-  top: 123px;
+  top: 0;
   z-index: 1;
   width: 100%;
 }
