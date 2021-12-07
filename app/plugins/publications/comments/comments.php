@@ -87,7 +87,7 @@ class plgPublicationsComments extends \Qubeshub\Plugin\Plugin
 		$this->option = $option;
 		$this->obj_id   = $publication->version->id;
 		$this->obj_type = substr($option, 4);
-		$this->url = $publication->link('version') . '&active=' . $this->_name;
+		$this->url = $publication->link('comments') . '&active=' . $this->_name;
 
 		include_once __DIR__ . '/models/comment.php';
 

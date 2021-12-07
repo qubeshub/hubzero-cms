@@ -2091,14 +2091,15 @@ class Publication extends Obj
 				$link = $this->_base . '&v=' . $this->get('version_id');
 			break;
 
+			// Plugins - coming from AJAX
 			case 'questions':
-			case 'versions':
-			case 'supportingdocs':
+			case 'versions': // (refactor) Can likely remove
+			case 'supportingdocs': // (refactor) Can likely remove
 			case 'reviews':
 			case 'comments':
 			case 'wishlist':
 			case 'citations':
-				$link = $this->_base . '&v=' . $this->get('version_number') . '&active=' . strtolower($type);
+				$link = 'index.php?option=com_publications' . $id . '&v=' . $this->get('version_number') . '&active=' . strtolower($type);
 			break;
 
 			case 'edit':
