@@ -176,7 +176,7 @@ $author_modified = ($this->comment->get('modified_by') == $this->comment->get('c
 				<?php } ?>
 					<a class="icon-copy copy">
 						<?php echo Lang::txt('PLG_PUBLICATIONS_COMMENTS_COPY_LINK'); ?>
-						<textarea class="js-copytextarea"><?php echo rtrim(Request::base(), '/') . Route::url($this->comment->link()); ?></textarea>
+						<textarea class="js-copytextarea"><?php echo rtrim(Request::base(), '/') . Route::url($this->comment->link('permalink')); ?></textarea>
 					</a>
 					<a class="icon-abuse abuse" data-txt-flagged="<?php echo Lang::txt('PLG_PUBLICATIONS_COMMENTS_REPORTED_AS_ABUSIVE'); ?>" href="<?php echo Route::url($this->comment->link('report')); ?>"><!--
 						--><?php echo Lang::txt('PLG_PUBLICATIONS_COMMENTS_REPORT_ABUSE'); ?><!--

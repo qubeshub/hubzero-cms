@@ -8,8 +8,11 @@
 namespace Plugins\Publications\Comments\Models;
 
 use Hubzero\Item\Comment as ItemComment;
+use Components\Publications\Models\Orm\Version as Version;
 
 require_once __DIR__ . '/file.php';
+require_once Component::path('com_publications') . DS . 'models' . DS . 'orm' . DS . 'version.php';
+require_once Component::path('com_publications') . DS . 'models' . DS . 'orm' . DS . 'publication.php';
 
 /**
  * Model for a comment
@@ -86,6 +89,10 @@ class Comment extends ItemComment
 			break;
 
 			case 'permalink':
+				// Little complicated to allow for supergroup overrides
+				$version = Version::one($this->get('item_id'));
+				$link = $version->link('versionid');
+				$link = $link . (!strpos($link, 'active=publications') ? '&active=comments' : '');
 			default:
 				$link .= '#c' . $this->get('id');
 			break;
