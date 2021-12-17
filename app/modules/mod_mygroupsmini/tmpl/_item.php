@@ -15,8 +15,8 @@ defined('_HZEXEC_') or die();
 	 $path = PATH_APP . '/site/groups/' . $group1->get('gidNumber') . '/uploads/' . $group1->get('logo');
    ?>
 	 <?php if ($group1->get('logo') && is_file($path)) { ?>
-	 <?php echo '  <a class="group-img" href="' . Route::url('index.php?option=com_groups&cn='. $group1->get('cn')) . '">'; ?>
-	 <?php echo '      <img src="' . with(new Hubzero\Content\Moderator($path))->getUrl() . '" alt="' . $this->escape(stripslashes($group1->get('description'))) . '" />'; ?>
+	 <?php echo '  <a href="' . Route::url('index.php?option=com_groups&cn='. $group1->get('cn')) . '">'; ?>
+	 <?php echo '      <img class="group-img" src="' . with(new Hubzero\Content\Moderator($path))->getUrl() . '" alt="' . $this->escape(stripslashes($group1->get('description'))) . '" />'; ?>
 	 <?php echo '  </a>'; ?>
    <?php }
    else { ?>
