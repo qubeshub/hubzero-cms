@@ -25,7 +25,7 @@
   position: sticky;
   top: 3.5rem;
   transition: 0.2s;
-  z-index: 1000;
+  z-index: 20;
 }
 .title-wrapper .back {
   grid-column: 1/span 1;
@@ -89,8 +89,7 @@
 .isSticky h2 {
   font-size: 1.7rem;
 }
-.isSticky .orgs,
-.isSticky .usage {
+.isSticky .stats {
   display: none;
 }
 .isSticky img {
@@ -381,9 +380,6 @@ ol.tags {
 }
 .top.tags .tag.admin {
   display: none;
-}
-.top.tags .top-level > .tag {
-  padding: 4px 10px;
 }
 .top.tags .top-level {
   margin-left: 1em;

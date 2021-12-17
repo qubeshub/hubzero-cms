@@ -48,12 +48,15 @@ $(document).ready(function () {
     })
 
     // Tags
-    const tags = $('.tag')
-    let counter = tags.length
+    const topLevelTag = $('.top-level')
+    topLevelTag.each(function () {
+        const subTags = $(this).find('.tag')
+        let counter = subTags.length
 
-    tags.each(function () {
-        $(this).css('z-index', counter)
-        counter--
+        subTags.each(function () {
+            $(this).css('z-index', counter)
+            counter--
+        })
     })
 })
 
