@@ -473,7 +473,7 @@ class Owner extends Table
 		$query   =  "SELECT DISTINCT ";
 		if (!$select)
 		{
-			$query .= " o.*, x.name, x.username, x.organization, x.picture, g.cn as groupname, g.description as groupdesc, p.created_by_user ";
+			$query .= " o.*, x.name, x.username, IF (up.organization IS NOT NULL, up.organization, x.organization) AS organization, x.picture, g.cn as groupname, g.description as groupdesc, p.created_by_user ";
 			$query .= ", if (o.userid = 0, o.invited_name, x.name) as fullname ";
 			if ($pub)
 			{
@@ -488,10 +488,11 @@ class Owner extends Table
 		$query .= " JOIN #__projects as p ON o.projectid=p.id";
 		if ($pub)
 		{
-			$query .= " LEFT JOIN #__publication_authors as pa ON o.id=pa.project_owner_id AND pa.publication_version_id=" . $this->_db->quote($pub);
+			$query .= " LEFT JOIN (SELECT * FROM #__publication_authors WHERE status = 1) as pa ON o.id=pa.project_owner_id AND pa.publication_version_id=" . $this->_db->quote($pub);
 		}
 		$query .=  " LEFT JOIN #__xprofiles as x ON o.userid=x.uidNumber ";
 		$query .=  " LEFT JOIN #__xgroups as g ON o.groupid=g.gidNumber ";
+		$query .=  " LEFT JOIN (SELECT user_id, profile_value AS organization FROM #__user_profiles WHERE profile_key = 'organization') AS up ON o.userid=up.user_id ";
 
 		if (is_numeric($projectid))
 		{
