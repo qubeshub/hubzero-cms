@@ -48,7 +48,7 @@ Document::addScript($base . '/assets/js/ElementQueries.js');
 if (file_exists(PATH_ROOT . $uploads . DS . "favicon.ico")):
 	$favicon = $uploads . DS . "favicon.ico";
 else:
-	$favicon = "/app/templates/qubes/favicon.ico";
+	$favicon = "/app/templates/bmc/favicon.ico";
 endif;
 ?>
 
