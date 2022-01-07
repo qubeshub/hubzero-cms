@@ -110,6 +110,7 @@ jQuery(document).ready(function(jq) {
 	var scrollTop = 0;
 	var bannerHeight = $(".super-group-header-overlay").height();
 	var barHeight = $(".super-group-bar").height();
+	var $brandingBar = $('.super-group-bar');
 
 	var windowTop = 0;
 	var startBarFade = 0;
