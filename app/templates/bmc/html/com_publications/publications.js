@@ -16,9 +16,13 @@ window.addEventListener("DOMContentLoaded", function () {
 
     // Adjust header placement on scroll
     document.querySelector('.content-panel').onscroll = function () {
-        const   subMenu = document.querySelector(".sub"),
-                header = document.querySelector('.title-wrapper')
-        if (header.classList.contains('isSticky') && subMenu.classList.contains('out')) {
+        const subMenu = document.querySelector(".sub"),
+            header = document.querySelector('.title-wrapper'),
+            mobile = document.querySelector('.with-sub')
+        
+        if (header.classList.contains('isSticky') && mobile.classList.contains('mobile')) {
+            header.style.top = "56px"
+        } else if (header.classList.contains('isSticky') && subMenu.classList.contains('out')) {
             header.style.top = "56px"
         } else if (header.classList.contains('isSticky') && !subMenu.classList.contains('out')) {
             header.style.top = "113px"
