@@ -1,0 +1,51 @@
+/**
+ * @package    hubzero-cms
+ * @copyright  Copyright 2005-2020 The Regents of the University of California.
+ * @license    http://opensource.org/licenses/MIT MIT
+ */
+
+/*
+
+	-- -- -- -- -- -- --
+	mod_mycollectionsmini
+	-- -- -- -- -- -- --
+
+*/
+
+.truncate {
+	display: block; /* Fallback for non-webkit */
+	display: -webkit-box;
+	height: 2.4em; /* Fallback for non-webkit */
+	margin: 0 auto;
+	font-size: 1em;
+	line-height: 1.2;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#mycollectionsmini div.grpdisp{
+	display:table;
+	width: 100%;
+}
+
+#mycollectionsmini div .group-name{
+	vertical-align:middle;
+	display:table-cell;
+	padding-left:15px;
+}
+
+#mycollectionsmini div.grpdisp .group-img{
+	vertical-align:middle;
+	display:table-cell;
+	width:45px;
+	background: #fff;
+	padding: 2px;
+}
+
+#mycollectionsmini div.a.group-img img{
+	height:45px;
+	width: 100%;
+	vertical-align:middle;
+}

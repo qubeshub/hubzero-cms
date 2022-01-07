@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<extension version="1.5.0" client="site" type="module">
+	<name>mod_mycollectionsmini</name>
+	<author>HUBzero</author>
+	<authorUrl>hubzero.org</authorUrl>
+	<authorEmail>support@hubzero.org</authorEmail>
+	<copyright>Copyright (c) 2005-2020 The Regents of the University of California.</copyright>
+	<license>http://opensource.org/licenses/MIT MIT</license>
+	<description>MOD_MYCOLLECTIONSMINI_XML_DESCRIPTION</description>
+	<files>
+		<filename module="mod_mycollectionsmini">mod_mycollectionsmini.php</filename>
+		<filename>index.html</filename>
+		<filename>helper.php</filename>
+	</files>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="moduleclass" type="text" default="" label="MOD_MYCOLLECTIONSMINI_PARAM_CLASS_LABEL" description="MOD_MYCOLLECTIONSMINI_PARAM_CLASS_DESC" />
+				<field name="limit" type="text" default="5" label="MOD_MYCOLLECTIONSMINI_PARAM_LIMIT_LABEL" description="MOD_MYCOLLECTIONSMINI_PARAM_LIMIT_DESC" member_dashboard="1" />
+				<field name="include_myposts" type="list" default="1" label="MOD_MYCOLLECTIONSMINI_PARAM_MYPOSTS_LABEL" description="MOD_MYCOLLECTIONSMINI_PARAM_MYPOSTS_DESC">
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>
+				<field name="include_mycollections" type="list" default="1" label="MOD_MYCOLLECTIONSMINI_PARAM_MYCOLLECTIONS_LABEL" description="MOD_MYCOLLECTIONSMINI_PARAM_MYCOLLECTIONS_DESC">
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>
+				<field name="include_myfollowers" type="list" default="1" label="MOD_MYCOLLECTIONSMINI_PARAM_MYFOLLOWERS_LABEL" description="MOD_MYCOLLECTIONSMINI_PARAM_MYFOLLOWERS_DESC">
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>				
+				<field name="button_show_add" type="list" default="1" label="MOD_MYCOLLECTIONSMINI_PARAM_SHOWADD_LABEL" description="MOD_MYCOLLECTIONSMINI_PARAM_SHOWADD_DESC">
+					<option value="1">JYES</option>
+					<option value="0">JNO</option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+	<languages>
+		<language tag="en-GB">en-GB.mod_mycollectionsmini.ini</language>
+	</languages>
+</extension>
