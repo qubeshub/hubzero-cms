@@ -117,7 +117,7 @@
 
 /* Offset by height of bar, and make sure in the back */
 .super-group-header-wrap {
-  top: 44px;
+  top: -150px;
   z-index: -100;
 }
 
