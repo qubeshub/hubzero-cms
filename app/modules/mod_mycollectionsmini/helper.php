@@ -8,8 +8,7 @@
 namespace Modules\MyCollectionsMini;
 
 use Hubzero\Module\Module;
-use Components\Groups\Models\Recent;
-use Hubzero\User\Group;
+use Components\Collections\Models;
 use User;
 
 /**
@@ -21,108 +20,77 @@ class Helper extends Module
 	 * Get groups for a user
 	 *
 	 * @param   integer  $uid   User ID
-	 * @param   string   $type  Membership type to return groups for
 	 * @return  array
 	 */
-	private function _getGroups($uid, $type='all', $groups=array())
+	private function _getPosts($uid)
 	{
-		$db = \App::get('db');
+		include_once \Component::path('com_collections') . DS . 'models' . DS . 'archive.php';
 
-		$where = '';
-		if (!$this->params->get('include_archived', 1))
-		{
-			$where = " AND g.published != 2";
+		// Filters for returning results
+		$filters = array(
+			'limit'       => $this->limit,
+			'created_by'  => $uid,
+			'state'       => 1,
+			'object_id'   => $uid, // Remove this and object_type to get group posts as well
+			'object_type' => 'member',
+			'user_id'	  => $uid,
+			'access'      => -1,
+			'sort'        => 'created',
+			'sort_Dir'    => 'desc'
+		);
+		
+		$archive = new \Components\Collections\Models\Archive('member', $uid);
+
+		// Pull relevant info
+		$posts = new \Hubzero\Base\ItemList();
+		foreach ($archive->posts($filters) as $post) {
+			$pinfo = new \stdClass();
+
+			$item = $post->item();
+			$pinfo->title = ($item->get('title') ? $item->get('title') : '<em>Missing title</em>');
+			$pinfo->post_url = Route::url('index.php?option=com_collections&controller=posts&post=' . $post->get('id') . '&task=comment');
+			$pinfo->special = null;
+
+			if ($item->type() == 'publication') {
+				include_once \Component::path('com_publications') . DS . 'models' . DS . 'publication.php';
+				$resource = new \Components\Publications\Models\Publication(null, null, $item->get('object_id'));
+				$imgPath = Route::url($resource->link('masterimage'));
+				$alt = $this->escape(stripslashes($resource->get('title', '')));
+				$pinfo->special = array(
+					'class' => 'publication',
+					'link_name' => 'Resource',
+					'link_url' => Route::url($resource->link('version'))
+				);
+			} else {
+				// File type
+				$path = $item->filespace() . DS . $item->get('id');
+				$assets = $item->assets();
+				$imgPath = null;
+				foreach ($assets as $asset) {
+					if ($asset->image()) {
+						// $isLocal = (filter_var($asset->file('original'), FILTER_VALIDATE_URL)) ? false : true;
+						// $imgPath = $isLocal ? $path . DS . $asset->file('thumbnail') : $asset->file('original');
+						$imgPath = $asset->link('thumb');
+						$alt = ($asset->get('description')) ? $this->escape(stripslashes($asset->get('description'))) : Lang::txt('COM_COLLECTIONS_IMAGE_ALT', ltrim($asset->get('filename'), DS));
+						break;
+					}
+				}
+			}
+			if ($imgPath) {
+				$pinfo->img_html = "<img src='" . $imgPath . "' alt='" . $alt . "'>";
+			} else {
+				// Missing image - use default image based on type
+				$pinfo->img_html = file_get_contents(PATH_CORE . DS . "assets/icons/" . ($item->type() == 'file' ? 'file': 'book') . ".svg");
+			}
+
+			$posts->add($pinfo);
 		}
 
-		// Get all groups the user is a member of
-		$query1 = "SELECT g.gidNumber, g.published, g.approved, g.description, g.cn, '1' AS registered, '0' AS regconfirmed, '0' AS manager
-				   FROM `#__xgroups` AS g, `#__xgroups_applicants` AS m
-				   WHERE (g.type='1' || g.type='3') AND m.gidNumber=g.gidNumber AND m.uidNumber=" . $uid . $where;
-
-		$query2 = "SELECT g.gidNumber, g.published, g.approved, g.description, g.cn, '1' AS registered, '1' AS regconfirmed, '0' AS manager
-				   FROM `#__xgroups` AS g, `#__xgroups_members` AS m
-				   WHERE (g.type='1' || g.type='3') AND m.uidNumber NOT IN
-						(SELECT uidNumber
-						 FROM `#__xgroups_managers` AS manager
-						 WHERE manager.gidNumber = m.gidNumber)
-				   AND m.gidNumber=g.gidNumber AND m.uidNumber=" . $uid . $where;
-
-		$query3 = "SELECT g.gidNumber, g.published, g.approved, g.description, g.cn, '1' AS registered, '1' AS regconfirmed, '1' AS manager
-				   FROM `#__xgroups` AS g, `#__xgroups_managers` AS m
-				   WHERE (g.type='1' || g.type='3') AND m.gidNumber=g.gidNumber AND m.uidNumber=" . $uid . $where;
-
-		$query4 = "SELECT g.gidNumber, g.published, g.approved, g.description, g.cn, '0' AS registered, '1' AS regconfirmed, '0' AS manager
-				   FROM `#__xgroups` AS g, `#__xgroups_invitees` AS m
-				   WHERE (g.type='1' || g.type='3') AND m.gidNumber=g.gidNumber AND m.uidNumber=" . $uid . $where;
-
-		switch ($type)
-		{
-			case 'all':
-				$query = "( $query1 ) UNION ( $query2 ) UNION ( $query3 ) UNION ( $query4 ) ORDER BY description ASC";
-			break;
-			case 'applicants':
-				$query = $query1;
-			break;
-			case 'members':
-				$query = $query2;
-			break;
-			case 'managers':
-				$query = $query3;
-			break;
-			case 'invitees':
-				$query = $query4;
-			break;
-		}
-
-		if (!empty($groups))
-		{
-			$query .= " WHERE g.cn IN (" . implode(',', $groups) . ")";
-		}
-
-		$db->setQuery($query);
-		$db->query();
-
-		return $db->loadObjectList();
+		return $posts;
 	}
 
-	/**
-	 * Get the user's status in the gorup
-	 *
-	 * @param   object  $group  Group to check status in
-	 * @return  string
-	 */
-	public function getStatus($group)
+	private function _getThumbnail()
 	{
-		if ($group->manager)
-		{
-			$status = 'manager';
-		}
-		else
-		{
-			if ($group->registered)
-			{
-				if ($group->regconfirmed)
-				{
-					$status = 'member';
-				}
-				else
-				{
-					$status = 'pending';
-				}
-			}
-			else
-			{
-				if ($group->regconfirmed)
-				{
-					$status = 'invitee';
-				}
-				else
-				{
-					$status = '';
-				}
-			}
-		}
-		return $status;
 	}
 
 	/**
@@ -135,40 +103,11 @@ class Helper extends Module
 		// Get the module parameters
 		$this->moduleclass = $this->params->get('moduleclass');
 		$this->limit = intval($this->params->get('limit', 100));
-		$this->recentgroups = array();
 
-		// Get the user's groups
-		$this->allgroups = $this->_getGroups(User::get('id'), 'all');
-
-		include_once \Component::path('com_groups') . DS . 'models' . DS . 'recent.php';
-
-		$recents = Recent::all()
-			->whereEquals('user_id', User::get('id'))
-			->order('created', 'desc')
-			->limit(5)
-			->rows();
-
-		foreach ($recents as $recent)
-		{
-			foreach ($this->allgroups as $group)
-			{
-				if ($recent->get('group_id') == $group->gidNumber)
-				{
-					$this->recentgroups[] = $group;
-				}
-			}
-		}
-
-		if (!User::authorise('core.create', 'com_groups'))
-		{
-			$this->params->set('button_show_add', 0);
-		}
+		// Get the user's posts
+		$this->allposts = $this->_getPosts(User::get('id'));
 
 		$layout = 'default';
-		if (!$this->params->get('show_recent', 1))
-		{
-			$layout = 'simple';
-		}
 
 		require $this->getLayoutPath($layout);
 	}

@@ -10,31 +10,73 @@ if (!jq) {
 
 jQuery(document).ready(function(jq){
 	var $ = jq,
-		containers = $('.mod_mycollectionsmini');
+		container = $('#mycollectionsmini');
+	
+	String.prototype.nohtml = function () {
+		return this + (this.indexOf('?') == -1 ? '?' : '&') + 'no_html=1';
+	};
 
-	if (containers.length <= 0) {
-		return;
-	}
+	container.find('a.comment').fancybox({
+		type: 'ajax',
+		autoSize: false,
+		fitToView: false,
+		titleShow: false,
+		autoCenter: false,
+		width: '100%',
+		height: 'auto',
+		topRatio: 0,
+		tpl: {
+			wrap:'<div class="fancybox-wrap post-modal"><div class="fancybox-skin"><div class="fancybox-outer"><div id="post-content" class="fancybox-inner"></div></div></div></div>'
+		},
+		beforeLoad: function() {
+			// Add collections.css
+			var link = document.createElement('link');
+			link.setAttribute('id', 'collections_css');
+			link.setAttribute('rel', 'stylesheet');
+			link.setAttribute('href', '/app/components/com_collections/site/assets/css/collections.css');
+			document.head.appendChild(link);
 
-	containers.each(function(i, container) {
-		var tabs   = $(container).find('.tab_title'),
-			panels = $(container).find('.tab_panel');
+			// Add collections.js
+			var link = document.createElement('script');
+			link.setAttribute('id', 'collections_js');
+			link.setAttribute('type', 'text/javascript');
+			link.setAttribute('src', '/app/components/com_collections/site/assets/js/collections.js');
+			document.head.appendChild(link);
 
-		tabs.each(function(i, item) {
-			$(item).on('click', function () {
-				var tab = $(this);
+			$(this).attr('href', $(this).attr('href').nohtml());
+		},
+		beforeShow: function() {
+			$(document).trigger('ajaxLoad');
+		},
+		afterShow: function() {
+			var el = this.element;
+			if ($('#commentform').length > 0) {
+				$('#post-content').on('submit', '#commentform', function(e) {
+					e.preventDefault();
+					$.post($(this).attr('action'), $(this).serialize(), function(data) {
+						$('#post-content').html(data);
+						$.fancybox.update();
 
-				tabs.each(function(i, item) {
-					$(this).removeClass('active');
+						var metadata = $(el).parent().parent(); //$('#p' + $(el).attr('data-id')).find('.meta');
+						if (metadata.length) {
+							$.getJSON(metadata.attr('data-metadata-url').nohtml(), function(data) {
+								metadata.find('.likes').text(data.likes);
+								metadata.find('.comments').text(data.comments);
+								metadata.find('.reposts').text(data.reposts);
+							});
+						}
+					});
 				});
-				panels.each(function(i, item) {
-					$(this).removeClass('active');
-				});
-
-				var panel = $('#' + tab.attr('rel'));
-				panel.addClass('active');
-				tab.addClass('active');
-			});
-		});
+			}
+		},
+		afterClose: function() {
+			$('#collections_css').remove();
+			$('#collections_js').remove();
+		},
+		helpers: {
+			overlay: {
+				css: { background: 'rgba(200, 200, 200, 0.95)' }
+			}
+		}
 	});
 });

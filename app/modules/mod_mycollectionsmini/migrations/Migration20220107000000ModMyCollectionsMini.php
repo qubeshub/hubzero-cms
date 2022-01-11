@@ -8,9 +8,9 @@
 use Hubzero\Content\Migration\Base;
 
 /**
- * Migration script for installing mygroups module
+ * Migration script for installing mycollections mini module
  **/
-class Migration20190305000000ModMyCollectionsMini extends Base
+class Migration20220107000000ModMyCollectionsMini extends Base
 {
 	/**
 	 * Up
