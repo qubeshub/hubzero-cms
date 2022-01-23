@@ -41,8 +41,12 @@ jQuery(document).ready(function(jq){
 		}
 		scrollTop = windowTop;
 
-		if (scrollingDown) {
-			HUB.template.brandingBar.removeClass('brand-out')
+		if ($(window).width() < 760) {
+			if (scrollingDown) {
+				HUB.template.brandingBar.removeClass('brand-out')
+			} else {
+				HUB.template.brandingBar.addClass('brand-out')
+			}
 		} else {
 			HUB.template.brandingBar.addClass('brand-out')
 		}
@@ -114,7 +118,7 @@ jQuery(document).ready(function(jq){
 	HUB.template.componentButton = $('.component-button');
 	
 	HUB.template.showMinidash = function(minidashPanelActive) {
-      minidashPanelActive.addClass('show');
+		minidashPanelActive.addClass('show');
 	};
 
 	HUB.template.hideMinidash = function(minidashPanelActive) {
@@ -122,17 +126,37 @@ jQuery(document).ready(function(jq){
 	};
 
 	if (HUB.template.componentButton.length > 0) {
-		console.log('button exists')
 		$(HUB.template.componentButton).on('click', function (event) {
-			console.log('clicked')
 			var minidashPanelActive = $(event.target).closest('.component-parent').find('.component-panel');
-			if (!(minidashPanelActive.hasClass('show'))) {
+			console.log(minidashPanelActive)
+			if (!minidashPanelActive.hasClass('show')) {
 				HUB.template.showMinidash(minidashPanelActive);
 			} else {
 				HUB.template.hideMinidash(minidashPanelActive);
 			}
 		});
 	}
+
+	// Truncate links if greater than 2 lines
+	HUB.template.groupMini = $('li.group-mini a')
+	HUB.template.projectMini = $('li.pr-active a')
+
+	$(HUB.template.groupMini).each(function() {
+		if (this.outerHeight > 22) {
+			$(this).addClass('truncate');
+		} else {
+			//do nothing
+		}
+	});
+
+	$(HUB.template.projectMini).each(function() {
+
+		if (this.outerHeight > 22) {
+			$(this).addClass('truncate');
+		} else {
+			//do nothing
+		}
+	});
 
 	// Escape button to the rescue for those who like to press it in a hope to close whatever is open
 	$(document).keyup(function(e) {

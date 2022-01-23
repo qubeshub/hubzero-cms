@@ -127,10 +127,16 @@ jQuery(document).ready(function(jq) {
 		}
 		scrollTop = windowTop;
 
-		// Adjust placement of navigation bar if branding bar is showing
-		if (scrollingDown && !$brandingBar.hasClass('brand-out')) {
+		// Adjust placement of navigation bar if branding bar is showing on mobile
+		if ($(window).width() < 768) {
+			console.log('tablet size')
+			if (scrollingDown && !$brandingBar.hasClass('brand-out')) {
 			$menuWrap.css('top', 0)
-		} else if (!scrollingDown && $brandingBar.hasClass('brand-out')) {
+			} else if (!scrollingDown && $brandingBar.hasClass('brand-out')) {
+				$menuWrap.css('top', 44 + 'px')
+			}
+		} else {
+			console.log('desktop size')
 			$menuWrap.css('top', 44 + 'px')
 		}
 
@@ -424,29 +430,4 @@ jQuery(document).ready(function(jq) {
 			$('.menuItem').children().blur();
 		}
 	});
-
-	// Minidash panel show/hide from hub.js
-	componentButton = $('.component-button');
-	minidashPanel = $('.component-panel');
-	backButton = $('.back');
-	
-	var showMinidash = function(minidashPanelActive) {
-      minidashPanelActive.addClass('show');
-	};
-
-	var hideMinidash = function(minidashPanelActive) {
-		minidashPanelActive.removeClass('show');
-	};
-
-	if (componentButton.length > 0) {
-		componentButton.on('click', function(event) {
-			var minidashPanelActive = $(event.target).closest('.component-parent').find('.component-panel');
-			if (!(minidashPanelActive.hasClass('show'))) {
-				showMinidash(minidashPanelActive);
-			} else {
-				hideMinidash(minidashPanelActive);
-			}
-		});
-	}
-
 });

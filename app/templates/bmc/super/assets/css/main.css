@@ -147,11 +147,6 @@
   font-size: 12px !important;
 }
 
-@media (min-width: 340px) and (max-width: 640px) {
-  .header-id {
-    z-index: 1001 !important;
-  }
-}
 /* Menu */
 .super-group-menu-wrap {
   background: #597f2f;
@@ -905,6 +900,7 @@ automatic element placement by the Hub. */
 
   .super-group-bar .content .branding {
     float: left;
+    width: 9.5rem;
   }
 
   .super-group-bar .content .subnav {

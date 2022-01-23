@@ -93,6 +93,13 @@ ul li {
 	ul {
 		margin: 10px 0 0 0;
 		list-style: none;
+		border-bottom: 1px solid #666;
+
+		li {
+			border-top: 1px solid #666;
+			margin: 0;
+			padding: 0.8rem 2rem;
+		}
 	}
 
 	.user-info {
@@ -114,6 +121,7 @@ ul li {
 	}
 
 	.component-button {
+		display: block !important;
 		cursor: pointer;
 
 		.nav-icon-more {
@@ -157,7 +165,7 @@ ul li {
 		right: 0;
 		height: 100%;
 		margin-right: -400px;
-		max-width: 400px;
+		width: 400px;
 		overflow-y: scroll;
 		padding: @padContain;
 		.transition();
@@ -177,7 +185,6 @@ ul li {
 			color: #fff;
 		}
 	}
-
 
 	// close button
 	button {
