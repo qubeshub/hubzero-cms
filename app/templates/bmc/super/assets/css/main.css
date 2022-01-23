@@ -411,7 +411,7 @@
 .sidebar-wrapper-fixed-top {
   bottom: initial !important;
   position: fixed !important;
-  top: 2.3125em !important;
+  top: 5.3125em !important;
 }
 
 .sidebar-wrapper-fixed-bottom {
@@ -422,7 +422,7 @@
 }
 
 .sidebar-wrapper-footer {
-  bottom: 0 !important;
+  bottom: -1.3125em !important;
   top: initial !important;
 }
 
