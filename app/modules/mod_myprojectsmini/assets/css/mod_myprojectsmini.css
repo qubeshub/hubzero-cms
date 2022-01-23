@@ -27,7 +27,7 @@
 
 #myprojectsmini div.prjctdisp {
     display:table;
-		width: 100%;
+	/* width: 100%; */
 }
 
 #myprojectsmini div .project-name{

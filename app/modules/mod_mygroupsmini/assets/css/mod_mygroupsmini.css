@@ -27,7 +27,7 @@
 
 #mygroupsmini div.grpdisp{
 	display:table;
-	width: 100%;
+	/* width: 100%; */
 }
 
 #mygroupsmini div .group-name{
