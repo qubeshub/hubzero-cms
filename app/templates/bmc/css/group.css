@@ -95,13 +95,21 @@ ul li {
 .account-details:after {
   display: none;
 }
-.account-details a {
+.account-details a,
+.account-details a:active,
+.account-details a:visited {
   color: #fff;
   border: none;
 }
 .account-details ul {
   margin: 10px 0 0 0;
   list-style: none;
+  border-bottom: 1px solid #666;
+}
+.account-details ul li {
+  border-top: 1px solid #666;
+  margin: 0;
+  padding: 0.8rem 2rem;
 }
 .account-details .user-info p {
   text-transform: none;
@@ -109,6 +117,66 @@ ul li {
 .account-details .user-info p .account-email {
   font-family: 'Roboto';
   font-weight: 300;
+}
+.account-details .user-image img {
+  border-radius: 50%;
+  width: 2.889rem;
+}
+.account-details .component-button {
+  display: block !important;
+  cursor: pointer;
+}
+.account-details .component-button .nav-icon-more {
+  float: right;
+}
+.account-details .component-button .nav-icon-more svg {
+  top: 0.2rem;
+}
+.account-details .component-button .nav-icon-back svg {
+  margin-left: 0.5em;
+  width: 1rem;
+}
+.account-details [class^="nav-icon"] {
+  fill: #fff;
+}
+.account-details [class^="nav-icon"] svg {
+  margin-right: 0.5em;
+  width: 1.2rem;
+}
+.account-details .icon-plus::before,
+.account-details .icon-browse::before {
+  margin-right: 0.5em;
+}
+.account-details .component-panel {
+  background: #292929;
+  color: #fff;
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  margin-right: -400px;
+  width: 400px;
+  overflow-y: scroll;
+  padding: 20px;
+  -moz-transition: all ease 0.2s;
+  -o-transition: all ease 0.2s;
+  -webkit-transition: all ease 0.2s;
+  transition: all ease 0.2s;
+  -webkit-transition-delay: 0;
+  -moz-transition-delay: 0;
+  -ms-transition-delay: 0;
+  -o-transition-delay: 0;
+}
+.account-details .component-panel.show {
+  margin-right: 0;
+}
+.account-details .component-panel ul {
+  padding: 0;
+  margin: 1rem 0;
+  border-bottom: 1px solid #666;
+}
+.account-details .component-panel h2 {
+  color: #fff;
 }
 .account-details button {
   display: block;
@@ -329,11 +397,16 @@ body.panel-open .hub-overlay {
 /* Group Bar */
 .super-group-bar {
   background: #000000;
-  z-index: 999;
+  z-index: 1001;
   /* Was 1001 */
-  height: 44px;
+  height: 0;
   font-family: 'Ubuntu', sans-serif;
   font-weight: 400;
+  position: fixed;
+  overflow-y: hidden;
+  top: 0;
+  transition: 0.2s;
+  width: 100%;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -474,6 +547,9 @@ body.panel-open .hub-overlay {
 }
 .super-group-bar .content .subnav li {
   list-style: none;
+}
+.brand-out {
+  height: 2.75rem;
 }
 /* BEGIN: Supergroup template fixes */
 /* REMOVE LATER */

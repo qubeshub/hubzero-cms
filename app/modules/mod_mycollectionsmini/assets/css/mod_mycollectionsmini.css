@@ -1,0 +1,86 @@
+/**
+ * @package    hubzero-cms
+ * @copyright  Copyright 2005-2020 The Regents of the University of California.
+ * @license    http://opensource.org/licenses/MIT MIT
+ */
+
+/*
+
+	-- -- -- -- -- -- --
+	mod_mycollectionsmini
+	-- -- -- -- -- -- --
+
+*/
+
+.truncate {
+	display: block; /* Fallback for non-webkit */
+	display: -webkit-box;
+	height: 2.4em; /* Fallback for non-webkit */
+	margin: 0 auto;
+	font-size: 1em;
+	line-height: 1.2;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#mycollectionsmini div.postdisp {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	width: 100%;
+}
+
+#mycollectionsmini div.postdisp div.post-ids, 
+#mycollectionsmini div.postdisp div.post-actions {
+	display: flex;
+	align-items: center;
+}
+
+#mycollectionsmini div.postdisp div.post-actions {
+	gap: 15px;
+}
+
+#mycollectionsmini div .post-name {
+	vertical-align:middle;
+	flex: 1 0;
+	padding-left:15px;
+}
+
+#mycollectionsmini div.postdisp div.post-img {
+	vertical-align:middle;
+	flex: 0 0 45px;
+	width:45px;
+	background: #fff;
+	padding: 2px;
+}
+
+#mycollectionsmini div.postdisp div.post-img img,
+#mycollectionsmini div.postdisp div.post-img svg {
+	height:45px;
+	width: 100%;
+	vertical-align:middle;
+}
+
+div.post-actions span:before {
+	font-family: "Fontcons";
+	margin-right: 4px;
+}
+
+div.post-actions span.action-post:before {	
+	content: "\f016";
+}
+
+div.post-actions span.action-publication:before {
+	content: "\f02d";
+}
+
+div.module-section {
+	margin: 0;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    line-height: 20px;
+	color: #fff;
+	padding: 1rem 2rem 0 2rem;
+}

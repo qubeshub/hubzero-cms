@@ -25,6 +25,33 @@ jQuery(document).ready(function(jq){
 	// Template
 	HUB.template.body = $('body');
 
+	// Slide "powered by" branding bar in and out of view
+	HUB.template.menuWrap = $('.super-group-menu-wrap');
+	HUB.template.brandingBar = $('.super-group-bar');
+	var scrollTop = 0;
+	var windowTop = 0;
+
+	$(window).on('scroll', function () {
+		var windowTop = $(this).scrollTop();
+
+		if (windowTop > scrollTop) {
+			scrollingDown = true;
+		} else {
+			scrollingDown = false;
+		}
+		scrollTop = windowTop;
+
+		if ($(window).width() < 760) {
+			if (scrollingDown) {
+				HUB.template.brandingBar.removeClass('brand-out')
+			} else {
+				HUB.template.brandingBar.addClass('brand-out')
+			}
+		} else {
+			HUB.template.brandingBar.addClass('brand-out')
+		}
+	})
+
 	// Account panel
 	HUB.template.accountTrigger = $('.user-account-link.loggedin');
 	HUB.template.accountPanel = $('.account-details');
@@ -87,6 +114,50 @@ jQuery(document).ready(function(jq){
 		HUB.template.dashPanel.removeClass('open');
 	};
 
+	// Minidash panel show/hide from hub.js
+	HUB.template.componentButton = $('.component-button');
+	
+	HUB.template.showMinidash = function(minidashPanelActive) {
+		minidashPanelActive.addClass('show');
+	};
+
+	HUB.template.hideMinidash = function(minidashPanelActive) {
+		minidashPanelActive.removeClass('show');
+	};
+
+	if (HUB.template.componentButton.length > 0) {
+		$(HUB.template.componentButton).on('click', function (event) {
+			var minidashPanelActive = $(event.target).closest('.component-parent').find('.component-panel');
+			console.log(minidashPanelActive)
+			if (!minidashPanelActive.hasClass('show')) {
+				HUB.template.showMinidash(minidashPanelActive);
+			} else {
+				HUB.template.hideMinidash(minidashPanelActive);
+			}
+		});
+	}
+
+	// Truncate links if greater than 2 lines
+	HUB.template.groupMini = $('li.group-mini a')
+	HUB.template.projectMini = $('li.pr-active a')
+
+	$(HUB.template.groupMini).each(function() {
+		if (this.outerHeight > 22) {
+			$(this).addClass('truncate');
+		} else {
+			//do nothing
+		}
+	});
+
+	$(HUB.template.projectMini).each(function() {
+
+		if (this.outerHeight > 22) {
+			$(this).addClass('truncate');
+		} else {
+			//do nothing
+		}
+	});
+
 	// Escape button to the rescue for those who like to press it in a hope to close whatever is open
 	$(document).keyup(function(e) {
 		if(e.keyCode == 27) {
@@ -110,7 +181,7 @@ jQuery(document).ready(function(jq){
 		HUB.template.closeAllPanels();
 	});
 
-	HUB.template.init = function() {
+	HUB.template.init = function () {
 	};
 
 	HUB.template.init();

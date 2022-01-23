@@ -110,6 +110,7 @@ jQuery(document).ready(function(jq) {
 	var scrollTop = 0;
 	var bannerHeight = $(".super-group-header-overlay").height();
 	var barHeight = $(".super-group-bar").height();
+	var $brandingBar = $('.super-group-bar');
 
 	var windowTop = 0;
 	var startBarFade = 0;
@@ -125,6 +126,19 @@ jQuery(document).ready(function(jq) {
 			scrollingDown = false;
 		}
 		scrollTop = windowTop;
+
+		// Adjust placement of navigation bar if branding bar is showing on mobile
+		if ($(window).width() < 768) {
+			console.log('tablet size')
+			if (scrollingDown && !$brandingBar.hasClass('brand-out')) {
+			$menuWrap.css('top', 0)
+			} else if (!scrollingDown && $brandingBar.hasClass('brand-out')) {
+				$menuWrap.css('top', 44 + 'px')
+			}
+		} else {
+			console.log('desktop size')
+			$menuWrap.css('top', 44 + 'px')
+		}
 
 		// Negative padding on $menuWrap is a headache!
 		// Fix sidebar directly under menu after announcements
@@ -416,5 +430,4 @@ jQuery(document).ready(function(jq) {
 			$('.menuItem').children().blur();
 		}
 	});
-
 });

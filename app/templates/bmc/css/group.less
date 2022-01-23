@@ -81,7 +81,7 @@ ul li {
 		display: none;
 	}
 
-	a {
+	a, a:active, a:visited {
 		color: #fff;
 		border: none;
 
@@ -93,6 +93,13 @@ ul li {
 	ul {
 		margin: 10px 0 0 0;
 		list-style: none;
+		border-bottom: 1px solid #666;
+
+		li {
+			border-top: 1px solid #666;
+			margin: 0;
+			padding: 0.8rem 2rem;
+		}
 	}
 
 	.user-info {
@@ -103,6 +110,79 @@ ul li {
 				font-family: 'Roboto';
 				font-weight: 300;
 			}
+		}
+	}
+
+	.user-image {
+		img {
+			border-radius: 50%;
+			width: 2.889rem;
+		}
+	}
+
+	.component-button {
+		display: block !important;
+		cursor: pointer;
+
+		.nav-icon-more {
+			float: right;
+			svg {
+				top: .2rem;
+			}
+		}
+
+		.nav-icon-back {
+			// font-size: .8rem !important;
+			// font-weight: bold;
+			// text-transform: uppercase;
+
+			svg {
+				margin-left: .5em;
+				width: 1rem;
+			}
+		}
+	}
+
+	[class^="nav-icon"] {
+		fill: #fff;
+
+		svg {
+		margin-right: .5em;
+		width: 1.2rem;
+		}
+	}
+
+	.icon-plus::before,
+	.icon-browse::before {
+		margin-right: .5em;
+	}
+
+	.component-panel {
+		background: @colorAuxMenu;
+		color: #fff;
+		position: fixed;
+		top: 0;
+		right: 0;
+		height: 100%;
+		margin-right: -400px;
+		width: 400px;
+		overflow-y: scroll;
+		padding: @padContain;
+		.transition();
+		.transition-delay(0);
+
+		&.show {
+			margin-right: 0;
+		}
+
+		ul {
+			padding: 0;
+			margin: 1rem 0;
+			border-bottom: 1px solid #666;
+		}
+
+		h2 {
+			color: #fff;
 		}
 	}
 
@@ -225,10 +305,15 @@ body.panel-open {
 /* Group Bar */
 .super-group-bar {
 	background: #000000;
-	z-index: 999; /* Was 1001 */
-	height: 44px;
+	z-index: 1001; /* Was 1001 */
+	height: 0;
 	font-family: 'Ubuntu', sans-serif;
 	font-weight: 400;
+	position: fixed;
+	overflow-y: hidden;
+	top: 0;
+	transition: .2s;
+	width: 100%;
 
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
@@ -406,6 +491,10 @@ body.panel-open {
 
 		}
 	}
+}
+
+.brand-out {
+	height: 2.75rem;
 }
 
 /* BEGIN: Supergroup template fixes */

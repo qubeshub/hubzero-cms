@@ -104,20 +104,14 @@
 	bottom: 2px;
 }
 
-/* Bar needs to be at top */
-.super-group-bar {
-	top: 0;
-}
-
 /* Offset by height of bar, and make sure in the back */
 .super-group-header-wrap {
-	top: 44px;
+	top: -150px;
 	z-index: -100;
 }
 
 /* Fixed at top */
-.super-group-header-wrap,
-.super-group-bar {
+.super-group-header-wrap {
 	position: absolute;
 	width: 100%;
 }
@@ -154,11 +148,4 @@
   	right: 0 !important;
   	font-size: 12px !important;
   }
-}
-
-// Responsiveness
-@media (min-width: 340px) and (max-width: 640px) {
-	.header-id {
-		z-index: 1001 !important;
-	}
 }

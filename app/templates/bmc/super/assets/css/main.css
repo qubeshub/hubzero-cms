@@ -110,20 +110,14 @@
   bottom: 2px;
 }
 
-/* Bar needs to be at top */
-.super-group-bar {
-  top: 0;
-}
-
 /* Offset by height of bar, and make sure in the back */
 .super-group-header-wrap {
-  top: 44px;
+  top: -150px;
   z-index: -100;
 }
 
 /* Fixed at top */
-.super-group-header-wrap,
-.super-group-bar {
+.super-group-header-wrap {
   position: absolute;
   width: 100%;
 }
@@ -153,11 +147,6 @@
   font-size: 12px !important;
 }
 
-@media (min-width: 340px) and (max-width: 640px) {
-  .header-id {
-    z-index: 1001 !important;
-  }
-}
 /* Menu */
 .super-group-menu-wrap {
   background: #597f2f;
@@ -422,7 +411,7 @@
 .sidebar-wrapper-fixed-top {
   bottom: initial !important;
   position: fixed !important;
-  top: 2.3125em !important;
+  top: 5.3125em !important;
 }
 
 .sidebar-wrapper-fixed-bottom {
@@ -433,7 +422,7 @@
 }
 
 .sidebar-wrapper-footer {
-  bottom: 0 !important;
+  bottom: -1.3125em !important;
   top: initial !important;
 }
 
@@ -911,6 +900,7 @@ automatic element placement by the Hub. */
 
   .super-group-bar .content .branding {
     float: left;
+    width: 9.5rem;
   }
 
   .super-group-bar .content .subnav {
