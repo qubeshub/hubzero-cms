@@ -117,7 +117,8 @@
 }
 
 /* Fixed at top */
-.super-group-header-wrap {
+.super-group-header-wrap,
+.super-group-bar {
   position: absolute;
   width: 100%;
 }
