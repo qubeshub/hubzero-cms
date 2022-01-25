@@ -638,17 +638,6 @@ class Publications extends SiteController
 			return;
 		}
 
-		// Redirect if master type has its own template and not coming from supergroup
-		if (!Request::getString('base_url')) {
-			$master_type = $this->model->masterType();
-			if ($master_type->ownergroup) {
-				$group = \Hubzero\User\Group::getInstance($master_type->ownergroup);
-				App::redirect(
-					Route::url('index.php?option=com_groups&cn=' . $group->cn . '&active=publications&id=' . $this->_identifier . '&v=' . $this->_version, false)
-				);
-			}
-		}
-
 		// Is the visitor authorized to view this resource?
 		if (!$this->model->access('view'))
 		{
@@ -724,6 +713,17 @@ class Publications extends SiteController
 		if ($tab != 'about' && !in_array($tab, $available))
 		{
 			$tab = 'about';
+		}
+
+		// Redirect if master type has its own template and not coming from supergroup
+		if (!$no_html && !Request::getString('base_url')) {
+			$master_type = $this->model->masterType();
+			if ($master_type->ownergroup) {
+				$group = \Hubzero\User\Group::getInstance($master_type->ownergroup);
+				App::redirect(
+					Route::url('index.php?option=com_groups&cn=' . $group->cn . '&active=publications&id=' . $this->_identifier . '&v=' . $this->_version, false)
+				);
+			}
 		}
 
 		$body = '';
