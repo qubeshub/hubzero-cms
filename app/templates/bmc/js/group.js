@@ -218,6 +218,7 @@ jQuery(document).ready(function(jq){
 		// Send forms via AJAX - if successful, close pop-up
 		var el = $(this);
 		var formData = new FormData(this);
+		console.log("Sending form...");
 		$.ajax({
 			method: 'POST',
 			url: $(this).attr('action').nohtml(),
@@ -230,9 +231,12 @@ jQuery(document).ready(function(jq){
 				if (response.error || !response.success) {
 					message = { type: 'error', message: (response.error ? response.error : response.message) };
 					HUB.template.renderMessages(message, Infinity, $container = $('#fancybox-message-container'));
-				} else if (response.success) {
+				} else if (response.hasOwnProperty('redirect')) {
 					$.fancybox.close(true);
 					location.href = response.redirect;
+				} else {
+					$('div#sbox-content').html(response.message);
+					$.fancybox.update();
 				}
 			},
 			error: function(xhr, status, error) {
