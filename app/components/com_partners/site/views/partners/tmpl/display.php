@@ -57,38 +57,6 @@ Pathway::append(
 
 <!-- Need to add checks if metadata is available before displaying -->
 <section class="main section">
-	<h2><?php echo Lang::txt('COM_PARTNERS_SPONSORED'); ?></h2>
-	<form class="section-inner" action="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller); ?>" method="get">
-		<div class="subject">
-			<div class="cards">
-				<?php foreach ($this->sponsored as $record) {
-					if ($record->get('state')) { // Display only if published
-						$this->view('_card')
-							 ->set('option', $this->option)
-							 ->set('controller', $this->controller)
-							 ->set('record', $record)
-							 ->display();
-					}
-				} ?>
-			</div>
-		</div>
-	</form>
-	<h2><?php echo Lang::txt('COM_PARTNERS_FEATURED'); ?></h2>
-		<form class="section-inner" action="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller); ?>" method="get">
-		<div class="subject">
-			<div class="cards">
-				<?php foreach ($this->featured as $record) {
-					if ($record->get('state')) { // Display only if published
-						$this->view('_card')
-							 ->set('option', $this->option)
-							 ->set('controller', $this->controller)
-							 ->set('record', $record)
-							 ->display();
-					}
-				} ?>
-			</div>
-		</div>
-	</form>
 	<h2><?php echo Lang::txt('COM_PARTNERS_OTHER'); ?></h2>
 		<form class="section-inner" action="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller); ?>" method="get">
 		<div class="subject">
