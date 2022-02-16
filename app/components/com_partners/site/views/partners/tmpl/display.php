@@ -57,8 +57,7 @@ Pathway::append(
 
 <!-- Need to add checks if metadata is available before displaying -->
 <section class="main section">
-	<h2><?php echo Lang::txt('COM_PARTNERS_OTHER'); ?></h2>
-		<p>We would also like to acknowledge <a href="/community/groups/bioquest/about/funders">our funders</a>.</p>
+		<p>Please also visit the <a href="/community/groups/bioquest/about/funders">BioQUEST Funders page</a>.</p>
 		<form class="section-inner" action="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller); ?>" method="get">
 		<div class="subject">
 			<div class="cards">
