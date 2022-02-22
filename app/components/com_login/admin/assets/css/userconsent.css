@@ -1,0 +1,17 @@
+/**
+ * @package    hubzero-cms
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
+ * @license    http://opensource.org/licenses/MIT MIT
+ */
+
+.userconsent .wrap {
+	width: 320px;
+	margin: 0 auto 100px auto;
+}
+.userconsent .actions,
+.userconsent .title {
+	text-align: center;
+}
+.userconsent .actions {
+	margin-top: 10px;
+}
