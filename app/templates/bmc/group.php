@@ -11,7 +11,7 @@ defined('_HZEXEC_') or die();
 $group  = \Hubzero\User\Group::getInstance(Request::getCmd('cn', ''));
 
 // return url (if any)
-$return = '/' . trim(str_replace(Request::base(),'', Request::current()), '/');
+$return = '/' . trim(str_replace(Request::base(),'', Request::current(true)), '/');
 
 // include frameworks
 Html::behavior('framework', true);
