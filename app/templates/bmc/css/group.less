@@ -540,6 +540,52 @@ body.panel-open {
 	margin-bottom: 25px !important;
 }
 
+#fancybox-message-container {
+	position: absolute;
+    top: 0; // Accounts for title header
+    z-index: 1;
+    width: 100%;
+}
+
+// Notifications
+.sub #fancybox-message-container {
+	margin: 0 -50px;
+}
+  
+#system-message button.close {
+	position: absolute;
+	right: 1em;
+	top: 0.2em;
+	background: unset;
+	border: unset;
+	width: 0.5em;
+}
+  
+#system-message button.close:before {
+	font-family: 'Fontcons';
+	content: "\f057";
+}
+  
+#system-message dd:before {
+	margin-top: 0.2em;
+}
+  
+#system-message dd.success:before {
+	content: "\f087";
+}
+  
+#system-message dd.success a {
+	color: #FFF;
+}
+  
+#system-message dd.success a:hover {
+	color: #DDD;
+}
+  
+#system-message dd.error:before {
+	content: "\f088";
+}
+
 a,
 a:active,
 a:visited {

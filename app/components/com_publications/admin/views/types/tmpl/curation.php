@@ -88,6 +88,13 @@ foreach ($this->blocks as $b)
 					<label for="field-ownergroup"><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_OWNER_GROUP'); ?>:</label>
 					<input type="text" name="ownergroup" id="field-ownergroup" maxlength="255" value="<?php echo $ownerGroup; ?>" />
 				</div>
+				<div class="input-wrap" data-hint="<?php echo Lang::txt('COM_PUBLICATIONS_MTYPE_MEMBERSHIP_REQUIRED'); ?>">
+					<label for="field-membership-required"><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_MEMBERSHIP_REQUIRED'); ?></label>
+					<select name="fields[membership_required]" id="field-membership-required">
+						<option value="0" <?php echo $this->row->membership_required == 0 ? ' selected="selected"' : ''; ?>><?php echo Lang::txt('JNO'); ?></option>
+						<option value="1" <?php echo $this->row->membership_required == 1 ? ' selected="selected"' : ''; ?>><?php echo Lang::txt('JYES'); ?></option>
+					</select>
+				</div>
 			</fieldset>
 		</div>
 		<div class="col span6">

@@ -46,8 +46,8 @@ ul li {
   background: #292929;
   z-index: 1002;
   filter: alpha(opacity=85);
-  -moz-opacity: 0.85;
-  opacity: 0.85;
+  -moz-opacity: 85 / 100;
+  opacity: 85 / 100;
   -moz-transition: all ease 0.2s;
   -o-transition: all ease 0.2s;
   -webkit-transition: all ease 0.2s;
@@ -202,7 +202,7 @@ ul li {
 .account-details button:after {
   position: absolute;
   display: block;
-  top: 20px;
+  top: 40px / 2;
   left: 0;
   width: 100%;
   height: 1px;
@@ -237,8 +237,8 @@ ul li {
   -ms-transform: rotate(0deg);
   -o-transform: rotate(0deg);
   filter: alpha(opacity=0);
-  -moz-opacity: 0;
-  opacity: 0;
+  -moz-opacity: 0 / 100;
+  opacity: 0 / 100;
 }
 .account-details button:focus {
   outline: -webkit-focus-ring-color auto 5px;
@@ -343,7 +343,7 @@ ul li {
 .group-dash button:after {
   position: absolute;
   display: block;
-  top: 20px;
+  top: 40px / 2;
   left: 0;
   width: 100%;
   height: 1px;
@@ -378,8 +378,8 @@ ul li {
   -ms-transform: rotate(0deg);
   -o-transform: rotate(0deg);
   filter: alpha(opacity=0);
-  -moz-opacity: 0;
-  opacity: 0;
+  -moz-opacity: 0 / 100;
+  opacity: 0 / 100;
 }
 body.panel-open {
   overflow: hidden;
@@ -576,6 +576,42 @@ body.panel-open .hub-overlay {
 }
 .super-group-content-wrap {
   margin-bottom: 25px !important;
+}
+#fancybox-message-container {
+  position: absolute;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+}
+.sub #fancybox-message-container {
+  margin: 0 -50px;
+}
+#system-message button.close {
+  position: absolute;
+  right: 1em;
+  top: 0.2em;
+  background: unset;
+  border: unset;
+  width: 0.5em;
+}
+#system-message button.close:before {
+  font-family: 'Fontcons';
+  content: "\f057";
+}
+#system-message dd:before {
+  margin-top: 0.2em;
+}
+#system-message dd.success:before {
+  content: "\f087";
+}
+#system-message dd.success a {
+  color: #FFF;
+}
+#system-message dd.success a:hover {
+  color: #DDD;
+}
+#system-message dd.error:before {
+  content: "\f088";
 }
 a,
 a:active,
