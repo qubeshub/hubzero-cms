@@ -162,7 +162,7 @@ class Html
                 $licFile = $path . DS . 'LICENSE.txt';
                 if (file_exists($licFile))
                 {
-                    $licenseUrl = Route::url('index.php?option=com_publications&id=' . $publication->id . '&task=license' . '&v=' . $publication->version_id);
+                    $licenseUrl = Route::url('index.php?option=com_publications&id=' . $publication->id . '&task=license' . '&v=' . $publication->version_id . '&no_html=1');
                     $append = '<li><a href="' . $licenseUrl . '" class="license-terms play" rel="external">' . Lang::txt('COM_PUBLICATIONS_LICENSE_TERMS') . '</a></li>';
                 }
 

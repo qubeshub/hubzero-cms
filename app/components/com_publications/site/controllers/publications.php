@@ -1025,6 +1025,8 @@ class Publications extends SiteController
 	 */
 	public function licenseTask()
 	{
+		$no_html = Request::getInt('no_html', 0);
+
 		// Get our model and load publication data
 		$this->model = new Models\Publication($this->_identifier, $this->_version);
 
@@ -1047,8 +1049,14 @@ class Publications extends SiteController
 			->set('config', $this->config)
 			->set('publication', $this->model)
 			->set('title', stripslashes($this->model->version->get('title')) . ': ' . Lang::txt('COM_PUBLICATIONS_LICENSE'))
-			->setErrors($this->getErrors())
-			->display();
+			->setErrors($this->getErrors());
+
+		if (!$no_html) {
+			$this->view->display();
+		} else {
+			echo $this->view->loadTemplate();
+			return false;
+		}
 	}
 
 	/**
