@@ -1,6 +1,8 @@
 @use '../../css/pages/variables.scss' as v;
 @use '../../css/pages/mixins.scss' as m;
 
+@import url("/app/components/com_support/site/assets/css/support.css");
+
 .support-wrapper {
     @include m.respond-at(53.75em) {
         @include m.flexbox;
