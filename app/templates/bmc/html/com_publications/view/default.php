@@ -59,6 +59,14 @@ $tabOverrides = array(
 				// Show download and adaptation buttons
 				echo \Templates\Bmc\Publications\Helpers\Html::primaryButton($this->publication, "icon-download");
 				echo \Templates\Bmc\Publications\Helpers\Html::showSection($subSections, "forks", "html");
+				if ($this->publication->params->get('instructor_only') && 
+							    $this->publication->hasInstructorAttachments() &&
+								!$this->publication->access('instructor')) {
+									$request  = '<a class="btn instructor-access" href="' . Route::url('index.php?option=com_groups&cn=' . $this->publication->params->get('instructor_group')) . DS . 'join">';
+									$request .= Lang::txt('COM_PUBLICATIONS_REQUEST_INSTRUCTOR_ACCESS');
+									$request .= '</a>';
+									echo $request;
+								}
 				?>
 			</div>
 		</div>

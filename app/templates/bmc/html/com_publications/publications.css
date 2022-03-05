@@ -422,4 +422,10 @@ ol.tags {
   background: #40476D;
   background-image: unset;
   color: #D8DBE8;
+}
+
+a.instructor-access {
+  width: 100%;
+  margin: 1em 0em;
+  background: #7f2f31;
 }/*# sourceMappingURL=publications.css.map */
