@@ -138,6 +138,10 @@ class Html
         // Add plugin style
         \Qubeshub\Document\Assets::addPluginStylesheet('publications', 'supportingdocs');
 
+		// Membership required?
+		$master_type = $publication->masterType();
+		$members_only = $master_type->membership_required && !is_null($master_type->ownergroup);
+
         if ($listAll)
         {
             // Get elements in primary and supporting role
@@ -173,7 +177,19 @@ class Html
                     1,
                     $append
                 );
-                ?>
+
+				// Show login/join group prompt
+				if ($members_only) {
+					$group = \Hubzero\User\Group::getInstance($master_type->ownergroup);
+					$return = '/groups/' . $group->get('cn') . '/join?return=' . base64_encode('/' . trim(str_replace(Request::base(),'', Request::current(true)), '/')); ?>
+					<p>
+					<?php if (User::isGuest()) { ?>
+						<a class="user-account-link" href="<?php echo Route::url('index.php?option=com_users&view=login&return=' . base64_encode($return)); ?>" title="Login">Login</a> to access supporting documents
+					<? } else if (!$publication->access('members-only')) { ?>						
+						<a href="<?php echo $return; ?>" title="Join">Become a member</a> to access supporting documents
+					<?php } ?>
+					</p>
+				<?php } ?>
                 <div class="pub-content">
                     <?php echo $list; ?>
                 </div>

@@ -858,9 +858,14 @@ class Publications extends SiteController
 		// Requesting instructor materials? (no request falls back on access privileges)
 		$instructor = Request::getInt('instructor', Component::params('com_publications')->get('instructor_only') && $this->model->hasInstructorAttachments() && $this->model->access('instructor'));
 
+		// Requesting member-only materials?
+		$master_type = $this->model->masterType();
+		$members_only = $master_type->membership_required && !is_null($master_type->ownergroup);
+		
 		// Is the visitor authorized to view content?
 		if (!$this->model->access('view-all') || 
-			($instructor && !$this->model->access('instructor')))
+			($instructor && !$this->model->access('instructor')) ||
+			($members_only && !$this->model->access('members-only') && ($render == 'archive')))
 		{
 			$this->_blockAccess();
 			return true;
@@ -954,9 +959,10 @@ class Publications extends SiteController
 			$access = $attachmentTable->access;
 		}
 
-		// Is this allowed?
+		// Is this allowed? Check instructor and members-only access
 		// Note: If happening someone is being sneaky!!
-		if (Component::params('com_publications')->get('instructor_only') && $access && !$this->model->access('instructor')) {
+		if ((Component::params('com_publications')->get('instructor_only') && $access && !$this->model->access('instructor')) ||
+		    (($role != 1) && $members_only && !$this->model->access('members-only'))) {
 			$this->_blockAccess();
 			return true;
 		}

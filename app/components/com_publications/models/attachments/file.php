@@ -436,7 +436,7 @@ class File extends Base
 
 				$instructors_only = Component::params('com_publications')->get('instructor_only') && $attach->access;
 				$html .= '<li>';
-				$html .= $file->exists() && $authorized && (!$instructors_only || $pub->access('instructor'))
+				$html .= $file->exists() && $authorized && (!$instructors_only || $pub->access('instructor')) && (($attach->role == 1) || $pub->access('members-only'))
 						? '<a href="' . Route::url($pub->link('serve') . '&el=' . $elementId . '&a=' . $attach->id . '&download=1') . '" title="' . $pop . '">' . $icon . ' ' . $title . '</a>'
 						: $icon . ' ' . $title . $notice;
 				$html .= $instructors_only ? ' (<em>Instructors only</em>)' : '';
