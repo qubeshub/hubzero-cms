@@ -881,7 +881,7 @@ class Types extends AdminController
 			}
 			if (!$ownerGroup)
 			{
-				$row->ownerGroup = 0;
+				$row->ownerGroup = null;
 			}
 
 			$objC = new \Components\Publications\Models\Curation($row->curation);
@@ -960,7 +960,7 @@ class Types extends AdminController
 		}
 
 		// Store new content
-		if (!$row->store())
+		if (!$row->store(true))
 		{
 			App::redirect($url, $row->getError(), 'error');
 			return;
