@@ -178,3 +178,27 @@ a.fs-dropdown-selected-item span {
   top: 10px;
 }
 /* END: Fixing page creation */
+/* Group edit - handle custom fields for new member message */
+#hubForm.full fieldset div.field-wrap:nth-last-child(2) {
+  margin-bottom: 2em;
+}
+#hubForm.full fieldset div.field-wrap:last-child {
+  margin-top: 0;
+  margin-bottom: 2em;
+}
+#hubForm.full fieldset div.field-wrap fieldset.radio {
+  margin: 0;
+  padding: 0;
+}
+#hubForm.full fieldset div.field-wrap fieldset.radio ul {
+  margin-left: 0;
+}
+#hubForm.full fieldset div.field-wrap fieldset.radio ul input {
+  margin: 0 0.5em 0 0;
+}
+#hubForm.full fieldset div.field-wrap fieldset.radio ul label {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+  display: inline-block;
+}

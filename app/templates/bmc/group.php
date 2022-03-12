@@ -10,6 +10,14 @@ defined('_HZEXEC_') or die();
 // get needed objects
 $group  = \Hubzero\User\Group::getInstance(Request::getCmd('cn', ''));
 
+// Record the user (replicated in com_groups/site/controllers/groups.php::viewTask)
+if (!User::isGuest() && in_array(User::get('id'), $group->get('members'))) {
+	require_once \Component::path('com_groups') . DS . 'models' . DS . 'recent.php';
+	$welcomeMessage = \Components\Groups\Models\Recent::memberCheckIn(User::get('id'), $group->get('gidNumber'));
+} else {
+	$welcomeMessage = false;
+}
+
 // return url (if any)
 $return = '/' . trim(str_replace(Request::base(),'', Request::current(true)), '/');
 
@@ -70,7 +78,10 @@ $membership_control = $params->get('membership_control', 1);
 </head>
 <body class="contentpane" id="group-body">
 <jdoc:include type="modules" name="notices" />
-
+<?php
+if ($welcomeMessage) : ?>
+<div id="welcome" style="display:none;"><?php echo $welcomeMessage; ?></div>
+<? endif; ?>
 <div class="super-group-bar brand-out">
 	<div class="content cf">
 		<div class="skip-nav">
