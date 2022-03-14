@@ -81,7 +81,7 @@ $membership_control = $params->get('membership_control', 1);
 <?php
 if ($welcomeMessage) : ?>
 <div id="welcome" style="display:none;"><?php echo $welcomeMessage; ?></div>
-<? endif; ?>
+<?php endif; ?>
 <div class="super-group-bar brand-out">
 	<div class="content cf">
 		<div class="skip-nav">

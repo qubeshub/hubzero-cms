@@ -4,6 +4,13 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
+//-----------------------------------------------------------
+//  Ensure we have our namespace
+//-----------------------------------------------------------
+if (!HUB) {
+	var HUB = {};
+}
+
 if (!jq) {
 	var jq = $;
 }
