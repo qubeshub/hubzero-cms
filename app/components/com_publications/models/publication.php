@@ -1193,7 +1193,7 @@ class Publication extends Obj
 			$this->params->set('access-instructor-publication', true);
 
 			// Members-only access
-			$this->params->set('access-members-only-publication', true);
+			$this->params->set('access-member-publication', true);
 		}
 
 		// Get user groups
@@ -1266,19 +1266,18 @@ class Publication extends Obj
 
 		// Member of ownergroup (for members-only files)
 		$this->masterType();
-		if ($this->_type->ownergroup) {
+		if ($this->_type->membership_required && $this->_type->ownergroup) {
 			$ownergroup = \Hubzero\User\Group::getInstance($this->_type->ownergroup);
+			if (in_array($ownergroup->cn, $usersgroups)) {
+				$this->params->set('access-member-publication', true);
+			}
 		}
-		$this->params->set('access-members-only-publication', 
-			!$this->_type->membership_required || 
-			($this->_type->ownergroup && 
-		     in_array($ownergroup->cn, $usersgroups)));
 
 		// Authors and submitter of resource can access instructor and members-only files
 		if (in_array(User::get('id'), array_map(function ($author) { return $author->user_id; }, $this->authors())) ||
 		    ($this->submitter() && (User::get('id') == $this->submitter()->user_id))) {
 			$this->params->set('access-instructor-publication', true);
-			$this->params->set('access-members-only-publication', true);
+			$this->params->set('access-member-publication', true);
 	}
 
 		// Curators have full view access and approval controls
@@ -1289,7 +1288,7 @@ class Publication extends Obj
 			$this->params->set('access-edit-state-publication', true);
 			$this->params->set('access-manage-publication', true);
 			$this->params->set('access-instructor-publication', true);
-			$this->params->set('access-members-only-publication', true);
+			$this->params->set('access-member-publication', true);
 	}
 
 		$this->_authorized = true;

@@ -435,8 +435,10 @@ class File extends Base
 				$icon  = '<img height="16" src="' . $file->getIcon() . '" alt="' . $file->get('ext') . '" />';
 
 				$instructors_only = Component::params('com_publications')->get('instructor_only') && $attach->access;
+				$pub->masterType();
+				$members_only = $pub->_type->membership_required && !is_null($pub->_type->ownergroup) && ($attach->role != 1);
 				$html .= '<li>';
-				$html .= $file->exists() && $authorized && (!$instructors_only || $pub->access('instructor')) && (($attach->role == 1) || $pub->access('members-only'))
+				$html .= $file->exists() && $authorized && (!$instructors_only || $pub->access('instructor')) && (!$members_only || $pub->access('member'))
 						? '<a href="' . Route::url($pub->link('serve') . '&el=' . $elementId . '&a=' . $attach->id . '&download=1') . '" title="' . $pop . '">' . $icon . ' ' . $title . '</a>'
 						: $icon . ' ' . $title . $notice;
 				$html .= $instructors_only ? ' (<em>Instructors only</em>)' : '';

@@ -865,7 +865,7 @@ class Publications extends SiteController
 		// Is the visitor authorized to view content?
 		if (!$this->model->access('view-all') || 
 			($instructor && !$this->model->access('instructor')) ||
-			($members_only && !$this->model->access('members-only') && ($render == 'archive')))
+			($members_only && !$this->model->access('member') && ($render == 'archive')))
 		{
 			$this->_blockAccess();
 			return true;
@@ -962,7 +962,7 @@ class Publications extends SiteController
 		// Is this allowed? Check instructor and members-only access
 		// Note: If happening someone is being sneaky!!
 		if ((Component::params('com_publications')->get('instructor_only') && $access && !$this->model->access('instructor')) ||
-		    (($role != 1) && $members_only && !$this->model->access('members-only'))) {
+		    (($role != 1) && $members_only && !$this->model->access('member'))) {
 			$this->_blockAccess();
 			return true;
 		}
