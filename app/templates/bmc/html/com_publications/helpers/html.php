@@ -185,7 +185,7 @@ class Html
 					<p>
 					<?php if (User::isGuest()) { ?>
 						<a class="user-account-link" href="<?php echo Route::url('index.php?option=com_users&view=login&return=' . base64_encode($return)); ?>" title="Login">Login</a> to access supporting documents
-					<? } else if (!$publication->access('member')) { ?>						
+					<?php } else if (!$publication->access('member')) { ?>						
 						<a href="<?php echo $return; ?>" title="Join">Become a member</a> to access supporting documents
 					<?php } ?>
 					</p>
