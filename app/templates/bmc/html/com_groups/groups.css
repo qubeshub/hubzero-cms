@@ -202,3 +202,7 @@ a.fs-dropdown-selected-item span {
   padding-left: 0;
   display: inline-block;
 }
+/* Welcome message */
+.fancybox-outer #welcome {
+  margin: 20px;
+}
