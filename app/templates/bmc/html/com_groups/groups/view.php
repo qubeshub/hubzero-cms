@@ -109,7 +109,7 @@ $no_html = Request::getInt('no_html', 0);
 						endif;
 						if ($this->welcomeMessage) : ?>
 						<div id="welcome" style="display:none;"><?php echo $this->welcomeMessage; ?></div>
-						<? endif; ?>
+						<?php endif; ?>
 					</div><!-- /#page_header -->
 					<div id="page_notifications">
 						<?php
