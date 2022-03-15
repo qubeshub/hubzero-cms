@@ -659,7 +659,7 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 			break;
 
 			case 'masterimage':
-				$link = 'index.php?option=com_publications&v=' . $this->get('id') . '&media=Image:master';
+				$link = 'index.php?option=com_publications' . $id . '&v=' . $this->get('id') . '&media=Image:master';
 			break;
 
 			case 'serve':
