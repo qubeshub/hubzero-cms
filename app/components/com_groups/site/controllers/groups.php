@@ -441,7 +441,6 @@ class Groups extends Base
 			$this->view->group->set('cn', Request::getString('suggested_cn', ''));
 			$this->view->group->set('join_policy', $this->config->get('join_policy'));
 			$this->view->group->set('discoverability', $this->config->get('discoverability', 0));
-			$this->view->group->set('discussion_email_autosubscribe', null);
 
 			$this->view->tags = '';
 
@@ -591,8 +590,6 @@ class Groups extends Base
 		$plugins           = Request::getArray('group_plugin', '', 'POST');
 		$params            = Request::getArray('params', array(), 'POST');
 
-		$g_discussion_email_autosubscribe = Request::getInt('discussion_email_autosubscribe', 0, 'post');
-
 		// Are we editing or creating?
 		if ($g_gidNumber)
 		{
@@ -692,7 +689,6 @@ class Groups extends Base
 			$group->set('join_policy', $g_join_policy);
 			$group->set('restrict_msg', $g_restrict_msg);
 			$group->set('discoverability', $g_discoverability);
-			$group->set('discussion_email_autosubscribe', $g_discussion_email_autosubscribe);
 			$group->set('logo', $logo);
 			$group->set('plugins', $plugin_access);
 
@@ -741,7 +737,6 @@ class Groups extends Base
 		$group->set('discoverability', $g_discoverability);
 		$group->set('logo', $logo);
 		$group->set('plugins', $plugin_access);
-		$group->set('discussion_email_autosubscribe', $g_discussion_email_autosubscribe);
 		$group->set('params', $gParams->toString());
 		$group->update();
 

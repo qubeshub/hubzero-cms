@@ -108,16 +108,6 @@ class Import extends Base
 			'hide',
 			'show',
 		),
-		'discussion_email_autosubscribe' => array(
-			'discussion_email_autosubscribe',
-			'discussionemailautosubscribe',
-			'discussionemail',
-			'discussionautosubscribe',
-			'emailautosubscribe',
-			'discussion',
-			'email',
-			'autosubscribe',
-		),
 		'plugins' => array(
 			'plugins',
 			'plugin',

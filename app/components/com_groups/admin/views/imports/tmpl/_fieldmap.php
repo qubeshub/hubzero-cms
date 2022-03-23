@@ -44,7 +44,6 @@ if ($this->import->get('id')) { ?>
 								'restrict_msg',
 								'join_policy',
 								'discoverability',
-								'discussion_email_autosubscribe',
 								'plugins',
 								'created',
 								'created_by',
