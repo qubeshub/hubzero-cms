@@ -80,6 +80,7 @@ $this->css()
 
 					<div class="form-group form-check">
 						<label for="discussion_email_autosubscribe" class="form-check-label">
+							<input type="hidden" name="params[discussion_email_autosubscribe]" value="0" />
 							<input type="checkbox" class="option form-check-input" name="params[discussion_email_autosubscribe]" id="discussion_email_autosubscribe" value="1" <?php
 								if ($this->config->get('discussion_email_autosubscribe', null) >= 1):
 									echo ' checked="checked"';
@@ -91,19 +92,19 @@ $this->css()
 							</span>
 						</label>
 						<label>
-							<input type="radio" name="params[discussion_email_autosubscribe]" class="forum-email-digest" value="1"
+							<input type="radio" name="params[discussion_email_autosubscribe]" class="forum-email-digest" id='forum-immediate' value="1"
 								<?php if ($this->config->get('discussion_email_autosubscribe', null) == 1) { echo ' checked="checked"'; } ?> 
 								<?php if ($this->config->get('discussion_email_autosubscribe', null) == 0) { echo ' disabled="disabled"'; } ?> />
 							<?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_POSTS_IMMEDIATELY'); ?>
 
 							<br />
 
-							<input type="radio" name="params[discussion_email_autosubscribe]" class="forum-email-digest" value="2"
+							<input type="radio" name="params[discussion_email_autosubscribe]" class="forum-email-digest" id='forum-digest' value="2"
 								<?php if ($this->config->get('discussion_email_autosubscribe', null) >= 2) { echo ' checked="checked"'; } ?>
 								<?php if ($this->config->get('discussion_email_autosubscribe', null) == 0) { echo ' disabled="disabled"'; } ?> />
 							<?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_POSTS_AS_A'); ?>
 
-							<select name="params[discussion_email_autosubscribe]" class="forum-email-digest" <?php if ($this->config->get('discussion_email_autosubscribe', null) < 2) { echo ' disabled="disabled"'; } ?>>
+							<select name="params[discussion_email_autosubscribe]" class="forum-email-digest" id='forum-frequency' <?php if ($this->config->get('discussion_email_autosubscribe', null) < 2) { echo ' disabled="disabled"'; } ?>>
 								<option value="2"<?php if ($this->config->get('discussion_email_autosubscribe', null) == 2) { echo ' selected="selected"'; } ?>><?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_POSTS_DAILY'); ?></option>
 								<option value="3"<?php if ($this->config->get('discussion_email_autosubscribe', null) == 3) { echo ' selected="selected"'; } ?>><?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_POSTS_WEEKLY'); ?></option>
 								<option value="4"<?php if ($this->config->get('discussion_email_autosubscribe', null) == 4) { echo ' selected="selected"'; } ?>><?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_POSTS_MONTHLY'); ?></option>
