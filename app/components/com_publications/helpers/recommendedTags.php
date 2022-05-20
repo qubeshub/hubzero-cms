@@ -63,8 +63,8 @@ class RecommendedTags extends \Hubzero\Base\Obj
             FROM #__publications
             WHERE id = ' . $pid
 		);
-		$master_type = new MasterType($db);
 		$this->master_type_id = (int) $this->_db->loadResult();
+		$master_type = new MasterType($this->_db);
 		if ($ownergroup = (int) $master_type->getType($this->master_type_id)->ownergroup) {
 			$this->master_type_cn = \Hubzero\User\Group::getInstance($ownergroup)->cn;
 			$this->_sg_db = \Hubzero\User\Group\Helper::getDBO(array(), $this->master_type_cn);
