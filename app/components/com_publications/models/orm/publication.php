@@ -229,20 +229,19 @@ class Publication extends Relational
 	{
 		if (empty($this->activeVersion))
 		{
-			$versions = $this->versions->sort('id', false);
-
-			foreach ($versions as $version)
+			$maxid = 0;
+			foreach ($this->versions as $version)
 			{
-				if ($version->state == 1)
+				if (($version->id > $maxid) && ($version->state == 1))
 				{
+					$maxid = $version->id;
 					$this->activeVersion = $version;
-					break;
 				}
 			}
 
 			if (empty($this->activeVersion))
 			{
-				$this->activeVersion = $versions->first();
+				$this->activeVersion = $this->versions->first();
 			}
 		}
 
