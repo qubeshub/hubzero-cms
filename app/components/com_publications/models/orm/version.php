@@ -17,6 +17,7 @@ use stdClass;
 require_once __DIR__ . DS . 'attachment.php';
 require_once __DIR__ . DS . 'author.php';
 require_once __DIR__ . DS . 'license.php';
+require_once \Component::path('com_publications') . DS . 'helpers' . DS . 'recommendedTags.php';
 
 /**
  * Model class for publication version
@@ -739,7 +740,7 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 	 *
 	 * @return  array
 	 */
-	public function tags()
+	public function tags($admin=null)
 	{
 		include_once \Component::path('com_tags') . '/models/cloud.php';
 
@@ -749,6 +750,10 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 			'scope'    => 'publications',
 			'scope_id' => $this->id
 		);
+
+		if (!is_null($admin)) {
+			$filters['admin'] = $admin;
+		}
 
 		return $cloud->tags('list', $filters);
 	}
@@ -799,31 +804,47 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 		$obj->url = rtrim(Request::root(), '/') . Route::urlForClient('site', $this->link('version'));
 		$obj->doi = $this->get('doi');
 
-		$tags = $this->tags();
-		if (count($tags) > 0)
-		{
-			$obj->tags = array();
-			foreach ($tags as $tag)
-			{
-				$title = $tag->get('raw_tag', '');
-				$description = $tag->get('tag', '');
-				$label = $tag->get('label', '');
-				$obj->tags[] = array(
-					'id' => 'tag-' . $tag->id,
-					'title' => $title,
-					'description' => $description,
-					'access_level' => $tag->admin == 0 ? 'public' : 'private',
-					'type' => 'publication-tag',
-					'badge_b' => $label == 'badge' ? true : false
-				);
-			}
+		$obj->type = $this->publication->type->alias;
+
+		if ($this->publication->group_owner) {
+			$obj->gid = $this->publication->group_owner;
+			$obj->group = \Hubzero\User\Group::getInstance($this->publication->group_owner)->get('description');
 		}
-		else
+ 
+		// Admin tags
+		$admin_tags = $this->tags($admin=1);
+
+		// Non-admin tags (filtered through focus areas)
+		$recommendedTagsHelper = new \Components\Publications\Helpers\RecommendedTags($this->publication->id, $this->id, App::get('db'));
+		$fa_flat = $recommendedTagsHelper->get_existing_focus_areas_map();
+        $fa_tree = $recommendedTagsHelper->loadFocusAreas(null, null, null, $fa_flat);
+		$stack = array(); $paths = array();
+		$nested_tags = $recommendedTagsHelper->flatten_paths($fa_tree, $stack, $paths, true, true);
+		$nested_tags = array_map(function($v) { return implode('.', $v); }, $nested_tags);
+
+		// Keywords
+		$keywords = $recommendedTagsHelper->get_existing_tags();
+
+		// Use multivalued tags field (NOT child documents, which is a nightmare pre-7 Solr)
+		$obj->tags = array(); // Used for focus areas and ontologies
+		$obj->keywords = array(); // Used for free tags
+		$obj->note = array(); // Used for ontology labels
+		foreach ($admin_tags as $tag)
 		{
-			$obj->tags[] = array(
-				'id' => '',
-				'title' => ''
-			);
+			$obj->tags[] = $tag->get('tag', '');
+			$obj->note[] = $recommendedTagsHelper->get_name($tag->get('id'));
+		}
+		foreach ($nested_tags as $tag)
+		{
+			$obj->tags[] = $tag;
+
+		}
+		// $obj->keywords[] = $tag->get('raw_tag', '');
+		if (!empty($obj->keywords)) {
+			$obj->keywords = implode(' ', $obj->keywords);
+		}
+		if (!empty($obj->note)) {
+			$obj->note = implode(' ', $obj->note);
 		}
 
 		$authors = $this->authors;

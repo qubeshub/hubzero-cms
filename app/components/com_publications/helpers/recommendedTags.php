@@ -8,6 +8,7 @@
 
 namespace Components\Publications\Helpers;
 
+use Components\Tags\Models\Tag;
 use Components\Publications\Tables\MasterType;
 
 /**
@@ -295,27 +296,28 @@ class RecommendedTags extends \Hubzero\Base\Obj
 		return '';
 	}
 
-	public function flatten_paths(&$array, &$stack = array(), &$paths = array()) {
+	public function flatten_paths(&$array, &$stack = array(), &$paths = array(), $include_admin = false, $include_fa = false) {
 		if (!array_key_exists('children', $array)) {
 			// Root case
-			array_walk($array, function($v) use (&$stack, &$paths) {
-				$this->flatten_paths($v, $stack, $paths);
+			array_walk($array, function($v) use (&$stack, &$paths, $include_admin, $include_fa) {
+				$this->flatten_paths($v, $stack, $paths, $include_admin, $include_fa);
 			});
 			return $paths;
 		} else {
 			// Add to stack if not admin
-			if (!$array['admin']) {
+			if ($include_admin || !$array['admin']) {
 				$stack[] = array($array['raw_tag'] => $array['tag']);
 			}
 			if (count($array['children']) == 0) {
 				// Store stack (if exists)
 				if ($stack) {
-					$paths[] = array_merge(...$stack);
+					$fa = ($include_fa && array_key_exists('label', $array) ? array('fa' => Tag::blank()->normalize($array['label'])) : array());
+					$paths[] = array_merge($fa, ...$stack);
 				}
 			} else {
 				// Call children
-				array_walk($array['children'], function($v) use (&$stack, &$paths) {
-					$this->flatten_paths($v, $stack, $paths);
+				array_walk($array['children'], function($v) use (&$stack, &$paths, $include_admin, $include_fa) {
+					$this->flatten_paths($v, $stack, $paths, $include_admin, $include_fa);
 				});
 			}
 		}
