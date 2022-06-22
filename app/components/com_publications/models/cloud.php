@@ -8,11 +8,12 @@
 namespace Components\Publications\Models;  
   
 use Components\Tags\Models\Tag;
-use Components\Tags\Models\Cloud;  
+use Components\Tags\Models\Cloud;
 use Hubzero\Component\View;
   
 require_once \Component::path('com_tags') . DS . 'models' . DS . 'tag.php';
 require_once \Component::path('com_tags') . DS . 'models' . DS . 'cloud.php';
+require_once \Component::path('com_tags') . DS . 'models' . DS . 'focusarea.php';
   
 class PubCloud extends Cloud  
 {  
@@ -33,6 +34,11 @@ class PubCloud extends Cloud
 	 */
 	public function render($rtrn='html', $filters=array(), $clear=false)
 	{
+		// Default to keywords
+		if (!isset($filters['focusarea'])) {
+			$filters['focusarea'] = false;
+		}
+
 		switch (strtolower($rtrn))
 		{
 			case 'string':
@@ -60,41 +66,21 @@ class PubCloud extends Cloud
 			case 'cloud':
 			case 'html':
 			default:
-				if (!isset($this->_cache['tags.cloud']) || $clear)
-				{
-                    // Get pub pid information; _scope_id is version
-                    $query = "SELECT publication_id FROM `#__publication_versions` WHERE id = " . $this->_scope_id;
-                    $this->_db->setQuery($query); 
-                    $pid = $this->_db->loadResult();
-
-                    // Get focus area tags
-                    $recommendedTagsHelper = new \Components\Publications\Helpers\RecommendedTags($pid, $this->_scope_id, App::get('db'));
-                    $fa_flat = $recommendedTagsHelper->get_existing_focus_areas_map();
-                    $fa_tree = $recommendedTagsHelper->loadFocusAreas(null, null, null, $fa_flat);
-
-                    // Get admin info for keywords and add to end of $fa_tree
-                    foreach ($recommendedTagsHelper->get_existing_tags() as $raw_tag) {
-                        $tag_model = Tag::oneByTag($raw_tag);
-                        $atag = array(
-                            'tag' => $tag_model->get('tag'),
-                            'raw_tag' => $raw_tag,
-                            'admin' => $tag_model->get('admin'),
-                            'children' => array()
-                        );
-                        $fa_tree[$raw_tag] = $atag;
-                    }
-
+				$layout = (!$filters['focusarea'] ? 'cloud' : 'focusareas');
+				if (!isset($this->_cache['tags.' . $layout]) || $clear) {
+					$tags = $this->tags('list', $filters, $clear);
+					
 					$view = new View(array(
 						'base_path' => dirname(__DIR__) . '/site',
 						'name'      => 'tags',
-						'layout'    => '_cloud'
+						'layout'    => '_' . $layout
 					));
 					$view->set('config', \Component::params('com_tags'))
-					     ->set('tags', $recommendedTagsHelper->flatten_paths($fa_tree));
+						->set('tags', $tags);
 
-					$this->_cache['tags.cloud'] = $view->loadTemplate();
+					$this->_cache['tags.' . $layout] = $view->loadTemplate();
 				}
-				return $this->_cache['tags.cloud'];
+				return $this->_cache['tags.' . $layout];
 			break;
 		}
 	}

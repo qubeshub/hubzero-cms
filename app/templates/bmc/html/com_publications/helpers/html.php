@@ -9,9 +9,10 @@ namespace Templates\Bmc\Publications\Helpers;
 
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'View.php';
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Document' . DS . 'Assets.php';
-require_once \Component::path('com_publications') . DS . 'helpers' . DS . 'recommendedTags.php';
+require_once \Component::path('com_publications') . DS . 'models' . DS . 'cloud.php';
 
 use Component;
+use Components\Publications\Models\PubCloud;
 
 /**
  * Html helper class
@@ -455,15 +456,36 @@ class Html
 	 * @param   object  $publication  Publication model
 	 * @return  string  HTML
      */
-    public static function showTags($publication)
+    public static function showKeywords($publication)
     {
         $html = '';
         if ($publication->params->get('show_tags')) {
-            $publication->getTagCloud();
-            if ($publication->_tagCloud) {
-                $html  = '<h4>' . Lang::txt('COM_PUBLICATIONS_TAGS') . '</h4>';
+			$cloud = (new PubCloud($publication->version->get('id')))->render();
+            if ($cloud) {
+                $html  = '<h4>Keywords</h4>';
                 $html .= '<div class="pub-content">';
-                $html .= $publication->_tagCloud;
+                $html .= $cloud;
+                $html .= '</div>';
+            }
+        }
+        return $html;
+    }
+
+	/**
+	 * Show publication focus areas
+	 *
+	 * @param   object  $publication  Publication model
+	 * @return  string  HTML
+     */
+    public static function showFocusAreas($publication)
+    {
+        $html = '';
+        if ($publication->params->get('show_tags')) {
+			$cloud = (new PubCloud($publication->version->get('id')))->render('html', array('focusarea' => true));
+            if ($cloud) {
+                $html  = '<h4>Focus Areas</h4>';
+                $html .= '<div class="pub-content">';
+                $html .= $cloud;
                 $html .= '</div>';
             }
         }

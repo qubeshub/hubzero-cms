@@ -15,28 +15,12 @@ if (!count($this->tags))
 }
 
 // build HTML
-$tll = array();
+$html = '<ol class="tags top">';
 foreach ($this->tags as $tag) {
-    $last_tag = end($tag);
-    $first_tag = reset($tag);
-    foreach($tag as $raw => $subtag) {
-        $classes = trim(implode(" ", array($subtag === $first_tag ? 'top-level' : null, $subtag !== $last_tag ? 'sub-tags' : null)));
-        // Opening...
-        $tll[] = '<li' . ($classes ? ' class="' . $classes . '"' : '') . '>';
-        $tll[] = '<a class="tag" href="' . Route::url('index.php?option=com_tags&tag=' . $last_tag) . '">' . $this->escape(stripslashes($raw)) . '</a>';
-        if ($subtag !== $last_tag) {
-            $tll[] = '<ol class="tags">';
-        }
-    }
-    // ...Closing
-    $tll[] = '</li>';
-    for ($x = 2; $x <= count($tag); $x++) {
-        $tll = array_merge($tll, array('</ol>', '</li>'));
-    }
+    $html .= '<li class="top-level">';
+    $html .= '<a class="tag" href="' . Route::url('index.php?option=com_tags&tag=' . $tag->get('tag')) . '">' . $this->escape(stripslashes($tag->get('raw_tag'))) . '</a>';
+    $html .= '</li>';
 }
-
-$html  = '<ol class="tags top">' . "\n";
-$html .= implode("\n", $tll);
-$html .= '</ol>' . "\n";
+$html .= '</ol>';
 
 echo $html;

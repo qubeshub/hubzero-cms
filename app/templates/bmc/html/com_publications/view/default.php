@@ -127,11 +127,17 @@ $tabOverrides = array(
 
 				<div class="tags">
 					<?php
-					// Show tags
-					echo \Templates\Bmc\Publications\Helpers\Html::showTags($this->publication);
+					// Show keywords
+					echo \Templates\Bmc\Publications\Helpers\Html::showKeywords($this->publication);
 					?>
 				</div>
 
+				<div class="focusareas">
+					<?php
+					// Show tags
+					echo \Templates\Bmc\Publications\Helpers\Html::showFocusAreas($this->publication);
+					?>
+				</div>
 
 				<?php 
 				// Show status for authorized users
