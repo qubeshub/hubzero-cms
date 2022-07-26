@@ -460,7 +460,7 @@ class Html
     {
         $html = '';
         if ($publication->params->get('show_tags')) {
-			$cloud = (new PubCloud($publication->version->get('id')))->render();
+			$cloud = (new PubCloud($publication->version->get('id')))->render('html', array('type' => 'keywords'));
             if ($cloud) {
                 $html  = '<h4>Keywords</h4>';
                 $html .= '<div class="pub-content">';
@@ -481,7 +481,7 @@ class Html
     {
         $html = '';
         if ($publication->params->get('show_tags')) {
-			$cloud = (new PubCloud($publication->version->get('id')))->render('html', array('focusarea' => true));
+			$cloud = (new PubCloud($publication->version->get('id')))->render('html', array('type' => 'focusareas'));
             if ($cloud) {
                 $html  = '<h4>Focus Areas</h4>';
                 $html .= '<div class="pub-content">';

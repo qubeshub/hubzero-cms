@@ -12,14 +12,13 @@ defined('_HZEXEC_') or die();
 $focus_area = new \Components\Tags\Models\FocusArea;
 
 // FAs from tags
-$fas = $focus_area::fromTags($this->tags);
-$focus_area->set('subset', $fas->copy()->rows()->fieldsByKey('id'));
-$roots = $focus_area::parents($fas, $null = true); // Get root FAs
+$fas = $focus_area->fromTags($this->tags);
+$roots = $focus_area->parents($fas, true); // Get root FAs
 
 $html = '';
 foreach ($roots as $root) {
     $html .= '<h5>' . $root->label . '</h5>';
-    $html .= $focus_area->render($root->id, 'html');
+    $html .= $focus_area->render($root, 'html');
 }
 
 echo $html;

@@ -13,11 +13,12 @@ use Date;
 use User;
 use Lang;
 use stdClass;
+use Components\Publications\Models\PubCloud;
 
 require_once __DIR__ . DS . 'attachment.php';
 require_once __DIR__ . DS . 'author.php';
 require_once __DIR__ . DS . 'license.php';
-require_once \Component::path('com_publications') . DS . 'helpers' . DS . 'recommendedTags.php';
+require_once \Component::path('com_publications') . DS . 'models' . DS . 'cloud.php';
 
 /**
  * Model class for publication version
@@ -811,41 +812,14 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 			$obj->group = \Hubzero\User\Group::getInstance($this->publication->group_owner)->get('description');
 		}
  
-		// Admin tags
-		$admin_tags = $this->tags($admin=1);
+		$tags = new PubCloud($this->id);
+		$obj->keywords = $tags->render('string', array('type' => 'keywords'));
 
-		// Non-admin tags (filtered through focus areas)
-		$recommendedTagsHelper = new \Components\Publications\Helpers\RecommendedTags($this->publication->id, $this->id, App::get('db'));
-		$fa_flat = $recommendedTagsHelper->get_existing_focus_areas_map();
-        $fa_tree = $recommendedTagsHelper->loadFocusAreas(null, null, null, $fa_flat);
-		$stack = array(); $paths = array();
-		$nested_tags = $recommendedTagsHelper->flatten_paths($fa_tree, $stack, $paths, true, true);
-		$nested_tags = array_map(function($v) { return implode('.', $v); }, $nested_tags);
+		// Focus areas (for faceting)
+		$obj->tags = $tags->render('search', array('type' => 'focusareas'));
 
-		// Keywords
-		$keywords = $recommendedTagsHelper->get_existing_tags();
-
-		// Use multivalued tags field (NOT child documents, which is a nightmare pre-7 Solr)
-		$obj->tags = array(); // Used for focus areas and ontologies
-		$obj->keywords = array(); // Used for free tags
-		$obj->note = array(); // Used for ontology labels
-		foreach ($admin_tags as $tag)
-		{
-			$obj->tags[] = $tag->get('tag', '');
-			$obj->note[] = $recommendedTagsHelper->get_name($tag->get('id'));
-		}
-		foreach ($nested_tags as $tag)
-		{
-			$obj->tags[] = $tag;
-
-		}
-		// $obj->keywords[] = $tag->get('raw_tag', '');
-		if (!empty($obj->keywords)) {
-			$obj->keywords = implode(' ', $obj->keywords);
-		}
-		if (!empty($obj->note)) {
-			$obj->note = implode(' ', $obj->note);
-		}
+		// Focus areas (for general search)
+		$obj->note = $tags->render('string', array('type' => 'focusareas'));
 
 		$authors = $this->authors;
 		foreach ($authors as $author)
