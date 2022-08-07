@@ -18,30 +18,6 @@ $elName = "tagsPick";
 // Get curator status
 $curatorStatus = $this->pub->_curationModel->getCurationStatus($this->pub, $this->step, 0, 'author');
 
-include_once \Component::path('com_publications') . DS . 'helpers' . DS . 'recommendedTags.php';
-
-// Get focus areas - this may be redundant: check $recommended->get_focus_area_properties();
-$db = \App::get('db');
-$recommended = new \Components\Publications\Helpers\RecommendedTags($this->pub->id, $this->pub->version->id, $db = $db);
-$fas = $recommended->loadFocusAreas();
-$focusareas = array();
-foreach ($fas as $tag => $fa)
-{
-	if (!isset($focusareas[$fa['label']]))
-	{
-		$focusareas[$fa['label']] = array();
-	}
-	$focusareas[$fa['label']][$tag] = $fa;
-}
-// Now sort by ordering
-function custom_sort($a,$b) {
-	return (int)$a['ordering']>(int)$b['ordering'];
-}
-foreach ($focusareas as $key => $fas)
-{
-	usort($focusareas[$key], "custom_sort");
-}
-
 $this->css('tags.css')
      ->js('tags.js');
 ?>
@@ -66,20 +42,16 @@ $this->css('tags.css')
 
 			<fieldset class="focus-areas">
 				<?php
-					if (count($focusareas) > 0):
-						$fa_existing = $recommended->get_existing_focus_areas_map();
-						$fa_props = $recommended->get_focus_area_properties();
-
+					if (count($this->fas) > 0):
 						echo 'Choose from these recommended tags:';
-						$idx = 0;
-						foreach ($focusareas as $label=>$fas):
+						foreach ($this->fas as $fa):
 				?>
-							<fieldset value="<?php echo ($fa_props[$label]['mandatory_depth'] ? $fa_props[$label]['mandatory_depth'] : 0) ?>">
+							<fieldset value="<?php echo ($fa->O_mandatory_depth ? $fa->O_mandatory_depth : 0) ?>">
 								<legend>
-									<span class="tooltips" title="<?php echo $fa_props[$label]['about']; ?>"><?php echo ($fa_props[$label]['label'] ? $fa_props[$label]['label'] : $label) ?></span>
-									<?php echo ($fa_props[$label]['mandatory_depth'] ? '<span class="required">required</span>' : '<span class="optional">optional</span>'); ?>
+									<span class="tooltips" title="<?php echo $fa->about; ?>"><?php echo $fa->label; ?></span>
+									<?php echo ($fa->O_mandatory_depth ? '<span class="required">required</span>' : '<span class="optional">optional</span>'); ?>
 								</legend>
-								<?php $recommended->fa_controls(++$idx, $fas, $fa_props, $fa_existing); ?>
+								<?php echo $fa->render('select', array('selected' => $this->selected, 'multiple_depth' => $fa->O_multiple_depth)); ?>
 							</fieldset>
 						<?php
 						endforeach;
@@ -87,13 +59,13 @@ $this->css('tags.css')
 				?>
 			</fieldset>
 			<?php
-			$tf = Event::trigger( 'hubzero.onGetMultiEntry', array(array('tags', 'tags', 'actags', '', $recommended->get_existing_tags_value_list())) );
+			$tf = Event::trigger( 'hubzero.onGetMultiEntry', array(array('tags', 'tags', 'actags', '', $this->keywords)) );
 
 			echo 'Enter your own tags below:';
 			if (count($tf) > 0) {
 				echo $tf[0];
 			} else {
-				echo '<textarea name="tags" id="tags" rows="6" cols="35">' . $recommended->get_existing_tags_value_list() . '</textarea>' . "\n";
+				echo '<textarea name="tags" id="tags" rows="6" cols="35">' . $this->keywords . '</textarea>' . "\n";
 			}
 			?>
 		</div>

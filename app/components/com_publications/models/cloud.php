@@ -9,6 +9,7 @@ namespace Components\Publications\Models;
   
 use Components\Tags\Models\Tag;
 use Components\Tags\Models\Cloud;
+use Components\Tags\Models\FocusArea;
 use Hubzero\Component\View;
   
 require_once \Component::path('com_tags') . DS . 'models' . DS . 'tag.php';
@@ -26,10 +27,24 @@ class PubCloud extends Cloud
 
     /**
 	 * Render a tag cloud
+	 * 
+	 * $rtrn:
+	 * 		"html" (default) => Return html of tag cloud
+	 * 		"string" => Return comma-separated string of raw_tag or label (depending on "type" setting).
+	 * 					The "for" $filter can be used to prepare tags for ckeditor (see above).
+	 * 		"array" or "list" => Return array. $filter['key'] determines which column to return (default is 'tag')
+	 * 		"search" => Return array of 'tag' column (if keywords) or flattened tags (if focus area). Used for solr indexing.
+	 * 
+	 * $filters:
+	 * 		"type" => "keywords" or "focusareas"
+	 * 		"key" => Tag variable of interest (defaults to "tag"). Used when $rtrn='array' or 'list'.
+	 *		"for" => "ckeditor" (used when "type" is "keywords" and $rtrn='string')
+	 *		Any other filters for $this->tags() method.
 	 *
 	 * @param   string   $rtrn     Format to render
 	 * @param   array    $filters  Filters to apply
 	 * @param   boolean  $clear    Clear cached data?
+	 * 
 	 * @return  string
 	 */
 	public function render($rtrn='html', $filters=array(), $clear=false)
@@ -40,6 +55,7 @@ class PubCloud extends Cloud
 		} else {
 			$type = $filters['type']; // keywords (or) focusareas
 		}
+		$tags = $this->tags('list', $filters, true);
 
 		switch (strtolower($rtrn))
 		{
@@ -47,55 +63,47 @@ class PubCloud extends Cloud
 				if (!isset($this->_cache['tags.string.' . $type]) || $clear)
 				{
 					if ($type == 'all' || $type == 'keywords') {
-						$tags = array();
-						foreach ($this->tags('list', $filters, true) as $tag)
-						{
-							$tags[] = $tag->get('raw_tag');
+						$strings = $tags->fieldsByKey('raw_tag');
+						if (isset($filters['for']) && $filters['for'] == 'ckeditor') {
+							$strings = array_map(function($k) {
+								return str_replace('"', '&quot;', str_replace(',', '&#44;', $k));
+							}, $strings);
 						}
 					} else {
-						$focus_area = new \Components\Tags\Models\FocusArea;
-						$tags = $this->tags('list', $filters, true);
-						$fas = $focus_area->fromTags($tags);
-						$tags = array();
-						foreach ($fas as $fa) {
-							$tags[] = $fa->label;
-						}
+						$strings = FocusArea::fromTags($tags)
+							->rows()
+							->fieldsByKey('label');
 					}
-					$this->_cache['tags.string.' . $type] = implode(', ', $tags);
+					$this->_cache['tags.string.' . $type] = implode(', ', $strings);
 				}
 				return $this->_cache[('tags.string.' . $type)];
 			break;
 
 			case 'array':
-				$tags = array();
-				foreach ($this->tags('list', $filters, $clear) as $tag)
+			case 'list':
+				$key = isset($filters['key']) ? $filters['key'] : 'tag';
+				$array = array();
+				foreach ($tags as $tag)
 				{
-					$tags[] = $tag->get('tag');
+					$array[] = $tag->get($key);
 				}
-				return $tags;
+				return $array;
 			break;
 
 			case 'search':
 				if (!isset($this->_cache['tags.search.' . $type]) || $clear) {
 					if ($type == 'keywords') {
-						$keywords = $this->tags('list', $filters, true);
-						$tags = array();
-						foreach ($keywords as $keyword)
-						{
-							$tags[] = $keyword->get('tag');
-						}
+						$search = $tags->fieldsByKey('tag');
 					} else {
-						$focus_area = new \Components\Tags\Models\FocusArea;
-						$tags = $this->tags('list', $filters, true);
-						$fas = $focus_area->fromTags($tags);
-						$roots = $focus_area->parents($fas, true);
-						$tags = array();
+						$fas = FocusArea::fromTags($tags);
+						$roots = $fas->parents(true);
+						$search = array();
 						foreach ($roots as $root) {
-							$tags[] = $focus_area->render($root, 'search');
+							$search[] = $root->render('search', array('selected' => $fas));
 						}
-						$tags = (count($tags) ? array_merge(...$tags) : $tags);
+						$search = (count($search) ? array_merge(...$search) : $search);
 					}
-					$this->_cache['tags.search.' . $type] = $tags;
+					$this->_cache['tags.search.' . $type] = $search;
 				}
 				return $this->_cache['tags.search.' . $type];
 			break;
@@ -104,8 +112,6 @@ class PubCloud extends Cloud
 			case 'html':
 			default:
 				if (!isset($this->_cache['tags.cloud.' . $type]) || $clear) {
-					$tags = $this->tags('list', $filters, true);
-					
 					$view = new View(array(
 						'base_path' => dirname(__DIR__) . '/site',
 						'name'      => 'tags',

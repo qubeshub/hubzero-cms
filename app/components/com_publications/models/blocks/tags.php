@@ -8,10 +8,14 @@
 namespace Components\Publications\Models\Block;
 
 use Components\Publications\Models\Block as Base;
+use Components\Publications\Models\PubCloud;
+use Components\Tags\Models\FocusArea;
 use stdClass;
 
 require_once dirname(dirname(__DIR__)) . DS . 'helpers' . DS . 'tags.php';
-require_once \Component::path('com_publications') . DS . 'helpers' . DS . 'recommendedTags.php';
+require_once dirname(dirname(__DIR__)) . DS . 'helpers' . DS . 'recommendedTags.php';
+require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'cloud.php';
+require_once \Component::path('com_tags') . DS . 'models' . DS . 'focusarea.php';
 
 /**
  * Tags block
@@ -133,6 +137,11 @@ class Tags extends Base
 		// Get categories
 		$view->categories = $pub->category()->getContribCategories();
 
+		// Get focus areas and tags
+		$view->fas = FocusArea::fromObject($pub->master_type);
+		$cloud = new PubCloud($pub->version->get('id'));
+		$view->selected = $cloud->render('list', array('type' => 'focusareas'));
+		$view->keywords = $cloud->render('string', array('type' => 'keywords', 'for' => 'ckeditor'));
 		if ($this->getError())
 		{
 			$view->setError($this->getError());

@@ -961,8 +961,7 @@ HUB.ProjectPublicationsDraft = {
 								return false;
 							}
 
-					// Check for correct depth - note that this will only work when there is only ONE
-					//   focus area per master type
+					// Check for correct depth
 					item_depth = $(tag).parentsUntil('fieldset').length;
 					max_depth = Math.max(item_depth, max_depth);
 					if (item_depth >= $(tag).closest('fieldset').attr('value'))

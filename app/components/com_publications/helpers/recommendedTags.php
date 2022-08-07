@@ -338,6 +338,8 @@ class RecommendedTags extends \Hubzero\Base\Obj
 
 	public function checkStatus()
 	{
+		// Use render with search
+		// Loop over fas (initialized to 0), explode search with . and count array for depth
 		if ($this->has_focus_area) {
 			$map = $this->get_existing_focus_areas_map();
 			$fas = $this->get_focus_area_properties();
@@ -407,10 +409,13 @@ class RecommendedTags extends \Hubzero\Base\Obj
 	 */
 	public function processTags($pid, $vid)
 	{
+		// PUT THIS IN com_publications/models/blocks/tags.php
+		// Also create and call method processTags in focusarea model class
 		$tags = preg_split('/,\s*/', $_POST['tags']);
 		$push = array();
 		$map  = array(); // Duplicate ($push[1] is same)
 
+		// DO NOT NEED THIS (SEE BELOW USE OF $fas)
 		$this->_db->setQuery(
 			'SELECT fa.tag_id, t.raw_tag, fa.mandatory_depth AS minimum_depth, 0 AS actual_depth
 			FROM `#__focus_areas` fa
@@ -453,6 +458,7 @@ class RecommendedTags extends \Hubzero\Base\Obj
 		$filtered = array();
 		// only accept focus areas with parents if their parent is also checked
 		foreach ($push as $idx => $tag) {
+			// Get parents
 			$this->_db->setQuery(
 				'SELECT t.tag, t.id
 				FROM `#__tags_object` to1
@@ -464,17 +470,21 @@ class RecommendedTags extends \Hubzero\Base\Obj
 			$parent = array();
 			$possible_parents = $this->_db->loadAssocList();
 			foreach ($possible_parents as $par) {
+				// Has parent already been found? If so, we've got a hit!
 				if (isset($map[$par['tag']])) {
-					$parent[] = $par;
+					$parent[] = $par; // Likely not needed anymore (see below)
 					$any_match = true;
 				}
 			}
+			// Can enter here if (1) no parents, or (2) parent found and previously stored
+			//   Otherwise, remove from $map list (i.e. don't store)
 			if (!$possible_parents || $any_match) {
 				$filtered[] = $tag;
 				$parent_id = array();
 				foreach ($parent as $par) {
 					$parent_id[] = $par['id'];
 				}
+				// DO NOT NEED THIS!!!!
 				if (isset($fas[$tag[2]]) && $fas[$tag[2]]['actual_depth'] < $fas[$tag[2]]['minimum_depth']) {
 					// count depth if necessary to determine whether focus area constraints are satisified
 					for ($depth = $parent ? 2 : 1; $parent_id && $fas[$tag[2]]['actual_depth'] < $fas[$tag[2]]['minimum_depth'] && $depth < $fas[$tag[2]]['minimum_depth']; ++$depth) {
@@ -490,7 +500,7 @@ class RecommendedTags extends \Hubzero\Base\Obj
 					$fas[$tag[2]]['actual_depth'] = max($depth, $fas[$tag[2]]['actual_depth']);
 				}
 			} else {
-				unset($map[$tag[1]]);
+				unset($map[$tag[1]]); // WHY?!?! Likely not needed...
 			}
 		}
 		$push = $filtered;
@@ -502,17 +512,18 @@ class RecommendedTags extends \Hubzero\Base\Obj
 				continue;
 			}
 			$push[] = array($tag, $norm_tag, '');
-			$map[$norm_tag] = true;
+			$map[$norm_tag] = true; // This is probably not necessary as $map is not used again - unless duplicate entry of tags is allowed??
 		}
 		foreach ($push as $idx => $tag) {
 			$this->_db->setQuery("SELECT raw_tag FROM `#__tags` WHERE tag = " . $this->_db->quote($tag[1]));
 			if (($raw_tag = $this->_db->loadResult())) {
-				$push[$idx][0] = $raw_tag;
+				$push[$idx][0] = $raw_tag; // Replace tag with raw_tag
 			}
 		}
 
 		// Going to manually do this like in Resources by deleting and then re-adding.
 		// NOTE: This changes the time stamp!  Refactor:  Modify com_tags/models/cloud::setTags
+		// Should be able to use $rt->setTags, giving comma separated string of tags (don't need label!)
 		$rt = new \Components\Tags\Models\Cloud($vid, 'publications');
 		$this->_db->setQuery('DELETE FROM `#__tags_object` WHERE tbl = \'publications\' AND objectid = ' . $vid);
 		$this->_db->execute();

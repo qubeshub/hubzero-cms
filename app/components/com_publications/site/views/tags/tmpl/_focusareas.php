@@ -8,17 +8,13 @@
 // No direct access.
 defined('_HZEXEC_') or die();
 
-// Get focus area class
-$focus_area = new \Components\Tags\Models\FocusArea;
-
-// FAs from tags
-$fas = $focus_area->fromTags($this->tags);
-$roots = $focus_area->parents($fas, true); // Get root FAs
+$fas = \Components\Tags\Models\FocusArea::fromTags($this->tags);
+$roots = $fas->parents(true); // Get root FAs
 
 $html = '';
 foreach ($roots as $root) {
     $html .= '<h5>' . $root->label . '</h5>';
-    $html .= $focus_area->render($root, 'html');
+    $html .= $root->render('view', array('selected' => $fas));
 }
 
 echo $html;
