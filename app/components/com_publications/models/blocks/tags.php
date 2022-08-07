@@ -231,14 +231,15 @@ class Tags extends Base
 		$status = new \Components\Publications\Models\Status();
 
 		$tagsHelper  = new \Components\Publications\Helpers\Tags( $this->_parent->_db);
-		$recommendedTagsHelper = new \Components\Publications\Helpers\RecommendedTags( $pub->id, $pub->version->id, $this->_parent->_db );
+        $fas = FocusArea::fromObject($pub->master_type);
+		$selected = (new PubCloud($pub->version->id))->render('search', array('type' => 'focusareas')); // Returns flattened paths
 
 		// Required?
 		$required = $manifest->params->required;
 		$count = $tagsHelper->countTags($pub->version->id);
 		$status->status = $required && $count == 0 ? 0 : 1;
 		$status->status = !$required && $count == 0 ? 2 : $status->status;
-		$status->status = $status->status && $recommendedTagsHelper->checkStatus();
+		$status->status = $status->status && $fas->checkStatus($selected);
 
 		return $status;
 	}
