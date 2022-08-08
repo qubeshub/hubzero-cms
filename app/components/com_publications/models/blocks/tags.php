@@ -13,7 +13,6 @@ use Components\Tags\Models\FocusArea;
 use stdClass;
 
 require_once dirname(dirname(__DIR__)) . DS . 'helpers' . DS . 'tags.php';
-require_once dirname(dirname(__DIR__)) . DS . 'helpers' . DS . 'recommendedTags.php';
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'cloud.php';
 require_once \Component::path('com_tags') . DS . 'models' . DS . 'focusarea.php';
 
@@ -200,8 +199,20 @@ class Tags extends Base
 			return false;
 		}
 
-		$recommendedTagsHelper = new \Components\Publications\Helpers\RecommendedTags( $pub->id, $pub->version->id, $this->_parent->_db );
-		$recommendedTagsHelper->processTags( $pub->id, $pub->version->id );
+		// Get keywords and focus area tags
+		$keywords = preg_split('/,\s*/', $_POST['tags']);
+		$fa_tags = FocusArea::fromObject($pub->master_type)->processTags();
+		$tags = array_merge($keywords, $fa_tags);
+
+		// Going to manually do this like in Resources by deleting and then re-adding.
+		// NOTE: This changes the time stamp!  Refactor:  Modify com_tags/models/cloud::setTags
+		// Should be able to use $rt->setTags, giving comma separated string of tags (don't need label!)
+		$rt = new \Components\Tags\Models\Cloud($pub->version->id, 'publications');
+		$this->_parent->_db->setQuery('DELETE FROM `#__tags_object` WHERE tbl = \'publications\' AND objectid = ' . $pub->version->id);
+		$this->_parent->_db->execute();
+		foreach ($tags as $tag) {
+			$rt->add($tag, User::get('id'), 0, 1); // Ignore label
+		}
 
 		// Reflect the update in curation record
 		$this->_parent->set('_update', 1);
