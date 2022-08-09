@@ -250,7 +250,7 @@ class Tags extends Base
 		$count = $tagsHelper->countTags($pub->version->id);
 		$status->status = $required && $count == 0 ? 0 : 1;
 		$status->status = !$required && $count == 0 ? 2 : $status->status;
-		$status->status = $status->status && $fas->checkStatus($selected);
+		$status->status = $status->status && $fas->checkStatus($selected) ? 1 : 0;
 
 		return $status;
 	}
