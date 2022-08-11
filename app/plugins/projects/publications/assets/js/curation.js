@@ -912,21 +912,24 @@ HUB.ProjectPublicationsDraft = {
 	{
 		var $ = this.jQuery;
 
-		var input = $('#actags');
-		var element = $('#tagsPick');
+		var fa_element = $('#tagsPick');
+		var kw_element = $('#keywordsPick');
 
-		if (!element.length || !input.length)
+		if (!fa_element.length || !kw_element.length)
 		{
 			return false;
 		}
 
-		var required = $(element).hasClass('el-required') ? 1 : 0;
+		var fa_required = $(fa_element).hasClass('el-required') ? 1 : 0;
+		var kw_required = $(kw_element).hasClass('el-required') ? 1 : 0;
 
 		// Timed checker
 		var timer = setInterval(function()
 		{
-			 var tags = HUB.ProjectPublicationsDraft.getSelectedTags();
-			 HUB.ProjectPublicationsDraft.checkElementCompleteness(tags, required, $(element))
+			 var fas = HUB.ProjectPublicationsDraft.getSelectedTags();
+			 HUB.ProjectPublicationsDraft.checkElementCompleteness(fas, fa_required, $(fa_element))
+			 var tags = HUB.ProjectPublicationsDraft.getSelectedKeywords();
+			 HUB.ProjectPublicationsDraft.checkElementCompleteness(tags, kw_required, $(kw_element))
 		}, HUB.ProjectPublicationsDraft.doneTypingInterval);
 
 	},
@@ -937,13 +940,6 @@ HUB.ProjectPublicationsDraft = {
 
 		// Get selected tags
 		var selected = '';
-		var tags = $('.token-input-token-act p');
-
-		tags.each(function(i, item)
-		{
-			selected = selected ? selected + ',' + $(item).html() : $(item).html();
-		});
-
 		var all_depths_met = true;
 		$('.focus-areas').children().each(function(ifa, fa) {
 			var depth_met = ($(fa).has('.required').length === 0);
@@ -991,6 +987,22 @@ HUB.ProjectPublicationsDraft = {
 		if (!all_depths_met) {
 			selected = '';
 		}
+		
+		return selected;
+	},
+
+	getSelectedKeywords: function()
+	{
+		var $ = this.jQuery;
+
+		// Get selected tags
+		var selected = '';
+		var tags = $('.token-input-token-act p');
+
+		tags.each(function(i, item)
+		{
+			selected = selected ? selected + ',' + $(item).html() : $(item).html();
+		});
 
 		return selected;
 	},

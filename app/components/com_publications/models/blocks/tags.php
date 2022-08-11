@@ -94,12 +94,28 @@ class Tags extends Base
 			);
 		}
 
+		// Get block status
+		$status = $pub->curation('blocks', $blockId, 'status');
+		$status->review = $pub->curation('blocks', $blockId, 'review');
+
+		// Get block element model
+		$elModel = new \Components\Publications\Models\BlockElements($this->_parent->_db);
+
+		// Properties object
+		$master 			= new stdClass;
+		$master->block 		= $this->_name;
+		$master->blockId 	= $this->_blockId;
+		$master->params		= $this->_manifest->params;
+		// $master->props		= $elModel->getActiveElement($status->elements, $status->review);
+
 		$view->manifest     = $this->_manifest;
-		$view->content      = self::buildContent($pub, $viewname);
+		$view->content      = self::buildContent($pub, $viewname, $status, $master);
 		$view->pub          = $pub;
 		$view->active       = $this->_name;
 		$view->step         = $blockId;
 		$view->showControls = 4;
+		$view->status		= $status;
+		$view->master		= $master;
 
 		if ($this->getError())
 		{
@@ -115,7 +131,7 @@ class Tags extends Base
 	 * @param   string  $viewname
 	 * @return  string  HTML
 	 */
-	public function buildContent($pub = null, $viewname = 'edit')
+	public function buildContent($pub = null, $viewname = 'edit', $status, $master)
 	{
 		$name = $viewname == 'freeze' || $viewname == 'curator' ? 'freeze' : 'draft';
 
@@ -129,6 +145,22 @@ class Tags extends Base
 			)
 		);
 
+		// Get block element model
+		$elModel = new \Components\Publications\Models\BlockElements($this->_parent->_db);
+
+		// Build each element
+		$o = 1;
+		$html = '';
+		foreach ($this->_manifest->elements as $elementId => $element)
+		{
+			$html  .= $elModel->drawElement(
+						$element->name, $elementId, $element, $master,
+						$pub, $status, $viewname, $o
+			);
+			$o++;
+		}
+		$view->elHtml = $html;
+
 		$view->pub      = $pub;
 		$view->manifest = $this->_manifest;
 		$view->step     = $this->_blockId;
@@ -137,9 +169,7 @@ class Tags extends Base
 		$view->categories = $pub->category()->getContribCategories();
 
 		// Get focus areas and tags
-		$view->fas = FocusArea::fromObject($pub->master_type);
 		$cloud = new PubCloud($pub->version->get('id'));
-		$view->selected = $cloud->render('list', array('type' => 'focusareas'));
 		$view->keywords = $cloud->render('string', array('type' => 'keywords', 'for' => 'ckeditor'));
 		if ($this->getError())
 		{
@@ -229,6 +259,20 @@ class Tags extends Base
 	}
 
 	/**
+	 * Check element status
+	 *
+	 * @return  object
+	 */
+	public function getElementStatus($element, $pub = null)
+	{
+		// Get block element model
+		$elModel = new \Components\Publications\Models\BlockElements($this->_parent->_db);
+
+		$status = $elModel->getStatus($element->type, $element, $pub);
+		return $status;
+	}
+
+	/**
 	 * Check completion status
 	 *
 	 * @param   object   $pub
@@ -238,21 +282,76 @@ class Tags extends Base
 	 */
 	public function getStatus($pub = null, $manifest = null, $elementId = null)
 	{
+		// Set block manifest
+		if ($this->_manifest === null)
+		{
+			$this->_manifest = $manifest ? $manifest : self::getManifest();
+		}
+
 		// Start status
 		$status = new \Components\Publications\Models\Status();
 
-		$tagsHelper  = new \Components\Publications\Helpers\Tags( $this->_parent->_db);
-        $fas = FocusArea::fromObject($pub->master_type);
-		$selected = (new PubCloud($pub->version->id))->render('search', array('type' => 'focusareas')); // Returns flattened paths
+		// Return element status
+		if ($elementId !== null && isset($this->_manifest->elements->$elementId))
+		{
+			return self::getElementStatus($this->_manifest->elements->$elementId, $pub);
+		}
 
-		// Required?
-		$required = $manifest->params->required;
-		$count = $tagsHelper->countTags($pub->version->id);
-		$status->status = $required && $count == 0 ? 0 : 1;
-		$status->status = !$required && $count == 0 ? 2 : $status->status;
-		$status->status = $status->status && $fas->checkStatus($selected) ? 1 : 0;
+		// Check against manifested requirements
+		if ($this->_manifest && $this->_manifest->elements)
+		{
+			// Check if requirements are satisfied for each attachment element
+			$i          = 0;
+			$success    = 0;
+			$incomplete = 0;
+
+			foreach ($this->_manifest->elements as $elementId => $element)
+			{
+				if (!isset($status->elements))
+				{
+					$status->elements = new stdClass();
+				}
+				$status->elements->$elementId = self::getElementStatus($element, $pub);
+				if ($status->elements->$elementId->status >= 1)
+				{
+					$success++;
+				}
+				if ($status->elements->$elementId->status == 2)
+				{
+					$incomplete++;
+				}
+				$i++;
+			}
+
+			$success = $success == $i ? 1 : 0;
+			$status->status = $success == 1 && $incomplete ? 2 : $success;
+		}
+
+		$cloud = new PubCloud($pub->version->get('id'));
+		$count = count($cloud->render('list', array('type' => 'keywords')));
+		$status->status = $manifest->params->required && $count == 0 ? 0 : $status->status;
 
 		return $status;
+	}
+
+	/**
+	 * Get default manifest for the block element
+	 *
+	 * @return  void
+	 */
+	public function getElementManifest()
+	{
+		$manifest = array(
+			'name' 		=> 'focusareas',
+			'type' 		=> 'focusareas',
+			'label'		=> 'Categories',
+			'about'		=> '<p>Choose from these recommended tags:</p>',
+			'adminTips'	=> '',
+			'params' 	=> array(
+				'type' 		=> 'focusareas'
+			)
+		);
+		return json_decode(json_encode($manifest), false);
 	}
 
 	/**
@@ -278,9 +377,20 @@ class Tags extends Base
 				'draftTagline'	=> Lang::txt('COM_PUBLICATIONS_BLOCKS_TAGS_DRAFT_TAGLINE'),
 				'about'					=> Lang::txt('COM_PUBLICATIONS_BLOCKS_TAGS_ABOUT'),
 				'adminTips'			=> '',
-				'elements' 			=> array(),
+				'elements' 			=> array(
+					1 => array(
+						'name' 		=> 'focusareas',
+						'type' 		=> 'focusareas',
+						'label'		=> 'Categories',
+						'about'		=> '<p>Choose from these recommended tags:</p>',
+						'adminTips'	=> '',
+						'params' 	=> array(
+							'type' 		=> 'focusareas'
+						)
+					)
+				),
 				'params'				=> array(
-					'required' => 1, 
+					'required' => 0, 
 					'published_editing' => 0
 				)
 			);
