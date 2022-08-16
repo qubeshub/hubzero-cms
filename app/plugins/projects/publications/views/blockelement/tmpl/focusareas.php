@@ -52,6 +52,7 @@ $updated  = $curatorStatus->updated && (($curatorStatus->status == 3 && !$comple
 				<?php echo $this->manifest->label; ?>
 			</label>
 		  <?php echo $this->pub->_curationModel->drawCurationNotice($curatorStatus, $props, 'author', $elName); ?>
+          <?php echo strip_tags($aboutText); ?>
 
 			<fieldset class="focus-areas">
 				<?php

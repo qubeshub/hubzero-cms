@@ -261,12 +261,13 @@
 		text-indent: 50px;
 		overflow: hidden;
 	}
-	#author-list, .content-list {
+	#author-list, #alignment-list, .content-list {
 		list-style: none;
 		margin: 0.5em;
 		padding-left: 0;
 	}
 	#author-list li,
+	#alignment-list li,
 	.content-list li {
 		border: 1px solid #ddd;
 		background: #efefef;
@@ -274,12 +275,20 @@
 		padding: 3px;
 		position: relative;
 	}
+	#alignment-list li {
+		clear: both;
+		height: 32px;
+	}
+	#alignment-list li span:nth-last-child(-n+2) {
+		margin-right: 20px;
+	}
 	.content-list li.summary {
 		background: #FFF;
 		border: none;
 		border-bottom: 2px solid #ddd;
 	}
-	#author-list li .handle {
+	#author-list li .handle,
+	#alignment-list li .handle {
 		cursor:move;
 		float: right;
 		font-weight: bold;
@@ -452,7 +461,8 @@
 		margin: 1em;
 		list-style: square;
 	}
-	.editauthor {
+	.editauthor,
+	.editalignment {
 		color: blue;
 		float: right;
 		margin: 0 0.3em;
@@ -596,4 +606,12 @@
 		width: 22px;
 		height: 22px;
 		font-size: 22px;
+	}
+	input.numeric-input {
+		width: auto !important;
+		margin-bottom: 0px !important;
+	}
+	.numeric-input::-webkit-inner-spin-button, 
+	.numeric-input::-webkit-outer-spin-button {  
+		opacity: 1;
 	}

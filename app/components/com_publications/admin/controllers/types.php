@@ -9,12 +9,15 @@ namespace Components\Publications\Admin\Controllers;
 
 use Hubzero\Component\AdminController;
 use Components\Publications\Tables;
+use Components\Tags\Models\Alignment;
 use stdClass;
 use Request;
 use Config;
 use Route;
 use Lang;
 use App;
+
+require_once \Component::path('com_tags') . DS . 'models' . DS . 'alignment.php';
 
 /**
  * Manage publication master types
@@ -596,7 +599,17 @@ class Types extends AdminController
 							{
 								foreach ($bpValue as $tpName => $tpValue)
 								{
-									if (is_array($manifest->blocks->$blockId->elements->$elementId->$dataLabel->$bpName->$tpName))
+									if ($tpName == 'view') {
+										switch (key($tpValue)) {
+											case 'alignment':
+												Alignment::saveAlignment($id, 'publication_master_types', $tpValue['alignment']);
+											break;
+											
+											default:
+											break;
+										}
+										$pval = key($tpValue);
+									} elseif (is_array($manifest->blocks->$blockId->elements->$elementId->$dataLabel->$bpName->$tpName))
 									{
 										$pval = trim($tpValue) ? explode(',', trim($tpValue)) : array();
 									}

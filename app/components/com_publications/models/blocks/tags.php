@@ -343,12 +343,15 @@ class Tags extends Base
 	{
 		$manifest = array(
 			'name' 		=> 'focusareas',
-			'type' 		=> 'focusareas',
+			'type' 		=> 'tags',
 			'label'		=> 'Categories',
-			'about'		=> '<p>Choose from these recommended tags:</p>',
+			'about'		=> 'Choose from these recommended tags:',
 			'adminTips'	=> '',
 			'params' 	=> array(
-				'type' 		=> 'focusareas'
+				'type'	=> 'alignment',
+				'typeParams' => array(
+					'view' => 'alignment'
+				)
 			)
 		);
 		return json_decode(json_encode($manifest), false);
@@ -380,12 +383,15 @@ class Tags extends Base
 				'elements' 			=> array(
 					1 => array(
 						'name' 		=> 'focusareas',
-						'type' 		=> 'focusareas',
+						'type' 		=> 'tags',
 						'label'		=> 'Categories',
-						'about'		=> '<p>Choose from these recommended tags:</p>',
+						'about'		=> 'Choose from these recommended tags:',
 						'adminTips'	=> '',
 						'params' 	=> array(
-							'type' 		=> 'focusareas'
+							'type'	=> 'alignment',
+							'typeParams' => array(
+								'view' => 'alignment'
+							)
 						)
 					)
 				),

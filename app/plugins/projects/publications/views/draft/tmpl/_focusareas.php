@@ -9,7 +9,7 @@
 defined('_HZEXEC_') or die();
 
 $html = '';
-$multiple = !is_null($this->props['multiple_depth']) && ($this->props['multiple_depth'] <= $this->depth);
+$multiple = !is_null($this->props['multiple_depth']) && ($this->props['multiple_depth'] < $this->depth);
 $tag = $this->child->tag->get('tag');
 $html .= '<div class="fa' . ($this->depth === 1 ? ' top-level' : '') . '">';
 $html .= '<input class="option" class="' . ($multiple ? 'checkbox' : 'radio') . '" type="' . ($multiple ? 'checkbox' : 'radio') . '" ' . (in_array($tag, $this->props['selected']) ? 'checked="checked" ' : '') . 'id="tagfa-' . $tag . '" name="tagfa-' . $this->parent . '[]" value="' . $tag . '"';

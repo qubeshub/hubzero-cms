@@ -84,7 +84,9 @@ $block     = $blocks->$blockId;
 						elseif ($paramname == 'typeParams') {
 							foreach ($paramvalue as $tpName => $tpValue) { ?>
 							<div class="input-wrap">
+								<?php if ($tpName !== 'view') { ?>
 								<label><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_PARAMS_' . strtoupper($tpName)); ?></label>
+								<?php } ?>
 							<?php
 								if ($tpName == 'handler') { ?>
 								<select name="curation[blocks][<?php echo $blockId; ?>][elements][<?php echo $elementId; ?>][params][<?php echo $paramname; ?>][<?php echo $tpName; ?>]">
@@ -122,6 +124,19 @@ $block     = $blocks->$blockId;
 								<option value="2" <?php echo ($tpValue == 2) ? ' selected="selected"' : ''; ?>><?php echo Lang::txt('COM_PUBLICATIONS_CURATION_ELEMENT_PARAMS_MULTIZIP_TWO'); ?></option>
 							</select>
 						<?php }
+							elseif ($tpName == 'view') { ?>
+								<input type="hidden" name="curation[blocks][<?php echo $blockId; ?>][elements][<?php echo $elementId; ?>][params][<?php echo $paramname; ?>][view]" value="<?php echo $tpValue;  ?>" />
+								<?php
+								$view = new \Hubzero\Component\View(array(
+									'base_path' => $this->_basePath,
+									'name'      => $this->_name,
+									'layout'    => '_select' . $tpValue,
+								));	
+								$view->row = $this->row;
+								$view->blockId = $blockId;
+								$view->elementId = $elementId;
+								echo $view->loadTemplate(); ?>
+							<?php }
 								elseif (is_array($tpValue)) {
 								$tpVal = implode(',', $tpValue); ?>
 								<input type="text" name="curation[blocks][<?php echo $blockId; ?>][elements][<?php echo $elementId; ?>][params][<?php echo $paramname; ?>][<?php echo $tpName; ?>]" value="<?php echo $tpVal;  ?>" />
