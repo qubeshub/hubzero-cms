@@ -31,11 +31,11 @@ if ($fas != null)
 		$html .= ' <span class="editalignment" onclick="HUB.PublicationsCuration.deleteAlignment(this)" > ' . Lang::txt('COM_PUBLICATIONS_DELETE') . '</span> ';
         $html .= ' <span class="editalignment">';
         $html .= '   <label for="multiple-' . $id . '">Radio depth</label>';
-        $html .= '   <input class="numeric-input" type="number" id="multiple-' . $id . '" name="curation[blocks][' . $this->blockId . '][elements][' . $this->elementId . '][params][typeParams][view][alignment][' . $id . '][multiple_depth]" value="' . $fa->O_multiple_depth . '" min="0" max="' . $depth[$id] . '">';
+        $html .= '   <input class="numeric-input" type="number" id="multiple-' . $id . '" name="curation[blocks][' . $this->blockId . '][elements][' . $this->elementId . '][params][typeParams][view][alignment][' . $id . '][multiple_depth]" value="' . $fa->multiple_depth . '" min="0" max="' . $depth[$id] . '">';
         $html .= ' </span>';
         $html .= ' <span class="editalignment">';
         $html .= '   <label for="mandatory-' . $id . '">Mandatory depth</label>';
-        $html .= '   <input class="numeric-input" type="number" id="mandatory-' . $id . '" name="curation[blocks][' . $this->blockId . '][elements][' . $this->elementId . '][params][typeParams][view][alignment][' . $id . '][mandatory_depth]" value="' . $fa->O_mandatory_depth . '" min="0" max="' . $depth[$id] . '">';
+        $html .= '   <input class="numeric-input" type="number" id="mandatory-' . $id . '" name="curation[blocks][' . $this->blockId . '][elements][' . $this->elementId . '][params][typeParams][view][alignment][' . $id . '][mandatory_depth]" value="' . $fa->mandatory_depth . '" min="0" max="' . $depth[$id] . '">';
         $html .= ' </span>';
 		$html .= '</li>' . "\n";
 	}

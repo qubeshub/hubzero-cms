@@ -13,7 +13,7 @@ $props    = $this->pub->curation('blocks', $this->master->blockId, 'props') . '-
 $complete = $this->pub->curation('blocks', $this->master->blockId, 'elementStatus', $this->elementId);
 
 // Element required status depends on the requirement of each focus area
-$required = count(array_filter($this->fas->copy()->rows()->fieldsByKey('O_mandatory_depth'),
+$required = count(array_filter($this->fas->copy()->rows()->fieldsByKey('mandatory_depth'),
                   function($required) {
                     return $required;
                   }));
@@ -59,12 +59,12 @@ $updated  = $curatorStatus->updated && (($curatorStatus->status == 3 && !$comple
 					if (count($this->fas) > 0):
 						foreach ($this->fas as $fa):
 				?>
-							<fieldset value="<?php echo ($fa->O_mandatory_depth ? $fa->O_mandatory_depth : 0) ?>">
+							<fieldset value="<?php echo ($fa->mandatory_depth ? $fa->mandatory_depth : 0) ?>">
 								<legend>
 									<span class="tooltips" title="<?php echo $fa->about; ?>"><?php echo $fa->label; ?></span>
-									<?php echo ($fa->O_mandatory_depth ? '<span class="required">required</span>' : '<span class="optional">optional</span>'); ?>
+									<?php echo ($fa->mandatory_depth ? '<span class="required">required</span>' : '<span class="optional">optional</span>'); ?>
 								</legend>
-								<?php echo $fa->render('select', array('selected' => $this->selected, 'multiple_depth' => $fa->O_multiple_depth)); ?>
+								<?php echo $fa->render('select', array('selected' => $this->selected, 'multiple_depth' => $fa->multiple_depth)); ?>
 							</fieldset>
 						<?php
 						endforeach;
