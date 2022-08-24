@@ -343,7 +343,7 @@ class Tags extends Base
 	{
 		$manifest = array(
 			'name' 		=> 'focusareas',
-			'type' 		=> 'tags',
+			'type' 		=> 'focusareas',
 			'label'		=> 'Categories',
 			'about'		=> 'Choose from these recommended tags:',
 			'adminTips'	=> '',
@@ -383,7 +383,7 @@ class Tags extends Base
 				'elements' 			=> array(
 					1 => array(
 						'name' 		=> 'focusareas',
-						'type' 		=> 'tags',
+						'type' 		=> 'focusareas',
 						'label'		=> 'Categories',
 						'about'		=> 'Choose from these recommended tags:',
 						'adminTips'	=> '',
