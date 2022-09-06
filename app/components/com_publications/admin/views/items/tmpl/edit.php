@@ -47,9 +47,14 @@ if (count($matches) > 0)
 	}
 }
 
-$customFields = $rt->customFields && $rt->customFields != '{"fields":[]}' ? $rt->customFields : '{"fields":[{"default":"","name":"citations","label":"Citations","type":"textarea","required":"0"}]}';
-
 $customFields = $this->model->_curationModel->getMetaSchema();
+$hasFocusArea = array_reduce(
+	$this->model->_curationModel->getElementsByName('tags'),
+	function ($carry, $el) {
+		return $carry || ($el->manifest->type == 'focusareas');
+	},
+	false
+);
 
 include_once Component::path('com_publications') . DS . 'models' . DS . 'elements.php';
 
@@ -146,19 +151,6 @@ $panels = array(
 				</fieldset>
 			</fieldset>
 			<fieldset class="adminform">
-				<legend><span><?php echo Lang::txt('COM_PUBLICATIONS_FIELDSET_TAGS'); ?></span></legend>
-
-				<div class="input-wrap">
-					<?php
-					$tf = Event::trigger( 'hubzero.onGetMultiEntry', array(array('tags', 'tags', 'actags', '', $this->model->getTagsForEditing(0, 0, true))) );
-					if (count($tf) > 0) {
-						echo $tf[0];
-					} else { ?>
-						<input type="text" name="tags" id="actags" value="<?php echo $this->model->getTagsForEditing(); ?>" />
-					<?php } ?>
-				</div>
-			</fieldset>
-			<fieldset class="adminform">
 				<legend><span><?php echo Lang::txt('COM_PUBLICATIONS_FIELDSET_LICENSE'); ?></span></legend>
 
 				<div class="input-wrap">
@@ -175,6 +167,42 @@ $panels = array(
 					<textarea name="license_text" id="license_text" cols="40" rows="5" class="pubinput"><?php echo preg_replace("/\r\n/", "\r", trim($this->model->get('license_text'))); ?></textarea>
 				</div>
 			</fieldset>
+			<fieldset class="adminform">
+				<legend><span><?php echo Lang::txt('COM_PUBLICATIONS_FIELDSET_KEYWORDS'); ?></span></legend>
+
+				<div class="input-wrap">
+					<?php
+					$tf = Event::trigger( 'hubzero.onGetMultiEntry', array(array('tags', 'tags', 'actags', '', $this->model->getTagsForEditing(array('type' => 'keywords')))) );
+					if (count($tf) > 0) {
+						echo $tf[0];
+					} else { ?>
+						<input type="text" name="tags" id="actags" value="<?php echo $this->model->getTagsForEditing(array('type' => 'keywords')); ?>" />
+					<?php } ?>
+				</div>
+			</fieldset>
+			<?php if ($hasFocusArea) { ?>
+				<fieldset class="adminform focusareas">
+					<legend><span><?php echo Lang::txt('COM_PUBLICATIONS_FIELDSET_FOCUSAREAS'); ?></span></legend>
+
+					<div class="input-wrap">
+						<?php 
+						$focusAreas = $this->model->getFocusAreasForEditing();
+						if (count($focusAreas['fas']) > 0) {
+						foreach ($focusAreas['fas'] as $fa) { ?>
+							<fieldset value="<?php echo ($fa->mandatory_depth ? $fa->mandatory_depth : 0) ?>">
+								<legend>
+									<span class="tooltips" title="<?php echo $fa->about; ?>"><?php echo $fa->label; ?></span>
+									<?php echo ($fa->mandatory_depth ? '<span class="required">required</span>' : '<span class="optional">optional</span>'); ?>
+								</legend>
+								<?php echo $fa->render('select', array('selected' => $focusAreas['selected'], 'multiple_depth' => $fa->multiple_depth)); ?>
+							</fieldset>
+							<?php } ?>
+						<?php } else { ?>
+							<span>No focus areas defined</span>
+						<?php } ?>
+					</div>
+				</fieldset>
+			<?php } ?>
 		</div>
 		<div class="col span5">
 			<table class="meta">

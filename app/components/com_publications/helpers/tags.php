@@ -8,6 +8,7 @@
 namespace Components\Publications\Helpers;
 
 use Components\Publications\Models\PubCloud;
+use Components\Tags\Models\FocusArea;
 use Route;
 use Date;
 use Lang;
@@ -251,6 +252,26 @@ class Tags extends \Hubzero\Base\Obj
 	}
 
 	/**
+	 * [TEMPORARY] Tag an existing object
+	 * 	Only called when saving tags from admin interface
+	 *
+	 * @param      integer $object_id  Object ID
+	 * @param      string  $tag_string String of comma-separated tags
+	 */
+	public function tag_existing_object($object_id, $tags)
+	{
+		// Going to manually do this like in Resources by deleting and then re-adding.
+		// NOTE: This changes the time stamp!  Refactor:  Modify com_tags/models/cloud::setTags
+		// Should be able to use $rt->setTags, giving comma separated string of tags (don't need label!)
+		$rt = new \Components\Tags\Models\Cloud($object_id, 'publications');
+		$this->_db->setQuery('DELETE FROM `#__tags_object` WHERE tbl = \'publications\' AND objectid = ' . $object_id);
+		$this->_db->execute();
+		foreach ($tags as $tag) {
+			$rt->add($tag, User::get('id'), 0, 1); // Ignore label
+		}
+	}
+
+	/**
 	 * Remove a tag on an object
 	 *
 	 * @param      integer $tagger_id Tagger ID
@@ -358,17 +379,28 @@ class Tags extends \Hubzero\Base\Obj
 	 * Return a list of tags for an object as a comma-separated string
 	 *
 	 * @param      integer $oid       Object ID
-	 * @param      integer $offset    Record offset
-	 * @param      integer $limit     Number to return
-	 * @param      integer $tagger_id Tagger ID
-	 * @param      integer $strength  Tag strength
-	 * @param      integer $admin     Admin tags?
+	 * @param	   array   $filters	  Array of filters
 	 * @return     string
 	 */
-	public function get_tag_string($oid, $offset=0, $limit=0, $tagger_id=null, $strength=0, $admin=0, $label='')
+	public function get_tag_string($oid, $filters = array())
 	{
 		$cloud = new PubCloud($oid, $this->_tbl);
-		return $cloud->render('string');
+		return $cloud->render('string', $filters);
+	}
+
+	/**
+	 * Return a list of tags for an object as a comma-separated string
+	 *
+	 * @param      integer $oid       Object ID
+	 * @param	   integer $mtype	  Publication master type
+	 * @return     array
+	 */
+	public function get_focus_areas($oid, $mtype)
+	{
+		$fas = FocusArea::fromObject($mtype);
+		$cloud = new PubCloud($oid);
+		$selected = $cloud->render('list', array('type' => 'focusareas'));
+		return array('fas' => $fas, 'selected' => $selected);
 	}
 
 	/**

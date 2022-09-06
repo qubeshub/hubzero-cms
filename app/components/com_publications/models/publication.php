@@ -1787,12 +1787,10 @@ class Publication extends Obj
 	/**
 	 * Get tags for editing
 	 *
-	 * @param   int     $tagger_id
-	 * @param   int     $strength
-	 * @param   int     $admin
+	 * @param   array   $filters
 	 * @return  string  HTML
 	 */
-	public function getTagsForEditing($tagger_id = 0, $strength = 0, $admin = 0)
+	public function getTagsForEditing($filters = array())
 	{
 		if (!$this->exists())
 		{
@@ -1802,8 +1800,27 @@ class Publication extends Obj
 		include_once dirname(__DIR__) . DS . 'helpers' . DS . 'tags.php';
 
 		$rt = new Helpers\Tags($this->_db);
-		$this->_tagsForEditing = $rt->get_tag_string($this->version->get('id'), 0, 0, $tagger_id, $strength, $admin);
+		$this->_tagsForEditing = $rt->get_tag_string($this->version->get('id'), $filters);
 		return $this->_tagsForEditing;
+	}
+
+	/**
+	 * Get focus area editing form
+	 * 
+	 * @return string	HTML
+	 */
+	public function getFocusAreasForEditing()
+	{
+		if (!$this->exists())
+		{
+			return false;
+		}
+
+		include_once dirname(__DIR__) . DS . 'helpers' . DS . 'tags.php';
+
+		$rt = new Helpers\Tags($this->_db);
+		$this->_fasForEditing = $rt->get_focus_areas($this->version->get('id'), $this->masterType()->id);
+		return $this->_fasForEditing;
 	}
 
 	/**

@@ -315,6 +315,47 @@ class Curation extends Obj
 	}
 
 	/**
+	 * Get manifests elements of interest by name
+	 *
+	 * @param   integer  $role  Element role
+	 * @param   string   $type
+	 * @return  mixed    False on failure, array on success
+	 */	
+	public function getElementsByName($name = 'content')
+	{
+		if (!$this->_blocks)
+		{
+			return false;
+		}
+
+		// Get blocks model
+		$blocksModel = new Blocks($this->_db);
+
+		$elements = array();
+
+		// Find all blocks of the same parent
+		foreach ($this->_blocks as $blockId => $block)
+		{
+			$parentBlock = $blocksModel->getBlockProperty($block->name, '_parentname');
+
+			if ($parentBlock == $name)
+			{
+				foreach ($block->elements as $elId => $element)
+				{
+					$output = new stdClass;
+					$output->block    = $block->params;
+					$output->blockId  = $blockId;
+					$output->id       = $elId;
+					$output->manifest = $element;
+					$elements[] = $output;
+				}
+			}
+		}
+
+		return $elements;
+	}
+
+	/**
 	 * Get schema for metadata elements
 	 *
 	 * @return  array

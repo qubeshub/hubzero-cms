@@ -615,3 +615,66 @@
 	.numeric-input::-webkit-outer-spin-button {  
 		opacity: 1;
 	}
+
+	.focusareas .fa .fa {
+	  margin-left: 2em;
+	}
+	
+	.focusareas .fa input:first-child:not(:nth-last-child(2)):before {
+		position: relative;
+		content: '\203A';
+		font-family: 'Fontcons';
+		font-size: 12px;
+		left: -12px;
+		top: -5px;
+	}
+	
+	.focusareas .fa input:first-child:not(:nth-last-child(2)):checked:before {
+		position: relative;
+		content: '\2304';
+		font-family: 'Fontcons';
+		font-size: 12px;
+		left: -14px;
+		top: -5px;
+	}
+	
+	.focusareas fieldset {
+		margin: 1.5em 0em;
+		padding: 0 0 1.5em 0;
+		border: 1px solid #e5e5e5;
+		float: none;
+		width: auto;
+	}
+
+	.focusareas input[type=checkbox] {
+		width: auto;
+		display: inline;
+	}
+	
+	.focusareas fieldset legend {
+		float: none;
+		color: #121212;
+		border: none;
+		width: auto;
+		padding: 0 1em;
+		margin: 0 0 0 1em;
+		text-indent: 0;
+		text-shadow: none;
+		font-size: 1em;
+	}
+	
+	.focusareas fieldset div {
+		padding: 0 1em;
+		margin: 0 0 0 1em;
+	}
+	
+	.focusareas fieldset .required,
+	.focusareas fieldset .optional {
+		font-size: 0.8em !important;
+		margin-top: 0.3em;
+	}
+	
+	#tagsPick fieldset .required.complete {
+		color: #5ad5a8;
+	}
+	  

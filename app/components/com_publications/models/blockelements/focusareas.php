@@ -81,7 +81,7 @@ class FocusAreas extends Base
 				'folder'	=>'projects',
 				'element'	=>'publications',
 				'name'		=>'freeze',
-				'layout'	=>'metadata'
+				'layout'	=>'focusareas'
 			)
 		);
 
@@ -92,6 +92,10 @@ class FocusAreas extends Base
 		$view->name			 = $viewname;
 		$view->master		 = $master;
 
+		$view->fas = FocusArea::fromObject($pub->master_type);
+		$cloud = new PubCloud($pub->version->get('id'));
+		$view->fas_cloud = $cloud->render('html', array('type' => 'focusareas'));
+		
 		return $view->loadTemplate();
 	}
 

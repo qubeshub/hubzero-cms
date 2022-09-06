@@ -831,12 +831,18 @@ class Items extends AdminController
 			}
 		}
 
-		// Incoming tags
-		$tags = Request::getString('tags', '', 'post');
+		// Incoming keywords
+		$keywords = explode(',', Request::getString('tags', '', 'post'));
+
+		// Incoming focus areas
+		$focusAreas = $this->model->getFocusAreasForEditing();
+		$fa_tags = $focusAreas['fas']->processTags();
+		$tags = array_merge($keywords, $fa_tags);
 
 		// Save the tags
 		$rt = new Helpers\Tags($this->database);
-		$rt->tag_object(User::get('id'), $this->model->version->id, $tags, 1, true);
+		$rt->tag_existing_object($this->model->version->id, $tags);
+		// $rt->tag_object(User::get('id'), $this->model->version->id, $tags, 1, true);
 
 		// Email config
 		$pubtitle = \Hubzero\Utility\Str::truncate($this->model->version->title, 100);
