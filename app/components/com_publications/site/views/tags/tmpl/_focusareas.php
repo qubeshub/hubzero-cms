@@ -13,7 +13,7 @@ $roots = $fas->parents(true); // Get root FAs
 
 $html = '';
 foreach ($roots as $root) {
-    $html .= '<h5>' . $root->label . '</h5>';
+    $html .= '<h5 id="fa-' . $root->tag->tag . '">' . $root->label . '</h5>';
     $html .= $root->render('view', array('selected' => $fas));
 }
 

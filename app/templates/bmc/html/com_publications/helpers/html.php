@@ -472,27 +472,6 @@ class Html
     }
 
 	/**
-	 * Show publication focus areas
-	 *
-	 * @param   object  $publication  Publication model
-	 * @return  string  HTML
-     */
-    public static function showFocusAreas($publication)
-    {
-        $html = '';
-        if ($publication->params->get('show_tags')) {
-			$cloud = (new PubCloud($publication->version->get('id')))->render('html', array('type' => 'focusareas'));
-            if ($cloud) {
-                $html  = '<h4>Focus Areas</h4>';
-                $html .= '<div class="pub-content">';
-                $html .= $cloud;
-                $html .= '</div>';
-            }
-        }
-        return $html;
-    }
-
-	/**
 	 * Show version info
 	 *
 	 * @param   object  $publication  Publication model

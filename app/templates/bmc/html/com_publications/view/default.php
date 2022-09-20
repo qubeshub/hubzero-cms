@@ -129,13 +129,9 @@ $tabOverrides = array(
 					<?php
 					// Show keywords
 					echo \Templates\Bmc\Publications\Helpers\Html::showKeywords($this->publication);
-					?>
-				</div>
-
-				<div class="focusareas">
-					<?php
-					// Show tags
-					echo \Templates\Bmc\Publications\Helpers\Html::showFocusAreas($this->publication);
+					
+					// Show alignments
+					echo \Templates\Bmc\Publications\Helpers\Html::showSection($this->sections, "alignments", "metadata");
 					?>
 				</div>
 
