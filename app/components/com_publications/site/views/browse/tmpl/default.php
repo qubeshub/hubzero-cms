@@ -21,52 +21,82 @@ $this->css()
 
   <?php include_once Component::path('com_publications') . DS . 'site' . DS . 'views' . DS . 'publications' . DS . 'tmpl' . DS . 'intro.php';  ?>
 
-  <section class="live-update">
+  <section class="section live-update">
     <div aria-live="polite" id="live-update-wrapper">
 <?php } ?>
 
-      <form action="<?php echo Route::url('index.php?option=' . $this->option . '&task=browse'); ?>" id="resourcesform" method="get" data-target="#results-container">
-        <div class="container browse-resources-wrapper">
-          <div class="page-filter-wrapper">
-            <header class="page-filter">
-              <div class="search-input-wrapper">
-                <fieldset class="entry-search">
-                  <legend><?php echo Lang::txt('Search'); ?></legend>
-                  <label for="entry-search-field"><?php echo Lang::txt('Enter keyword or phrase'); ?></label>
-                  <input type="text" name="search" id="entry-search-field" value="<?php echo $this->escape($this->filters['search']); ?>" placeholder="<?php echo Lang::txt('Enter keyword or phrase'); ?>" />
-                </fieldset>
-                <input class="entry-search-submit" type="submit" value="<?php echo Lang::txt('Search'); ?>" />
-              </div>
-            </header>
-          </div>
-
-          <div class="container" id="results-container" aria-live="polite">
-
-            <?php
-            if ($this->results && $this->results->count() > 0)
-            {
-              // Display List of items
-              $this->view('_list')
-                 ->set('results', $this->results)
-                 ->set('filters', $this->filters)
-                 ->set('config', $this->config)
-                 ->display();
-
-              $this->pageNav->setAdditionalUrlParam('tag', $this->filters['tag']);
-              $this->pageNav->setAdditionalUrlParam('category', $this->filters['category']);
-              $this->pageNav->setAdditionalUrlParam('sortby', $this->filters['sortby']);
-
-              echo $this->pageNav->render();
-
-              echo '<div class="clear"></div>';
-            } else { ?>
-              <p class="warning"><?php echo Lang::txt('COM_PUBLICATIONS_NO_RESULTS'); ?></p>
-            <?php } ?>
-
-            <div class="clearfix"></div>
-          </div><!-- / .container -->
+    <div class="browse-mobile-btn-wrapper">
+        <button class="browse-mobile-btn"><i class="fas fa-bars"></i><span>Filters</span></button>
+    </div>
+    <form action="<?php echo Route::url('index.php?option=' . $this->option . '&task=browse'); ?>" method="post" id="filter-form" enctype="multipart/form-data">
+        <div class="resource-container">
+            <div class="filter-container">
+                <div class="active-filters-wrapper">
+                    <h6>Applied Filters</h6>
+                    <ul class="active-filters"></ul>
+                </div>
+                <div class="text-search-options">
+                    <fieldset>
+                        <input type="hidden" name="action" value="search" />
+                        <input type="hidden" name="no_html" value="1" />
+                        <input type="hidden" name="sort" value="<?php echo $this->sortby; ?>" />
+                    </fieldset>
+                    <fieldset>
+                        <h5>Text Search:</h5>
+                        <div class="search-text-wrapper">
+                            <?php echo \Hubzero\Html\Builder\Input::text("search", $this->search); ?>
+                            <input type="submit" class="btn" id="search-btn" value="Apply">
+                        </div>
+                    </fieldset>
+                    <input type="submit" class="btn" id="reset-btn" value="Reset All Filters">
+                </div>
+                    
+                    <div id="accordion">
+                        <h5><i class="fas fa-chevron-down"></i>Courses</h5>
+                        <div class="filter-panel">
+                            <ul>
+                                <?php foreach($courses as $course) { ?>
+                                    <?php $id = $course->tag()->rows()->tag; ?>
+                                    <li><input type="checkbox" name="tags[]" id="<?php echo $id; ?>" value="<?php echo $id; ?>" <?php if (in_array($id, $this->tags)) { echo 'checked'; } ?>><label for="<?php echo $id; ?>"><?php echo $course->name; ?></label></li>
+                                <?php } ?>
+                            </ul>
+                        </div>
+                        <?php foreach($taxonomies as $name => $facet) { ?>
+                            <h5><i class="fas fa-chevron-down"></i><?php echo $name; ?></h5>
+                            <div class="filter-panel">
+                                <ul>
+                                    <?php foreach($facet["children"] as $name => $filter) { ?>
+                                        <?php $id = $filter["model"]->tag()->rows()->tag; ?>
+                                        <li><input type="checkbox" name="tags[]" id="<?php echo $id; ?>" value="<?php echo $id; ?>" <?php if (in_array($id, $this->tags)) { echo 'checked'; } ?>><label for="<?php echo $id; ?>"><?php echo $name; ?></label></li>
+                                    <?php } ?>
+                                </ul>
+                            </div>
+                        <?php } ?>
+                    </div>
+            </div>
+            <div class="container">
+                <div class="container" id="sortby">
+                    <nav class="entries-filters">
+                        <ul class="entries-menu order-options">
+                            <li><a <?php echo ($this->sortby == 'downloads') ? 'class="active"' : ''; ?> data-value="downloads" title="Downloads">Downloads</a></li>
+                            <li><a <?php echo ($this->sortby == 'views') ? 'class="active"' : ''; ?> data-value="views" title="Views">Views</a></li>
+                            <li><a <?php echo ($this->sortby == 'date') ? 'class="active"' : ''; ?> data-value="date" title="Date">Date</a></li>
+                            <li><a <?php echo ($relevance_classes) ? 'class="' . $relevance_classes . '"' : ''; ?> data-value="relevance" title="Relevance">Relevance</a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <?php
+                // Calling cards view
+                echo $this->view('cards')
+                    ->set('group', $this->group)
+                    ->set('results', $this->results)
+                    ->set('authorized', $this->authorized)
+                    ->set('pageNav', $this->pageNav)
+                    ->loadTemplate();
+                ?>
+            </div>
         </div>
-      </form>
+    </form>
 
     <?php if (!$no_html) { ?>
         </div> <!-- .live-update-wrapper -->
