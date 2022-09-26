@@ -10,6 +10,7 @@ namespace Components\Publications\Site\Controllers;
 $componentPath = Component::path('com_publications');
 
 require_once "$componentPath/models/bundle.php";
+require_once $componentPath . DS . 'tables' . DS . 'master.type.php';
 
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'SiteController.php';
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Module' . DS . 'Helper.php';
@@ -22,6 +23,7 @@ use Components\Publications\Tables;
 use Components\Publications\Models\Bundle;
 use Components\Publications\Models;
 use Components\Publications\Helpers;
+use Components\Tags\Models\FocusArea;
 use Component;
 use Exception;
 use Document;
@@ -452,25 +454,18 @@ class Publications extends SiteController
 	public function browseTask()
 	{
 		// Set the default sort
-		$default_sort = 'date';
-
-		if ($this->config->get('show_ranking'))
-		{
-			$default_sort = 'ranking';
-		}
+		$default_sort = 'relevance';
 
 		// Incoming
 		$filters = [
-			'category'    => Request::getString('category', ''),
 			'sortby'      => Request::getCmd('sortby', $default_sort),
 			'limit'       => Request::getInt('limit', Config::get('list_limit')),
 			'start'       => Request::getInt('limitstart', 0),
 			'search'      => Request::getString('search', ''),
-			'tag'         => trim(Request::getString('tag', '', 'request')),
-			'tag_ignored' => []
+			'tag'         => trim(Request::getString('tag', '', 'request'))
 		];
 
-		if (!in_array($filters['sortby'], ['date', 'title', 'id', 'rating', 'ranking', 'popularity']))
+		if (!in_array($filters['sortby'], ['relevance', 'date', 'views', 'downloads']))
 		{
 			$filters['sortby'] = $default_sort;
 		}
@@ -480,32 +475,6 @@ class Publications extends SiteController
 		{
 			$obj = new Project($this->database);
 			$filters['projects'] = $obj->getUserProjectIds(User::get('id'));
-		}
-
-		// Get major types
-		$categoriesTable = new Tables\Category($this->database);
-		$categories = $categoriesTable->getCategories();
-
-		if (is_numeric($filters['category']))
-		{
-			$filters['category'] = (int)$filters['category'];
-		}
-
-		if (!is_int($filters['category']))
-		{
-			foreach ($categories as $category)
-			{
-				if (trim($filters['category']) == $category->url_alias)
-				{
-					$filters['category'] = (int)$category->id;
-					break;
-				}
-			}
-
-			if (!is_int($filters['category']))
-			{
-				$filters['category'] = null;
-			}
 		}
 
 		// Instantiate a publication object
@@ -538,6 +507,12 @@ class Publications extends SiteController
 			$this->_title .= Lang::txt('COM_PUBLICATIONS_ALL');
 			$this->_task_title = Lang::txt('COM_PUBLICATIONS_ALL');
 		}
+
+		// Get focus areas for qubesresource
+		$db = \App::get('db');
+		$master_type = new Tables\MasterType($db);
+		$qubes_mtype_id = $master_type->getType('qubesresource')->id;
+		$this->view->fas = FocusArea::fromObject($qubes_mtype_id);
 
 		// Set page title
 		$this->_buildTitle();
