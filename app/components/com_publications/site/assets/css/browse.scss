@@ -1,0 +1,327 @@
+@use  '../../../../../templates/bmc/css/pages/variables' as v;
+@use '../../../../../templates/bmc/css/pages/mixins' as m;
+
+.resource-container {
+    @include m.flexbox;
+}
+
+.filter-container {
+    @include m.respond-at(50em) {
+        height: auto;
+        flex: 0 0 18.75rem;
+    }
+    height: 0;
+    overflow: hidden;
+    transition: height .3s;
+}
+
+.card-container {
+    @include m.respond-at(50em) {
+        @include m.grid-template(repeat(auto-fill, minmax(22rem, 1fr)), auto);
+    }
+    @include m.flexbox(wrap);
+    @include m.grid-template(repeat(auto-fill, minmax(20rem, 1fr)), auto);
+    height: fit-content;
+    width: 100%;
+}
+
+.container {
+    @include m.respond-at(50em) {
+        padding-left: 2em;
+    }
+}
+
+.browse-mobile-btn-wrapper {
+    @include m.respond-at(50em) {
+        display: none;
+    }
+    @include m.flexbox;
+    background-color: v.$white;
+    justify-content: flex-end;
+    position: fixed;
+    right: 1.25em;
+    transition: .1s;
+    width: calc(100% - 2.5em);
+    z-index: 10;
+}
+
+.browse-mobile-btn {
+    @include m.flexbox;
+    align-items: center;
+    background-color: v.$white;
+    border: 1px solid v.$white-smoke;
+    font-family: v.$font-link;
+    font-size: 1.2rem;
+    height: 3rem;
+    margin-bottom: 1em;
+    margin-top: .6em;
+    padding: .25em .5em;
+
+    .fas {
+        color: v.$white-smoke;
+        font-size: 1.5rem;
+        margin-right: .5em;
+    }
+
+    img {
+        margin-right: .6em;
+        width: 2.6rem;
+    }
+}
+
+// Filters
+.active-filters-wrapper {
+    h6 {
+        display: none;
+        font-size: .8rem;
+        font-weight: bold;
+    }
+}
+
+.active-filters {
+    @include m.flexbox(wrap);
+    margin-left: 0;
+
+    li {
+        list-style-type: none;
+        margin: .25em;
+    }
+}
+
+.active-filter-tag {
+    background: transparent;
+    border: 1px solid v.$silver;
+    border-radius: 2px;
+    font-family: v.$font-body;
+    font-size: .8rem;
+    padding: .5em 1.8em .5em .5em;
+    position: relative;
+}
+.close-active-filter-tag {
+    display: block;
+    position: absolute;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    width: 10px;
+    height: 10px;
+    font-size: 0;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+
+
+    &::before {
+        position: absolute;
+        display: block;
+        left: 0;
+        top: 5px;
+        width: 100%;
+        height: 1px;
+        background-color: v.$silver;
+        content: '';
+        transform: rotate(45deg);
+    }
+
+    &::after {
+        position: absolute;
+        display: block;
+        left: 0;
+        top: 5px;
+        width: 100%;
+        height: 1px;
+        background-color: v.$silver;
+        content: '';
+        transform: rotate(-45deg);
+    }
+}
+.text-search-options {
+    h5:last-of-type {
+        margin-top: .5em;
+    }
+
+    #reset-btn {
+        margin-top: 1em;
+    }
+}
+
+.search-text-wrapper {
+    @include m.flexbox;
+}
+
+input#search[type="text"] {
+    flex-grow: 2;
+}
+
+#accordion {
+    margin-top: 1.5em;
+}
+
+.ui-accordion-header {
+    border-bottom: 1px solid v.$white-smoke;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: 1.1rem;
+    margin-bottom: 0;
+    padding: .5em;
+
+    &:first-of-type {
+        border-top: 1px solid v.$white-smoke;
+    }
+
+    .fas {
+        margin-right: 1em;
+    }
+}
+
+.filter-panel {
+    max-height: unset;
+    ul {
+        li {
+            display: flex;
+            
+            label {
+                margin-left: .5em;
+            }
+        }
+    }
+}
+
+.coursesource-card {
+    box-shadow: 0px 0px 5px 1px #CAC4CE;
+    margin: 1.25em 1em;
+    position: relative;
+
+    h5 {
+        margin-top: .4em;
+    }
+}
+
+.coursesource-card-article-type {
+    background: v.$sea-blue;
+    display: inline-block;
+    color: v.$white;
+    padding: .75em .5em;
+    position: absolute;
+    top: .7em;
+    left: -.3em;
+    z-index: 5;
+}
+
+.coursesource-card-img {
+    @include m.flexbox;
+    position: relative;
+
+    .meta-panel {
+        @include m.flexbox;
+        background: rgba(255, 255, 255, 0.85);
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-evenly;
+        padding: .5em;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        top: 0;
+    }
+
+    .meta-item {
+        text-align: center;
+        
+        p {
+            font-family: v.$font-link;
+            font-size: .7rem;
+            font-style: oblique;
+        }
+
+        &:nth-child(-n+2) {
+            &::after{
+                content: '';
+                display: block;
+                margin: 0 auto;
+                width: 2.8em;
+                border-bottom: 1px solid v.$white-smoke;
+            }
+        }
+    }
+
+    img {
+        display: block;
+        width: 100%;
+        height: 15rem;
+        margin: 0 auto;
+        object-fit: cover;
+    }
+}
+
+.coursesource-card-contents {
+    padding: 0 .5em;
+}
+
+.coursesource-card-courses {
+    font-size: .9rem;
+
+    span {
+        border-right: 1px solid v.$white-smoke;
+        padding: 0 .5em;
+        
+        &:last-of-type {
+            border-right: none;
+        }
+    }
+
+    img {
+        height: .9rem;
+        margin-right: .25em;
+        width: auto;
+    }
+}
+
+.coursesource-card-keywords {
+    margin-bottom: .5em;
+    .tag-icon {
+        svg {
+            height: .7rem;
+            width: auto;
+        }
+    }
+
+    .coursesource-keywords {
+        border-right: 1px solid v.$white-smoke;
+        font-size: .8rem;
+        font-style: oblique;
+        padding: 0 .5em;
+
+        &:last-of-type {
+            border-right: none;
+        }
+    }
+}
+
+.pagination,
+p.warning {
+    @include m.respond-at(69.75em) {
+        @include m.grid(1 / span 2, auto);
+    }
+    @include m.respond-at(92.875em) {
+        @include m.grid(1 / span 3, auto);
+    }
+    @include m.grid(1 / span 1, auto);
+}
+
+@supports (display:grid) {
+    .resource-card {
+        width: auto;
+    }
+}
+
+// Mobile responsiveness
+.mobile-active {
+    background-color: v.$white;
+    box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.3);
+    height: auto;
+    padding: 1em;
+    position: absolute;
+    width: 100%;
+    z-index: 9;
+}

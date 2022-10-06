@@ -804,6 +804,9 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 		$obj->description   = $description;
 		$obj->url = rtrim(Request::root(), '/') . Route::urlForClient('site', $this->link('version'));
 		$obj->doi = $this->get('doi');
+		if ($this->get('published_up')) {
+			$obj->publish_up = explode('+', Date::of($this->get('published_up'))->toISO8601())[0] . 'Z';
+		}
 
 		$obj->type = $this->publication->type->alias;
 
