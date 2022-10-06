@@ -8,9 +8,14 @@
 namespace Components\Publications\Site\Controllers;
 
 $componentPath = Component::path('com_publications');
+$searchPath = Component::path('com_search');
 
 require_once "$componentPath/models/bundle.php";
 require_once $componentPath . DS . 'tables' . DS . 'master.type.php';
+require_once $componentPath . DS . 'models' . DS . 'orm' . DS . 'publication.php';
+
+require_once "$searchPath/models/solr/facet.php";
+require_once "$searchPath/models/solr/searchcomponent.php";
 
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'SiteController.php';
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Module' . DS . 'Helper.php';
@@ -24,6 +29,10 @@ use Components\Publications\Models\Bundle;
 use Components\Publications\Models;
 use Components\Publications\Helpers;
 use Components\Tags\Models\FocusArea;
+
+use Components\Search\Models\Solr\Facet;
+use Components\Search\Models\Solr\SearchComponent;
+
 use Component;
 use Exception;
 use Document;
@@ -453,66 +462,99 @@ class Publications extends SiteController
 	 */
 	public function browseTask()
 	{
-		// Set the default sort
-		$default_sort = 'relevance';
-
 		// Incoming
-		$filters = [
-			'sortby'      => Request::getCmd('sortby', $default_sort),
-			'limit'       => Request::getInt('limit', Config::get('list_limit')),
-			'start'       => Request::getInt('limitstart', 0),
-			'search'      => Request::getString('search', ''),
-			'tag'         => trim(Request::getString('tag', '', 'request'))
-		];
+		$search = Request::getString('search', '');
+		$sortBy = Request::getCmd('sortby', 'publish_up');
+		$sortDir = Request::getString('sortdir', 'desc');
+		$limit = Request::getInt('limit', Config::get('list_limit'));
+		$start = Request::getInt('start', 0);
+		$no_html = Request::getInt('no_html', 0);
 
-		if (!in_array($filters['sortby'], ['relevance', 'date', 'views', 'downloads']))
-		{
-			$filters['sortby'] = $default_sort;
+		// Process filters - want to make sure only the leaves are stored (for OR queries)
+		$ftags = array_filter($_POST, function($key) {
+            return (strpos($key, 'tagfa-') === 0);
+        }, ARRAY_FILTER_USE_KEY);
+		$filters = array(); // Used for dynamic UI
+		$leaves = array(); // Only leaves will show up in OR search
+		if ($ftags) {
+			$fas = array_map(function($key) {
+				return explode('-', $key)[1];
+			}, array_keys($ftags));
+			foreach ($fas as $fa) {
+				$tags = array_filter($ftags['tagfa-' . $fa], function($atag) {
+					return (count($atag) > 1 || (count($atag) == 1 && $atag[0] != ''));
+				});
+				$filters[$fa] = array_map(function($fa) { return array_map(function($tag) { return explode('.', $tag)[1]; }, $fa); }, $tags);
+				if ($tags) {
+					$keys = array_keys($tags);
+					$values = array_merge(...array_values($tags));
+					$leaves[$fa] = array_filter($values, function($value) use ($keys, $tags) {
+						return ($value != '') && (!in_array(explode('.', $value)[1], $keys) || !$tags[explode('.', $value)[1]]);
+					});
+				}
+			}
 		}
 
-		// Get projects user has access to
-		if (!User::isGuest())
-		{
-			$obj = new Project($this->database);
-			$filters['projects'] = $obj->getUserProjectIds(User::get('id'));
+		// Initialize Solr search engine
+		$config = Component::params('com_search');
+		$query = new \Hubzero\Search\Query($config);
+		$query->query($search ? $search : '*:*')->limit($limit)->start($start);
+
+		// Add sorting
+		$query->sortBy($sortBy, $sortDir);
+
+		// Add filters
+		$query->addFilter('hubtype', 'hubtype:publication'); // Only publications
+		$query->addFilter('access_level', 'access_level:public'); // Only published
+		foreach ($leaves as $tag => $filter) {
+			if ($filter) {
+				$query->addFilter($tag, 'tags:(' . implode(' OR ', $filter) . ')', $tag);
+			}
 		}
 
-		// Instantiate a publication object
-		$model = new Models\Publication();
-
-		// Execute count query
-		$total = $model->entries('count', $filters);
-
-		// Run query with limit
-		$results = $model->entries('list', $filters);
-
-		// Initiate paging
-		$pageNav = new Paginator(
-			$total,
-			$filters['start'],
-			$filters['limit']
-		);
-
-		// Get type if not given
-		// $this->_title = Lang::txt(strtoupper($this->_option)) . ': ';
-		$this->_title = 'Resources: ';
-		if ($filters['category'] != '')
-		{
-			$categoriesTable->load($filters['category']);
-			$this->_title .= $categoriesTable->name;
-			$this->_task_title = $categoriesTable->name;
-		}
-		else
-		{
-			$this->_title .= Lang::txt('COM_PUBLICATIONS_ALL');
-			$this->_task_title = Lang::txt('COM_PUBLICATIONS_ALL');
-		}
-
-		// Get focus areas for qubesresource
+		// Focus areas as facets
 		$db = \App::get('db');
 		$master_type = new Tables\MasterType($db);
 		$qubes_mtype_id = $master_type->getType('qubesresource')->id;
 		$this->view->fas = FocusArea::fromObject($qubes_mtype_id);
+		foreach($this->view->fas as $fa) {
+			$fa_key = $fa->tag->tag;
+			$multifacet = $query->adapter->getFacetMultiQuery($fa_key);
+			$multifacet->createQuery($fa_key, 'tags:' . $fa_key . '.*')->setExcludes(array($fa_key));
+			$tags = $fa->render('search');
+			array_walk($tags, function($tag) use ($multifacet, $fa_key) {
+				$multifacet->createQuery($tag, 'tags:' . $tag)->setExcludes(array($fa_key));
+			});
+		}
+
+		// Do the solr search
+		try
+		{
+			$query = $query->run();
+		}
+		catch (\Solarium\Exception\HttpException $e)
+		{
+			$query->query('')->limit($limit)->start($start)->run();
+			\Notify::warning(Lang::txt('COM_SEARCH_MALFORMED_QUERY'));
+		}
+
+		// Get results
+		$results  = $query->getResults();
+		$pubs = array();
+		foreach ($results as $result) {
+			$pid = explode('-', $result['id'])[1];
+			$pub = \Components\Publications\Models\Orm\Publication::oneOrFail($pid);
+			$pubs[] = $pub->getActiveVersion();
+		}
+		$numFound = $query->getNumFound();
+		$facets = $query->resultsFacetSet;
+
+		// Initiate paging
+		$pageNav = new Paginator(
+			$numFound,
+			$start,
+			$limit
+		);
 
 		// Set page title
 		$this->_buildTitle();
@@ -522,18 +564,35 @@ class Publications extends SiteController
 
 		// Output HTML
 		$this->view
-			->set('title', $this->_title)
-			->set('option', $this->_option)
-			->set('config', $this->config)
+			->set('results', $pubs)
+			->set('total', $numFound)
 			->set('filters', $filters)
-			->set('categories', $categories)
-			->set('total', $total)
-			->set('results', $results)
+			->set('facets', $facets)
+			->set('sortBy', $sortBy)
+			->set('search', $search)
 			->set('pageNav', $pageNav)
 			->setErrors($this->getErrors())
-			->setName('browse')
-			->setLayout('default')
-			->display();
+			->setName('browse');
+		if (!$no_html) {
+			$this->view
+				->setLayout('default')
+				->display();
+		} else {
+			$response = Array(
+				'status' => \App::get('notification')->messages(),
+				// 'facets' => array_map(function($facet) { return $facet->getValues(); }, $facets->getFacets()), // DEBUG
+				// 'filters' => $filters, // DEBUG
+				'html' => [
+					'cards' => $this->view->setLayout('cards')->loadTemplate(),
+					'filters' => $this->view->setLayout('filters')->loadTemplate()
+				]
+			);
+
+			// Ugly brute force method of cleaning output
+			ob_clean();
+			echo json_encode($response);
+			exit();
+		}
 	}
 
 	/**

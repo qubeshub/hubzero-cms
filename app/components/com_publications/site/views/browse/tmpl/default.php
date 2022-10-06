@@ -14,7 +14,13 @@ $database = App::get('db');
 
 $this->css()
      ->css('intro')
-     ->js();
+     ->css('browse')
+     ->js('browse');
+
+$relevance_classes = array();
+if ($this->sortBy == 'relevance') { $relevance_classes[] = 'active'; }
+if (!$this->search) { $relevance_classes[] = 'disabled'; }
+$relevance_classes = implode($relevance_classes, ' ');
 ?>
 
 <?php if (!$no_html) { ?>
@@ -37,9 +43,9 @@ $this->css()
                 </div>
                 <div class="text-search-options">
                     <fieldset>
-                        <input type="hidden" name="action" value="search" />
+                        <input type="hidden" name="action" value="browse" />
                         <input type="hidden" name="no_html" value="1" />
-                        <input type="hidden" name="sort" value="<?php echo $this->sortby; ?>" />
+                        <input type="hidden" name="sort" value="<?php echo $this->sortBy; ?>" />
                     </fieldset>
                     <fieldset>
                         <h5>Text Search:</h5>
@@ -51,36 +57,20 @@ $this->css()
                     <input type="submit" class="btn" id="reset-btn" value="Reset All Filters">
                 </div>
                     
-                    <div id="accordion">
-                        <h5><i class="fas fa-chevron-down"></i>Courses</h5>
-                        <div class="filter-panel">
-                            <ul>
-                                <?php foreach($courses as $course) { ?>
-                                    <?php $id = $course->tag()->rows()->tag; ?>
-                                    <li><input type="checkbox" name="tags[]" id="<?php echo $id; ?>" value="<?php echo $id; ?>" <?php if (in_array($id, $this->tags)) { echo 'checked'; } ?>><label for="<?php echo $id; ?>"><?php echo $course->name; ?></label></li>
-                                <?php } ?>
-                            </ul>
-                        </div>
-                        <?php foreach($taxonomies as $name => $facet) { ?>
-                            <h5><i class="fas fa-chevron-down"></i><?php echo $name; ?></h5>
-                            <div class="filter-panel">
-                                <ul>
-                                    <?php foreach($facet["children"] as $name => $filter) { ?>
-                                        <?php $id = $filter["model"]->tag()->rows()->tag; ?>
-                                        <li><input type="checkbox" name="tags[]" id="<?php echo $id; ?>" value="<?php echo $id; ?>" <?php if (in_array($id, $this->tags)) { echo 'checked'; } ?>><label for="<?php echo $id; ?>"><?php echo $name; ?></label></li>
-                                    <?php } ?>
-                                </ul>
-                            </div>
-                        <?php } ?>
-                    </div>
+                <?php
+                // Calling filters view
+                echo $this->view('filters')
+                    ->set('fas', $this->fas)
+                    ->set('filters', $this->filters)
+                    ->set('facets', $this->facets)
+                    ->loadTemplate();
+                ?> 
             </div>
             <div class="container">
                 <div class="container" id="sortby">
                     <nav class="entries-filters">
                         <ul class="entries-menu order-options">
-                            <li><a <?php echo ($this->sortby == 'downloads') ? 'class="active"' : ''; ?> data-value="downloads" title="Downloads">Downloads</a></li>
-                            <li><a <?php echo ($this->sortby == 'views') ? 'class="active"' : ''; ?> data-value="views" title="Views">Views</a></li>
-                            <li><a <?php echo ($this->sortby == 'date') ? 'class="active"' : ''; ?> data-value="date" title="Date">Date</a></li>
+                            <li><a <?php echo ($this->sortBy == 'publish_up') ? 'class="active"' : ''; ?> data-value="date" title="Date">Date</a></li>
                             <li><a <?php echo ($relevance_classes) ? 'class="' . $relevance_classes . '"' : ''; ?> data-value="relevance" title="Relevance">Relevance</a></li>
                         </ul>
                     </nav>
@@ -88,9 +78,7 @@ $this->css()
                 <?php
                 // Calling cards view
                 echo $this->view('cards')
-                    ->set('group', $this->group)
                     ->set('results', $this->results)
-                    ->set('authorized', $this->authorized)
                     ->set('pageNav', $this->pageNav)
                     ->loadTemplate();
                 ?>
