@@ -580,8 +580,8 @@ class Publications extends SiteController
 		} else {
 			$response = Array(
 				'status' => \App::get('notification')->messages(),
-				// 'facets' => array_map(function($facet) { return $facet->getValues(); }, $facets->getFacets()), // DEBUG
-				// 'filters' => $filters, // DEBUG
+				'facets' => array_map(function($facet) { return $facet->getValues(); }, $facets->getFacets()), // DEBUG
+				'filters' => $filters, // DEBUG
 				'html' => [
 					'cards' => $this->view->setLayout('cards')->loadTemplate(),
 					'filters' => $this->view->setLayout('filters')->loadTemplate()

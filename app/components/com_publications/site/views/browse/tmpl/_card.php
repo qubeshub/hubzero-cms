@@ -21,7 +21,7 @@ $params->merge($rparams);
 	</div>
 
 	<div class="coursesource-card-contents">
-		<h5><a href="<?php echo '#'; ?>"><?php echo $this->row->title; ?></a></h5>
+		<h5><a href="<?php echo Route::url($this->row->link('version')); ?>"><?php echo $this->row->title; ?></a></h5>
 
 		<?php echo \Hubzero\Utility\Str::truncate(strip_tags($this->row->abstract), 250); ?>
 	</div>
