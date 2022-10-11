@@ -178,7 +178,7 @@ $(document).ready(function () {
                 $('div.card-container').html(JSON.parse(sessionStorage.getItem('results')).html.cards);
                 $('div#accord').html(JSON.parse(sessionStorage.getItem('results')).html.filters);
                 // checkActiveFilters()
-                // console.log(response);
+                console.log(response);
 
                 if (response.status.length) {
                     // TPL.renderMessages(response.status, 7000); // Little longer for permalink to display
@@ -247,7 +247,8 @@ $(document).ready(function () {
 
     // Restore search results if saved in sessionStorage
     if (sessionStorage.getItem('results')) {
-        $('div.card-container').html(JSON.parse(sessionStorage.getItem('results')).html);
+        // Not working
+        // $('div.card-container').html(JSON.parse(sessionStorage.getItem('results')).html);
 
         if (sessionStorage.getItem('tags')) {
             let tags = JSON.parse(sessionStorage.getItem('tags'))
