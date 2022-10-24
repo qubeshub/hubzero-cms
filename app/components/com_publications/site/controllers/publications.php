@@ -520,7 +520,7 @@ class Publications extends SiteController
 		foreach($this->view->fas as $fa) {
 			$fa_key = $fa->tag->tag;
 			$multifacet = $query->adapter->getFacetMultiQuery($fa_key);
-			$multifacet->createQuery($fa_key, 'tags:' . $fa_key . '.*')->setExcludes(array($fa_key));
+			$multifacet->createQuery($fa_key, 'tags:/' . $fa_key . '.*/')->setExcludes(array($fa_key));
 			$tags = $fa->render('search');
 			array_walk($tags, function($tag) use ($multifacet, $fa_key) {
 				$multifacet->createQuery($tag, 'tags:' . $tag)->setExcludes(array($fa_key));
