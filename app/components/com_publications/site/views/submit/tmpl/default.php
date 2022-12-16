@@ -24,17 +24,11 @@ $this->css()
 \Hubzero\Document\Assets::addPluginScript('projects', 'files', 'jquery.queueuploader.js');
 
 ?>
-
-<?php if (!$no_html) { ?>
-
   <?php include_once Component::path('com_publications') . DS . 'site' . DS . 'views' . DS . 'publications' . DS . 'tmpl' . DS . 'intro.php';  ?>
 
   <section class="live-update">
     <div aria-live="polite" id="live-update-wrapper">
-<?php } ?>
-
       <div id="live-update-content">
-
 
         <!-- <?php if ($this->pid && !empty($this->project) && $this->project->get('created_by_user') == User::get('id')) { ?>
         	<p class="contrib-options">
@@ -60,8 +54,5 @@ $this->css()
         	<?php echo $this->content; ?>
         </section><!-- / .section -->
       </div>
-
-<?php if (!$no_html) { ?>
     </div> <!-- .live-update-wrapper -->
   </section>
-<?php } ?>
