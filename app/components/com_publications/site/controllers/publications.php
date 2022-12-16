@@ -467,7 +467,7 @@ class Publications extends SiteController
 		$sortBy = Request::getCmd('sortby', 'publish_up');
 		$sortDir = Request::getString('sortdir', 'desc');
 		$limit = Request::getInt('limit', Config::get('list_limit'));
-		$start = Request::getInt('start', 0);
+		$start = Request::getInt('limitstart', 0);
 		$no_html = Request::getInt('no_html', 0);
 
 		// Process filters - want to make sure only the leaves are stored (for OR queries)
@@ -520,6 +520,7 @@ class Publications extends SiteController
 		foreach($this->view->fas as $fa) {
 			$fa_key = $fa->tag->tag;
 			$multifacet = $query->adapter->getFacetMultiQuery($fa_key);
+			// $multifacet->createQuery($fa_key, 'tags:' . $fa_key . '*')->setExcludes(array($fa_key));
 			$multifacet->createQuery($fa_key, 'tags:/' . $fa_key . '.*/')->setExcludes(array($fa_key));
 			$tags = $fa->render('search');
 			array_walk($tags, function($tag) use ($multifacet, $fa_key) {

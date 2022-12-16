@@ -1,66 +1,74 @@
 String.prototype.nohtml = function () {
 	return this + (this.indexOf('?') == -1 ? '?' : '&') + 'no_html=1';
 };
+jQuery.fn.reverse = [].reverse;
 
 $(document).ready(function () {
-    $('#accordion').accordion({ collapsible:true, active:false, heightStyle:'content', disabled:true});
-    $('#accordion h5.ui-accordion-header').click(function(){
-        var _this = $(this);
-        _this.find('i').toggleClass('fa-chevron-down fa-chevron-up');
-        _this.next().slideToggle();
-        return false;
-    });
-    $('.accordion-expand-all').click(function(){
-        var headers = $('#accordion h5.ui-accordion-header');
-        headers.removeClass('ui-icon-triangle-1-e').addClass('ui-icon-triangle-1-s');
-        headers.next().slideDown();
-    });
-    $('.accordion-collapse-all').click(function(){
-        var headers = $('#accordion h5.ui-accordion-header');
-        $('.ui-accordion-header-icon', headers).removeClass('ui-icon-triangle-1-s').addClass('ui-icon-triangle-1-e');
-        headers.next().slideUp();
-    });
+    $('.accordion-section').on('click', function () {
+        $(this).toggleClass('active')
+        $(this).next().toggle('slow')
+        $(this).children('.hz-icon').toggleClass('icon-chevron-down icon-chevron-up')
+        
+    })
     let tags = []
-    $(document).on('change', '#filter-form :checkbox', function() {
+    $(document).on('change', '#filter-form :checkbox', function () {
         $('input[name=limitstart]').val(0); // Reset pagination
         let tagItem = {
                 tag: $(this).attr('id'),
-                name: $(this).next('label').text()
+                name: $(this).siblings('.tagfa-label').text()
             }
+        const parent = $(this).closest('.filter-option')
+        const grandparent = parent.parents('.filter-option')
+
         if ($(this).prop('checked')) {
+            if (parent.children('ul.option')) {
+                parent.children('ul.option').prev().val('active');
+            }
+            if (grandparent) {
+                grandparent.reverse().each(function () {
+                    const checkbox = $(this).children().children()
+                    let tagItem = {
+                        tag: checkbox.attr('id'),
+                        name: checkbox.siblings('.tagfa-label').text()
+                    }
+                    if (!checkbox.is(':checked')) {
+                        checkbox.prop('checked', true)
+                        tags.push(tagItem)
+                        $('.active-filters').append(`<li class='checked-tag ${tagItem.tag}'><button class='active-filter-tag'>${tagItem.name}<span class='close-active-filter-tag'></span></button></li>`)
+                    }
+                })
+            }
             tags.push(tagItem)
             $('.active-filters').append(`<li class='checked-tag ${tagItem.tag}'><button class='active-filter-tag'>${tagItem.name}<span class='close-active-filter-tag'></span></button></li>`)
         } else {
+            if (parent.children('ul.option')) {
+                const checkedChildren = parent.children('ul.option').find('input:checked')
+                checkedChildren.each(function () {
+                    let tagItem = {
+                        tag: $(this).attr('id'),
+                        name: $(this).siblings('.tagfa-label').text()
+                    }
+                    $(this).prop('checked', false)
+                    for (i = 0; i < tags.length; i++) {
+                        if (tags[i].tag === $(this).attr('id')) {
+                            tags.splice(i, 1);
+                            break;
+                        }
+                    }
+                    $(`.${tagItem.tag}`).remove()
+                })
+            } 
             for (i = 0; i < tags.length; i++) {
-                if (tags[i].tag === $(this).attr('id')) {
-                    tags.splice(i, 1);
-                    break;
+                    if (tags[i].tag === $(this).attr('id')) {
+                        tags.splice(i, 1);
+                        break;
+                    }
                 }
-            }
             $(`.${tagItem.tag}`).remove()
         }
         sessionStorage.setItem('tags', JSON.stringify(tags))
-      
-        $('#filter-form').submit();
-        checkActiveFilters()
-    });
-    $(document).on('change', '#filter-form select.option', function() {
-        $('input[name=limitstart]').val(0); // Reset pagination
-        let tagItem = {
-                tag: $(this).val(),
-                name: $(this).children(':selected').text()
-            }
-        // tags.push(tagItem)
-        // $('.active-filters').append(`<li class='checked-tag ${tagItem.tag}'><button class='active-filter-tag'>${tagItem.name}<span class='close-active-filter-tag'></span></button></li>`)
-        // for (i = 0; i < tags.length; i++) {
-        //     if (tags[i].tag === $(this).attr('id')) {
-        //         tags.splice(i, 1);
-        //         break;
-        //     }
-        // }
-        // $(`.${tagItem.tag}`).remove()
-        // sessionStorage.setItem('tags', JSON.stringify(tags))
-      
+        // console.log(tags)
+        
         $('#filter-form').submit();
         checkActiveFilters()
     });
@@ -86,13 +94,6 @@ $(document).ready(function () {
         e.stopPropagation();
         $('#filter-form').submit();
         checkActiveFilters()
-    });
-
-    $(document).on('change', 'div.fad > select', function (e) {
-        // print to console "for" attribute of this
-        val = 'tagfa-' + $(this).val().split('.')[1];
-        $(this).siblings('div.fad, div.fac').hide();
-        $(this).siblings('div.fad[for="' + val + '"], div.fac[for="' + val + '"]').show();
     });
 
     const checkActiveFilters = () => {
@@ -175,8 +176,25 @@ $(document).ready(function () {
             success: function (response, status, xhr) {
                 // Save results to sessionStorage
                 sessionStorage.setItem('results', JSON.stringify(response))
+            
                 $('div.card-container').html(JSON.parse(sessionStorage.getItem('results')).html.cards);
                 $('div#accord').html(JSON.parse(sessionStorage.getItem('results')).html.filters);
+
+                // Reinitiate accordion
+                $('.accordion-section').on('click', function () {
+                    $(this).toggleClass('active')
+                    $(this).next().toggle('slow')
+                    $(this).children('.hz-icon').toggleClass('icon-chevron-down icon-chevron-up')
+                })
+
+                // Open panels with checked children
+                $('.filter-panel').each(function () {
+                    if ($(this).find('input:checked').length) {
+                        console.log($(this).find('input:checked'))
+                        $(this).prev().addClass('active')
+                        $(this).css('display', 'block')
+                    }
+                })
                 // checkActiveFilters()
                 console.log(response);
 
@@ -206,10 +224,27 @@ $(document).ready(function () {
                     break;
                 }
             }
+
+            // Check for children filters
+            const filter = $('.filter-panel').find(`#${getFilter}`)
+            const parent = filter.closest('.filter-option')
+            if (parent.children('ul.option')) {
+                const checkedChildren = parent.children('ul.option').find('input:checked')
+                checkedChildren.each(function () {
+                    const tagID = $(this).attr('id')
+                    $(this).prop('checked', false)
+                    for (i = 0; i < storedTags.length; i++) {
+                        if (storedTags[i].tag === $(this).attr('id')) {
+                            storedTags.splice(i, 1);
+                            break;
+                        }
+                    }
+                    $(`.${tagID}`).remove()
+                })
+            }
             sessionStorage.setItem('tags', JSON.stringify(storedTags))
 
-            // Remove filter
-            $('.filter-panel').find(`#${getFilter}`).prop('checked', false)
+            filter.prop('checked', false)
             $('#filter-form').submit()
             activeFilter.remove()
         }
@@ -248,12 +283,18 @@ $(document).ready(function () {
     // Restore search results if saved in sessionStorage
     if (sessionStorage.getItem('results')) {
         // Not working
-        // $('div.card-container').html(JSON.parse(sessionStorage.getItem('results')).html);
+        $('div.card-container').html(JSON.parse(sessionStorage.getItem('results')).html.cards);
 
         if (sessionStorage.getItem('tags')) {
             let tags = JSON.parse(sessionStorage.getItem('tags'))
             for (i = 0; i < tags.length; i++) {
+                const parent = $(`#${tags[i].tag}`).closest('ul.option')
+                const child = $(`#${tags[i].tag}`).closest('.filter-option').children('ul.option')
                 $('.filter-panel').find(`#${tags[i].tag}`).prop('checked', true)
+                parent.css('display', 'block')
+                child.css('display', 'block')
+                parent.closest('.filter-panel').prev().addClass('active')
+                parent.closest('.filter-panel').addClass('active')
                 $('.active-filters').append(`<li class='checked-tag ${tags[i].tag}'><button class='active-filter-tag'>${tags[i].name}<span class='close-active-filter-tag'></span></button></li>`)
             }
         }
@@ -292,10 +333,11 @@ $(document).ready(function () {
             $('.active-filters > li').remove()
             $('.active-filters-wrapper > h6').css('display', 'none')
             $('.search-data').remove()
-            $('#filter-form')[0].reset()
+            $('#accord').find('input:checked').prop('checked', false)
             $('.token-input-token-act').remove()
-            $('#filter-form').submit()
+            // $('#filter-form').submit()
         }
+        tags = []
     })
 
     // BEGIN: Ajax-ify pagination
@@ -303,11 +345,10 @@ $(document).ready(function () {
         e.preventDefault();
 
         params = Object.fromEntries(this.href.split(/[?&]/).slice(1).map(s => s.split('=')));
+        console.log(params)
         $('input[name=limitstart]').val(params.start);
         $('input[name=limit]').val(params.limit);
-
         $('#filter-form').submit();
-
         return false;
     });
 
@@ -341,17 +382,19 @@ $(document).ready(function () {
     // Mobile responsiveness
     const filterContainer = $('.filter-container'),
         mobileFilter = $('.browse-mobile-btn'),
-        btnIcon = mobileFilter.children('i'),
+        btnIcon = mobileFilter.children('.hz-icon'),
         filterText = mobileFilter.children('span');
     
     mobileFilter.on('click', function () {
         filterContainer.toggleClass('mobile-active')
-        btnIcon.toggleClass('fa-bars fa-times')
+        btnIcon.toggleClass('icon-filter icon-remove')
 
         if (filterContainer.hasClass('mobile-active')) {
+            $('.browse-mobile-btn-wrapper').css('position', 'fixed')
             filterText.text('Close')
         } else {
-            filterText.text('Filters')
+            filterText.text('Filter')
+            $('.browse-mobile-btn-wrapper').css('position', 'sticky')
         }
     })
 

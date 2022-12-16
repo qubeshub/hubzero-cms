@@ -20,16 +20,18 @@ $no_html = Request::getInt('no_html', 0);
     $fa_tag = $fa->tag->tag;
     $facets = $this->facets->getFacet($fa_tag)->getValues();
     $filters = (array_key_exists($fa_tag, $this->filters) && $this->filters[$fa_tag] ? array_merge(...array_values($this->filters[$fa_tag])) : array());
-    $disable = ($facets[$fa_tag] == 0); ?>
-    <div class="accordion-section" for="tagfa-<?php echo $fa_tag ?>" <?php echo ($disable ? "style='display:none;'" : "") ?>>
-        <h5>
-            <i class="fas fa-chevron-down"></i><?php echo $fa->label; ?>
-            <span class="facet-count" for="<?php echo $fa_tag ?>">(<?php echo $facets[$fa_tag]; ?>)</span>
-        </h5>
-        <div class="filter-panel">
-            <?php echo $fa->render('filter', array('root' => $fa_tag, 'filters' => $filters, 'facets' => $facets)); ?>
-        </div>
+    $disable = ($facets[$fa_tag] == 0);
+ ?>
+
+    <h5 class="accordion-section" for="tagfa-<?php echo $fa_tag ?>" <?php echo ($disable ? "style='display:none;'" : "") ?>>
+        <?php echo $fa->label; ?>
+        <span class="facet-count" for="<?php echo $fa_tag ?>">(<?php echo $facets[$fa_tag]; ?>)</span>
+        <span class="hz-icon icon-chevron-down"></span>
+    </h5>
+    <div class="filter-panel">
+        <?php echo $fa->render('filter', array('root' => $fa_tag, 'filters' => $filters, 'facets' => $facets)); ?>
     </div>
+
 <?php } ?>
 <?php if (!$no_html) { ?>
 </div>
