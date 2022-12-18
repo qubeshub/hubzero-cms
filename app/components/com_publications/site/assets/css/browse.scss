@@ -165,6 +165,19 @@ input#search[type="text"] {
     margin-top: 1.5em;
 }
 
+.accord-trigger {
+    background-color: transparent;
+    border: none;
+    color: v.$color-text-body;
+    font-style: v.$font-body;
+    line-height: inherit;
+
+    &:hover {
+        background-color: transparent;
+        border: none;
+    }
+}
+
 .hz-icon {
     margin-left: auto;
 }

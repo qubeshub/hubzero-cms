@@ -7,7 +7,10 @@ $(document).ready(function () {
     $('.accordion-section').on('click', function () {
         $(this).toggleClass('active')
         $(this).next().toggle('slow')
-        $(this).children('.hz-icon').toggleClass('icon-chevron-down icon-chevron-up')
+        $(this).children('.accord-trigger').attr('aria-expanded', function (i, attr) {
+            return attr == 'false' ? 'true' : 'false'
+        })
+        $(this).find('.hz-icon').toggleClass('icon-chevron-down icon-chevron-up')
         
     })
     let tags = []
@@ -184,14 +187,17 @@ $(document).ready(function () {
                 $('.accordion-section').on('click', function () {
                     $(this).toggleClass('active')
                     $(this).next().toggle('slow')
-                    $(this).children('.hz-icon').toggleClass('icon-chevron-down icon-chevron-up')
+                    $(this).children('.accord-trigger').attr('aria-expanded', function (i, attr) {
+                        return attr == 'false' ? 'true' : 'false'
+                    })
+                    $(this).find('.hz-icon').toggleClass('icon-chevron-down icon-chevron-up')
                 })
 
                 // Open panels with checked children
                 $('.filter-panel').each(function () {
                     if ($(this).find('input:checked').length) {
-                        console.log($(this).find('input:checked'))
                         $(this).prev().addClass('active')
+                        $(this).prev().children('.accord-trigger').attr('aria-expanded', 'true')
                         $(this).css('display', 'block')
                     }
                 })
@@ -294,6 +300,7 @@ $(document).ready(function () {
                 parent.css('display', 'block')
                 child.css('display', 'block')
                 parent.closest('.filter-panel').prev().addClass('active')
+                parent.closest('.filter-panel').prev().children('.accord-trigger').attr('aria-expanded', 'true')
                 parent.closest('.filter-panel').addClass('active')
                 $('.active-filters').append(`<li class='checked-tag ${tags[i].tag}'><button class='active-filter-tag'>${tags[i].name}<span class='close-active-filter-tag'></span></button></li>`)
             }
