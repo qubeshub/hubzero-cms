@@ -464,8 +464,8 @@ class Publications extends SiteController
 	{
 		// Incoming
 		$search = Request::getString('search', '');
-		$sortBy = Request::getCmd('sortby', 'publish_up');
-		$sortDir = Request::getString('sortdir', 'desc');
+		$sortBy = Request::getCmd('sortby', 'score');
+		// $sortDir = Request::getString('sortdir', 'desc');
 		$limit = Request::getInt('limit', Config::get('list_limit'));
 		$start = Request::getInt('limitstart', 0);
 		$no_html = Request::getInt('no_html', 0);
@@ -501,7 +501,9 @@ class Publications extends SiteController
 		$query->query($search ? $search : '*:*')->limit($limit)->start($start);
 
 		// Add sorting
-		$query->sortBy($sortBy, $sortDir);
+		$query->sortBy($sortBy, 'desc');
+		// Always add desc by publish_up at end
+		$query->sortBy('publish_up', 'desc');
 
 		// Add filters
 		$query->addFilter('hubtype', 'hubtype:publication'); // Only publications
