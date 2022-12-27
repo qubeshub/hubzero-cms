@@ -16,11 +16,6 @@ $this->css()
      ->css('intro')
      ->css('browse')
      ->js('browse');
-
-$relevance_classes = array();
-if ($this->sortBy == 'relevance') { $relevance_classes[] = 'active'; }
-if (!$this->search) { $relevance_classes[] = 'disabled'; }
-$relevance_classes = implode($relevance_classes, ' ');
 ?>
 
 <?php include_once Component::path('com_publications') . DS . 'site' . DS . 'views' . DS . 'publications' . DS . 'tmpl' . DS . 'intro.php';  ?>
@@ -37,7 +32,7 @@ $relevance_classes = implode($relevance_classes, ' ');
                         <fieldset>
                             <input type="hidden" name="action" value="browse" />
                             <input type="hidden" name="no_html" value="1" />
-                            <input type="hidden" name="sort" value="<?php echo $this->sortBy; ?>" />
+                            <input type="hidden" name="sortby" value="<?php echo $this->sortBy; ?>" />
                         </fieldset>
                         <fieldset>
                             <h5>Text Search:</h5>
@@ -66,8 +61,7 @@ $relevance_classes = implode($relevance_classes, ' ');
                     <div class="container" id="sortby">
                         <nav class="entries-filters">
                             <ul class="entries-menu order-options">
-                                <li><a <?php echo ($this->sortBy == 'publish_up') ? 'class="active"' : ''; ?> data-value="date" title="Date">Date</a></li>
-                                <li><a <?php echo ($relevance_classes) ? 'class="' . $relevance_classes . '"' : ''; ?> data-value="relevance" title="Relevance">Relevance</a></li>
+                                <li><a class="active" data-value="score" title="Relevance">Relevance</a></li>
                             </ul>
                         </nav>
                     </div>

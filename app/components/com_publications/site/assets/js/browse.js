@@ -381,7 +381,7 @@ $(document).ready(function () {
     $('ul.entries-menu a').click(function() {
         $('ul.entries-menu a.active').toggleClass('active');
         $(this).toggleClass('active');
-        $('input[name=sort]').val($(this).data('value'));
+        $('input[name=sortby]').val($(this).data('value'));
 
         $('#filter-form').submit();
     });
