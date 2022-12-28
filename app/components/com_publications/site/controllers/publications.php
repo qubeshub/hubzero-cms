@@ -29,6 +29,7 @@ use Components\Publications\Models\Bundle;
 use Components\Publications\Models;
 use Components\Publications\Helpers;
 use Components\Tags\Models\FocusArea;
+use Components\Publications\Models\PubCloud;
 
 use Components\Search\Models\Solr\Facet;
 use Components\Search\Models\Solr\SearchComponent;
@@ -547,7 +548,9 @@ class Publications extends SiteController
 		foreach ($results as $result) {
 			$pid = explode('-', $result['id'])[1];
 			$pub = \Components\Publications\Models\Orm\Publication::oneOrFail($pid);
-			$pubs[] = $pub->getActiveVersion();
+			$vub = $pub->getActiveVersion();
+			$vub->set('keywords', (new PubCloud($vub->get('id')))->render('list', array('type' => 'keywords', 'key' => 'raw_tag')));
+			$pubs[] = $vub;
 		}
 		$numFound = $query->getNumFound();
 		$facets = $query->resultsFacetSet;
