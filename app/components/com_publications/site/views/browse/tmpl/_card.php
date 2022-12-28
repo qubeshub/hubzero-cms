@@ -13,6 +13,8 @@ $config = Component::params('com_publications');
 $rparams = new \Hubzero\Config\Registry($this->row->params);
 $params = $config;
 $params->merge($rparams);
+$keywords = array_reduce($this->row->keywords, function($carry, $kw) { return $carry . '<span class="keyword">' . $kw . '</span>'; });
+$stats = $this->row->stats()[0];
 ?>
 
 <div class="resource coursesource-card">
@@ -29,34 +31,36 @@ $params->merge($rparams);
 
 		<?php echo \Hubzero\Utility\Str::truncate(strip_tags($this->row->abstract), 200); ?>
 
+		<?php if (!empty($keywords)) : ?>
 		<div class="pub-keywords">
-			<p><span class="hz-icon icon-tags"></span> Keywords: <span class="keyword">hoomin</span><span class="keyword">hoomin</span><span class="keyword">hoomin</span>  </p>
+			<p><span class="hz-icon icon-tags"></span> Keywords: <?php echo $keywords; ?> </p>
 		</div>
+		<?php endif; ?>
 	</div>
 
 	<div class="meta-panel">
 		<div class="meta-item">
-			<span class="count"><?php echo (int) $this->row->views; ?></span>
+			<span class="count"><?php echo (int) $stats->views; ?></span>
 			<p>views</p>
 		</div>
 
 		<div class="divider"></div>
 
 		<div class="meta-item">
-			<span class="count"><?php echo (int) $this->row->downloads; ?></span>
+			<span class="count"><?php echo (int) $stats->downloads; ?></span>
 			<p>downloads</p>
 		</div>
 
 		<div class="divider"></div>
 
 		<div class="meta-item">
-			<span class="count"><?php echo (int) $this->row->comments; ?></span>
+			<span class="count"><?php echo (int) $stats->comments; ?></span>
 			<p>comments</p>
 		</div>
 
 		<div class="divider"></div>
 		<div class="meta-item">
-			<span class="count"><?php echo (int) $this->row->forks; ?></span>
+			<span class="count"><?php echo (int) $stats->adaptations; ?></span>
 			<p>adaptations</p>
 		</div>
 	</div>
