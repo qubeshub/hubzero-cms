@@ -183,6 +183,9 @@ $(document).ready(function () {
                 $('div.card-container').html(JSON.parse(sessionStorage.getItem('results')).html.cards);
                 $('div#accord').html(JSON.parse(sessionStorage.getItem('results')).html.filters);
 
+                // Scroll to top of search results
+                $('html, body, .content-panel').animate({ scrollTop: 350 }, 'slow')
+
                 // Reinitiate accordion
                 $('.accordion-section').on('click', function () {
                     $(this).toggleClass('active')
@@ -201,6 +204,8 @@ $(document).ready(function () {
                         $(this).css('display', 'block')
                     }
                 })
+                
+
                 // checkActiveFilters()
                 console.log(response);
 

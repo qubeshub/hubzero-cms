@@ -12,9 +12,6 @@
   .filter-container {
     height: 100%;
     flex: 0 0 18.75rem;
-    position: -webkit-sticky;
-    position: sticky;
-    top: 4rem;
   }
 }
 
@@ -81,6 +78,11 @@
 .browse-mobile-btn img {
   margin-right: 0.6em;
   width: 2.6rem;
+}
+
+.total-results {
+  font-size: 0.9rem;
+  text-align: right;
 }
 
 .active-filters-wrapper h6 {

@@ -9,8 +9,6 @@
     @include m.respond-at(50em) {
         height: 100%;
         flex: 0 0 18.75rem;
-        position: sticky;
-        top: 4rem;
     }
     height: 0;
     overflow: hidden;
@@ -71,6 +69,11 @@
 }
 
 // Filters
+.total-results {
+    font-size: .9rem;
+    text-align: right;
+}
+
 .active-filters-wrapper {
     h6 {
         display: none;
