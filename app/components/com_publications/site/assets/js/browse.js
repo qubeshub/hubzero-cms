@@ -183,6 +183,10 @@ $(document).ready(function () {
                 $('div.card-container').html(JSON.parse(sessionStorage.getItem('results')).html.cards);
                 $('div#accord').html(JSON.parse(sessionStorage.getItem('results')).html.filters);
 
+                // Get results total and display them at top of the search results
+                let $totals = $('.counter').text()
+                $('.total-results').text($totals)
+
                 // Scroll to top of search results
                 $('html, body, .content-panel').animate({ scrollTop: 350 }, 'slow')
 
@@ -372,6 +376,10 @@ $(document).ready(function () {
 
         return false;
     });
+
+    // Get results total and display them at top of the search results
+    let $totals = $('.counter').text()
+    $('.total-results').text($totals)
 
     $(document).on('DOMNodeInserted', 'nav.pagination', function (e) {
         $('#limit').removeAttr('onchange').bind('change', function(e) {

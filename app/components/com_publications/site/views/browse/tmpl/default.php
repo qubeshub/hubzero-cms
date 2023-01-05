@@ -58,9 +58,7 @@ $this->css()
                         <h6>Applied Filters</h6>
                         <ul class="active-filters"></ul>
                     </div>
-                    <div class="total-results">
-                        <p><?php echo $this->total; ?> results found</p>
-                    </div>
+                    <div class="total-results"></div>
                     <div class="container" id="sortby">
                         <nav class="entries-filters">
                             <ul class="entries-menu order-options">
