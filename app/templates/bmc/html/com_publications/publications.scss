@@ -24,8 +24,6 @@
   flex-flow: row;
   display: grid;
   // grid-template-columns: 12rem auto 19rem;
-  position: sticky;
-  top: 3.5rem;
   transition: .2s;
   z-index: 20;
   .back {
@@ -285,10 +283,6 @@
     border-left: 1px solid v.$silver;
     border-right: 1px solid v.$silver;
     margin-top: 1em;
-    nav {
-      position: sticky;
-      top: 9rem;
-    }
     ul {
       list-style-type: none;
       margin: 0 2em;
