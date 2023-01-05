@@ -8,7 +8,8 @@
 .newsletter-img img,
 .resource-img img {
   height: 100%;
-  object-fit: cover;
+  -o-object-fit: cover;
+     object-fit: cover;
   transition: 3s ease-in-out;
   width: 100%;
 }
@@ -57,13 +58,13 @@
   background-image: url("../img/qubes_background.png");
   background-repeat: no-repeat;
   background-size: cover;
+  background-position: center;
   height: auto;
 }
 @media only screen and (min-width: 44.0625em) {
   .page-header {
     display: flex;
     flex-wrap: nowrap;
-    height: 16rem;
   }
 }
 
@@ -192,8 +193,7 @@
 
 .sticky {
   position: sticky;
-  position: -webkit-sticky;
-  /* Safari */
+  position: -webkit-sticky; /* Safari */
   width: 100%;
 }
 
@@ -230,8 +230,6 @@
 }
 .page-filter-wrapper.sticky .page-filter {
   background-color: #fff;
-  -webkit-box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.3);
   box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.3);
 }
 .page-filter-wrapper.sticky .mobile-filter {
@@ -252,8 +250,7 @@
   padding-left: 1.5em;
   padding-right: 1.5em;
   position: sticky;
-  position: -webkit-sticky;
-  /* Safari */
+  position: -webkit-sticky; /* Safari */
   top: 160px;
   transition: 0.3s ease;
   width: 25%;
@@ -371,11 +368,9 @@
 }
 .newsletter-title a,
 .resource-title a {
-  display: block;
-  /* Fallback for non-webkit */
+  display: block; /* Fallback for non-webkit */
   display: -webkit-box;
-  height: 2rem;
-  /* Fallback for non-webkit */
+  height: 2rem; /* Fallback for non-webkit */
   font-family: "montserratregular", Helvetica Neue, Helvetica, sans-serif;
   margin: 0 auto;
   font-size: 1rem;
@@ -614,7 +609,8 @@
   width: 10rem;
 }
 .resource-type img {
-  object-fit: contain;
+  -o-object-fit: contain;
+     object-fit: contain;
   width: 100%;
 }
 
@@ -705,4 +701,4 @@
 
 .submit-options {
   padding: 2em;
-}
+}/*# sourceMappingURL=intro.css.map */

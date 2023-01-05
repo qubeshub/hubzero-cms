@@ -42,11 +42,11 @@
   @include flexbox(wrap);
   @include respond-at(44.0625em) {
     @include flexbox;
-    height: 16rem;
   }
   background-image: url('../img/qubes_background.png');
   background-repeat: no-repeat;
   background-size: cover;
+  background-position: center;
   height: auto;
 }
 
