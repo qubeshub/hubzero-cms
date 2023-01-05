@@ -1,6 +1,10 @@
 @use  '../../../../../templates/bmc/css/pages/variables' as v;
 @use '../../../../../templates/bmc/css/pages/mixins' as m;
 
+section.section {
+    padding-top: 2em;
+}
+
 .resource-container {
     @include m.flexbox;
 }

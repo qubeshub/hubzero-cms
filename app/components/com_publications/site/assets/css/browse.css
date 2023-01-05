@@ -1,3 +1,7 @@
+section.section {
+  padding-top: 2em;
+}
+
 .resource-container {
   display: flex;
   flex-wrap: nowrap;

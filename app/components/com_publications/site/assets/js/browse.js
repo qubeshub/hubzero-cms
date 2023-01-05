@@ -188,7 +188,7 @@ $(document).ready(function () {
                 $('.total-results').text($totals)
 
                 // Scroll to top of search results
-                $('html, body, .content-panel').animate({ scrollTop: 350 }, 'slow')
+                $('html, body, .content-panel').animate({ scrollTop: 230 }, 'slow')
 
                 // Reinitiate accordion
                 $('.accordion-section').on('click', function () {
@@ -209,7 +209,6 @@ $(document).ready(function () {
                     }
                 })
                 
-
                 // checkActiveFilters()
                 console.log(response);
 

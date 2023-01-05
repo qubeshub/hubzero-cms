@@ -44,11 +44,3 @@ $this->css()
       <p><strong>Cloud-based Software</strong>: Resources such as activities or datasets utilizing free modeling and statistical software which run in the browser. Additionally, students can run these cloud-based software, eliminating the need to purchase or install software locally.</p>
     </div>
   </div> <!-- .page-header -->
-
-  <nav class="nav-page">
-    <ul>
-      <li><a class="nav-page-link browse-link" href="<?php echo Route::url('index.php?option=' . $this->option . '&task=browse'); ?>">Browse Resources</a> <span class="nav-descriptor">Browse Resources</span></li>
-      <li><a class="nav-page-link oer-link" href="<?php echo Route::url('index.php?option=' . $this->option . '&task=oer'); ?>">Why OER?</a> <span class="nav-descriptor">Learn the benefits of using and sharing OER</span></li>
-      <li><a class="nav-page-link submit-link" href="<?php echo Route::url('index.php?option=' . $this->option . '&task=submit'); ?>">Submit a Resource</a> <span class="nav-descriptor">Submit a Resource</span></li>
-    </ul>
-  </nav>
