@@ -20,13 +20,13 @@ $n = 0;
 <?php foreach ($this->fas as $fa) { 
     $fa_tag = $fa->tag->tag;
     $facets = $this->facets->getFacet($fa_tag)->getValues();
-    $filters = (array_key_exists($fa_tag, $this->filters) && $this->filters[$fa_tag] ? array_merge(...array_values($this->filters[$fa_tag])) : array());
+    $filters = (array_key_exists($fa_tag, $this->filters) ? $this->filters[$fa_tag] : array());
     $disable = ($facets[$fa_tag] == 0);
     $n++;
  ?>
 
     <h5 class="accordion-section" for="tagfa-<?php echo $fa_tag ?>" <?php echo ($disable ? "style='display:none;'" : "") ?>>
-        <button type="button" aria-expanded="false" class="accord-trigger" aria-controls="filter-panel-<?php echo $n; ?>" id="accord-<?php echo $n; ?>">
+        <button type="button" aria-expanded="<?php echo (!empty($filters) ? 'true' : 'false') ?>" class="accord-trigger" aria-controls="filter-panel-<?php echo $n; ?>" id="accord-<?php echo $n; ?>">
             <?php echo $fa->label; ?>
             <span class="facet-count" for="<?php echo $fa_tag ?>">(<?php echo $facets[$fa_tag]; ?>)</span>
             <span class="hz-icon icon-chevron-down"></span>
