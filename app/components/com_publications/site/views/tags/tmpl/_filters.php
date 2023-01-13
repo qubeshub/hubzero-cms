@@ -13,27 +13,28 @@ $html = '';
 switch ($this->stage) {
     case 'before':
         $ptag = $this->parent->tag->get('tag');
-        $active = Request::getString($ptag, '');
+        $active = strpos(implode(' ', $this->props['filters']), $ptag . '.') !== false;
         $display = '';
-        if ($active === 'active') {
+        if ($active) {
             $display = '';
-        } elseif ($this->depth > 1 && $active !== 'active') {
+        } elseif ($this->depth > 1) {
             $display = ' style="display:none;"';
         }
         if (count($this->children)) {
             $html .= '<input type="hidden" name="' . $ptag . '" value="' . $active . '">';
-            $html .= '<ul name="tagfa-' . $this->props['root'] . '[' . $ptag . ']" id="tagfa-' . $ptag . '" class="option"' . $display . '>';
+            $html .= '<ul class="option"' . $display . '>';
         }
     break;
     case 'during':
         $ptag = $this->parent->tag->get('tag');
         $ctag = $this->child->tag->get('tag');
-        $count = $this->props['facets'][$ptag . '.' . $ctag];
+        $pctag = $ptag . '.' . $ctag;
+        $count = $this->props['facets'][$pctag];
         $depth = $this->depth;
-        $checked = in_array($ctag, $this->props['filters']);
-        $html .= '<li class="filter-option" ' . ($count == 0 ? ' style="display:none;"' : '') . '>';
+        $checked = in_array($pctag, $this->props['filters']);
+        $html .= '<li class="filter-option" ' . ($count == 0 && !$checked ? ' style="display:none;"' : '') . '>';
         $html .= '<label>';
-        $html .= '<input class="option" type="checkbox" id="tagfa-' . $ctag . '" name="tagfa-' . $this->props['root'] . '[' . $ptag . '][]" value="' . $ptag . '.' . $ctag . '"' . ($checked ? ' checked' : '') . '/><span class="tagfa-label">' . $this->child->label . '</span>';
+        $html .= '<input class="option" type="checkbox" id="tagfa-' . $ctag . '" name="tagfa-' . $this->props['root'] . '[' . $ptag . '][]" value="' . $this->child->id . '"' . ($checked ? ' checked' : '') . '/><span class="tagfa-label">' . $this->child->label . '</span>';
         $html .= '<span class="facet-count">(' . $count . ')</span>';
         $html .= '</label>';
         $html .= $this->child->render('filter', $this->props, ++$depth); 

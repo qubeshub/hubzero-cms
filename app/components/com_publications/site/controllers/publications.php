@@ -469,29 +469,32 @@ class Publications extends SiteController
 		// $sortDir = Request::getString('sortdir', 'desc');
 		$limit = Request::getInt('limit', Config::get('list_limit'));
 		$start = Request::getInt('limitstart', 0);
+		$fl = Request::getString('fl', '');
+		$fl = $fl ? explode(',', $fl) : array();
 		$no_html = Request::getInt('no_html', 0);
 
-		// Process filters - want to make sure only the leaves are stored (for OR queries)
-		$ftags = array_filter($_POST, function($key) {
-            return (strpos($key, 'tagfa-') === 0);
-        }, ARRAY_FILTER_USE_KEY);
-		$filters = array(); // Used for dynamic UI
-		$leaves = array(); // Only leaves will show up in OR search
-		if ($ftags) {
-			$fas = array_map(function($key) {
-				return explode('-', $key)[1];
-			}, array_keys($ftags));
-			foreach ($fas as $fa) {
-				$tags = array_filter($ftags['tagfa-' . $fa], function($atag) {
-					return (count($atag) > 1 || (count($atag) == 1 && $atag[0] != ''));
-				});
-				$filters[$fa] = array_map(function($fa) { return array_map(function($tag) { return explode('.', $tag)[1]; }, $fa); }, $tags);
-				if ($tags) {
-					$keys = array_keys($tags);
-					$values = array_merge(...array_values($tags));
-					$leaves[$fa] = array_filter($values, function($value) use ($keys, $tags) {
-						return ($value != '') && (!in_array(explode('.', $value)[1], $keys) || !$tags[explode('.', $value)[1]]);
-					});
+		$leaves = array();
+		$filters = array();
+		foreach ($fl as $leaf_child) {
+			$path = array();
+			if ($fa = FocusArea::oneOrFail($leaf_child)) {
+				$child = $fa;
+				$ctag = $child->tag->tag;
+				$parent = $child->parents()->row();
+				$leaf = $parent->tag->tag . '.' . $child->tag->tag;
+				while (!is_null($parent->get('id'))) {
+					$ptag = $parent->tag->tag;
+					$path[] = $ptag . '.' . $child->tag->tag;
+
+					$child = $parent; $ctag = $ptag;
+					$parent = $parent->parents()->row();
+				}
+
+				$leaves[$ctag][] = $leaf;
+				if (array_key_exists($ctag, $filters)) {
+					$filters[$ctag] = array_unique(array_merge($filters[$ctag], $path));
+				} else {
+					$filters[$ctag] = $path;
 				}
 			}
 		}
@@ -572,6 +575,7 @@ class Publications extends SiteController
 		$this->view
 			->set('results', $pubs)
 			->set('total', $numFound)
+			->set('leaves', $leaves)
 			->set('filters', $filters)
 			->set('facets', $facets)
 			->set('sortBy', $sortBy)
@@ -588,6 +592,7 @@ class Publications extends SiteController
 				'status' => \App::get('notification')->messages(),
 				'facets' => array_map(function($facet) { return $facet->getValues(); }, $facets->getFacets()), // DEBUG
 				'filters' => $filters, // DEBUG
+				'leaves' => $leaves,
 				'html' => [
 					'cards' => $this->view->setLayout('cards')->loadTemplate(),
 					'filters' => $this->view->setLayout('filters')->loadTemplate()

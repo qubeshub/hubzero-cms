@@ -107,6 +107,28 @@ $(document).ready(function () {
         }
     }
 
+    const updateUrl = () => {
+        var url = '/publications/browse';
+        
+        var limit = $('#limit').val();
+        var limitstart = $('input[name=limitstart]').val();
+        var queryParams = '?search=';
+        var limitParams = `&limit=${limit}&limitstart=${limitstart}`;
+        var query = $('#search').val();
+        var encodedTerms = encodeURIComponent(query).replace(/%20/g, '+');
+        var filters = $.merge(
+            $('li:has(input:checked) > ul:not(:has(input:checked))').siblings('label').children('input'), 
+            $('label:only-child:has(input:checked) > input'))
+            .map(function() { return $(this).val(); })
+            .get()
+            .join(',');
+        var filterParams = (filters !== '' ? `&fl=${filters}` : '');
+
+        urlToFetch = `${url}${queryParams}${encodedTerms}${filterParams}${limitParams}`;
+
+        window.history.pushState({href: urlToFetch}, '', urlToFetch);
+    }
+
     $(document).on('submit', 'form', function(e) {
         e.preventDefault();
 
@@ -116,7 +138,7 @@ $(document).ready(function () {
 
         // Save form data in sessionStorage and add active filter
         for (const [key, value] of formData) {
-            console.log('»', key, value)
+            // console.log('»', key, value)
 
             if (key === 'keywords') {
                 let keys = []
@@ -169,6 +191,8 @@ $(document).ready(function () {
             }
         }
  
+        updateUrl();
+        
         $.ajax({
             method: 'POST',
             url: $(this).attr('action'),
@@ -186,9 +210,6 @@ $(document).ready(function () {
                 // Get results total and display them at top of the search results
                 let $totals = $('.counter').text()
                 $('.total-results').text($totals)
-
-                // Scroll to top of search results
-                $('html, body, .content-panel').animate({ scrollTop: 230 }, 'slow')
 
                 // Reinitiate accordion
                 $('.accordion-section').on('click', function () {
@@ -360,7 +381,7 @@ $(document).ready(function () {
         e.preventDefault();
 
         params = Object.fromEntries(this.href.split(/[?&]/).slice(1).map(s => s.split('=')));
-        console.log(params)
+        // console.log(params)
         $('input[name=limitstart]').val(params.start);
         $('input[name=limit]').val(params.limit);
         $('#filter-form').submit();
