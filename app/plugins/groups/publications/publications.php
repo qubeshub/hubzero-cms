@@ -258,6 +258,24 @@ class plgGroupsPublications extends \Qubeshub\Plugin\Plugin
 					$arr['html'] = $newtest->view->loadTemplate();
 					$arr['metadata']['count'] = $total;
 				}
+				elseif ($action === 'curation')
+				{
+					// Instantiate a new view  
+					$view = new \Hubzero\Plugin\View(array(  
+						'folder'=>'groups',  
+						'element'=>'publications',  
+						'name'=>'curation'  
+					));   
+					
+					// Set any errors  
+					if ($this->getError())  
+					{  
+						$view->setError( $this->getError() );  
+					}  
+					
+					// Return the view  
+					$arr['html'] = $view->loadTemplate();
+				}
 				else
 				{			
 					// Instantiate a vew

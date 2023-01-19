@@ -1,0 +1,52 @@
+/**
+ * @package     hubzero-cms
+ * @file        plugins/groups/projects/projects.css
+ * @copyright   Copyright (c) 2005-2023 The Regents of the University of California.
+ * @license     http://opensource.org/licenses/MIT MIT
+ */
+
+@use '../../../../../templates/bmc/css/pages/variables' as v;
+@use '../../../../../templates/bmc/css/pages/mixins' as m;
+
+//Layout
+.group-curation-body {
+    display: flex;
+}
+
+.group-curation-menu {
+    border-right: 1px solid v.$silver;
+    margin-right: 2em;
+    max-width: 16.5625rem;
+}
+
+//Menu
+.group-curation-menu {
+    padding: 0 1em;
+    ul {
+        list-style: none;
+        margin: 0;
+    }
+}
+
+.header-underline {
+    border-bottom: 1px solid v.$silver;
+    width: 90%;
+}
+
+//Curation List Table
+.sort-by {
+    &::after {
+        content: '\2193';
+        margin-left: .2em;
+        font-size: .8rem;
+    }
+}
+
+.group-curation-main {
+    table {
+        border-spacing: 1em;
+    }
+    tr.even {
+        background-color: v.$white-smoke;
+    }
+}

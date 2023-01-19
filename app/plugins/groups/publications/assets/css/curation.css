@@ -1,0 +1,42 @@
+@charset "UTF-8";
+/**
+ * @package     hubzero-cms
+ * @file        plugins/groups/projects/projects.css
+ * @copyright   Copyright (c) 2005-2023 The Regents of the University of California.
+ * @license     http://opensource.org/licenses/MIT MIT
+ */
+.group-curation-body {
+  display: flex;
+}
+
+.group-curation-menu {
+  border-right: 1px solid #c1c1c1;
+  margin-right: 2em;
+  max-width: 16.5625rem;
+}
+
+.group-curation-menu {
+  padding: 0 1em;
+}
+.group-curation-menu ul {
+  list-style: none;
+  margin: 0;
+}
+
+.header-underline {
+  border-bottom: 1px solid #c1c1c1;
+  width: 90%;
+}
+
+.sort-by::after {
+  content: "↓";
+  margin-left: 0.2em;
+  font-size: 0.8rem;
+}
+
+.group-curation-main table {
+  border-spacing: 1em;
+}
+.group-curation-main tr.even {
+  background-color: #f1f1f1;
+}/*# sourceMappingURL=curation.css.map */
