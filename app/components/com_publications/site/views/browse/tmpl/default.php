@@ -16,6 +16,9 @@ $this->css()
      ->css('intro')
      ->css('browse')
      ->js('browse');
+
+$fl = Request::getString('fl', '');
+$activeTags= Request::getString('active-tags', '');
 ?>
 
 <?php include_once Component::path('com_publications') . DS . 'site' . DS . 'views' . DS . 'publications' . DS . 'tmpl' . DS . 'intro.php';  ?>
@@ -52,6 +55,8 @@ $this->css()
                         ->set('facets', $this->facets)
                         ->loadTemplate();
                     ?> 
+                    <input type="hidden" id="fl" name="fl" value="<?php echo $fl; ?>">
+                    <input type="hidden" id="active-tags" name="active-tags" value="<?php echo $activeTags; ?>">
                 </div>
                 <div class="container">
                     <div class="active-filters-wrapper">

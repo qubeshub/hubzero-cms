@@ -13,7 +13,7 @@ $html = '';
 switch ($this->stage) {
     case 'before':
         $ptag = $this->parent->tag->get('tag');
-        $active = strpos(implode(' ', $this->props['filters']), $ptag . '.') !== false;
+        $active = Request::getString($ptag, '');
         $display = '';
         if ($active) {
             $display = '';

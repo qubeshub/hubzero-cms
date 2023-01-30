@@ -4,6 +4,7 @@ String.prototype.nohtml = function () {
 jQuery.fn.reverse = [].reverse;
 
 $(document).ready(function () {
+    // Accordion
     $('.accordion-section').on('click', function () {
         $(this).toggleClass('active')
         $(this).next().toggle('slow')
@@ -13,14 +14,106 @@ $(document).ready(function () {
         $(this).find('.hz-icon').toggleClass('icon-chevron-down icon-chevron-up')
         
     })
+
+    // On load
+    $('#limit').removeAttr('onchange').bind('change', function(e) {
+        e.preventDefault();
+
+        $('#filter-form').submit();
+
+        return false;
+    });
+
+    // Get results total and display them at top of the search results
+    let $totals = $('.counter').text()
+    $('.total-results').text($totals)
+
+    $(document).on('DOMNodeInserted', 'nav.pagination', function (e) {
+        $('#limit').removeAttr('onchange').bind('change', function(e) {
+            e.preventDefault();
+
+            $('#filter-form').submit();
+
+            return false;
+        });
+    });
+
+    const checkActiveFilters = () => {
+        if ($('.active-filters').children('li').length) {
+            $('.active-filters-wrapper > h6').css('display', 'block')
+        } else {
+            $('.active-filters-wrapper > h6').css('display', 'none')
+        }
+    }
+
+    // Open filter panel if checkbox is checked on load
+    $('#filter-form :checkbox').each(function () {
+        if ($(this).prop('checked')) {
+            $(this).closest('.filter-panel').css('display', 'block')
+            const parent = $(this).closest('.filter-option') // Get the <li>
+            parent.children('input').val('active')
+            parent.children('ul.option').css('display', 'block')
+            // Get the accordion section
+            const section = $(this).closest('.filter-panel').prev()
+            section.addClass('active') 
+        }
+    })
+
     let tags = []
+    let fl = []
+
+    // If loading with incoming fl
+    if ($('input#fl').val().length) {
+        const incFL = $('input#fl').val()
+
+        // Check for grandparents
+        const incParent = $('#accord').find(`input[value="${incFL}"]`).closest('.filter-option')
+        const incGrandparent = incParent.parents('.filter-option')
+        if (incGrandparent) {
+            incGrandparent.reverse().each(function () {
+                const getFL = $(this).children().children()
+                fl.push(getFL.attr('value'))
+                tags.push(getFL.siblings('.tagfa-label').text())
+
+                // Add active filter
+                $('.active-filters').append(`<li class='checked-tag' value='${getFL.attr('value')}'><button class='active-filter-tag'>${getFL.siblings('.tagfa-label').text()}<span class='close-active-filter-tag'></span></button></li>`)
+            })
+        }
+        // Get active tag
+        const incTag = $('#accord').find(`input[value="${incFL}"]`).siblings('.tagfa-label').text()
+        fl.push(incFL)
+        tags.push(incTag)
+
+        // Add active filter
+        $('.active-filters').append(`<li class='checked-tag' value='${incFL}'><button class='active-filter-tag'>${incTag}<span class='close-active-filter-tag'></span></button></li>`)
+
+        // Update hidden input values
+        $('input#fl').val(fl)
+        $('input#active-tags').val(tags)
+
+        checkActiveFilters()
+    }
+
+    // If loading with incoming search
+    if ($('input#search').val().length) {
+        const incSearch = $('input#search').val()
+        const parsedIncSearch = incSearch.split(', ')
+        parsedIncSearch.forEach(item => {
+            $('.active-filters').append(`<li class='search-data' value='${item}'><button class='active-filter-tag'>${item}<span class='close-active-filter-tag'></span></button></li>`)
+        })
+        checkActiveFilters()
+    }
+
+    // Filters
     $(document).on('change', '#filter-form :checkbox', function () {
         $('input[name=limitstart]').val(0); // Reset pagination
         let tagItem = {
                 tag: $(this).attr('id'),
-                name: $(this).siblings('.tagfa-label').text()
+                name: $(this).siblings('.tagfa-label').text(),
+                value: $(this).attr('value')
             }
-        const parent = $(this).closest('.filter-option')
+
+        const parent = $(this).closest('.filter-option') // Parent <li>
         const grandparent = parent.parents('.filter-option')
 
         if ($(this).prop('checked')) {
@@ -32,46 +125,76 @@ $(document).ready(function () {
                     const checkbox = $(this).children().children()
                     let tagItem = {
                         tag: checkbox.attr('id'),
-                        name: checkbox.siblings('.tagfa-label').text()
+                        name: checkbox.siblings('.tagfa-label').text(),
+                        value: checkbox.attr('value')
                     }
                     if (!checkbox.is(':checked')) {
                         checkbox.prop('checked', true)
-                        tags.push(tagItem)
-                        $('.active-filters').append(`<li class='checked-tag ${tagItem.tag}'><button class='active-filter-tag'>${tagItem.name}<span class='close-active-filter-tag'></span></button></li>`)
+                        // Update hidden inputs
+                        fl.push(`${tagItem.value}`)
+                        $('input#fl').val(fl)
+                        tags.push(`${tagItem.name}`)
+                        $('input#active-tags').val(tags)
+
+                        // Add active filter
+                        $('.active-filters').append(`<li class='checked-tag' value='${tagItem.value}'><button class='active-filter-tag'>${tagItem.name}<span class='close-active-filter-tag'></span></button></li>`)
                     }
                 })
             }
-            tags.push(tagItem)
-            $('.active-filters').append(`<li class='checked-tag ${tagItem.tag}'><button class='active-filter-tag'>${tagItem.name}<span class='close-active-filter-tag'></span></button></li>`)
+            fl.push(`${tagItem.value}`)
+            $('input#fl').val(fl)
+            tags.push(`${tagItem.name}`)
+            $('input#active-tags').val(tags)
+
+            $('.active-filters').append(`<li class='checked-tag' value='${tagItem.value}'><button class='active-filter-tag'>${tagItem.name}<span class='close-active-filter-tag'></span></button></li>`)
         } else {
             if (parent.children('ul.option')) {
                 const checkedChildren = parent.children('ul.option').find('input:checked')
                 checkedChildren.each(function () {
-                    let tagItem = {
-                        tag: $(this).attr('id'),
-                        name: $(this).siblings('.tagfa-label').text()
+                    // Update hidden input values
+                    const leaf = $(this).attr('value')
+                    const indexFl = fl.indexOf(leaf)
+                    if (indexFl > -1) {
+                        fl.splice(indexFl, 1)
                     }
-                    $(this).prop('checked', false)
-                    for (i = 0; i < tags.length; i++) {
-                        if (tags[i].tag === $(this).attr('id')) {
-                            tags.splice(i, 1);
-                            break;
+                    $('input#fl').val(fl)
+
+                    const indexTag = tags.indexOf($(this).siblings('.tagfa-label').text())
+                    if (indexTag > -1) {
+                        tags.splice(indexTag, 1)
+                    }
+                    $('input#active-tags').val(tags)
+
+                    // Remove from applied filters
+                    $('.checked-tag').each(function () {
+                        if ($(this).attr('value') === leaf) {
+                            $(this).remove()
                         }
-                    }
-                    $(`.${tagItem.tag}`).remove()
+                    })
                 })
-            } 
-            for (i = 0; i < tags.length; i++) {
-                    if (tags[i].tag === $(this).attr('id')) {
-                        tags.splice(i, 1);
-                        break;
-                    }
+            }
+            
+            // Update hidden input values
+            const leaf = $(this).attr('value')
+            const indexFl = fl.indexOf(leaf)
+            if (indexFl > -1) {
+                fl.splice(indexFl, 1)
+            }
+            $('input#fl').val(fl)
+
+            const indexTag = tags.indexOf($(this).siblings('.tagfa-label').text())
+            if (indexTag > -1) {
+                tags.splice(indexTag, 1)
+            }
+            $('input#active-tags').val(tags)
+
+            // Remove from applied filters
+            $('.checked-tag').each(function () {
+                if ($(this).attr('value') === leaf) {
+                    $(this).remove()
                 }
-            $(`.${tagItem.tag}`).remove()
+            })
         }
-        sessionStorage.setItem('tags', JSON.stringify(tags))
-        // console.log(tags)
-        
         $('#filter-form').submit();
         checkActiveFilters()
     });
@@ -98,14 +221,6 @@ $(document).ready(function () {
         $('#filter-form').submit();
         checkActiveFilters()
     });
-
-    const checkActiveFilters = () => {
-        if ($('.active-filters').children('li').length) {
-            $('.active-filters-wrapper > h6').css('display', 'block')
-        } else {
-            $('.active-filters-wrapper > h6').css('display', 'none')
-        }
-    }
 
     const updateUrl = () => {
         var url = '/publications/browse';
@@ -136,62 +251,35 @@ $(document).ready(function () {
     
         // console.log(...formData); // https://stackoverflow.com/questions/25040479/formdata-created-from-an-existing-form-seems-empty-when-i-log-it
 
-        // Save form data in sessionStorage and add active filter
+        // Add active filter for search field
         for (const [key, value] of formData) {
-            // console.log('»', key, value)
-
-            if (key === 'keywords') {
-                let keys = []
-                let inputs = $('.token-input-token-act')
-        
-                inputs.each(function () {
-                    let item = {
-                        data: $(this).attr('data-id'),
-                        name: $(this).attr('data-name')
-                    }
-                    keys.push(item)
-                    if (!$(`.${item.data}`).length) {
-                        $('.active-filters').append(`<li class='keyword-tag ${item.data}'><button class='active-filter-tag'>${item.name}<span class='close-active-filter-tag'></span></button></li>`)
-                    }
-                })
-                
-                // Remove active tags if keyword removed via form
-                let activeFilters = $('.keyword-tag')
-                if (activeFilters.length > keys.length) {
-                    activeFilters.each(function () {
-                        const findTag = $(this).attr('class').split(' ')[1]
-                        if (keys.some(key => key.data === findTag)) {
-                            return
-                        } else {
-                            $(this).remove()
-                        }
-                    })
-                }
-               
-                sessionStorage.setItem('keywords', JSON.stringify(keys))
-            }
+            console.log('»', key, value)
 
             if (key === 'search') {
                 let search = ''
                 search = value
+                $('input#search').attr('value', search)
                 if (search.length > 0) {
-                    sessionStorage.setItem('search', JSON.stringify(search))
-                        if (!$('.search-data').length) {
-                            $('.active-filters').append(`<li class='search-data'><button class='active-filter-tag'>${search}<span class='close-active-filter-tag'></span></button></li>`)
-                        } else {
-                        if ($('.search-data').children().text() !== search) {
-                            $('.search-data').remove()
-                            $('.active-filters').append(`<li class='search-data'><button class='active-filter-tag'>${search}<span class='close-active-filter-tag'></span></button></li>`)
-                        }
+                    // Look for any active tags for search
+                    const activeTags = $('.search-data')
+                    const parsed = search.split(', ')
+                    // console.log(parsed)
+                    if (!activeTags.length) {
+                        parsed.forEach(item => {
+                            $('.active-filters').append(`<li class='search-data' value='${item}'><button class='active-filter-tag'>${item}<span class='close-active-filter-tag'></span></button></li>`)
+                        })
+                    } else {
+                        parsed.forEach(value => {
+                            activeTags.each(function () {
+                                if ($(this).attr('value') !== value) {
+                                    $('.active-filters').append(`<li class='search-data' value='${value}'><button class='active-filter-tag'>${value}<span class='close-active-filter-tag'></span></button></li>`)
+                                }
+                            })
+                        })
                     }
-                } else {
-                    sessionStorage.removeItem('search')
-                    $('.search-data').remove()
                 }
             }
         }
- 
-        updateUrl();
         
         $.ajax({
             method: 'POST',
@@ -201,11 +289,11 @@ $(document).ready(function () {
             contentType: false,
             dataType: "json",
             success: function (response, status, xhr) {
-                // Save results to sessionStorage
-                sessionStorage.setItem('results', JSON.stringify(response))
-            
-                $('div.card-container').html(JSON.parse(sessionStorage.getItem('results')).html.cards);
-                $('div#accord').html(JSON.parse(sessionStorage.getItem('results')).html.filters);
+
+                $('div.card-container').html(response.html.cards)
+                $('div#accord').html(response.html.filters)
+
+                updateUrl();
 
                 // Get results total and display them at top of the search results
                 let $totals = $('.counter').text()
@@ -230,7 +318,7 @@ $(document).ready(function () {
                     }
                 })
                 
-                // checkActiveFilters()
+                checkActiveFilters()
                 console.log(response);
 
                 if (response.status.length) {
@@ -246,134 +334,97 @@ $(document).ready(function () {
     // Remove active filters
     $('#filter-form').on('click', '.active-filter-tag', function (e) {
         e.preventDefault()
-        let activeFilter = $(this).parent()
-        let getType = $(this).parent().attr('class').split(' ')[0]
-        let getFilter = $(this).parent().attr('class').split(' ')[1]
+        const activeFilter = $(this).parent() // Get the <li>
+        const getType = activeFilter.attr('class')
 
         if (getType === 'checked-tag') {
-            // Update sessionStorage
-            let storedTags = JSON.parse(sessionStorage.getItem('tags'))
-            for (i = 0; i < storedTags.length; i++) {
-                if (storedTags[i].tag === getFilter) {
-                    storedTags.splice(i, 1);
-                    break;
-                }
-            }
+            // Update hidden inputs
+            const getValue = activeFilter.attr('value')
+            const getText = $(this).text()
 
+            const indexFl = fl.indexOf(getValue)
+            if (indexFl > -1) {
+                fl.splice(indexFl, 1)
+            }
+            $('input#fl').val(fl)
+
+            const indexTag = tags.indexOf(getText)
+            if (indexTag > -1) {
+                tags.splice(indexTag, 1)
+            }
+            $('input#active-tags').val(tags)
+
+            $checkedInputs = $('.filter-panel').find('input:checked')
+            $checkedInputs.each(function () {
+                if ($(this).attr('value') === getValue) {
+                    $(this).prop('checked', false)
+                }
+            })
+
+            activeFilter.remove()
+          
             // Check for children filters
-            const filter = $('.filter-panel').find(`#${getFilter}`)
-            const parent = filter.closest('.filter-option')
+            const filter = $(`input[value="${getValue}"]`)
+            const parent = filter.closest('.filter-option') // Get the <li>
             if (parent.children('ul.option')) {
                 const checkedChildren = parent.children('ul.option').find('input:checked')
                 checkedChildren.each(function () {
-                    const tagID = $(this).attr('id')
-                    $(this).prop('checked', false)
-                    for (i = 0; i < storedTags.length; i++) {
-                        if (storedTags[i].tag === $(this).attr('id')) {
-                            storedTags.splice(i, 1);
-                            break;
-                        }
+                    // Update hidden inputs
+                    const getValue = $(this).attr('value')
+                    const getText = $(this).siblings('.tagfa-label').text()
+
+                    const indexFl = fl.indexOf(getValue)
+                    if (indexFl > -1) {
+                        fl.splice(indexFl, 1)
                     }
-                    $(`.${tagID}`).remove()
+                    $('input#fl').val(fl)
+
+                    const indexTag = tags.indexOf(getText)
+                    if (indexTag > -1) {
+                        tags.splice(indexTag, 1)
+                    }
+                    $('input#active-tags').val(tags)
+
+                    // Remove the active filter
+                    $(`ul.active-filters li[value="${getValue}"]`).remove()
                 })
             }
-            sessionStorage.setItem('tags', JSON.stringify(storedTags))
-
-            filter.prop('checked', false)
-            $('#filter-form').submit()
-            activeFilter.remove()
-        }
-
-        if (getType === 'keyword-tag') {
-            let storedKeywords = JSON.parse(sessionStorage.getItem('keywords'))
-            let newValues = []
-            for (i = 0; i < storedKeywords.length; i++) {
-                
-                if (storedKeywords[i].data === getFilter) {
-                    storedKeywords.splice(i, 1)
-                    break
-                }
-            }
-            sessionStorage.setItem('keywords', JSON.stringify(storedKeywords))
-            $(`.token-input-token-act[data-id='${getFilter}']`).remove()
-          
-            for (i = 0; i < storedKeywords.length; i++) {
-                newValues.push(storedKeywords[i].data)
-            }
-            $('#keywords').val(newValues)
-            $('#filter-form').submit()
-            activeFilter.remove()
         }
 
         if (getType === 'search-data') {
-            sessionStorage.removeItem('search')
-            $('#search').val('')
-            $('#filter-form').submit()
+            const getValue = activeFilter.attr('value')
+            const search = $('input#search').attr('value')
+            const parsed = search.split(', ')
+            // Check if more than one search item
+            if (parsed.length > 1) {
+                const indexParsed = parsed.indexOf(getValue)
+                if (indexParsed > -1) {
+                    parsed.splice(indexParsed, 1)
+                }
+                // Update the new value
+                $('input#search').val(parsed)
+            } else {
+                $('input#search').val('')
+            }
             activeFilter.remove()
         }
 
+        $('#filter-form').submit()
         checkActiveFilters();
     })
 
-    // Restore search results if saved in sessionStorage
-    if (sessionStorage.getItem('results')) {
-        // Not working
-        $('div.card-container').html(JSON.parse(sessionStorage.getItem('results')).html.cards);
-
-        if (sessionStorage.getItem('tags')) {
-            let tags = JSON.parse(sessionStorage.getItem('tags'))
-            for (i = 0; i < tags.length; i++) {
-                const parent = $(`#${tags[i].tag}`).closest('ul.option')
-                const child = $(`#${tags[i].tag}`).closest('.filter-option').children('ul.option')
-                $('.filter-panel').find(`#${tags[i].tag}`).prop('checked', true)
-                parent.css('display', 'block')
-                child.css('display', 'block')
-                parent.closest('.filter-panel').prev().addClass('active')
-                parent.closest('.filter-panel').prev().children('.accord-trigger').attr('aria-expanded', 'true')
-                parent.closest('.filter-panel').addClass('active')
-                $('.active-filters').append(`<li class='checked-tag ${tags[i].tag}'><button class='active-filter-tag'>${tags[i].name}<span class='close-active-filter-tag'></span></button></li>`)
-            }
-        }
-
-        if (sessionStorage.getItem('keywords')) {
-            let keys = JSON.parse(sessionStorage.getItem('keywords'))
-            for (i = 0; i < keys.length; i++) {
-                $('#keywords').val(keys[i].name)
-                $('.active-filters').append(`<li class='keyword-tag ${keys[i].data}'><button class='active-filter-tag'>${keys[i].name}<span class='close-active-filter-tag'></span></button></li>`)
-            }
-        }
-
-        if (sessionStorage.getItem('search')) {
-            let search = JSON.parse(sessionStorage.getItem('search'))
-            $('#search').val(search)
-            if (search.length) {
-                $('.active-filters').append(`<li class='search-data'><button class='active-filter-tag'>${search}<span class='close-active-filter-tag'></span></button></li>`)
-        }
-            }
-    }
-
-    // Open filter panel if checkbox is checked on load
-    $('#filter-form :checkbox').each(function () {
-        if ($(this).prop('checked')) {
-            $(this).closest('.filter-panel').removeAttr('style')
-        }
-    })
-
     // Reset filters
-    $('#reset-btn').on('click', function () {
-        if (sessionStorage.getItem('results')) {
-            sessionStorage.removeItem('results')
-            sessionStorage.removeItem('search')
-            sessionStorage.removeItem('keywords')
-            sessionStorage.removeItem('tags')
-            $('.active-filters > li').remove()
-            $('.active-filters-wrapper > h6').css('display', 'none')
-            $('.search-data').remove()
-            $('#accord').find('input:checked').prop('checked', false)
-            $('.token-input-token-act').remove()
-            // $('#filter-form').submit()
-        }
+    $('#reset-btn').on('click', function (e) {
+        e.preventDefault();
+
+        $('input#fl').val('')
+        fl = []
+        $('input#active-tags').val('')
         tags = []
+        $('input#search').val('')
+        $('.active-filters > li').remove()
+        $('.active-filters-wrapper > h6').css('display', 'none')
+        $('#filter-form').submit()
     })
 
     // BEGIN: Ajax-ify pagination
@@ -388,29 +439,7 @@ $(document).ready(function () {
         return false;
     });
 
-    // On load
-    $('#limit').removeAttr('onchange').bind('change', function(e) {
-        e.preventDefault();
-
-        $('#filter-form').submit();
-
-        return false;
-    });
-
-    // Get results total and display them at top of the search results
-    let $totals = $('.counter').text()
-    $('.total-results').text($totals)
-
-    $(document).on('DOMNodeInserted', 'nav.pagination', function (e) {
-        $('#limit').removeAttr('onchange').bind('change', function(e) {
-            e.preventDefault();
-
-            $('#filter-form').submit();
-
-            return false;
-        });
-    });
-
+    // Sortby
     $('ul.entries-menu a').click(function() {
         $('ul.entries-menu a.active').toggleClass('active');
         $(this).toggleClass('active');
