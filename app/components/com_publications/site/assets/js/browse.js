@@ -51,7 +51,6 @@ $(document).ready(function () {
         if ($(this).prop('checked')) {
             $(this).closest('.filter-panel').css('display', 'block')
             const parent = $(this).closest('.filter-option') // Get the <li>
-            parent.children('input').val('active')
             parent.children('ul.option').css('display', 'block')
             // Get the accordion section
             const section = $(this).closest('.filter-panel').prev()
@@ -117,9 +116,6 @@ $(document).ready(function () {
         const grandparent = parent.parents('.filter-option')
 
         if ($(this).prop('checked')) {
-            if (parent.children('ul.option')) {
-                parent.children('ul.option').prev().val('active');
-            }
             if (grandparent) {
                 grandparent.reverse().each(function () {
                     const checkbox = $(this).children().children()
@@ -262,20 +258,13 @@ $(document).ready(function () {
                 if (search.length > 0) {
                     // Look for any active tags for search
                     const activeTags = $('.search-data')
-                    const parsed = search.split(', ')
-                    // console.log(parsed)
+
                     if (!activeTags.length) {
-                        parsed.forEach(item => {
-                            $('.active-filters').append(`<li class='search-data' value='${item}'><button class='active-filter-tag'>${item}<span class='close-active-filter-tag'></span></button></li>`)
-                        })
+                        $('.active-filters').append(`<li class='search-data' value='${search}'><button class='active-filter-tag'>${search}<span class='close-active-filter-tag'></span></button></li>`)
                     } else {
-                        parsed.forEach(value => {
-                            activeTags.each(function () {
-                                if ($(this).attr('value') !== value) {
-                                    $('.active-filters').append(`<li class='search-data' value='${value}'><button class='active-filter-tag'>${value}<span class='close-active-filter-tag'></span></button></li>`)
-                                }
-                            })
-                        })
+                        // Replace current active tag
+                        activeTags.remove()
+                        $('.active-filters').append(`<li class='search-data' value='${search}'><button class='active-filter-tag'>${search}<span class='close-active-filter-tag'></span></button></li>`)
                     }
                 }
             }
@@ -392,21 +381,8 @@ $(document).ready(function () {
         }
 
         if (getType === 'search-data') {
-            const getValue = activeFilter.attr('value')
-            const search = $('input#search').attr('value')
-            const parsed = search.split(', ')
-            // Check if more than one search item
-            if (parsed.length > 1) {
-                const indexParsed = parsed.indexOf(getValue)
-                if (indexParsed > -1) {
-                    parsed.splice(indexParsed, 1)
-                }
-                // Update the new value
-                $('input#search').val(parsed)
-            } else {
-                $('input#search').val('')
-            }
             activeFilter.remove()
+            $('input#search').val('')
         }
 
         $('#filter-form').submit()
@@ -428,16 +404,16 @@ $(document).ready(function () {
     })
 
     // BEGIN: Ajax-ify pagination
-    $(document).on('click', 'a.pagenav', function(e) {
-        e.preventDefault();
+    // $(document).on('click', 'a.pagenav', function(e) {
+    //     e.preventDefault();
 
-        params = Object.fromEntries(this.href.split(/[?&]/).slice(1).map(s => s.split('=')));
-        // console.log(params)
-        $('input[name=limitstart]').val(params.start);
-        $('input[name=limit]').val(params.limit);
-        $('#filter-form').submit();
-        return false;
-    });
+    //     params = Object.fromEntries(this.href.split(/[?&]/).slice(1).map(s => s.split('=')));
+    //     // console.log(params)
+    //     $('input[name=limitstart]').val(params.start);
+    //     $('input[name=limit]').val(params.limit);
+    //     $('#filter-form').submit();
+    //     return false;
+    // });
 
     // Sortby
     $('ul.entries-menu a').click(function() {

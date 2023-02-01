@@ -13,15 +13,15 @@ $html = '';
 switch ($this->stage) {
     case 'before':
         $ptag = $this->parent->tag->get('tag');
-        $active = Request::getString($ptag, '');
-        $display = '';
+        $str = implode(' ', $this->props['filters']);
+        $active = strpos(implode(' ', $this->props['filters']), $ptag) !== false;
+        $display = ''; 
         if ($active) {
             $display = '';
         } elseif ($this->depth > 1) {
             $display = ' style="display:none;"';
         }
         if (count($this->children)) {
-            $html .= '<input type="hidden" name="' . $ptag . '" value="' . $active . '">';
             $html .= '<ul class="option"' . $display . '>';
         }
     break;
