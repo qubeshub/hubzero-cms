@@ -5,15 +5,153 @@ jQuery.fn.reverse = [].reverse;
 
 $(document).ready(function () {
     // Accordion
-    $('.accordion-section').on('click', function () {
-        $(this).toggleClass('active')
-        $(this).next().toggle('slow')
-        $(this).children('.accord-trigger').attr('aria-expanded', function (i, attr) {
-            return attr == 'false' ? 'true' : 'false'
+    const accordion = () => {
+        $('.accordion-section').on('click', function () {
+            $(this).toggleClass('active')
+            $(this).next().toggle('slow')
+            $(this).children('.accord-trigger').attr('aria-expanded', function (i, attr) {
+                return attr == 'false' ? 'true' : 'false'
+            })
+            $(this).find('.hz-icon').toggleClass('icon-chevron-down icon-chevron-up')
         })
-        $(this).find('.hz-icon').toggleClass('icon-chevron-down icon-chevron-up')
-        
-    })
+    }
+
+    // Get results total and display them at top of the search results
+    const totalResults = () => {
+        let $totals = $('.counter').text()
+        $('.total-results').text($totals)
+    }
+
+    // Display active filter header
+    const checkActiveFilters = () => {
+        if ($('.active-filters').children('li').length) {
+            $('.active-filters-wrapper > h6').css('display', 'block')
+        } else {
+            $('.active-filters-wrapper > h6').css('display', 'none')
+        }
+    }
+
+    // Open filter panel if checkbox is checked 
+    const checkOpenPanels = () => {
+        $('.filter-panel').each(function () {
+            if ($(this).find('input:checked').length) {
+                $(this).prev().addClass('active')
+                $(this).prev().children('.accord-trigger').attr('aria-expanded', 'true')
+                $(this).css('display', 'block')
+            }
+        })
+    }
+
+    /*
+    Add active filters
+    @param input - selector i.e. $('input[value="#"]')
+    @param type - string = checkbox || search
+    note - search values is located within the form submission
+    */
+    const addActiveFilter = (input, type) => {
+        if (type === 'checkbox') {
+
+            // Check for grandparents
+            const parent = input.closest('.filter-option') // Get the <li>
+            const grandparent = parent.parents('.filter-option')
+            
+            if (grandparent) {
+                grandparent.reverse().each(function () {
+                    const getFl = $(this).children().children() // input
+
+                    if (!getFl.is(':checked')) {
+                        getFl.prop('checked', true)
+                        tags.push(`${getFl.siblings('tagfa-label').text()}`)
+                        $('input#active-tags').val(tags)
+
+                        // Add active filter
+                        $('.active-filters').append(`<li class='checked-tag' value='${getFl.attr('value')}'><button class='active-filter-tag'>${getFl.siblings('.tagfa-label').text()}<span class='close-active-filter-tag'></span></button></li>`)
+                    }
+                })
+            }
+            
+            // Add to tags array
+            tags.push(input.siblings('.tagfa-label').text())
+            
+            // Update hidden input
+             $('input#active-tags').val(tags)
+            
+             // Add active filter
+            $('.active-filters').append(`<li class='checked-tag' value='${input.attr('value')}'><button class='active-filter-tag'>${input.siblings('.tagfa-label').text()}<span class='close-active-filter-tag'></span></button></li>`)
+        }
+
+        if (type === 'search') {
+            const activeTags = $('.search-data')
+            const searchValue = input.val()
+
+            if (!activeTags.length) {
+                $('.active-filters').append(`<li class='search-data' value='${searchValue}'><button class='active-filter-tag'>${searchValue}<span class='close-active-filter-tag'></span></button></li>`)
+            } else {
+                // Replace current active tag
+                activeTags.remove()
+                $('.active-filters').append(`<li class='search-data' value='${searchValue}'><button class='active-filter-tag'>${searchValue}<span class='close-active-filter-tag'></span></button></li>`)
+            }
+
+        }
+    }
+    /*
+    Remove active filters
+    @param input - selector i.e. $('input[value="#"]')
+    @param type - string = checkbox || search
+    note - search values is located within the form submission
+    */
+    const removeActiveFilters = (input, type) => {
+        if (type === 'checkbox') {
+            const parent = input.closest('.filter-option') // Get the <li>
+
+            // Check for children
+            if (parent.children('ul.option')) {
+                const checkedChildren = parent.children('ul.option').find('input:checked')
+                checkedChildren.each(function () {
+                    $(this).prop('checked', false)
+
+                    // Update hidden input
+                    const value = $(this).attr('value')
+                    const indexTag = tags.indexOf($(this).siblings('.tagfa-label').text())
+
+                    if (indexTag > -1) {
+                        tags.splice(indexTag, 1)
+                    }
+                    $('input#active-tags').val(tags)
+
+                    // Remove from applied filters
+                    $('.checked-tag').each(function () {
+                        if ($(this).attr('value') === value) {
+                            $(this).remove()
+                        }
+                    })
+                })
+            }
+
+            input.prop('checked', false)
+
+            // Update hidden input
+            const indexTag = tags.indexOf(input.siblings('.tagfa-label').text())
+            const value = input.attr('value')
+            if (indexTag > -1) {
+                tags.splice(indexTag, 1)
+            }
+
+            $('input#active-tags').val(tags)
+
+            // Remove from applied filters
+            $('.checked-tag').each(function () {
+                if ($(this).attr('value') === value) {
+                    $(this).remove()
+                }
+            })
+        }
+
+        if (type === 'search') {
+            $('.search-data').remove()
+            $('input#search').val('')
+        }
+    }
 
     // On load
     $('#limit').removeAttr('onchange').bind('change', function(e) {
@@ -23,10 +161,6 @@ $(document).ready(function () {
 
         return false;
     });
-
-    // Get results total and display them at top of the search results
-    let $totals = $('.counter').text()
-    $('.total-results').text($totals)
 
     $(document).on('DOMNodeInserted', 'nav.pagination', function (e) {
         $('#limit').removeAttr('onchange').bind('change', function(e) {
@@ -38,161 +172,48 @@ $(document).ready(function () {
         });
     });
 
-    const checkActiveFilters = () => {
-        if ($('.active-filters').children('li').length) {
-            $('.active-filters-wrapper > h6').css('display', 'block')
-        } else {
-            $('.active-filters-wrapper > h6').css('display', 'none')
-        }
-    }
-
-    // Open filter panel if checkbox is checked on load
-    $('#filter-form :checkbox').each(function () {
-        if ($(this).prop('checked')) {
-            $(this).closest('.filter-panel').css('display', 'block')
-            const parent = $(this).closest('.filter-option') // Get the <li>
-            parent.children('ul.option').css('display', 'block')
-            // Get the accordion section
-            const section = $(this).closest('.filter-panel').prev()
-            section.addClass('active') 
-        }
-    })
-
     let tags = []
-    let fl = []
 
-    // If loading with incoming fl
+    // If loading with incoming fl - add appropriate active tags
     if ($('input#fl').val().length) {
-        const incFL = $('input#fl').val()
+        const getValue = $('input#fl').val()
+        const getInput = $(`input[value="${getValue}"]`)
 
         // Check for grandparents
-        const incParent = $('#accord').find(`input[value="${incFL}"]`).closest('.filter-option')
-        const incGrandparent = incParent.parents('.filter-option')
-        if (incGrandparent) {
-            incGrandparent.reverse().each(function () {
-                const getFL = $(this).children().children()
-                fl.push(getFL.attr('value'))
-                tags.push(getFL.siblings('.tagfa-label').text())
+        const parent = getInput.closest('.filter-option') // Get the <li>
+        const grandparent = parent.parents('.filter-option')
 
-                // Add active filter
-                $('.active-filters').append(`<li class='checked-tag' value='${getFL.attr('value')}'><button class='active-filter-tag'>${getFL.siblings('.tagfa-label').text()}<span class='close-active-filter-tag'></span></button></li>`)
+        if (grandparent.length) {
+            grandparent.reverse().each(function () {
+                const filter = $(this).children().children()
+                addActiveFilter(filter, 'checkbox')
             })
         }
-        // Get active tag
-        const incTag = $('#accord').find(`input[value="${incFL}"]`).siblings('.tagfa-label').text()
-        fl.push(incFL)
-        tags.push(incTag)
 
-        // Add active filter
-        $('.active-filters').append(`<li class='checked-tag' value='${incFL}'><button class='active-filter-tag'>${incTag}<span class='close-active-filter-tag'></span></button></li>`)
-
-        // Update hidden input values
-        $('input#fl').val(fl)
-        $('input#active-tags').val(tags)
-
-        checkActiveFilters()
+        addActiveFilter(getInput, 'checkbox') 
     }
 
     // If loading with incoming search
     if ($('input#search').val().length) {
-        const incSearch = $('input#search').val()
-        const parsedIncSearch = incSearch.split(', ')
-        parsedIncSearch.forEach(item => {
-            $('.active-filters').append(`<li class='search-data' value='${item}'><button class='active-filter-tag'>${item}<span class='close-active-filter-tag'></span></button></li>`)
-        })
-        checkActiveFilters()
+        addActiveFilter($('input#search'), 'search')
     }
+
+    accordion()
+    totalResults()
+    checkOpenPanels()
+    checkActiveFilters()
 
     // Filters
     $(document).on('change', '#filter-form :checkbox', function () {
         $('input[name=limitstart]').val(0); // Reset pagination
-        let tagItem = {
-                tag: $(this).attr('id'),
-                name: $(this).siblings('.tagfa-label').text(),
-                value: $(this).attr('value')
-            }
-
-        const parent = $(this).closest('.filter-option') // Parent <li>
-        const grandparent = parent.parents('.filter-option')
 
         if ($(this).prop('checked')) {
-            if (grandparent) {
-                grandparent.reverse().each(function () {
-                    const checkbox = $(this).children().children()
-                    let tagItem = {
-                        tag: checkbox.attr('id'),
-                        name: checkbox.siblings('.tagfa-label').text(),
-                        value: checkbox.attr('value')
-                    }
-                    if (!checkbox.is(':checked')) {
-                        checkbox.prop('checked', true)
-                        // Update hidden inputs
-                        fl.push(`${tagItem.value}`)
-                        $('input#fl').val(fl)
-                        tags.push(`${tagItem.name}`)
-                        $('input#active-tags').val(tags)
+            addActiveFilter($(this), 'checkbox')
 
-                        // Add active filter
-                        $('.active-filters').append(`<li class='checked-tag' value='${tagItem.value}'><button class='active-filter-tag'>${tagItem.name}<span class='close-active-filter-tag'></span></button></li>`)
-                    }
-                })
-            }
-            fl.push(`${tagItem.value}`)
-            $('input#fl').val(fl)
-            tags.push(`${tagItem.name}`)
-            $('input#active-tags').val(tags)
-
-            $('.active-filters').append(`<li class='checked-tag' value='${tagItem.value}'><button class='active-filter-tag'>${tagItem.name}<span class='close-active-filter-tag'></span></button></li>`)
         } else {
-            if (parent.children('ul.option')) {
-                const checkedChildren = parent.children('ul.option').find('input:checked')
-                checkedChildren.each(function () {
-                    // Update hidden input values
-                    const leaf = $(this).attr('value')
-                    const indexFl = fl.indexOf(leaf)
-                    if (indexFl > -1) {
-                        fl.splice(indexFl, 1)
-                    }
-                    $('input#fl').val(fl)
-
-                    const indexTag = tags.indexOf($(this).siblings('.tagfa-label').text())
-                    if (indexTag > -1) {
-                        tags.splice(indexTag, 1)
-                    }
-                    $('input#active-tags').val(tags)
-
-                    // Remove from applied filters
-                    $('.checked-tag').each(function () {
-                        if ($(this).attr('value') === leaf) {
-                            $(this).remove()
-                        }
-                    })
-                })
-            }
-            
-            // Update hidden input values
-            const leaf = $(this).attr('value')
-            const indexFl = fl.indexOf(leaf)
-            if (indexFl > -1) {
-                fl.splice(indexFl, 1)
-            }
-            $('input#fl').val(fl)
-
-            const indexTag = tags.indexOf($(this).siblings('.tagfa-label').text())
-            if (indexTag > -1) {
-                tags.splice(indexTag, 1)
-            }
-            $('input#active-tags').val(tags)
-
-            // Remove from applied filters
-            $('.checked-tag').each(function () {
-                if ($(this).attr('value') === leaf) {
-                    $(this).remove()
-                }
-            })
+            removeActiveFilters($(this), 'checkbox')
         }
         $('#filter-form').submit();
-        checkActiveFilters()
     });
 
     let timer;
@@ -208,14 +229,12 @@ $(document).ready(function () {
                 $('input.btn[id=search-btn]').click();                
             },1000)
         }
-        checkActiveFilters()
     });
 
     $(document).on('click', 'input.btn[id=search-btn]', function (e) {
         e.preventDefault();
         e.stopPropagation();
         $('#filter-form').submit();
-        checkActiveFilters()
     });
 
     const updateUrl = () => {
@@ -236,12 +255,17 @@ $(document).ready(function () {
         var filterParams = (filters !== '' ? `&fl=${filters}` : '');
 
         urlToFetch = `${url}${queryParams}${encodedTerms}${filterParams}${limitParams}`;
+        
+        // Update hidden input
+        $('input#fl').val(filters)
 
         window.history.pushState({href: urlToFetch}, '', urlToFetch);
     }
 
     $(document).on('submit', 'form', function(e) {
         e.preventDefault();
+
+        updateUrl()
 
         var formData = new FormData(this);
     
@@ -256,17 +280,9 @@ $(document).ready(function () {
                 search = value
                 $('input#search').attr('value', search)
                 if (search.length > 0) {
-                    // Look for any active tags for search
-                    const activeTags = $('.search-data')
-
-                    if (!activeTags.length) {
-                        $('.active-filters').append(`<li class='search-data' value='${search}'><button class='active-filter-tag'>${search}<span class='close-active-filter-tag'></span></button></li>`)
-                    } else {
-                        // Replace current active tag
-                        activeTags.remove()
-                        $('.active-filters').append(`<li class='search-data' value='${search}'><button class='active-filter-tag'>${search}<span class='close-active-filter-tag'></span></button></li>`)
-                    }
+                    addActiveFilter($('input#search'), 'search')
                 }
+                
             }
         }
         
@@ -282,31 +298,9 @@ $(document).ready(function () {
                 $('div.card-container').html(response.html.cards)
                 $('div#accord').html(response.html.filters)
 
-                updateUrl();
-
-                // Get results total and display them at top of the search results
-                let $totals = $('.counter').text()
-                $('.total-results').text($totals)
-
-                // Reinitiate accordion
-                $('.accordion-section').on('click', function () {
-                    $(this).toggleClass('active')
-                    $(this).next().toggle('slow')
-                    $(this).children('.accord-trigger').attr('aria-expanded', function (i, attr) {
-                        return attr == 'false' ? 'true' : 'false'
-                    })
-                    $(this).find('.hz-icon').toggleClass('icon-chevron-down icon-chevron-up')
-                })
-
-                // Open panels with checked children
-                $('.filter-panel').each(function () {
-                    if ($(this).find('input:checked').length) {
-                        $(this).prev().addClass('active')
-                        $(this).prev().children('.accord-trigger').attr('aria-expanded', 'true')
-                        $(this).css('display', 'block')
-                    }
-                })
-                
+                totalResults()
+                accordion()
+                checkOpenPanels()
                 checkActiveFilters()
                 console.log(response);
 
@@ -327,74 +321,20 @@ $(document).ready(function () {
         const getType = activeFilter.attr('class')
 
         if (getType === 'checked-tag') {
-            // Update hidden inputs
-            const getValue = activeFilter.attr('value')
-            const getText = $(this).text()
-
-            const indexFl = fl.indexOf(getValue)
-            if (indexFl > -1) {
-                fl.splice(indexFl, 1)
-            }
-            $('input#fl').val(fl)
-
-            const indexTag = tags.indexOf(getText)
-            if (indexTag > -1) {
-                tags.splice(indexTag, 1)
-            }
-            $('input#active-tags').val(tags)
-
-            $checkedInputs = $('.filter-panel').find('input:checked')
-            $checkedInputs.each(function () {
-                if ($(this).attr('value') === getValue) {
-                    $(this).prop('checked', false)
-                }
-            })
-
-            activeFilter.remove()
-          
-            // Check for children filters
-            const filter = $(`input[value="${getValue}"]`)
-            const parent = filter.closest('.filter-option') // Get the <li>
-            if (parent.children('ul.option')) {
-                const checkedChildren = parent.children('ul.option').find('input:checked')
-                checkedChildren.each(function () {
-                    // Update hidden inputs
-                    const getValue = $(this).attr('value')
-                    const getText = $(this).siblings('.tagfa-label').text()
-
-                    const indexFl = fl.indexOf(getValue)
-                    if (indexFl > -1) {
-                        fl.splice(indexFl, 1)
-                    }
-                    $('input#fl').val(fl)
-
-                    const indexTag = tags.indexOf(getText)
-                    if (indexTag > -1) {
-                        tags.splice(indexTag, 1)
-                    }
-                    $('input#active-tags').val(tags)
-
-                    // Remove the active filter
-                    $(`ul.active-filters li[value="${getValue}"]`).remove()
-                })
-            }
+            removeActiveFilters($(`input[value="${activeFilter.attr('value')}"]`), 'checkbox')
         }
 
         if (getType === 'search-data') {
-            activeFilter.remove()
-            $('input#search').val('')
+            removeActiveFilters($('input#search'), 'search')
         }
 
         $('#filter-form').submit()
-        checkActiveFilters();
     })
 
     // Reset filters
     $('#reset-btn').on('click', function (e) {
         e.preventDefault();
-
-        $('input#fl').val('')
-        fl = []
+        $('input:checked').prop('checked', false)
         $('input#active-tags').val('')
         tags = []
         $('input#search').val('')
