@@ -183,7 +183,6 @@ $(document).ready(function () {
         if (getValue.indexOf(',') !== -1) {
             const values = getValue.split(',')
             values.forEach(function (values) {
-                const num = parseInt(values)
                 const input = $(`input[value="${values}"]`)
 
                 // Check for grandparents
