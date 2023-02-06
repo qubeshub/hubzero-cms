@@ -178,19 +178,41 @@ $(document).ready(function () {
     if ($('input#fl').val().length) {
         const getValue = $('input#fl').val()
         const getInput = $(`input[value="${getValue}"]`)
+      
+        // Check if there are multi fl values
+        if (getValue.indexOf(',') !== -1) {
+            const values = getValue.split(',')
+            values.forEach(function (values) {
+                const num = parseInt(values)
+                const input = $(`input[value="${values}"]`)
 
-        // Check for grandparents
-        const parent = getInput.closest('.filter-option') // Get the <li>
-        const grandparent = parent.parents('.filter-option')
+                // Check for grandparents
+                const parent = input.closest('.filter-option') // Get the <li>
+                const grandparent = parent.parents('.filter-option')
 
-        if (grandparent.length) {
-            grandparent.reverse().each(function () {
-                const filter = $(this).children().children()
-                addActiveFilter(filter, 'checkbox')
+                if (grandparent.length) {
+                    grandparent.reverse().each(function () {
+                        const filter = $(this).children().children()
+                        addActiveFilter(filter, 'checkbox')
+                    })
+                }
+                
+                addActiveFilter(input, 'checkbox' )
             })
-        }
+        } else {
+            // Check for grandparents
+            const parent = getInput.closest('.filter-option') // Get the <li>
+            const grandparent = parent.parents('.filter-option')
 
-        addActiveFilter(getInput, 'checkbox') 
+            if (grandparent.length) {
+                grandparent.reverse().each(function () {
+                    const filter = $(this).children().children()
+                    addActiveFilter(filter, 'checkbox')
+                })
+            }
+
+            addActiveFilter(getInput, 'checkbox') 
+        }
     }
 
     // If loading with incoming search
