@@ -260,12 +260,24 @@ class plgGroupsPublications extends \Qubeshub\Plugin\Plugin
 				}
 				elseif ($action === 'curation')
 				{
+					$stage = Request::getString('stage', '');
+					$stuff = Request::getSTring('stuff', '');
+
+					
+
 					// Instantiate a new view  
-					$view = new \Hubzero\Plugin\View(array(  
-						'folder'=>'groups',  
-						'element'=>'publications',  
-						'name'=>'curation'  
-					));   
+					$view = $this->view('default', 'curation');
+
+					if ($stage === 'curate') {
+						$view = $this->view('curate', 'curation');
+						// $view = $this->view('curate')
+						// 	->set('curation', '_qc')
+						// 	->display();
+						
+					}
+
+					// echo $stage . ' ' . $stuff;
+					// die;
 					
 					// Set any errors  
 					if ($this->getError())  

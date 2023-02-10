@@ -39,4 +39,122 @@
 }
 .group-curation-main tr.even {
   background-color: #f1f1f1;
+}
+
+.article-curation-header {
+  display: flex;
+  flex-wrap: nowrap;
+  border-bottom: 1px solid #c1c1c1;
+  padding: 1em 1.5em;
+}
+
+.article-curation-img {
+  -o-object-fit: contain;
+     object-fit: contain;
+  width: 10rem;
+}
+
+.basic-details {
+  margin-left: 1.5em;
+}
+.basic-details p {
+  margin: 0;
+}
+
+.submission-details {
+  margin-left: auto;
+}
+
+.article-curation-body {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.article-curation-menu {
+  border-right: 1px solid #c1c1c1;
+  margin: 0.75em 0;
+  padding: 0.25em 1.5em;
+}
+.article-curation-menu .pending-actions {
+  border-bottom: 1px solid #c1c1c1;
+  margin-bottom: 0.75em;
+  padding-bottom: 0.5em;
+}
+.article-curation-menu a {
+  display: block;
+}
+
+.article-curation-panel {
+  margin: 1em 0 1em 2em;
+}
+
+.article-curation-summary {
+  border-top: 1px solid #c1c1c1;
+  padding: 1.5em;
+}
+.article-curation-summary .strong {
+  font-weight: bold;
+}
+.article-curation-summary p {
+  margin: 0.25em 0;
+}
+.article-curation-summary .top-relavence {
+  display: flex;
+  flex-wrap: nowrap;
+  border-bottom: 1px solid #c1c1c1;
+}
+.article-curation-summary .top-info {
+  margin-right: 1em;
+}
+.article-curation-summary .top-files {
+  border-left: 1px solid #c1c1c1;
+  padding-left: 1.5em;
+}
+.article-curation-summary .file-info {
+  font-size: 0.8rem;
+  margin-left: 0.5em;
+}
+
+.instructions {
+  font-size: 0.8rem;
+}
+
+#snippets {
+  display: none;
+}
+
+.email-address label {
+  display: flex;
+  flex-wrap: nowrap;
+  margin-bottom: 0.5em;
+}
+.email-address .email-field {
+  flex: 0 0 5rem;
+}
+.email-address input {
+  flex: 1 1 20rem;
+}
+
+.message-box {
+  margin: 1em 0;
+}
+.message-box textarea {
+  width: 100%;
+}
+
+.snippet-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  padding: 1.5em;
+}
+
+.snippet-category {
+  flex: 0 0 20%;
+}
+.snippet-category ul {
+  list-style: none;
+}
+
+.snippets h6 {
+  border-bottom: 1px solid #c1c1c1;
 }/*# sourceMappingURL=curation.css.map */
