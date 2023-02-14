@@ -1,0 +1,52 @@
+/**
+ * @package     hubzero-cms
+ * @file        plugins/groups/projects/projects.css
+ * @copyright   Copyright (c) 2005-2023 The Regents of the University of California.
+ * @license     http://opensource.org/licenses/MIT MIT
+ */
+
+@use '../../../../../templates/bmc/css/pages/variables' as v;
+@use '../../../../../templates/bmc/css/pages/mixins' as m;
+
+//Layout
+.instructions {
+    font-size: .8rem;
+}
+
+.email-address {
+    label {
+        @include m.flexbox;
+        margin-bottom: .5em;
+    }
+
+    .email-field {
+        flex: 0 0 5rem;
+    }
+
+    input {
+        flex: 1 1 20rem;
+    }
+}
+
+.message-box {
+    margin: 1em 0;
+    textarea {
+        width: 100%;
+    }
+}
+
+//Snippets
+.snippet {
+    @include m.flexbox;
+
+    .copy-me {
+        background-color: transparent;
+        border: none;
+        height: fit-content;
+        margin: 1em;
+    }
+
+    .hz-icon {
+        font-size: 1.5rem;
+    }
+}

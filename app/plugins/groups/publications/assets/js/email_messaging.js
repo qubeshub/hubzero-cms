@@ -16,7 +16,7 @@ if (!jq) {
 jQuery(document).ready(function(jq){
     var $ = jq;
     
-    $('a.show-people-info').fancybox({
+    $('a.modal').fancybox({
         type: 'ajax',
         autoSize : false,
         width: '80%',
@@ -39,25 +39,26 @@ jQuery(document).ready(function(jq){
                     }, 1000)
                     return false
                 })
+                
+                //Copy text using the copy icon
+                $(function () {
+                    $(".copied-toast").hide();
+                    $(".copy-me").click(function () {
+                        var copiedtext = $(this).next(".copy-text").text();
+                        if (navigator.clipboard) {
+                            navigator.clipboard.writeText(copiedtext)
+                                .then(() => {
+                                    $(".copied-toast").text("Copied!").show().fadeOut(1200);
+                                })
+                                .catch((error) => {
+                                    $(".copied-toast").text("Not copied!").show().fadeOut(1200);
+                                });
+                        } else {
+                            $(".copied-toast").text("Not copied!").show().fadeOut(1200);
+                        }
+                    });
+                });
             }
         }
     })
-
-    $('#accordion').accordion({
-        collapsible: true,
-        heightStyle: "content"
-    })
-    $('.accordion-header').on('click', function () {
-        const icon = $(this).find('.hz-icon')
-        $('.accordion-header').not($(this)).find('.hz-icon').removeClass('icon-chevron-up').addClass('icon-chevron-down')
-        if ($(this).hasClass('ui-accordion-header-active')) {
-			icon.removeClass('icon-chevron-down');
-			icon.addClass('icon-chevron-up');
-		} else {
-			icon.removeClass('icon-chevron-up');
-			icon.addClass('icon-chevron-down');
-		}
-    })
- 
-
 });

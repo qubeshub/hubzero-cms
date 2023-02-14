@@ -1,7 +1,7 @@
 <?php 
 /**
  * @package    hubzero-cms
- * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
+ * @copyright  Copyright (c) 2005-2023 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -43,8 +43,10 @@ $this->css('curation')
         <div>
             <h5>Prototype navigation only</h5>
             <ul>
-                <li><a href="https://192.168.33.10/community/groups/coursesource/publications/curation?stage=curate&status=qc">QC In Progress</a></li>
-                <li><a href="https://192.168.33.10/community/groups/coursesource/publications/curation?stage=curate&status=editor_assign">Editor Assign</a></li>
+                <li><a href="/community/groups/coursesource/publications/curation?stage=curate&status=qc">QC In Progress</a></li>
+                <li><a href="/community/groups/coursesource/publications/curation?stage=curate&status=editor_assign">Editor Assign</a></li>
+                <li><a href="/community/groups/coursesource/publications/curation?stage=curate&status=editor_assign_email">Editor Assign Email</a></li>
+                <li><a href="/community/groups/coursesource/publications/curation?stage=curate&status=editor_assign_pending">Pending Editor Response</a></li>
             </ul>
         </div>
     </div>
@@ -52,15 +54,38 @@ $this->css('curation')
     <div class="article-curation-panel">
         <?php
         $status = Request::getString('status', '');
-        if ($status === 'qc')
-        {
-            $view = $this->view('_qc', 'curation')
+
+        switch ($status) {
+            case '':
+                $view = $this->view('_curate', 'curation')
+                ->set('group', $this->group)
+                ->set('status', 'pending quality check')
+                ->set('actionable', 'start quality check')
                 ->display();
-        }
-        if ($status === 'editor_assign')
-        {
-            $view = $this->view('_editor_assign', 'curation')
+                break;
+            case 'qc':
+                $view = $this->view('_qc', 'curation')
+                ->set('group', $this->group)
                 ->display();
+                break;
+            case 'editor_assign':
+                $view = $this->view('_people_assign', 'curation')
+                ->set('group', $this->group)
+                ->set('role', 'editor')
+                ->display();
+                break;
+            case 'editor_assign_email':
+                $view = $this->view('_people_assign_email', 'curation')
+                ->set('group', $this->group)
+                ->set('role', 'editor')
+                ->display();
+                break;
+            case 'editor_assign_pending':
+                $view = $this->view('_people_assign_pending', 'curation')
+                ->set('group', $this->group)
+                ->set('role', 'editor')
+                ->display();
+                break;
         }
         ?>
     </div>
@@ -82,7 +107,7 @@ $this->css('curation')
         <div class="top-files">
             <p><span class="strong">Files</span>: </p>
             <ol>
-                <li><a href="#">Title of File</a><span class="file-info">PDF (110kb)</span></li>
+                <li><a href="#">Title of File</a><span class="file-info">MERGED PDF (110kb)</span></li>
                 <li><a href="#">Title of File</a><span class="file-info">JPEG (590kb)</span></li>
                 <li><a href="#">Title of File</a><span class="file-info">JPEG (340kb)</span></li>
             </ol>

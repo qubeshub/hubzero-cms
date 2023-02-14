@@ -1,0 +1,43 @@
+/**
+ * @package     hubzero-cms
+ * @file        plugins/groups/projects/projects.css
+ * @copyright   Copyright (c) 2005-2023 The Regents of the University of California.
+ * @license     http://opensource.org/licenses/MIT MIT
+ */
+.instructions {
+  font-size: 0.8rem;
+}
+
+.email-address label {
+  display: flex;
+  flex-wrap: nowrap;
+  margin-bottom: 0.5em;
+}
+.email-address .email-field {
+  flex: 0 0 5rem;
+}
+.email-address input {
+  flex: 1 1 20rem;
+}
+
+.message-box {
+  margin: 1em 0;
+}
+.message-box textarea {
+  width: 100%;
+}
+
+.snippet {
+  display: flex;
+  flex-wrap: nowrap;
+}
+.snippet .copy-me {
+  background-color: transparent;
+  border: none;
+  height: -moz-fit-content;
+  height: fit-content;
+  margin: 1em;
+}
+.snippet .hz-icon {
+  font-size: 1.5rem;
+}/*# sourceMappingURL=email_messaging.css.map */
