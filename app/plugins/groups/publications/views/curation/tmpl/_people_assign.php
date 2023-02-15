@@ -29,11 +29,11 @@ $this->css('curation');
 
                         <div class="Rtable-row odd">
                             <div class="Rtable-cell name-cell">
-                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor1"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">Editor O'Editor</a></div>
+                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor1"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info"><?php $this->role === 'editor' ?  $name = 'Editor O\'Editor' : $name = 'Reviewer Reviewerton'; echo $name; ?></a></div>
                             </div>
                             <div class="Rtable-cell assignment-cell">
                                 <div class="Rtable-cell--heading">Assignments: current / past (year)</div>
-                                <div class="Rtable-cell--content access-link-content">0 / <a href="#">2</a></div>
+                                <div class="Rtable-cell--content access-link-content">0 / <a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">2</a></div>
                             </div>
                             <div class="Rtable-cell conflict-cell">
                                 <div class="Rtable-cell--heading">Potential Conflicts</div>
@@ -43,11 +43,11 @@ $this->css('curation');
 
                         <div class="Rtable-row even">
                             <div class="Rtable-cell name-cell">
-                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor2"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">Another Editor</a></div>
+                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor2"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info"><?php $this->role === 'editor' ?  $name = 'Another Editor' : $name = 'Views Reviews'; echo $name; ?></a></div>
                             </div>
                             <div class="Rtable-cell assignment-cell">
                                 <div class="Rtable-cell--heading">Assignments: current / past (year)</div>
-                                <div class="Rtable-cell--content access-link-content">0 / <a href="#">1</a></div>
+                                <div class="Rtable-cell--content access-link-content">0 / <a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">1</a></div>
                             </div>
                             <div class="Rtable-cell conflict-cell">
                                 <div class="Rtable-cell--heading">Potential Conflicts</div>
@@ -67,16 +67,26 @@ $this->css('curation');
 
                         <div class="Rtable-row odd">
                             <div class="Rtable-cell name-cell">
-                                <div class="Rtable-cell--content title-content"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info"><input type="checkbox" name="editor" id="editor1">Editor O'Editor</a></div>
+                                <div class="Rtable-cell--content title-content"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info"><input type="checkbox" name="editor" id="editor1"><?php $this->role === 'editor' ?  $name = 'Editor O\'Editor' : $name = 'Reviewer Reviewerton'; echo $name; ?></a></div>
                             </div>
                             <div class="Rtable-cell assignment-cell">
                                 <div class="Rtable-cell--heading">Assignments: current / past (year)</div>
-                                <div class="Rtable-cell--content access-link-content">0 / <a href="#">2</a></div>
+                                <div class="Rtable-cell--content access-link-content">0 / <a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">2</a></div>
                             </div>
                             <div class="Rtable-cell conflict-cell">
                                 <div class="Rtable-cell--heading">Potential Conflicts</div>
                                 <div class="Rtable-cell--content replay-link-content">N/A</div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <p>Need a heading for everyone else</p>
+                <div class="wrapper">
+                    <div class="Rtable Rtable--5cols Rtable--collapse">
+                        <div class="Rtable-row Rtable-row--head">
+                            <div class="Rtable-cell name-cell column-heading">Name</div>
+                            <div class="Rtable-cell assignment-cell column-heading">Assignments: current / past (year)</div>
+                            <div class="Rtable-cell conflict-cell column-heading">Potential Conflicts</div>
                         </div>
                     </div>
                 </div>
@@ -95,11 +105,11 @@ $this->css('curation');
 
                         <div class="Rtable-row odd">
                             <div class="Rtable-cell name-cell">
-                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor3"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">Editor O'Editor</a></div>
+                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor3"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info"><?php $this->role === 'editor' ?  $name = 'Editor O\'Editor' : $name = 'Reviewer Reviewerton'; echo $name; ?></a></div>
                             </div>
                             <div class="Rtable-cell assignment-cell">
                                 <div class="Rtable-cell--heading">Assignments: current / past (year)</div>
-                                <div class="Rtable-cell--content access-link-content">0 / <a href="#">2</a></div>
+                                <div class="Rtable-cell--content access-link-content">0 / <a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">2</a></div>
                             </div>
                             <div class="Rtable-cell conflict-cell">
                                 <div class="Rtable-cell--heading">Potential Conflicts</div>
@@ -109,11 +119,11 @@ $this->css('curation');
 
                         <div class="Rtable-row even">
                             <div class="Rtable-cell name-cell">
-                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor4"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">Another Editor</a></div>
+                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor4"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info"><?php $this->role === 'editor' ?  $name = 'Another Editor' : $name = 'Views Reviews'; echo $name; ?></a></div>
                             </div>
                             <div class="Rtable-cell assignment-cell">
                                 <div class="Rtable-cell--heading">Assignments: current / past (year)</div>
-                                <div class="Rtable-cell--content access-link-content">0 / <a href="#">1</a></div>
+                                <div class="Rtable-cell--content access-link-content">0 / <a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">1</a></div>
                             </div>
                             <div class="Rtable-cell conflict-cell">
                                 <div class="Rtable-cell--heading">Potential Conflicts</div>
@@ -133,11 +143,11 @@ $this->css('curation');
 
                         <div class="Rtable-row odd">
                             <div class="Rtable-cell name-cell">
-                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor5"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">Editor O'Editor</a></div>
+                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor5"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info"><?php $this->role === 'editor' ?  $name = 'Editor O\'Editor' : $name = 'Reviewer Reviewerton'; echo $name; ?></a></div>
                             </div>
                             <div class="Rtable-cell assignment-cell">
                                 <div class="Rtable-cell--heading">Assignments: current / past (year)</div>
-                                <div class="Rtable-cell--content access-link-content">0 / <a href="#">2</a></div>
+                                <div class="Rtable-cell--content access-link-content">0 / <a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">2</a></div>
                             </div>
                             <div class="Rtable-cell conflict-cell">
                                 <div class="Rtable-cell--heading">Potential Conflicts</div>
@@ -147,16 +157,26 @@ $this->css('curation');
 
                         <div class="Rtable-row even">
                             <div class="Rtable-cell name-cell">
-                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor6"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">Another Editor</a></div>
+                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor6"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info"><?php $this->role === 'editor' ?  $name = 'Another Editor' : $name = 'Views Reviews'; echo $name; ?></a></div>
                             </div>
                             <div class="Rtable-cell assignment-cell">
                                 <div class="Rtable-cell--heading">Assignments: current / past (year)</div>
-                                <div class="Rtable-cell--content access-link-content">0 / <a href="#">1</a></div>
+                                <div class="Rtable-cell--content access-link-content">0 / <a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">1</a></div>
                             </div>
                             <div class="Rtable-cell conflict-cell">
                                 <div class="Rtable-cell--heading">Potential Conflicts</div>
                                 <div class="Rtable-cell--content replay-link-content">N/A</div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <p>Need a heading for everyone else</p>
+                <div class="wrapper">
+                    <div class="Rtable Rtable--5cols Rtable--collapse">
+                        <div class="Rtable-row Rtable-row--head">
+                            <div class="Rtable-cell name-cell column-heading">Name</div>
+                            <div class="Rtable-cell assignment-cell column-heading">Assignments: current / past (year)</div>
+                            <div class="Rtable-cell conflict-cell column-heading">Potential Conflicts</div>
                         </div>
                     </div>
                 </div>
@@ -175,11 +195,11 @@ $this->css('curation');
 
                         <div class="Rtable-row odd">
                             <div class="Rtable-cell name-cell">
-                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor7"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">Editor O'Editor</a></div>
+                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor7"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info"><?php $this->role === 'editor' ?  $name = 'Editor O\'Editor' : $name = 'Reviewer Reviewerton'; echo $name; ?></a></div>
                             </div>
                             <div class="Rtable-cell assignment-cell">
                                 <div class="Rtable-cell--heading">Assignments: current / past (year)</div>
-                                <div class="Rtable-cell--content access-link-content">0 / <a href="#">2</a></div>
+                                <div class="Rtable-cell--content access-link-content">0 / <a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">2</a></div>
                             </div>
                             <div class="Rtable-cell conflict-cell">
                                 <div class="Rtable-cell--heading">Potential Conflicts</div>
@@ -189,11 +209,11 @@ $this->css('curation');
 
                         <div class="Rtable-row even">
                             <div class="Rtable-cell name-cell">
-                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor8"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">Another Editor</a></div>
+                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor8"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info"><?php $this->role === 'editor' ?  $name = 'Another Editor' : $name = 'Views Reviews'; echo $name; ?></a></div>
                             </div>
                             <div class="Rtable-cell assignment-cell">
                                 <div class="Rtable-cell--heading">Assignments: current / past (year)</div>
-                                <div class="Rtable-cell--content access-link-content">0 / <a href="#">1</a></div>
+                                <div class="Rtable-cell--content access-link-content">0 / <a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">1</a></div>
                             </div>
                             <div class="Rtable-cell conflict-cell">
                                 <div class="Rtable-cell--heading">Potential Conflicts</div>
@@ -213,11 +233,11 @@ $this->css('curation');
 
                         <div class="Rtable-row odd">
                             <div class="Rtable-cell name-cell">
-                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor9"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">Editor O'Editor</a></div>
+                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor9"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info"><?php $this->role === 'editor' ?  $name = 'Editor O\'Editor' : $name = 'Reviewer Reviewerton'; echo $name; ?></a></div>
                             </div>
                             <div class="Rtable-cell assignment-cell">
                                 <div class="Rtable-cell--heading">Assignments: current / past (year)</div>
-                                <div class="Rtable-cell--content access-link-content">0 / <a href="#">2</a></div>
+                                <div class="Rtable-cell--content access-link-content">0 / <a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">2</a></div>
                             </div>
                             <div class="Rtable-cell conflict-cell">
                                 <div class="Rtable-cell--heading">Potential Conflicts</div>
@@ -227,16 +247,26 @@ $this->css('curation');
 
                         <div class="Rtable-row even">
                             <div class="Rtable-cell name-cell">
-                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor10"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">Another Editor</a></div>
+                                <div class="Rtable-cell--content title-content"><input type="checkbox" name="editor" id="editor10"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info"><?php $this->role === 'editor' ?  $name = 'Another Editor' : $name = 'Views Reviews'; echo $name; ?></a></div>
                             </div>
                             <div class="Rtable-cell assignment-cell">
                                 <div class="Rtable-cell--heading">Assignments: current / past (year)</div>
-                                <div class="Rtable-cell--content access-link-content">0 / <a href="#">1</a></div>
+                                <div class="Rtable-cell--content access-link-content">0 / <a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">1</a></div>
                             </div>
                             <div class="Rtable-cell conflict-cell">
                                 <div class="Rtable-cell--heading">Potential Conflicts</div>
                                 <div class="Rtable-cell--content replay-link-content">N/A</div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+                <p>Need a heading for everyone else</p>
+                <div class="wrapper">
+                    <div class="Rtable Rtable--5cols Rtable--collapse">
+                        <div class="Rtable-row Rtable-row--head">
+                            <div class="Rtable-cell name-cell column-heading">Name</div>
+                            <div class="Rtable-cell assignment-cell column-heading">Assignments: current / past (year)</div>
+                            <div class="Rtable-cell conflict-cell column-heading">Potential Conflicts</div>
                         </div>
                     </div>
                 </div>

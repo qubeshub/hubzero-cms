@@ -14,7 +14,7 @@ $this->css('curation');
     <h3 class="section-header"><?php echo $this->role; ?> Assignment: Pending response</h3>
     <a href="/community/groups/coursesource/publications/curation?stage=curate&status=editor_assign" class="actionable">Assign new <?php echo $this->role; ?></a>
     <div id="accordion">
-        <h4 class="accordion-header">Accepted<span class="count">(0)</span><span class="hz-icon icon-chevron-up"></span></h4>
+        <h4 class="accordion-header">Accepted<span class="count"><?php $this->role === 'editor' ?  $count = 0 : $count = 1; echo '(' . $count . ')'; ?></span><span class="hz-icon icon-chevron-up"></span></h4>
         <div class="accordion-panel">
             <!-- Responsive table using flexbox: https://codepen.io/Thiru/pen/bmxvZK -->
             <div class="wrapper">
@@ -25,24 +25,27 @@ $this->css('curation');
                         <div class="Rtable-cell contacts-cell column-heading">Number of contacts</div>
                         <div class="Rtable-cell history-cell column-heading">Last correspondance</div>
                     </div>
-
+                    <?php
+                    if ($this->role === 'reviewer') {
+                    ?>    
                     <div class="Rtable-row odd">
                         <div class="Rtable-cell name-cell">
-                            <div class="Rtable-cell--content title-content">None</div>
+                            <div class="Rtable-cell--content title-content"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">Reviewer Reviewerton</a></div>
                         </div>
                         <div class="Rtable-cell status-cell">
                             <div class="Rtable-cell--heading">Status</div>
-                            <div class="Rtable-cell--content access-link-content"></div>
+                            <div class="Rtable-cell--content status-content">Accepted</div>
                         </div>
                         <div class="Rtable-cell contacts-cell">
-                            <div class="Rtable-cell--heading">Last correspondance</div>
-                            <div class="Rtable-cell--content replay-link-content"></div>
+                            <div class="Rtable-cell--heading">Number of contacts</div>
+                            <div class="Rtable-cell--content contacts-content">1</div>
                         </div>
                         <div class="Rtable-cell correspondance-cell">
                             <div class="Rtable-cell--heading">Last correspondance</div>
-                            <div class="Rtable-cell--content corresepondance-content"></div>
+                            <div class="Rtable-cell--content corresepondance-content">20 Jan 2023</div>
                         </div>
                     </div>
+                    <?php }?>
                 </div>
             </div> <!-- end table -->
         </div>
@@ -59,7 +62,7 @@ $this->css('curation');
 
                     <div class="Rtable-row odd">
                         <div class="Rtable-cell name-cell">
-                            <div class="Rtable-cell--content title-content"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info">Editor O'Editor</a></div>
+                            <div class="Rtable-cell--content title-content"><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/people_info'; ?>" class="show-people-info"><?php $this->role === 'editor' ?  $name = 'Editor O\'Editor' : $name = 'Views Reviews'; echo $name; ?></a></div>
                         </div>
                         <div class="Rtable-cell status-cell">
                             <div class="Rtable-cell--heading">Status</div>
@@ -71,7 +74,7 @@ $this->css('curation');
                         </div>
                         <div class="Rtable-cell correspondance-cell">
                             <div class="Rtable-cell--heading">Last correspondance</div>
-                            <div class="Rtable-cell--content corresepondance-content">23 Jan. 2023</div>
+                            <div class="Rtable-cell--content corresepondance-content">23 Jan 2023</div>
                         </div>
                     </div>
                     <div class="Rtable-row people-assigned-response">

@@ -23,7 +23,7 @@ $this->css('email_messaging')
     <div class="email-address">
         <label>
             <span class="email-field">To:</span>
-            <input type="email" name="email-to" id="email-to" value="<?php echo $this->corresponding_author; ?>" required>
+            <input type="email" name="email-to" id="email-to" value="<?php $this->role === 'editor' ? $value = $this->corresponding_author : $value = $this->reviewer; echo $value; ?>" required>
         </label>
         <label>
             <span class="email-field">From:</span>
@@ -44,7 +44,7 @@ $this->css('email_messaging')
     </div>
     <div class="message-box">
         <label>
-            <textarea name="message" id="message" rows="10"></textarea>
+            <textarea name="message" id="message" rows="10">Can we do something like a maillist and use one email form to mail multiple people? Or do we need multiple email template views?</textarea>
         </label>
     </div>
     <input type="submit" class="btn" value="send">

@@ -43,10 +43,13 @@ $this->css('curation')
         <div>
             <h5>Prototype navigation only</h5>
             <ul>
-                <li><a href="/community/groups/coursesource/publications/curation?stage=curate&status=qc">QC In Progress</a></li>
-                <li><a href="/community/groups/coursesource/publications/curation?stage=curate&status=editor_assign">Editor Assign</a></li>
-                <li><a href="/community/groups/coursesource/publications/curation?stage=curate&status=editor_assign_email">Editor Assign Email</a></li>
-                <li><a href="/community/groups/coursesource/publications/curation?stage=curate&status=editor_assign_pending">Pending Editor Response</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=curate&status=qc'; ?>">QC In Progress</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=curate&status=editor_assign'; ?>">Editor Assign</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=curate&status=editor_assign_email'; ?>">Editor Assign Email</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=curate&status=editor_assign_pending'; ?>">Pending Editor Response</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=curate&status=reviewer_assign'; ?>">Reviewer Assign</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=curate&status=reviewer_assign_email'; ?>">Reviewer Assign Email</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=curate&status=reviewer_assign_pending'; ?>">Pending Editor Response</a></li>
             </ul>
         </div>
     </div>
@@ -84,6 +87,24 @@ $this->css('curation')
                 $view = $this->view('_people_assign_pending', 'curation')
                 ->set('group', $this->group)
                 ->set('role', 'editor')
+                ->display();
+                break;
+            case 'reviewer_assign':
+                $view = $this->view('_people_assign', 'curation')
+                ->set('group', $this->group)
+                ->set('role', 'reviewer')
+                ->display();
+                break;
+            case 'reviewer_assign_email':
+                $view = $this->view('_people_assign_email', 'curation')
+                ->set('group', $this->group)
+                ->set('role', 'reviewer')
+                ->display();
+                break;
+            case 'reviewer_assign_pending':
+                $view = $this->view('_people_assign_pending', 'curation')
+                ->set('group', $this->group)
+                ->set('role', 'reviewer')
                 ->display();
                 break;
         }
