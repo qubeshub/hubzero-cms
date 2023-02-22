@@ -11,6 +11,20 @@ $this->css('email_messaging')
     ->js('email_messaging.js'); 
 ?>
 
+<?php
+$value = '';
+
+if ($this->role === 'editor')
+{
+    $value = $this->editor;
+} elseif ($this->role === 'reviewer')
+{
+    $value = $this->reviewer;
+} elseif ($this->role === 'quality check') {
+    $value = $this->corresponding_author;
+}
+?>
+
 <div class="email-message-template">
     <p>Correspondance: First contact</p>
     <label for="email-template">Email template:</label>
@@ -23,7 +37,7 @@ $this->css('email_messaging')
     <div class="email-address">
         <label>
             <span class="email-field">To:</span>
-            <input type="email" name="email-to" id="email-to" value="<?php $this->role === 'editor' ? $value = $this->corresponding_author : $value = $this->reviewer; echo $value; ?>" required>
+            <input type="email" name="email-to" id="email-to" value="<?php echo $value; ?>" required>
         </label>
         <label>
             <span class="email-field">From:</span>

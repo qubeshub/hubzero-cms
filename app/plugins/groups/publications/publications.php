@@ -265,7 +265,7 @@ class plgGroupsPublications extends \Qubeshub\Plugin\Plugin
 					// Instantiate a new view  
 					$view = $this->view('default', 'curation');
 
-					if ($stage === 'curate') {
+					if (isset($stage) && !empty($stage)) {
 						$view = $this->view('curate', 'curation');
 					}
 

@@ -43,23 +43,24 @@ $this->css('curation')
         <div>
             <h5>Prototype navigation only</h5>
             <ul>
-                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=curate&status=qc'; ?>">QC In Progress</a></li>
-                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=curate&status=editor_assign'; ?>">Editor Assign</a></li>
-                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=curate&status=editor_assign_email'; ?>">Editor Assign Email</a></li>
-                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=curate&status=editor_assign_pending'; ?>">Pending Editor Response</a></li>
-                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=curate&status=reviewer_assign'; ?>">Reviewer Assign</a></li>
-                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=curate&status=reviewer_assign_email'; ?>">Reviewer Assign Email</a></li>
-                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=curate&status=reviewer_assign_pending'; ?>">Pending Editor Response</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=curate'; ?>">Landing Curate Page</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=qc'; ?>">QC In Progress</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=editor_assign'; ?>">Editor Assign</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=editor_assign_email'; ?>">Editor Assign Email</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=editor_assign_pending'; ?>">Pending Editor Response</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=reviewer_assign'; ?>">Reviewer Assign</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=reviewer_assign_email'; ?>">Reviewer Assign Email</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=reviewer_assign_pending'; ?>">Pending Reviewer Response</a></li>
             </ul>
         </div>
     </div>
 
     <div class="article-curation-panel">
         <?php
-        $status = Request::getString('status', '');
+        $stage = Request::getString('stage', '');
 
-        switch ($status) {
-            case '':
+        switch ($stage) {
+            case 'curate':
                 $view = $this->view('_curate', 'curation')
                 ->set('group', $this->group)
                 ->set('status', 'pending quality check')
@@ -69,6 +70,7 @@ $this->css('curation')
             case 'qc':
                 $view = $this->view('_qc', 'curation')
                 ->set('group', $this->group)
+                ->set('role', 'quality check')
                 ->display();
                 break;
             case 'editor_assign':

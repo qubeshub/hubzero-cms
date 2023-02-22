@@ -28,7 +28,8 @@ $this->css('curation');
         <?php 
             $view = $this->view('_email_messaging', 'curation')
                 ->set('group', $this->group)
-                ->set('corresponding_author', 'eoeditor@gmail.com')
+                ->set('role', 'quality check')
+                ->set('corresponding_author', 'authorauthorson@uni.edu')
                 // set 'from' field based on who is logged in
                 ->set('from', 'coursesourceeditor@gmail.com') 
                 ->display();

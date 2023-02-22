@@ -40,7 +40,7 @@ $this->css('curation');
                             <div class="Rtable-cell--heading">Number of contacts</div>
                             <div class="Rtable-cell--content contacts-content">1</div>
                         </div>
-                        <div class="Rtable-cell correspondance-cell">
+                        <div class="Rtable-cell history-cell">
                             <div class="Rtable-cell--heading">Last correspondance</div>
                             <div class="Rtable-cell--content corresepondance-content">20 Jan 2023</div>
                         </div>
@@ -72,7 +72,7 @@ $this->css('curation');
                             <div class="Rtable-cell--heading">Number of contacts</div>
                             <div class="Rtable-cell--content contacts-content">1</div>
                         </div>
-                        <div class="Rtable-cell correspondance-cell">
+                        <div class="Rtable-cell history-cell">
                             <div class="Rtable-cell--heading">Last correspondance</div>
                             <div class="Rtable-cell--content corresepondance-content">23 Jan 2023</div>
                         </div>

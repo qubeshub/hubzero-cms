@@ -19,7 +19,7 @@ $this->css('email_messaging')
              $view = $this->view('_email_messaging', 'curation')
                 ->set('group', $this->group)
                 ->set('role', 'editor')
-                ->set('corresponding_author', 'eoeditor@gmail.com')
+                ->set('editor', 'eoeditor@gmail.com')
                 // set 'from' field based on who is logged in
                 ->set('from', 'coursesourceeditor@gmail.com') 
                 ->display();
@@ -32,6 +32,5 @@ $this->css('email_messaging')
                 ->set('from', 'coursesourceeditor@gmail.com') 
                 ->display();
         }
-       
     ?>
 </div>

@@ -186,18 +186,18 @@
 }
 
 .name-cell {
-  width: 50%;
+  width: 40%;
 }
 .name-cell input[type=checkbox] {
   margin-right: 0.5em;
 }
 
 .assignment-cell {
-  width: 25%;
+  width: 30%;
 }
 
 .conflict-cell {
-  width: 25%;
+  width: 30%;
 }
 
 .title-cell {
@@ -211,7 +211,7 @@
 
 .contacts-cell,
 .history-cell {
-  width: 15%;
+  width: 20%;
 }
 
 .Rtable {
