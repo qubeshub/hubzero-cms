@@ -54,18 +54,30 @@ $(document).ready(function () {
             // Check for grandparents
             const parent = input.closest('.filter-option') // Get the <li>
             const grandparent = parent.parents('.filter-option')
+            console.log(grandparent)
             
-            if (grandparent) {
+            if (grandparent.length) {
                 grandparent.reverse().each(function () {
-                    const getFl = $(this).children().children() // input
+                    const getFl = $(this).children('label').children('input') // input
+                    const getLabel = getFl.siblings('.tagfa-label').text()
 
                     if (!getFl.is(':checked')) {
                         getFl.prop('checked', true)
-                        tags.push(`${getFl.siblings('tagfa-label').text()}`)
+                        tags.push(`${getFl.siblings('.tagfa-label').text()}`)
                         $('input#active-tags').val(tags)
 
                         // Add active filter
-                        $('.active-filters').append(`<li class='checked-tag' value='${getFl.attr('value')}'><button class='active-filter-tag'>${getFl.siblings('.tagfa-label').text()}<span class='close-active-filter-tag'></span></button></li>`)
+                        $('.active-filters').append(`<li class='checked-tag' value='${getFl.attr('value')}'><button class='active-filter-tag'>${getLabel}<span class='close-active-filter-tag'></span></button></li>`)
+                    } else {
+                        // Check if filter is not in the tags array, add it
+                        if (jQuery.inArray(getLabel, tags) === -1) {
+                            console.log('not in tags array')
+                            tags.push(getLabel)
+                            $('input#active-tags').val(tags)
+
+                            // Add active filter
+                            $('.active-filters').append(`<li class='checked-tag' value='${getFl.attr('value')}'><button class='active-filter-tag'>${getLabel}<span class='close-active-filter-tag'></span></button></li>`)
+                        }
                     }
                 })
             }
@@ -184,32 +196,10 @@ $(document).ready(function () {
             const values = getValue.split(',')
             values.forEach(function (values) {
                 const input = $(`input[value="${values}"]`)
-
-                // Check for grandparents
-                const parent = input.closest('.filter-option') // Get the <li>
-                const grandparent = parent.parents('.filter-option')
-
-                if (grandparent.length) {
-                    grandparent.reverse().each(function () {
-                        const filter = $(this).children().children()
-                        addActiveFilter(filter, 'checkbox')
-                    })
-                }
                 
                 addActiveFilter(input, 'checkbox' )
             })
         } else {
-            // Check for grandparents
-            const parent = getInput.closest('.filter-option') // Get the <li>
-            const grandparent = parent.parents('.filter-option')
-
-            if (grandparent.length) {
-                grandparent.reverse().each(function () {
-                    const filter = $(this).children().children()
-                    addActiveFilter(filter, 'checkbox')
-                })
-            }
-
             addActiveFilter(getInput, 'checkbox') 
         }
     }
