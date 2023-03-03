@@ -15,6 +15,10 @@
   max-width: 16.5625rem;
 }
 
+.panel h4 {
+  margin-top: 1em;
+}
+
 .group-curation-menu {
   padding: 0 1em;
 }
@@ -291,4 +295,64 @@
 }
 .no-flexbox .Rtable.Rtable-cell {
   width: 100%;
+}
+
+.rubric-header td {
+  position: relative;
+  padding-left: 1.5em;
+}
+
+.right-arrow {
+  border-bottom: 15px solid transparent;
+  border-left: 15px solid #8cc540;
+  border-top: 15px solid transparent;
+  height: 0;
+  left: 0;
+  margin: 0;
+  position: absolute;
+  top: 0.25em;
+  width: 0;
+}
+
+table .checkbox {
+  text-align: center;
+}
+
+.review-recommendation textarea,
+.decision-wrapper textarea {
+  width: 100%;
+}
+
+.review-wrapper {
+  margin-bottom: 1.5em;
+}
+
+.required {
+  font-size: 0.9rem;
+  color: red;
+}
+
+.review-upload {
+  border: 1px solid #c1c1c1;
+  padding: 1em;
+  margin-bottom: 1.5em;
+  width: 80%;
+}
+
+.confidential-comments h5 {
+  border-bottom: 1px solid #c1c1c1;
+  margin-top: 1em;
+}
+
+.reviewer-comments {
+  border: 1px solid #c1c1c1;
+  padding: 1em;
+}
+
+.reviewer-info h4 {
+  margin-top: 1.5em;
+}
+
+.comment-action label {
+  margin: 0 1em;
 }/*# sourceMappingURL=curation.css.map */

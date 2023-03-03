@@ -51,6 +51,9 @@ $this->css('curation')
                 <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=reviewer_assign'; ?>">Reviewer Assign</a></li>
                 <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=reviewer_assign_email'; ?>">Reviewer Assign Email</a></li>
                 <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=reviewer_assign_pending'; ?>">Pending Reviewer Response</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=review'; ?>">Review</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=editor_decision'; ?>">Editor Decision</a></li>
+                <li><a href="<?php echo '/community/groups/' . $this->group->get('cn') . '/publications/curation?stage=post_review'; ?>">Post Review</a></li>
             </ul>
         </div>
     </div>
@@ -107,6 +110,24 @@ $this->css('curation')
                 $view = $this->view('_people_assign_pending', 'curation')
                 ->set('group', $this->group)
                 ->set('role', 'reviewer')
+                ->display();
+                break;
+            case 'review':
+                $view = $this->view('_review', 'curation')
+                ->set('group', $this->group)
+                ->set('role', 'reviewer')
+                ->display();
+                break;
+            case 'editor_decision':
+                $view = $this->view('_editor_decision', 'curation')
+                ->set('group', $this->group)
+                ->set('role', 'editor')
+                ->display();
+                break;
+            case 'post_review':
+                $view = $this->view('_post_review', 'curation')
+                ->set('group', $this->group)
+                ->set('role', 'editor_in_chief')
                 ->display();
                 break;
         }

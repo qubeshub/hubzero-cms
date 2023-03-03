@@ -27,6 +27,11 @@
   width: 100%;
 }
 
+.email-attachments {
+  margin-top: 1.5em;
+  padding: 1em;
+}
+
 .snippet {
   display: flex;
   flex-wrap: nowrap;

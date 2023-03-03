@@ -35,6 +35,11 @@
     }
 }
 
+.email-attachments {
+    margin-top: 1.5em;
+    padding: 1em;
+}
+
 //Snippets
 .snippet {
     @include m.flexbox;

@@ -58,9 +58,15 @@ if ($this->role === 'editor')
     </div>
     <div class="message-box">
         <label>
-            <textarea name="message" id="message" rows="10">Can we do something like a maillist and use one email form to mail multiple people? Or do we need multiple email template views?</textarea>
+            <textarea name="message" id="message" rows="10"></textarea>
         </label>
     </div>
     <input type="submit" class="btn" value="send">
     <input type="submit" class="btn" value="save and exit">
+
+    <div class="email-attachments">
+        <h5>Attachments</h5>
+        <p>Any files to be attached to your email will be listed below. Or click "browse" to attach a file.</p>
+        <input type="button" value="browse" class="btn">
+    </div>
 </div>
