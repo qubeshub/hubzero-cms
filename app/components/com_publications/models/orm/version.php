@@ -760,6 +760,23 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 	}
 
 	/**
+	 * Get stats, such as number of views, downloads, comments, and adaptations
+	 * 
+	 * @return array
+	 */
+	public function stats()
+	{
+		$query = new \Hubzero\Database\Query;
+
+		$stats = $query->select('* FROM (SELECT SUM(page_views) as views, SUM(primary_accesses + support_accesses) as downloads FROM #__publication_logs WHERE publication_version_id=' . $this->get('id') . ') AS views_downloads,
+			(SELECT COUNT(*) as comments FROM #__item_comments WHERE item_type="publications" AND item_id=' . $this->get('id') . ') AS comments,
+			(SELECT COUNT(*) as adaptations FROM `jos_publication_versions` WHERE forked_from=' . $this->get('id') . ' AND state=1) AS adaptations')
+			->fetch();
+
+		return $stats;
+	}
+
+	/**
 	 * Namespace used for solr Search
 	 *
 	 * @return  string
@@ -804,6 +821,9 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 		$obj->description   = $description;
 		$obj->url = rtrim(Request::root(), '/') . Route::urlForClient('site', $this->link('version'));
 		$obj->doi = $this->get('doi');
+		if ($this->get('published_up')) {
+			$obj->publish_up = explode('+', Date::of($this->get('published_up'))->toISO8601())[0] . 'Z';
+		}
 
 		$obj->type = $this->publication->type->alias;
 

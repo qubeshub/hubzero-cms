@@ -14,61 +14,73 @@ $database = App::get('db');
 
 $this->css()
      ->css('intro')
-     ->js();
+     ->css('browse')
+     ->js('browse');
+
+$fl = Request::getString('fl', '');
+$activeTags= Request::getString('active-tags', '');
 ?>
 
-<?php if (!$no_html) { ?>
+<?php include_once Component::path('com_publications') . DS . 'site' . DS . 'views' . DS . 'publications' . DS . 'tmpl' . DS . 'intro.php';  ?>
 
-  <?php include_once Component::path('com_publications') . DS . 'site' . DS . 'views' . DS . 'publications' . DS . 'tmpl' . DS . 'intro.php';  ?>
-
-  <section class="live-update">
+<section class="section live-update">
     <div aria-live="polite" id="live-update-wrapper">
-<?php } ?>
-
-      <form action="<?php echo Route::url('index.php?option=' . $this->option . '&task=browse'); ?>" id="resourcesform" method="get" data-target="#results-container">
-        <div class="container browse-resources-wrapper">
-          <div class="page-filter-wrapper">
-            <header class="page-filter">
-              <div class="search-input-wrapper">
-                <fieldset class="entry-search">
-                  <legend><?php echo Lang::txt('Search'); ?></legend>
-                  <label for="entry-search-field"><?php echo Lang::txt('Enter keyword or phrase'); ?></label>
-                  <input type="text" name="search" id="entry-search-field" value="<?php echo $this->escape($this->filters['search']); ?>" placeholder="<?php echo Lang::txt('Enter keyword or phrase'); ?>" />
-                </fieldset>
-                <input class="entry-search-submit" type="submit" value="<?php echo Lang::txt('Search'); ?>" />
-              </div>
-            </header>
-          </div>
-
-          <div class="container" id="results-container" aria-live="polite">
-
-            <?php
-            if ($this->results && $this->results->count() > 0)
-            {
-              // Display List of items
-              $this->view('_list')
-                 ->set('results', $this->results)
-                 ->set('filters', $this->filters)
-                 ->set('config', $this->config)
-                 ->display();
-
-              $this->pageNav->setAdditionalUrlParam('tag', $this->filters['tag']);
-              $this->pageNav->setAdditionalUrlParam('category', $this->filters['category']);
-              $this->pageNav->setAdditionalUrlParam('sortby', $this->filters['sortby']);
-
-              echo $this->pageNav->render();
-
-              echo '<div class="clear"></div>';
-            } else { ?>
-              <p class="warning"><?php echo Lang::txt('COM_PUBLICATIONS_NO_RESULTS'); ?></p>
-            <?php } ?>
-
-            <div class="clearfix"></div>
-          </div><!-- / .container -->
+        <div class="browse-mobile-btn-wrapper">
+            <button class="browse-mobile-btn"><span class="hz-icon icon-filter">Filter</span></button>
         </div>
-      </form>
+        <form action="<?php echo Route::url('index.php?option=' . $this->option . '&task=browse'); ?>" method="post" id="filter-form" enctype="multipart/form-data">
+            <div class="resource-container">
+                <div class="filter-container">
+                    <div class="text-search-options">
+                        <fieldset>
+                            <input type="hidden" name="action" value="browse" />
+                            <input type="hidden" name="no_html" value="1" />
+                            <input type="hidden" name="sortby" value="<?php echo $this->sortBy; ?>" />
+                        </fieldset>
+                        <fieldset>
+                            <h5>Text Search:</h5>
+                            <div class="search-text-wrapper">
+                                <?php echo \Hubzero\Html\Builder\Input::text("search", $this->search); ?>
+                                <input type="submit" class="btn" id="search-btn" value="Apply">
+                            </div>
+                        </fieldset>
+                        <input type="submit" class="btn" id="reset-btn" value="Reset All Filters">
+                    </div>
+                        
+                    <?php
+                    // Calling filters view
+                    echo $this->view('filters')
+                        ->set('fas', $this->fas)
+                        ->set('filters', $this->filters)
+                        ->set('facets', $this->facets)
+                        ->loadTemplate();
+                    ?> 
+                    <input type="hidden" id="fl" name="fl" value="<?php echo $fl; ?>">
+                    <input type="hidden" id="active-tags" name="active-tags" value="<?php echo $activeTags; ?>">
+                </div>
+                <div class="container">
+                    <div class="active-filters-wrapper">
+                        <h6>Applied Filters</h6>
+                        <ul class="active-filters"></ul>
+                    </div>
+                    <div class="total-results"></div>
+                    <div class="container" id="sortby">
+                        <nav class="entries-filters">
+                            <ul class="entries-menu order-options">
+                                <li><a class="active" data-value="score" title="Relevance">Relevance</a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                        <?php
+                        // Calling cards view
+                        echo $this->view('cards')
+                            ->set('results', $this->results)
+                            ->set('pageNav', $this->pageNav)
+                            ->loadTemplate();
+                        ?>
+                </div>
+            </div>
+        </form>
+    </div> <!-- .live-update-wrapper -->
+</section>
 
-    <?php if (!$no_html) { ?>
-        </div> <!-- .live-update-wrapper -->
-      </section>
-    <?php } ?>

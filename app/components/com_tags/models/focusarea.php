@@ -119,7 +119,7 @@ class FocusArea extends Relational
     }
 
     /**
-     * Get parents
+     * Get parents (if $null is false, only works for one focus area at the moment)
      * 
      * @param   bool    $null   If true, return null parents (roots of focus area)
      * @return  object  Relational class
@@ -129,7 +129,7 @@ class FocusArea extends Relational
             ->join('#__focus_areas AS P', '#__focus_areas.parent', 'P.id', 'right')
             ->deselect()
             ->select('DISTINCT P.*');
-        return ($null ? $parents->whereIsNull('P.parent') : $parents);
+        return ($null ? $parents->whereIsNull('P.parent') : $parents->whereEquals('jos_focus_areas.id', $this->id));
     }
 
     /**
@@ -235,7 +235,7 @@ class FocusArea extends Relational
      * $props:
      *  'selected' => FocusArea class of selected focus areas (note: might be able to have this be array of ids if $rtrn != select)
      * 
-     * @param   string  $rtrn       Format to render ('search', 'select', 'view', 'flat')
+     * @param   string  $rtrn       Format to render ('search', 'select', 'view', 'flat', 'filter')
      * @param   array   $props      Array of props needed for render
      * @param   int     $depth      Depth of current recursive call
      * 
@@ -258,6 +258,14 @@ class FocusArea extends Relational
                     'element' => 'publications',
                     'name'    => 'draft',
                     'layout'  => '_focusareas'
+                )
+            );
+        } elseif ($rtrn == 'filter') {
+            $view = new \Hubzero\Component\View(
+                array(
+                    'base_path' => Component::path('com_publications') . '/site',
+                    'name'      => 'tags',
+                    'layout'    => '_filters'
                 )
             );
         }
@@ -296,6 +304,14 @@ class FocusArea extends Relational
             case 'select':
                 $html = '';
             break;
+            case 'filter':
+                $view->set('stage', 'before')
+                    ->set('depth', $depth)
+                    ->set('props', $props)
+                    ->set('parent', $this)
+                    ->set('children', $children);
+                $html = $view->loadTemplate();
+            break;
         }
 
         // Recurse step
@@ -303,7 +319,8 @@ class FocusArea extends Relational
             switch (strtolower($rtrn))
             {
                 case 'search':
-					$paths[] = $child->render('search', $props);
+					$paths[] = array($this->tag->get('tag') . '.' . $child->tag->get('tag'));
+                    $paths[] = $child->render('search', $props);
                 break;
                 case 'flat':
                     $flattree[] = $child->render('flat', $props, $depth);
@@ -311,6 +328,15 @@ class FocusArea extends Relational
                 case 'view':
                     $view->set('stage', 'during')
                         ->set('child', $child)
+                        ->set('parent', $this->tag->get('tag'))
+                        ->set('props', $props);
+                    $html .= $view->loadTemplate();
+                break;
+                case 'filter':
+                    $view->set('stage', 'during')
+                        ->set('child', $child)
+                        ->set('parent', $this)
+                        ->set('depth', $depth)
                         ->set('props', $props);
                     $html .= $view->loadTemplate();
                 break;
@@ -328,16 +354,10 @@ class FocusArea extends Relational
         switch (strtolower($rtrn))
         {
             case 'search':
-                $tag = $this->tag->get('tag');
                 if (!count($children)) {
-                    return array($tag);
+                    return array();
                 } else {
-                    return array_map(
-                        function($v) use ($tag) {
-                            return $tag . '.' . $v;
-                        },
-                        array_merge(...$paths)
-                    );
+                    return array_merge(...$paths);
                 }
             break;
             case 'flat':
@@ -356,6 +376,12 @@ class FocusArea extends Relational
             case 'select':
                 return $html;
             break;
+            case 'filter':
+                $view->set('stage', 'after')
+                    ->set('children', $children);
+                $html .= $view->loadTemplate();
+                return $html;
+            break;
         }
     }
 
@@ -371,21 +397,26 @@ class FocusArea extends Relational
 	 */
     public function checkStatus($selected)
 	{
+        // For my wonky vagrant issues only
+        // return 1;
         $fas_tags = $this->tags()->rows()->fieldsByKey('tag');
 
         // Calculate depth for each focus area
-        $depths = array_fill_keys($fas_tags, 0);
+        // Selected tags will be in parent.child form in focus area path order, e.g.
+        //  resourcesqubes.teachingmaterial precedes teachingmaterial.instructionalsetting
+        $depths = array(); foreach ($fas_tags as $fa) { $depths[$fa] = array($fa => 0); }
         foreach ($selected as $tag) {
             $levels = explode('.', $tag);
-            if (isset($depths[$levels[0]])) { // In case deactivated focus area is still stored
-                $depths[$levels[0]] = max($depths[$levels[0]], count($levels)-1);
+            if (isset($depths[$levels[0]])) {
+                $fa = $levels[0];
             }
+            $depths[$fa][$levels[1]] = $depths[$fa][$levels[0]] + 1;
         }
 
         // Check depths against mandatory depth
         foreach ($this as $fa) {
             $tag = $fa->tag->get('tag');
-            if ($depths[$tag] < $fa->mandatory_depth) {
+            if (max($depths[$tag]) < $fa->mandatory_depth) {
                 return 0;
             }
         }
