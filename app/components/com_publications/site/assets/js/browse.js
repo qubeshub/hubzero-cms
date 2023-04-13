@@ -95,15 +95,15 @@ $(document).ready(function () {
         if (type === 'search') {
             const activeTags = $('.search-data')
             const searchValue = input.val()
-
+            
             if (!activeTags.length) {
-                $('.active-filters').append(`<li class='search-data' value='${searchValue}'><button class='active-filter-tag'>${searchValue}<span class='close-active-filter-tag'></span></button></li>`)
+            $('.active-filters').append(`<li class='search-data' value='${searchValue}'><button class='active-filter-tag'>${searchValue}<span class='close-active-filter-tag'></span></button></li>`)
             } else {
                 // Replace current active tag
                 activeTags.remove()
                 $('.active-filters').append(`<li class='search-data' value='${searchValue}'><button class='active-filter-tag'>${searchValue}<span class='close-active-filter-tag'></span></button></li>`)
-            }
 
+            }
         }
     }
     /*
@@ -230,6 +230,7 @@ $(document).ready(function () {
     let timer;
     $(document).on('keypress', 'input[name=search]', function (e) {
         e.stopPropagation();
+        $('input[name=limitstart]').val(0); // Reset pagination
         
         if (e.key === 'Enter') {
             e.preventDefault();
@@ -292,6 +293,8 @@ $(document).ready(function () {
                 $('input#search').attr('value', search)
                 if (search.length > 0) {
                     addActiveFilter($('input#search'), 'search')
+                } else {
+                    removeActiveFilters($('input#search'), 'search')
                 }
                 
             }
