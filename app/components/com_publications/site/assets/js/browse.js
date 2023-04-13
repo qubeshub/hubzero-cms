@@ -8,7 +8,7 @@ $(document).ready(function () {
     const accordion = () => {
         $('.accordion-section').on('click', function () {
             $(this).toggleClass('active')
-            $(this).next().toggle('slow')
+            $(this).next().toggle()
             $(this).children('.accord-trigger').attr('aria-expanded', function (i, attr) {
                 return attr == 'false' ? 'true' : 'false'
             })
