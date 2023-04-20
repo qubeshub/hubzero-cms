@@ -18,7 +18,7 @@ if (!count($this->tags))
 $html = '<ol class="tags top">';
 foreach ($this->tags as $tag) {
     $html .= '<li class="top-level">';
-    $html .= '<a class="tag" href="' . Route::url('index.php?option=com_tags&tag=' . $tag->get('tag')) . '">' . $this->escape(stripslashes($tag->get('raw_tag'))) . '</a>';
+    $html .= '<a class="tag" href="' . Route::url('/com_publications/browse?search=' . urlencode($tag->get('raw_tag'))) . '">' . $this->escape(stripslashes($tag->get('raw_tag'))) . '</a>';
     $html .= '</li>';
 }
 $html .= '</ol>';
