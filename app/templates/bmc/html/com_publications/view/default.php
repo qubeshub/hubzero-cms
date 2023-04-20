@@ -6,6 +6,8 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
+$no_html = Request::getInt('no_html');
+
 // No direct access
 defined('_HZEXEC_') or die();
 
@@ -14,7 +16,16 @@ include_once PATH_APP . DS . 'templates' . DS . 'bmc' . DS . 'html' . DS . 'com_
 
 $this->css()
 	->css('jquery.fancybox.css', 'system')
-	->js();
+	->js()
+	->js('flot/jquery.colorhelpers.min.js', 'system')
+	->js('flot/jquery.flot.min.js', 'system')
+	->js('flot/jquery.flot.time.min.js', 'system')
+	->js('flot/jquery.flot.resize.min.js', 'system')
+	->js('flot/jquery.flot.canvas.min.js', 'system')
+	->js('flot/jquery.flot.tooltip.min.js', 'system')
+	->js('base64.js')
+	->js('canvas2image.js')
+	->js('jquery.flot.saveAsImage.js');
 
 // Load select publication information
 $this->publication->authors();
@@ -32,7 +43,6 @@ $tabOverrides = array(
 	"usage" => "Views/Downloads"
 )
 ?>
-
 <div class="wrapper">
 	<div class="title-wrapper">
 		<img alt="Resource Image" src="<?php echo Route::url($this->publication->link('masterimage')) ?>" />
@@ -176,7 +186,6 @@ $tabOverrides = array(
 				?>
 			</nav>
 		</div>
-
 		<div class="content-wrapper">
 			<div class="content-display">
 				<?php

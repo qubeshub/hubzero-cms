@@ -56,6 +56,7 @@ class plgPublicationsUsage extends \Qubeshub\Plugin\Plugin
 	 */
 	public function onPublication($publication, $option, $areas, $rtrn='all', $version = 'default', $extended = true)
 	{
+		$no_html  = Request::getInt('no_html', 0);   // No-html display?
 		$arr = array(
 			'name'    => 'usage',
 			'html'    => '',
@@ -114,6 +115,52 @@ class plgPublicationsUsage extends \Qubeshub\Plugin\Plugin
 		$views = $usageHelper->totalViews();
 		$downloads = $usageHelper->totalDownloads();
 
+		// Calculate for chart views
+		$current = new stdClass;
+		$current->page_views = 0;
+		$current->primary_accesses = 0;
+		$current->year  = substr(date("Y"), 2);
+		$current->month = date("m");
+		$views_array = array();
+		$downloads_array = array();
+		$viewshighest = 0;
+		$downhighest = 0;
+
+		$database->setQuery(
+			"SELECT *
+			FROM `#__publication_logs`
+			WHERE `publication_id`=" . $database->quote($publication->id) . " AND `publication_version_id`=" . $database->quote($publication->version->id) . "
+			ORDER BY `year` ASC, `month` ASC"
+		);
+
+		$results = $database->loadObjectList();
+		if ($results)
+		{
+			foreach ($results as $result)
+			{
+				$views_array[]     = "[new Date('20" . $result->year . '-' . \Hubzero\Utility\Str::pad($result->month, 2) . "-01')," . $result->page_views . "]";
+				$viewshighest = $result->page_views > $viewshighest ? $result->page_views : $viewshighest;
+				$downloads_array[] = "[new Date('20" . $result->year . '-' . \Hubzero\Utility\Str::pad($result->month, 2) . "-01')," . $result->primary_accesses . "]";
+				$downhighest = $result->primary_accesses > $downhighest ? $result->primary_accesses : $downhighest;
+			}
+
+			$current = end($results);
+		}
+		$current->datetime = $current->year . '-' . \Hubzero\Utility\Str::pad($current->month, 2) . '-01 00:00:00';
+
+		$dataset_views = Array(
+			'color' => "#666666",
+			'label' => Lang::txt('PLG_PUBLICATIONS_USAGE_VIEWS_EXPLANATION'),
+			'data' => Array(implode(',', $views_array)) 
+			);
+		$dataset_downloads = Array(
+			'color' => "#666666",
+			'label' => Lang::txt('PLG_PUBLICATIONS_USAGE_DOWNLOADS_EXPLANATION'),
+			'data' => Array(implode(',', $downloads_array))
+		);
+		$chart_views = (count($views_array) - 1);
+		$chart_downloads = (count($downloads_array) - 1);
+
 		// Are we returning HTML?
 		if ($rtrn == 'all' || $rtrn == 'html')
 		{
@@ -127,10 +174,28 @@ class plgPublicationsUsage extends \Qubeshub\Plugin\Plugin
 				->set('stats', $stats)
 				->set('totalViews', $views)
 				->set('totalDownloads', $downloads)
+				->set('results', $results)
 				->setErrors($this->getErrors());
 
 			// Return the output
 			$arr['html'] = $view->loadTemplate();
+		}
+
+		// Send calculations to usage.js
+		if ($no_html) {
+			$response = Array(
+				'views' => $views_array,
+				'dataset_views' => $dataset_views,
+				'downloads' => $downloads_array,
+				'dataset_downloads' => $dataset_downloads,
+				'chart_views' => $chart_views,
+				'chart_downloads' => $chart_downloads
+			);
+
+			// Ugly brute force method of cleaning output
+			ob_clean();
+			echo json_encode($response);
+			exit();
 		}
 
 		$view = $this->view('default', 'metadata')
