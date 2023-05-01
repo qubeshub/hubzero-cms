@@ -481,7 +481,7 @@ class Publications extends SiteController
 				$child = $fa;
 				$ctag = $child->tag->tag;
 				$parent = $child->parents()->row();
-				$leaf = $parent->tag->tag . '.' . $child->tag->tag;
+				$leaf = '"' . $parent->tag->tag . '.' . $child->tag->tag . '"';
 				while (!is_null($parent->get('id'))) {
 					$ptag = $parent->tag->tag;
 					$path[] = $ptag . '.' . $child->tag->tag;
@@ -530,7 +530,7 @@ class Publications extends SiteController
 			$multifacet->createQuery($fa_key, 'tags:/' . $fa_key . '.*/')->setExcludes(array($fa_key));
 			$tags = $fa->render('search');
 			array_walk($tags, function($tag) use ($multifacet, $fa_key) {
-				$multifacet->createQuery($tag, 'tags:' . $tag)->setExcludes(array($fa_key));
+				$multifacet->createQuery($tag, 'tags:"' . $tag . '"')->setExcludes(array($fa_key));
 			});
 		}
 
