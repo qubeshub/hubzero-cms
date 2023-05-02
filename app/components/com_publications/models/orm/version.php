@@ -839,7 +839,7 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 		$obj->tags = $tags->render('search', array('type' => 'focusareas'));
 
 		// Focus areas (for general search)
-		$obj->note = $tags->render('string', array('type' => 'focusareas'));
+		$obj->subject = $tags->render('string', array('type' => 'focusareas'));
 
 		$authors = $this->authors;
 		foreach ($authors as $author)
