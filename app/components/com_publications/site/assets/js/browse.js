@@ -348,6 +348,7 @@ $(document).ready(function () {
     // Reset filters
     $('#reset-btn').on('click', function (e) {
         e.preventDefault();
+        $('input[name=limitstart]').val(0); // Reset pagination
         $('input:checked').prop('checked', false)
         $('input#active-tags').val('')
         tags = []
