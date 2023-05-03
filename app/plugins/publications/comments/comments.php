@@ -71,12 +71,13 @@ class plgPublicationsComments extends \Qubeshub\Plugin\Plugin
 		if (is_array($areas))
 		{
 			// For now, always return html to allow for embedding
-			//  if (!array_intersect($areas, $this->onPublicationAreas($publication))
-			//  && !array_intersect($areas, array_keys($this->onPublicationAreas($publication))))
-			// {
-			// 	$rtrn = 'metadata';
-			// }
+			if (!array_intersect($areas, $this->onPublicationAreas($publication))
+				&& !array_intersect($areas, array_keys($this->onPublicationAreas($publication))))
+			{
+				$rtrn = 'metadata';
+			}
 		}
+		
 		if (!$publication->_category->_params->get('plg_comments') || !$extended)
 		{
 			return $arr;
