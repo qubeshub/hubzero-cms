@@ -564,6 +564,8 @@ class Publications extends SiteController
 			$start,
 			$limit
 		);
+		$pageNav->setAdditionalUrlParam('fl', count($fl) > 1 ? implode(",", $fl) : implode($fl));
+		$pageNav->setAdditionalUrlParam('search', $search);
 
 		// Set page title
 		$this->_buildTitle();
