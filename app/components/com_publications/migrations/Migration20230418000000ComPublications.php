@@ -46,7 +46,7 @@ class Migration20230418000000ComPublications extends Base
 				KEY `idx_vid_rid` (`vid`, `rid`),
 				KEY `idx_uid_rid` (`uid`, `rid`),
 				KEY `idx_vid_status` (`vid`, `status`)
-              ENGINE = MyISAM DEFAULT CHARSET=utf8;";
+              ) ENGINE = MyISAM DEFAULT CHARSET=utf8;";
             
             $this->db->setQuery($query);
 			if ($this->db->query()) {
