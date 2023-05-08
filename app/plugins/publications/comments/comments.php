@@ -63,6 +63,7 @@ class plgPublicationsComments extends \Qubeshub\Plugin\Plugin
 	public function onPublication($publication, $option, $areas, $rtrn='all', $version = 'default', $extended = true) // $model, $option, $areas, $rtrn='all')
 	{
 		$arr = array(
+			'name'	   => 'comments',
 			'html'     => '',
 			'metadata' => ''
 		);
@@ -70,7 +71,6 @@ class plgPublicationsComments extends \Qubeshub\Plugin\Plugin
 		// Check if our area is in the array of areas we want to return results for
 		if (is_array($areas))
 		{
-			// For now, always return html to allow for embedding
 			if (!array_intersect($areas, $this->onPublicationAreas($publication))
 				&& !array_intersect($areas, array_keys($this->onPublicationAreas($publication))))
 			{
@@ -92,7 +92,6 @@ class plgPublicationsComments extends \Qubeshub\Plugin\Plugin
 
 		include_once __DIR__ . '/models/comment.php';
 
-		$arr['name']  = 'comments';
 		$arr['count'] = $this->_countComments();
 
 		// Are we returning metadata?
