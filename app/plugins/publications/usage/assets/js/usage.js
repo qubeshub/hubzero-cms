@@ -28,10 +28,12 @@ $(document).ready(function () {
             chart_downloads.highlight(0, item.dataIndex);
         }
     };
+    
+    const url = $('#usage-form').attr('action') + '/' + $('#usage-form').attr('version')
 
     $.ajax({
         method: 'GET',
-        url: window.location.href.nohtml(),
+        url: url.nohtml(),
         dataType: 'json',
         success: function (response, status, xhr) {
             console.log(response)

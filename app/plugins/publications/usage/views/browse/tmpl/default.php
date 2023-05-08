@@ -20,11 +20,12 @@ $this->js('usage.js');
 
 $heights = array();
 ?>
+
 <h3 id="plg-usage-header">
 	<?php echo Lang::txt('PLG_PUBLICATIONS_USAGE'); ?>
 </h3>
 
-<form method="get" action="<?php echo Route::url($url); ?>">
+<form method="get" action="<?php echo Route::url($url); ?>" id="usage-form" version="<?php echo $this->publication->version->version_number; ?>">
 <?php if (count($results)) { ?>
 	<div class="usage-wrap">
 		<div class="grid charts">
