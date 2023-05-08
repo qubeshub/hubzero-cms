@@ -73,6 +73,7 @@ $(document).ready(function () {
 
     $(window).on('popstate', function (event) {
         const url = event.target.location.pathname
+        let active = ''
 
         ajaxLoad(url)
 
@@ -80,8 +81,14 @@ $(document).ready(function () {
         $('a.tab').each(function () {
             if ($(this).attr('href') === url) {
                 activeTab($(this))
+                active = 'active'
             }
         })
+
+        // If url doesn't contain a plugin - about is active
+        if (!active.length) {
+                activeTab($('.content-menu a.tab:first'))
+        }
     })
 })
 
