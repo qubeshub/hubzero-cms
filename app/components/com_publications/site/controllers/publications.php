@@ -16,6 +16,7 @@ require_once $componentPath . DS . 'models' . DS . 'orm' . DS . 'publication.php
 
 require_once "$searchPath/models/solr/facet.php";
 require_once "$searchPath/models/solr/searchcomponent.php";
+require_once "$searchPath/helpers/solr.php";
 
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'SiteController.php';
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Module' . DS . 'Helper.php';
@@ -33,6 +34,7 @@ use Components\Publications\Models\PubCloud;
 
 use Components\Search\Models\Solr\Facet;
 use Components\Search\Models\Solr\SearchComponent;
+use Components\Search\Helpers\SolrHelper;
 
 use Component;
 use Exception;
@@ -473,80 +475,22 @@ class Publications extends SiteController
 		$fl = $fl ? explode(',', $fl) : array();
 		$no_html = Request::getInt('no_html', 0);
 
-		$leaves = array();
-		$filters = array();
-		foreach ($fl as $leaf_child) {
-			$path = array();
-			if ($fa = FocusArea::oneOrFail($leaf_child)) {
-				$child = $fa;
-				$ctag = $child->tag->tag;
-				$parent = $child->parents()->row();
-				$leaf = '"' . $parent->tag->tag . '.' . $child->tag->tag . '"';
-				while (!is_null($parent->get('id'))) {
-					$ptag = $parent->tag->tag;
-					$path[] = $ptag . '.' . $child->tag->tag;
-
-					$child = $parent; $ctag = $ptag;
-					$parent = $parent->parents()->row();
-				}
-
-				$leaves[$ctag][] = $leaf;
-				if (array_key_exists($ctag, $filters)) {
-					$filters[$ctag] = array_unique(array_merge($filters[$ctag], $path));
-				} else {
-					$filters[$ctag] = $path;
-				}
-			}
-		}
-
-		// Initialize Solr search engine
-		$config = Component::params('com_search');
-		$query = new \Hubzero\Search\Query($config);
-		$query->query($search ? $search : '*:*')->limit($limit)->start($start);
-
-		// Add sorting
-		$query->sortBy($sortBy, 'desc');
-		// Always add desc by publish_up at end
-		$query->sortBy('publish_up', 'desc');
-
-		// Add filters
-		$query->addFilter('hubtype', 'hubtype:publication'); // Only publications
-		$query->addFilter('access_level', 'access_level:public'); // Only published
-		foreach ($leaves as $tag => $filter) {
-			if ($filter) {
-				$query->addFilter($tag, 'tags:(' . implode(' OR ', $filter) . ')', $tag);
-			}
-		}
-
 		// Focus areas as facets
 		$db = \App::get('db');
 		$master_type = new Tables\MasterType($db);
 		$qubes_mtype_id = $master_type->getType('qubesresource')->id;
 		$this->view->fas = FocusArea::fromObject($qubes_mtype_id);
-		foreach($this->view->fas as $fa) {
-			$fa_key = $fa->tag->tag;
-			$multifacet = $query->adapter->getFacetMultiQuery($fa_key);
-			// $multifacet->createQuery($fa_key, 'tags:' . $fa_key . '*')->setExcludes(array($fa_key));
-			$multifacet->createQuery($fa_key, 'tags:/' . $fa_key . '.*/')->setExcludes(array($fa_key));
-			$tags = $fa->render('search');
-			array_walk($tags, function($tag) use ($multifacet, $fa_key) {
-				$multifacet->createQuery($tag, 'tags:"' . $tag . '"')->setExcludes(array($fa_key));
-			});
-		}
+		
+		// Perform the search
+		$solr = new SolrHelper;
+		$search_results = $solr->search($search, $sortBy, $limit, $start, $fl, $this->view->fas);
+		$results = $search_results['results'];
+		$numFound = $search_results['numFound'];
+		$facets = $search_results['facets'];
+		$leaves = $search_results['leaves'];
+		$filters = $search_results['filters']; // Used for debugging for now
 
-		// Do the solr search
-		try
-		{
-			$query = $query->run();
-		}
-		catch (\Solarium\Exception\HttpException $e)
-		{
-			$query->query('')->limit($limit)->start($start)->run();
-			\Notify::warning(Lang::txt('COM_SEARCH_MALFORMED_QUERY'));
-		}
-
-		// Get results
-		$results  = $query->getResults();
+		// Convert results to publications
 		$pubs = array();
 		foreach ($results as $result) {
 			$pid = explode('-', $result['id'])[1];
@@ -555,8 +499,6 @@ class Publications extends SiteController
 			$vub->set('keywords', (new PubCloud($vub->get('id')))->render('list', array('type' => 'keywords', 'key' => 'raw_tag')));
 			$pubs[] = $vub;
 		}
-		$numFound = $query->getNumFound();
-		$facets = $query->resultsFacetSet;
 
 		// Initiate paging
 		$pageNav = new Paginator(
