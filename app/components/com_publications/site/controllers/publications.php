@@ -483,7 +483,7 @@ class Publications extends SiteController
 		
 		// Perform the search
 		$solr = new SolrHelper;
-		$search_results = $solr->search($search, $sortBy, $limit, $start, $fl, $this->view->fas);
+		$search_results = $solr->search($search, $sortBy, $limit, $start, array("fl" => $fl), $this->view->fas);
 		$results = $search_results['results'];
 		$numFound = $search_results['numFound'];
 		$facets = $search_results['facets'];
