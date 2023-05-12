@@ -36,7 +36,6 @@ $(document).ready(function () {
         url: url.nohtml(),
         dataType: 'json',
         success: function (response, status, xhr) {
-            console.log(response)
 
             var views = $('#chart-views');
             views.bind("plotclick", function(event, pos, item) {

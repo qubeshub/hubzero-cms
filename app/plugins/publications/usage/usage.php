@@ -179,23 +179,23 @@ class plgPublicationsUsage extends \Qubeshub\Plugin\Plugin
 
 			// Return the output
 			$arr['html'] = $view->loadTemplate();
-		}
 
-		// Send calculations to usage.js
-		if ($no_html) {
-			$response = Array(
-				'views' => $views_array,
-				'dataset_views' => $dataset_views,
-				'downloads' => $downloads_array,
-				'dataset_downloads' => $dataset_downloads,
-				'chart_views' => $chart_views,
-				'chart_downloads' => $chart_downloads
-			);
+			// Send calculations to usage.js
+			if ($no_html) {
+				$response = Array(
+					'views' => $views_array,
+					'dataset_views' => $dataset_views,
+					'downloads' => $downloads_array,
+					'dataset_downloads' => $dataset_downloads,
+					'chart_views' => $chart_views,
+					'chart_downloads' => $chart_downloads
+				);
 
-			// Ugly brute force method of cleaning output
-			ob_clean();
-			echo json_encode($response);
-			exit();
+				// Ugly brute force method of cleaning output
+				ob_clean();
+				echo json_encode($response);
+				exit();
+			}
 		}
 
 		$view = $this->view('default', 'metadata')
