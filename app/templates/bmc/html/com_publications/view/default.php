@@ -34,7 +34,6 @@ $tabOverrides = array(
 ?>
 
 <div class="wrapper">
-	<div class="title-wrapper-holder"></div>
 	<div class="title-wrapper">
 		<img alt="Resource Image" src="<?php echo Route::url($this->publication->link('masterimage')) ?>" />
 		<div class="title">
