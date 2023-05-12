@@ -68,6 +68,11 @@ jQuery(document).ready(function(jq){
 	// Set overlays for lightboxed elements
 	$('a[rel=lightbox]').fancybox();
 
+	// Instantiate/refresh ckeditors (needed for AJAX)
+	$('.ckeditor-content').each(function () { 
+		$(this).ckeditor(JSON.parse($(this).siblings('script').html()));
+	});
+
 	thread
 		.on('click', 'a.reply, a.edit', function (e) {
 			// Reply to comment

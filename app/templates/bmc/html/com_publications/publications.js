@@ -56,6 +56,10 @@ $(document).ready(function () {
                 $('<style type="text/css">@import url("/app/plugins/publications/usage/assets/css/usage.css")</style>').appendTo("head");
                 $.getScript('/app/plugins/publications/usage/assets/js/usage.js')
             }
+            if (window.location.href.indexOf('comments') > -1) {
+                $('<style type="text/css">@import url("/app/plugins/publications/comments/assets/css/comments.css")</style>').appendTo("head");
+                $.getScript('/app/plugins/publications/comments/assets/js/comments.js')
+            }
         })
         
 	})
