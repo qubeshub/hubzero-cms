@@ -214,28 +214,4 @@ jQuery(document).ready(function(jq){
 
 	$('a.abuse').fancybox(fancybox_config);
 
-	function gotoHash(id) {
-		var $target = $(id),
-			scrollOffset = $('.title-wrapper').height(),
-			y = $target.offset().top - (scrollOffset + 60);
-		
-		console.log($target)
-		console.log(y)
-		console.log(scrollOffset)
-		
-		if ($target.length) {
-			$('.content-panel').animate({
-				scrollTop: y
-			}, 1000)
-		}
-	}
-
-	$(window).on('load', function () {
-		if (window.location.hash) {
-			console.log('hashed url: ' + window.location.hash)
-			gotoHash(window.location.hash)
-		}
-	})
-
-	
 });
