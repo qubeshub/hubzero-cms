@@ -250,7 +250,7 @@ $(document).ready(function () {
     });
 
     const updateUrl = () => {
-        var url = '/publications/browse';
+        var url = location.pathname;
         
         var limit = $('#limit').val();
         var limitstart = $('input[name=limitstart]').val();
