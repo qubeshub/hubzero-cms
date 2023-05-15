@@ -720,14 +720,10 @@ class Publications extends SiteController
 		$sections = array();
 		$cats = array();
 
-		// Show extended pub info like reviews, questions etc.
-		$extended = $lastPubRelease && $lastPubRelease->id == $this->model->version->id ? true : false;
-
 		// Trigger the functions that return the areas we'll be using
 		$cats = Event::trigger('publications.onPublicationAreas', array(
 			$this->model,
-			$this->model->versionAlias,
-			$extended)
+			$this->model->versionAlias)
 		);
 
 		// Get the sections
@@ -736,8 +732,7 @@ class Publications extends SiteController
 			$this->_option,
 			array($tab),
 			'all',
-			$this->model->versionAlias,
-			$extended)
+			$this->model->versionAlias)
 		);
 
 		// Add collect module to sections
