@@ -336,10 +336,11 @@ class Html
 			$html .= $formatted;
 			if (!$pub->isDev())
 			{
+				$url = 'index.php?option=com_publications&id=' . $pub->id . '&v=' . $pub->get('version_number');
 				$html .= "\t\t" . '<p class="details">' . "\n";
-				$html .= "\t\t\t" . '<a href="' . Route::url($pub->link('citation') . '&task=citation&type=bibtex&no_html=1') . '" title="'
+				$html .= "\t\t\t" . '<a href="' . Route::url($url . '&task=citation&type=bibtex&no_html=1') . '" title="'
 					. Lang::txt('COM_PUBLICATIONS_DOWNLOAD_BIBTEX_FORMAT') . '">BibTex</a> <span>|</span> ' . "\n";
-				$html .= "\t\t\t" . '<a href="' . Route::url($pub->link('citation') . '&task=citation&type=endnote&no_html=1') . '" title="'
+				$html .= "\t\t\t" . '<a href="' . Route::url($url . '&task=citation&type=endnote&no_html=1') . '" title="'
 					. Lang::txt('COM_PUBLICATIONS_DOWNLOAD_ENDNOTE_FORMAT') . '">EndNote</a>' . "\n";
 				$html .= "\t\t" . '</p>'."\n";
 			}

@@ -267,7 +267,7 @@ class Html
 		$custom = !$custom && $license->text ? $license->text : $custom;
 		$lnk    = $license->url ? $license->url : '';
 		$title  = strtolower($license->title) != 'custom' ? $license->title : '';
-		$url    = Route::url($publication->link('version') . '&task=license');
+		$url    = Route::url($publication->link('license'));
 
 		$html  = '<p class="' . $cls . ' license">'.Lang::txt('COM_PUBLICATIONS_LICENSED_UNDER').' ';
 		if ($title)
@@ -346,7 +346,7 @@ class Html
 		foreach ($cats as $cat)
 		{
 			$name = key($cat);
-			if ($name != '')
+			if (($name != '') && ($name != 'watch'))
 			{
                 $cname = (array_key_exists($name, $tabOverrides) ? $tabOverrides[$name] : $cat[$name]);
 				$url = Route::url($base_url . '&' . $active_key . '=' . $name);
@@ -549,7 +549,7 @@ class Html
 		if ($publication->version->get('doi'))
 		{
 			$text .= "\t\t" . '<span class="doi">' . 'doi:' . $publication->version->get('doi');
-			$text .= ' - <span><a href="' . Route::url($publication->link() . '&active=about') . '#citethis">' . Lang::txt('cite this') . '</a></span></span>' . "\n";
+			$text .= ' - <span><a href="' . Route::url($publication->link('version')) . '#citethis">' . Lang::txt('cite this') . '</a></span></span>' . "\n";
 		}
 
 		// Show archival status (mkAIP)

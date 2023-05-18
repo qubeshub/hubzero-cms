@@ -87,7 +87,7 @@ $tabOverrides = array(
 				<?php
 				// Show share, collect, and watch
 				echo \Templates\Bmc\Publications\Helpers\Html::showSection($this->sections, "collect", "metadata");
-				echo \Templates\Bmc\Publications\Helpers\Html::showSection($subSections, "watch", "html");
+				echo \Templates\Bmc\Publications\Helpers\Html::showSection($this->sections, "watch", "metadata");
 				echo \Templates\Bmc\Publications\Helpers\Html::showSection($this->sections, "share", "metadata");
 				?>
 			</div>
@@ -164,7 +164,7 @@ $tabOverrides = array(
 					?>
 					<div class="more-files hide">
 						<?php
-						echo '<a href="' . Route::url('index.php?option=com_publications&id=' . $this->publication->get('id') . '&v=' . $this->publication->version->get('version_number') . '&active=supportingdocs#supportingdocs') . '">view all files</a>';
+						echo '<a href="' . Route::url($this->publication->link('version') . (!Request::getString('base_url') ? '&active=supportingdocs' : '&tab_active=supportingdocs') . '#supportingdocs') . '">view all files</a>';
 						?>
 					</div>
 				</div>

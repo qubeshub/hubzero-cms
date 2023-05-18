@@ -379,6 +379,29 @@ $(document).ready(function () {
         $('#filter-form').submit();
     });
 
+    // Submit Resource Btn
+	$('#submit-resource').fancybox({
+        type: 'ajax',
+        scrolling: true,
+        autoSize: false,
+        fitToView: true,
+        titleShow: false,
+        tpl: {
+            wrap:'<div class="fancybox-wrap"><div class="fancybox-skin"><div class="fancybox-outer"><div id="sbox-content" class="fancybox-inner"></div></div></div></div>'
+        },
+        beforeLoad: function() {
+            href = $(this).attr('href');
+            $(this).attr('href', href.nohtml());
+        },
+        afterShow: function() {
+			$('form.submit-options a.btn').on('click', (e) => {
+				e.preventDefault();
+				$.fancybox.close();
+				window.location = e.target.href;
+			});
+		}
+    });
+
     // Mobile responsiveness
     const filterContainer = $('.filter-container'),
         mobileFilter = $('.browse-mobile-btn'),

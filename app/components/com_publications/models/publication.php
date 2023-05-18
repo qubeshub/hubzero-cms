@@ -2130,7 +2130,10 @@ class Publication extends Obj
 			case 'reviews':
 			case 'comments':
 			case 'wishlist':
+			case 'forks':
+			case 'license':
 			case 'citations':
+			case 'watch':
 				$link = 'index.php?option=com_publications' . $id . '&v=' . $this->get('version_number') . '&active=' . strtolower($type);
 			break;
 

@@ -16,7 +16,7 @@ defined('_HZEXEC_') or die();
 		<div class="col span5 submit-new">
 			<h4><?php echo Lang::txt('COM_PUBLICATIONS_NEW_PUB_NO_PROJECT'); ?></h4>
 			<p><?php echo Lang::txt('COM_PUBLICATIONS_NEW_PUB_NO_PROJECT_EXPLANATION'); ?></p>
-			<p><a class="btn btn-success" href="<?php echo Route::url('publications/submit?action=publication&base=qubesresource'); ?>"><?php echo Lang::txt('COM_PUBLICATIONS_NEW_PUB_CREATE'); ?></a></p>
+			<p><a class="btn btn-success" href="<?php echo Route::url('publications/submit?action=publication&base=' . $this->base); ?>"><?php echo Lang::txt('COM_PUBLICATIONS_NEW_PUB_CREATE'); ?></a></p>
 		</div>
 		<div class="col span7 omega submit-to-project">
 			<h4><?php echo Lang::txt('COM_PUBLICATIONS_NEW_PUB_EXISTING_PROJECT'); ?></h4>
@@ -30,7 +30,7 @@ defined('_HZEXEC_') or die();
 							<span class="project-title">
 								<?php echo $this->escape($project->get('title')); ?>
 							</span>
-							<a class="btn btn-success icon-plus" href="<?php echo Route::url('projects/' . $this->escape($project->get('alias')) . '/publications/publication?base=qubesresource'); ?>" />
+							<a class="btn btn-success icon-plus" href="<?php echo Route::url('projects/' . $this->escape($project->get('alias')) . '/publications/publication?base=' . $this->base); ?>" />
 								<?php echo Lang::txt('COM_PUBLICATIONS_NEW_PUB_ADD'); ?>
 							</a>
 						</li>

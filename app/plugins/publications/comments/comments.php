@@ -88,7 +88,7 @@ class plgPublicationsComments extends \Qubeshub\Plugin\Plugin
 		$this->option = $option;
 		$this->obj_id   = $publication->version->id;
 		$this->obj_type = substr($option, 4);
-		$this->url = $publication->link('comments') . '&active=' . $this->_name;
+		$this->url = $publication->link('comments') . '&active=' . $this->_name; // Used for AJAX
 
 		include_once __DIR__ . '/models/comment.php';
 
@@ -97,9 +97,12 @@ class plgPublicationsComments extends \Qubeshub\Plugin\Plugin
 		// Are we returning metadata?
 		if ($rtrn == 'all' || $rtrn == 'metadata')
 		{
+			// Need different url for metadata
+			$url_base = $publication->link('version');
+			$url = $url_base . (!strpos($url_base, 'active=publications') ? '&active=comments' : '&tab_active=comments');
 			$arr['metadata'] = $this->view('default', 'metadata')
-				->set('url', Route::url($this->url . '#comments'))
-				->set('url_action', Route::url($this->url . '#commentform'))
+				->set('url', Route::url($url . '#comments'))
+				->set('url_action', Route::url($url . '#commentform'))
 				->set('comments', $arr['count'])
 				->loadTemplate();
 		}

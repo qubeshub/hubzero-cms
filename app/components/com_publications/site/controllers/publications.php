@@ -1302,6 +1302,7 @@ class Publications extends SiteController
 		$action  = Request::getString('action', '');
 		$active  = Request::getString('active', 'publications');
 		$action  = $this->_task == 'start' ? 'start' : $action;
+		$base 	 = Request::getString('base', 'qubesresource');
 		$ajax    = Request::getInt('ajax', 0);
 		$doiErr  = Request::getInt('doierr', 0);
 
@@ -1405,6 +1406,7 @@ class Publications extends SiteController
 			// Return the output
 			$this->view->setLayout('_choose')
 						->set('projects', $projects)
+						->set('base', $base)
 						->display();
 			return;
 		}
