@@ -308,7 +308,14 @@ class Author extends Table
 					$res->open = $user->get('access');
 					$res->picture = $user->picture(0, false);
 					$res->givenName = $user->get('givenName');
-					$res->middleName = $user->get('middleName');
+
+					// Patch: Original code calls User::get("middleName"), which
+					//   infers middle name from full name (many times incorrectly)
+					$query = "SELECT middleName FROM #__users WHERE id = $resId";
+					$this->_db->setQuery($query);
+					$res->middleName = $this->_db->loadResult();
+					// $res->middleName = $user->get('middleName');
+
 					$res->surname = $user->get('surname');
 					$res->orcid = $user->get('orcid');
 				}
