@@ -827,9 +827,10 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 
 		$obj->type = $this->publication->type->alias;
 
-		if ($this->publication->group_owner) {
-			$obj->gid = $this->publication->group_owner;
-			$obj->group = \Hubzero\User\Group::getInstance($this->publication->group_owner)->get('description');
+		$group = $activeVersion->project()->group();
+		if ($group) {
+			$obj->gid = $group->get('gidNumber');
+			$obj->group = $group->get('description');
 		}
  
 		$tags = new PubCloud($this->id);
