@@ -20,7 +20,7 @@ $this->css()
 	->js('flot/jquery.colorhelpers.min.js', 'system')
 	->js('flot/jquery.flot.min.js', 'system')
 	->js('flot/jquery.flot.time.min.js', 'system')
-	->js('flot/jquery.flot.resize.min.js', 'system')
+	// ->js('flot/jquery.flot.resize.min.js', 'system') // Handle resize in usage.js
 	->js('flot/jquery.flot.canvas.min.js', 'system')
 	->js('flot/jquery.flot.tooltip.min.js', 'system')
 	->js('base64.js')
