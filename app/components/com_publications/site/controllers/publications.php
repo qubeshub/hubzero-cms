@@ -18,6 +18,8 @@ require_once "$searchPath/models/solr/facet.php";
 require_once "$searchPath/models/solr/searchcomponent.php";
 require_once "$searchPath/helpers/solr.php";
 
+require_once Component::path('com_groups') . DS . 'models' . DS . 'orm' . DS . 'group.php';
+
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'SiteController.php';
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Module' . DS . 'Helper.php';
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'View.php';
@@ -31,6 +33,7 @@ use Components\Publications\Models;
 use Components\Publications\Helpers;
 use Components\Tags\Models\FocusArea;
 use Components\Publications\Models\PubCloud;
+use Components\Groups\Models\Orm\Group;
 
 use Components\Search\Models\Solr\Facet;
 use Components\Search\Models\Solr\SearchComponent;
@@ -1299,6 +1302,7 @@ class Publications extends SiteController
 	{
 		// Incoming
 		$pid     = Request::getInt('pid', 0);
+		$gid 	 = Request::getInt('gid', 0);
 		$action  = Request::getString('action', '');
 		$active  = Request::getString('active', 'publications');
 		$action  = $this->_task == 'start' ? 'start' : $action;
@@ -1368,6 +1372,11 @@ class Publications extends SiteController
 			);
 
 			$projects = array();
+			if ($gid) {
+				$gids = array($gid);
+				$gg = Group::oneOrFail($gid);
+				$gids = array_merge($gids, $gg->children()->rows()->fieldsByKey('gidNumber'));
+			}
 
 			// Get owned
 			$filters['which'] = 'owned';
@@ -1384,7 +1393,12 @@ class Publications extends SiteController
 				{
 					continue;
 				}
-				$projects[$own->get('title')] = $own;
+
+				$owned_by_group = $own->get('owned_by_group');
+				if (!$gid || in_array($owned_by_group, $gids)) {
+					$key = $owned_by_group ? $owned_by_group : 'inf'; // Unique key needed
+					$projects[$key][] = $own;
+				}
 			}
 
 			// Get other projects
@@ -1398,13 +1412,36 @@ class Publications extends SiteController
 				{
 					continue;
 				}
-				$projects[$own->get('title')] = $own;
+				
+				$owned_by_group = $own->get('owned_by_group');
+				if (!$gid || in_array($owned_by_group, $gids)) {
+					$key = $owned_by_group ? $owned_by_group : 'inf'; // Unique key needed
+					$projects[$key][] = $own;
+				}
 			}
 
-			ksort($projects);
+			// Sort each group of projects by project title...
+			foreach ($projects as $key => $gprojects) {
+				uasort($gprojects, function($a, $b) {
+					return strcasecmp($a->get('title'), $b->get('title'));
+				});
+			}
+			// ...then sort groups by group name
+			uasort($projects, function($a, $b) {
+				if (!$a[0]->get('groupname')) { return 1; }
+				if (!$b[0]->get('groupname')) { return -1; }
+				return strcasecmp($a[0]->get('groupname'), $b[0]->get('groupname'));
+			});
+			// Finally, move this group to front of array
+			if (isset($projects[$gid])) {
+				$g = $projects[$gid];
+				unset($projects[$gid]);
+				$projects = array($gid => $g) + $projects;
+			}
 
 			// Return the output
 			$this->view->setLayout('_choose')
+						->set('gid', $gid)
 						->set('projects', $projects)
 						->set('base', $base)
 						->display();

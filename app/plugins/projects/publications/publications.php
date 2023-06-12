@@ -159,6 +159,7 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 		// Incoming
 		$this->_task = Request::getString('action', '');
 		$this->_pid  = Request::getInt('pid', 0);
+		$this->_gid  = Request::getInt('gid', 0);
 		if (!$this->_task)
 		{
 			$this->_task = $this->_pid ? 'publication' : $action;
@@ -1242,6 +1243,7 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 		$objP->category    = $cat;
 		$objP->project_id  = $this->model->get('id');
 		$objP->created_by  = $this->_uid;
+		$objP->group_owner = $this->_gid;
 		$objP->created     = Date::toSql();
 		$objP->access      = 0;
 		if (!$objP->store())
