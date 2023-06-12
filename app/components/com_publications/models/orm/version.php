@@ -827,7 +827,7 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 
 		$obj->type = $this->publication->type->alias;
 
-		$group = $activeVersion->project()->group();
+		$group = $this->publication->get('group_owner') ? $this->publication->group() : $activeVersion->project()->group();
 		if ($group) {
 			$obj->gid = $group->get('gidNumber');
 			$obj->group = $group->get('description');
