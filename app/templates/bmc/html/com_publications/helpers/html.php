@@ -271,15 +271,15 @@ class Html
 
 		$html  = '<p class="' . $cls . ' license">'.Lang::txt('COM_PUBLICATIONS_LICENSED_UNDER').' ';
 		if ($title)
-		{
+		{ 
 			if ($lnk && !$custom)
 			{
-				$html .= '<a href="' . $lnk . '" rel="external">' . $title . '</a>';
+				$html .= '<a id="fancybox-iframe" href="' . $lnk . '" rel="external">' . $title . '</a>';
 			}
 			else
 			{
 				$html .= $title . ' ' . Lang::txt('COM_PUBLICATIONS_LICENSED_ACCORDING_TO') . ' ';
-				$html .= '<a href="' . $url . '" class="' . $class . '">' . Lang::txt('COM_PUBLICATIONS_LICENSED_THESE_TERMS') . '</a>';
+				$html .= '<a id="fancybox-license" href="' . $url . '" class="' . $class . '">' . Lang::txt('COM_PUBLICATIONS_LICENSED_THESE_TERMS') . '</a>';
 			}
 		}
 		else

@@ -2,6 +2,7 @@ String.prototype.nohtml = function () {
 	return this + (this.indexOf('?') == -1 ? '?' : '&') + 'no_html=1';
 };
 
+
 // Shorten list of content files
 $(document).ready(function () {
     const $list = $('.file > .pub-content > .element-list').children();
@@ -31,6 +32,32 @@ $(document).ready(function () {
             $(this).css('z-index', counter)
             counter--
         })
+    })
+
+    $('#fancybox-iframe').fancybox({
+        src: $(this).attr('href'),
+        type: 'iframe',
+        scrolling: true,
+        autoSize: false,
+        fitToView: true,
+        titleShow: false,
+        tpl: {
+            wrap:'<div class="fancybox-wrap"><div class="fancybox-skin"><div class="fancybox-outer"><div id="sbox-content" class="fancybox-inner"></div></div></div></div>'
+        },
+    });
+
+    $('#fancybox-license, .license-terms').fancybox({
+        type: 'ajax',
+        autoSize: false,
+        fitToView: true,
+        titleShow: false,
+        tpl: {
+            wrap:'<div class="fancybox-wrap"><div class="fancybox-skin"><div class="fancybox-outer"><div id="sbox-content" class="fancybox-inner"></div></div></div></div>'
+        },
+        beforeLoad: function() {
+			href = $(this).attr('href');
+			$(this).attr('href', href.nohtml());
+		},
     })
 
     // Load plugin section via ajax
