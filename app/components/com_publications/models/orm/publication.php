@@ -124,7 +124,12 @@ class Publication extends Relational
 	 */
 	public function group()
 	{
-		return $this->belongsToOne('Hubzero\\User\\Group', 'gidNumber', 'group_owner');
+		$group = \Hubzero\User\Group::getInstance($this->get('group_owner'));
+		if (!$group)
+		{
+			$group = new \Hubzero\User\Group;
+		}
+		return $group;
 	}
 
 	/**
