@@ -850,6 +850,11 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 			}
 		}
 
+		// Stats
+		$stats = $activeVersion->stats()[0];
+		$obj->hits = $stats->views;
+		$obj->hubid = $stats->downloads;
+
 		$obj->owner_type = 'user';
 		$obj->owner = $this->created_by;
 		if ($this->statusName != 'published')
