@@ -19,6 +19,11 @@ $this->css()
 
 $fl = Request::getString('fl', '');
 $activeTags= Request::getString('active-tags', '');
+
+$relevance_classes = array();
+if ($this->sortBy == 'score') { $relevance_classes[] = 'active'; }
+if (!$this->search) { $relevance_classes[] = 'disabled'; }
+$relevance_classes = implode($relevance_classes, ' ');
 ?>
 
 <?php include_once Component::path('com_publications') . DS . 'site' . DS . 'views' . DS . 'publications' . DS . 'tmpl' . DS . 'intro.php';  ?>
@@ -67,7 +72,8 @@ $activeTags= Request::getString('active-tags', '');
                     <div class="container" id="sortby">
                         <nav class="entries-filters">
                             <ul class="entries-menu order-options">
-                                <li><a class="active" data-value="score" title="Relevance">Relevance</a></li>
+                                <li><a <?php echo ($this->sortBy == 'date') ? 'class="active"' : ''; ?> data-value="publish_up" title="Date">Date</a></li>
+                                <li><a <?php echo ($relevance_classes) ? 'class="' . $relevance_classes . '"' : ''; ?> data-value="score" title="Relevance">Relevance</a></li>
                             </ul>
                         </nav>
                     </div>

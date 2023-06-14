@@ -254,8 +254,10 @@ $(document).ready(function () {
         
         var limit = $('#limit').val();
         var limitstart = $('input[name=limitstart]').val();
+        var sortby = $('input[name=sortby]').val();
         var queryParams = '?search=';
         var limitParams = `&limit=${limit}&limitstart=${limitstart}`;
+        var sortbyParams = `&sortby=${sortby}`;
         var query = $('#search').val();
         var encodedTerms = encodeURIComponent(query).replace(/%20/g, '+');
         var filters = $.merge(
@@ -266,7 +268,7 @@ $(document).ready(function () {
             .join(',');
         var filterParams = (filters !== '' ? `&fl=${filters}` : '');
 
-        urlToFetch = `${url}${queryParams}${encodedTerms}${filterParams}${limitParams}`;
+        urlToFetch = `${url}${queryParams}${encodedTerms}${filterParams}${limitParams}${sortbyParams}`;
         
         // Update hidden input
         $('input#fl').val(filters)
