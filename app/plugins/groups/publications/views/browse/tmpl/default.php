@@ -1,22 +1,18 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-$no_html = Request::getInt('no_html');
-
 // No direct access
 defined('_HZEXEC_') or die();
-
-$database = App::get('db');
-
 $this->css()
-     ->css('intro')
-     ->css('browse')
-     ->js('browse');
+     ->css('intro.css', 'com_publications')
+	 ->css('browse.css', 'com_publications')
+     ->js('browse.js', 'com_publications');
 
+$config = Component::params('com_publications');
 $fl = Request::getString('fl', '');
 $activeTags= Request::getString('active-tags', '');
 
@@ -26,14 +22,26 @@ if (!$this->search) { $relevance_classes[] = 'disabled'; }
 $relevance_classes = implode($relevance_classes, ' ');
 ?>
 
-<?php include_once Component::path('com_publications') . DS . 'site' . DS . 'views' . DS . 'publications' . DS . 'tmpl' . DS . 'intro.php';  ?>
+<section class="group-publications-header">
+    <?php if ($this->group->published == 1) { ?>
+        <ul id="page_options">
+            <li>
+                <a id="submit-resource" class="icon-add add btn" href="<?php echo Route::url('index.php?option=com_publications&task=submit&action=choose&gid=' . $this->group->get('gidNumber') . '&base=' . $this->mtype); ?>"><?php echo Lang::txt('PLG_GROUPS_PUBLICATIONS_START_A_CONTRIBUTION', $this->mtype_alias); ?></a>
+            </li>
+        </ul>
+    <?php } ?>
+    <div class="additional-resources-search">
+        <h5>Want to find additional resources? <a href="/publications/browse">Browse resources on QUBES</a>! <br>
+        QUBES hosts not only the resources shown here, but many more created by the broader QUBES community.</h5>
+    </div>
+</section>
 
 <section class="section live-update">
     <div aria-live="polite" id="live-update-wrapper">
         <div class="browse-mobile-btn-wrapper">
             <button class="browse-mobile-btn"><span class="hz-icon icon-filter">Filter</span></button>
         </div>
-        <form action="<?php echo Route::url('index.php?option=' . $this->option . '&task=browse'); ?>" method="post" id="filter-form" enctype="multipart/form-data">
+        <form action="<?php echo Route::url('index.php?option=com_groups&cn=' . $this->group->get('cn') . '&active=publications/browse'); ?>" method="post" id="filter-form" enctype="multipart/form-data">
             <div class="resource-container">
                 <div class="filter-container">
                     <div class="text-search-options">
@@ -54,7 +62,7 @@ $relevance_classes = implode($relevance_classes, ' ');
                         
                     <?php
                     // Calling filters view
-                    echo $this->view('filters')
+                    echo $this->view('filters', 'browse')
                         ->set('fas', $this->fas)
                         ->set('filters', $this->filters)
                         ->set('facets', $this->facets)
@@ -81,7 +89,7 @@ $relevance_classes = implode($relevance_classes, ' ');
                     </div>
                         <?php
                         // Calling cards view
-                        echo $this->view('cards')
+                        echo $this->view('cards', 'browse')
                             ->set('results', $this->results)
                             ->set('pageNav', $this->pageNav)
                             ->loadTemplate();
@@ -91,4 +99,3 @@ $relevance_classes = implode($relevance_classes, ' ');
         </form>
     </div> <!-- .live-update-wrapper -->
 </section>
-

@@ -18,6 +18,10 @@
 	margin-top: 2rem;
 }
 
+.pub-thumb {
+	position: relative;
+}
+
 .num {
 	float: none;
 	background: no-repeat;

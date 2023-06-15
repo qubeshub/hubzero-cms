@@ -8,7 +8,10 @@
 namespace Components\Publications\Tables;
 
 use Hubzero\Database\Table;
+use Components\Groups\Models\Orm\Group;
 use Lang;
+
+include_once Component::path('com_groups') . DS . 'models' . DS . 'orm' . DS . 'group.php';
 
 /**
  * Table class for publication master type
@@ -100,9 +103,12 @@ class MasterType extends Table
 	/**
 	 * Get master type with a specified owner group
 	 *
+	 * 	REFACTOR: Stops at first master type found. Implement multiple master
+	 *  	types in the future.
+	 * 
 	 * @return  array
 	 */
-	public function loadByOwnerGroup($group_id, $contributable=0)
+	public function loadByOwnerGroup($group_id, $parents=1, $contributable=0)
 	{
 		$keys = array(
 			'ownergroup' => $group_id
@@ -110,8 +116,18 @@ class MasterType extends Table
 		if ($contributable == 1) {
 			$keys['contributable'] = 1;
 		}
-
 		$this->load($keys);
+
+		if (!$this->id && $parents)
+		{
+			$gg = Group::oneOrFail($group_id);
+			foreach ($gg->parents()->rows() as $parent) {
+				$keys['ownergroup'] = $parent->get('gidNumber');
+				if ($this->load($keys)) {
+					break;
+				}
+			}
+		}
 		$this->_params = new \Hubzero\Config\Registry($this->params);
 
 		return $this;

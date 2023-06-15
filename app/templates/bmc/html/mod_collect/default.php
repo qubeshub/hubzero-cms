@@ -14,9 +14,11 @@ $this->css()
 
 $foo = App::get('editor')->display('description', '', '', '', 35, 5, false, 'field_description', null, null, array('class' => 'minimal no-footer'));
 
-$url  = urldecode(Request::path());
-$url  = implode('/', array_map('rawurlencode', explode('/', $url)));
-$url .= (strstr($url, '?') ? '&' : '?') . 'tryto=collect';
+// Hard-coding publications component route for now
+// REFACTOR when other components are added
+$id = Request::getInt('id');
+$v = Request::getInt('v');
+$url = Route::url('index.php?option=publications&id=' . $id . '&v=' . $v . '&tryto=collect');
 ?>
 
 <a class="icon-collect btn collect-this" href="<?php echo htmlspecialchars($url); ?>">

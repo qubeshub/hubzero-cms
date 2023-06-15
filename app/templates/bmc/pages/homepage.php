@@ -7,14 +7,12 @@
                 <div class="advert-img">
                     <img src="https://qubeshub.org/app/site/media/images/art-board-network.jpg" alt="Fall FMNs 2021" style="object-fit: cover;">
 
-                    <h2>Our 2020-2021 Faculty Mentoring Networks</h2>
+                    <h2>Join us for 2022 BioQUEST Office Hours and Webinars!</h2>
                 </div>
                 
-                <p>Over the 2020-2021 school year--one of the most difficult years for educators--the QUBES project ran 13 Faculty Mentoring Networks, bringing together more than 150 faculty to connect over a broad common goal: to improve the student experience in today’s STEM classrooms. </p>
-                <p>Participants explored how they could incorporate and teach new skill sets, how they could give students hands-on research experiences, how the data and models used could be made more relevant, inclusive, data-driven, and much, much more. </p>
-                <p>We look forward to the next cohort of FMNs and can't wait to see what they accomplish. </p>
-                <p>Explore the <a href="https://qubeshub.org/news/newsletter/july-community-spotlight?no_html=1#Products">Open Educational Resources that came from these groups</a> and check out our <a href="https://qubeshub.org/news/newsletter/august2021?no_html=1#FMNs">fall FMN offerings</a>.</p>
-                
+                <p>BioQUEST is hosting <a href="https://qubeshub.org/community/groups/bioquest/about/office_hours_and_webinars">Partner Office Hours</a> this spring on Wednesdays at 12:00 PM ET and Thursdays at 2:00 PM ET. Stop by to connect, ask a question, or tell us what you need!</p>
+                <p>We’re also continuing a webinar series. Visit our <a href="https://qubeshub.org/community/groups/bioquest/about/office_hours_and_webinars">Office Hours and Webinars page</a> to register for the next webinar or to view past sessions.</p>
+                <p>Thank you and happy new year!</p>
             </div>
         </div>
 
@@ -252,7 +250,7 @@
             <h4>Run a Faculty Mentoring Network</h4>
             <hr>
 
-            <p class="summary">If you have great teaching resources, a Faculty Mentoring Network could be a way to disseminate your work, get faculty feedback, and even student assessment data from a diverse set of classrooms. The Mentor Bridge program is designed to prepare Mentoring Network leaders for success.</p>
+            <p class="summary">If you have great teaching resources, a Faculty Mentoring Network could be a way to disseminate your work, get faculty feedback, and even student assessment data from a diverse set of classrooms.</p>
         </article>
 
         <article class="service">

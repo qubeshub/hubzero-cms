@@ -8,6 +8,8 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
+use Components\Publications\Tables\MasterType;
+
 include_once \Component::path('com_publications') . DS . 'models' . DS . 'publication.php';
 
 /**
@@ -35,6 +37,13 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 	 * @var	 array
 	 */
 	protected $_msg = null;
+
+	/**
+	 * Master type
+	 * 
+	 * @var object
+	 */
+	protected $_master_type = null;
 	
 	/**
 	 * Publication state transition
@@ -150,6 +159,7 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 		// Incoming
 		$this->_task = Request::getString('action', '');
 		$this->_pid  = Request::getInt('pid', 0);
+		$this->_gid  = Request::getInt('gid', 0);
 		if (!$this->_task)
 		{
 			$this->_task = $this->_pid ? 'publication' : $action;
@@ -185,6 +195,13 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 		{
 			// No browsing within provisioned project
 			$this->_task = $action == 'browse' ? 'contribute' : $action;
+		}
+
+		// Get master type for group (if it exists)
+		$this->_master_type = new MasterType($this->_database);
+		$gid = $this->model->groupOwner('gidNumber');
+		if ($gid) {
+			$this->_master_type->loadByOwnerGroup($gid);
 		}
 
 		\Hubzero\Document\Assets::addPluginStylesheet('projects', 'publications');
@@ -437,6 +454,7 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 		$view->project  = $this->model;
 		$view->filters  = $filters;
 		$view->title    = $this->_area['title'];
+		$view->base 	= $this->_master_type->id ? $this->_master_type->alias : 'qubesresource';
 
 		// Get messages	and errors
 		$view->msg = $this->_msg;
@@ -1225,6 +1243,7 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 		$objP->category    = $cat;
 		$objP->project_id  = $this->model->get('id');
 		$objP->created_by  = $this->_uid;
+		$objP->group_owner = $this->_gid;
 		$objP->created     = Date::toSql();
 		$objP->access      = 0;
 		if (!$objP->store())

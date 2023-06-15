@@ -70,10 +70,21 @@
     }
     .cta-buttons {
       text-align: center;
+      font-size: inherit;
       
       p {
         display: inline-block;
-        margin: 0;
+        margin: .2ems;
+      }
+
+      .btn-group  {
+        font-size: 100%;
+
+        > .btn {
+          + .btn {
+            margin-left: -10px;
+          }
+        }
       }
     }
   }

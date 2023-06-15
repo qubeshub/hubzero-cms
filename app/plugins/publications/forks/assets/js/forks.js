@@ -29,6 +29,13 @@ jQuery(document).ready(function(jq){
 		beforeLoad: function() {
 			href = $(this).attr('href');
 			$(this).attr('href', href.nohtml());
+		},
+		afterShow: function() {
+			$('form.fork-options a.btn').on('click', (e) => {
+				e.preventDefault();
+				$.fancybox.close();
+				window.location = e.target.href;
+			});
 		}
 	});
 });

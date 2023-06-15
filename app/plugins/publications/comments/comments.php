@@ -63,6 +63,7 @@ class plgPublicationsComments extends \Qubeshub\Plugin\Plugin
 	public function onPublication($publication, $option, $areas, $rtrn='all', $version = 'default', $extended = true) // $model, $option, $areas, $rtrn='all')
 	{
 		$arr = array(
+			'name'	   => 'comments',
 			'html'     => '',
 			'metadata' => ''
 		);
@@ -70,13 +71,13 @@ class plgPublicationsComments extends \Qubeshub\Plugin\Plugin
 		// Check if our area is in the array of areas we want to return results for
 		if (is_array($areas))
 		{
-			// For now, always return html to allow for embedding
-			//  if (!array_intersect($areas, $this->onPublicationAreas($publication))
-			//  && !array_intersect($areas, array_keys($this->onPublicationAreas($publication))))
-			// {
-			// 	$rtrn = 'metadata';
-			// }
+			if (!array_intersect($areas, $this->onPublicationAreas($publication))
+				&& !array_intersect($areas, array_keys($this->onPublicationAreas($publication))))
+			{
+				$rtrn = 'metadata';
+			}
 		}
+		
 		if (!$publication->_category->_params->get('plg_comments') || !$extended)
 		{
 			return $arr;
@@ -87,19 +88,21 @@ class plgPublicationsComments extends \Qubeshub\Plugin\Plugin
 		$this->option = $option;
 		$this->obj_id   = $publication->version->id;
 		$this->obj_type = substr($option, 4);
-		$this->url = $publication->link('comments') . '&active=' . $this->_name;
+		$this->url = $publication->link('comments') . '&active=' . $this->_name; // Used for AJAX
 
 		include_once __DIR__ . '/models/comment.php';
 
-		$arr['name']  = 'comments';
 		$arr['count'] = $this->_countComments();
 
 		// Are we returning metadata?
 		if ($rtrn == 'all' || $rtrn == 'metadata')
 		{
+			// Need different url for metadata
+			$url_base = $publication->link('version');
+			$url = $url_base . (!strpos($url_base, 'active=publications') ? '&active=comments' : '&tab_active=comments');
 			$arr['metadata'] = $this->view('default', 'metadata')
-				->set('url', Route::url($this->url . '#comments'))
-				->set('url_action', Route::url($this->url . '#commentform'))
+				->set('url', Route::url($url . '#comments'))
+				->set('url_action', Route::url($url . '#commentform'))
 				->set('comments', $arr['count'])
 				->loadTemplate();
 		}
