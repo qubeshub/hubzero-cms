@@ -9,7 +9,9 @@
 defined('_HZEXEC_') or die();
 
 \Hubzero\Document\Assets::addPluginStylesheet('publications', 'forks', 'forks');
-$ct = 0;
+$in_group = 0;
+$sub_group = 0;
+$out_group = 0;
 ?>
 <form class="submit-options" method="post" action=""> <?php // echo Route::url($this->publication->link() . '&active=fork&action=fork'); ?>
 	<h3><?php echo Lang::txt('COM_PUBLICATIONS_ADD_NEW_PUB'); ?></h3>
@@ -25,12 +27,11 @@ $ct = 0;
 				<ul>
 					<?php foreach ($this->projects as $key => $gprojects) { ?>
 						<li>
-							<?php if ($key === $this->gid) {
+							<?php if (!$in_group++ && $key === $this->gid) {
 								echo "<h5>Projects in this group:</h5>";
-								$ct++;
-							} elseif ($this->gid && ($ct <= 1) && ($key !== 'inf')) { 
+							} elseif (!$sub_group++ && $this->gid && ($key !== 'inf')) { 
 								echo "<h5>Projects in subgroups:</h5>";
-							} elseif ($key === 'inf') {
+							} elseif (!$out_group++ && ($key === 'inf')) {
 								echo "<h5>Projects outside of a group:</h5>";
 							} ?>
 							<div class="project-group">
