@@ -2238,8 +2238,8 @@ class Publication extends Obj
 
 		$this->_tblLog->logAccess($this->get('id'), $this->get('version_id'), $type, $logPath);
 
-		// Update solr
-		Event::trigger('search.onAddIndex', array('#__publication_versions', $this->version));
+		// Update solr -- implement asynchronously, with cron job, or with atomic updates
+		// Event::trigger('search.onAddIndex', array('#__publication_versions', $this->version));
 	}
 
 	/**
