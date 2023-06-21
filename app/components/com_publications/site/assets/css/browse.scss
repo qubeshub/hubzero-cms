@@ -22,9 +22,11 @@ section.section {
 .card-container {
     @include m.respond-at(50em) {
         @include m.grid-template(repeat(auto-fill, minmax(22rem, 1fr)), auto);
+        grid-auto-columns: minmax(22rem, 1fr);
     }
     @include m.flexbox(wrap);
-    @include m.grid-template(repeat(auto-fill, minmax(20rem, 1fr)), auto);
+    @include m.grid-template(repeat(auto-fill, minmax(18rem, 1fr)), auto);
+    grid-auto-columns: minmax(18rem, 1fr);
     height: fit-content;
     width: 100%;
 }
