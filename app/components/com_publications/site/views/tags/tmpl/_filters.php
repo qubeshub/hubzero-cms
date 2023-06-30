@@ -37,7 +37,9 @@ switch ($this->stage) {
         $html .= '<input class="option" type="checkbox" id="tagfa-' . $ctag . '" name="tagfa-' . $this->props['root'] . '[' . $ptag . '][]" value="' . $this->child->id . '"' . ($checked ? ' checked' : '') . '/><span class="tagfa-label">' . $this->child->label . '</span>';
         $html .= '<span class="facet-count">(' . $count . ')</span>';
         $html .= '</label>';
-        $html .= $this->child->render('filter', $this->props, ++$depth); 
+        if (in_array($pctag, $this->props['filters'])) {
+            $html .= $this->child->render('filter', $this->props, ++$depth); 
+        }
         $html .= "</li>";
     break;
     case 'after':
