@@ -8,7 +8,8 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
-$url = 'index.php?option=' . $this->option . '&' . ($this->publication->alias ? 'alias=' . $this->publication->alias : 'id=' . $this->publication->id) . '&active=alignments';
+// $url = 'index.php?option=' . $this->option . '&' . ($this->publication->alias ? 'alias=' . $this->publication->alias : 'id=' . $this->publication->id) . '&active=alignments';
+$url = (Request::getString('base_url') ? Request::getString('base_url') . '&tab_active=alignments' : 'index.php?option=com_publications&active=alignments') . '&id=' . $this->publication->id . '&v=' . $this->publication->version_number;
 
 $db = App::get('db');
 

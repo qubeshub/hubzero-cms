@@ -827,9 +827,10 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 
 		$obj->type = $this->publication->type->alias;
 
-		if ($this->publication->group_owner) {
-			$obj->gid = $this->publication->group_owner;
-			$obj->group = \Hubzero\User\Group::getInstance($this->publication->group_owner)->get('description');
+		$group = $this->publication->get('group_owner') ? $this->publication->group() : $activeVersion->project()->group();
+		if ($group) {
+			$obj->gid = $group->get('gidNumber');
+			$obj->group = $group->get('description');
 		}
  
 		$tags = new PubCloud($this->id);
@@ -848,6 +849,11 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 				$obj->author[] = $author->name;
 			}
 		}
+
+		// Stats
+		$stats = $activeVersion->stats()[0];
+		$obj->hits = $stats->views;
+		$obj->hubid = $stats->downloads;
 
 		$obj->owner_type = 'user';
 		$obj->owner = $this->created_by;

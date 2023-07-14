@@ -6,6 +6,8 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
+$no_html = Request::getInt('no_html');
+
 // No direct access
 defined('_HZEXEC_') or die();
 
@@ -14,7 +16,16 @@ include_once PATH_APP . DS . 'templates' . DS . 'bmc' . DS . 'html' . DS . 'com_
 
 $this->css()
 	->css('jquery.fancybox.css', 'system')
-	->js();
+	->js()
+	->js('flot/jquery.colorhelpers.min.js', 'system')
+	->js('flot/jquery.flot.min.js', 'system')
+	->js('flot/jquery.flot.time.min.js', 'system')
+	// ->js('flot/jquery.flot.resize.min.js', 'system') // Handle resize in usage.js
+	->js('flot/jquery.flot.canvas.min.js', 'system')
+	->js('flot/jquery.flot.tooltip.min.js', 'system')
+	->js('base64.js')
+	->js('canvas2image.js')
+	->js('jquery.flot.saveAsImage.js');
 
 // Load select publication information
 $this->publication->authors();
@@ -32,7 +43,6 @@ $tabOverrides = array(
 	"usage" => "Views/Downloads"
 )
 ?>
-
 <div class="wrapper">
 	<div class="title-wrapper">
 		<img alt="Resource Image" src="<?php echo Route::url($this->publication->link('masterimage')) ?>" />
@@ -77,7 +87,7 @@ $tabOverrides = array(
 				<?php
 				// Show share, collect, and watch
 				echo \Templates\Bmc\Publications\Helpers\Html::showSection($this->sections, "collect", "metadata");
-				echo \Templates\Bmc\Publications\Helpers\Html::showSection($subSections, "watch", "html");
+				echo \Templates\Bmc\Publications\Helpers\Html::showSection($this->sections, "watch", "metadata");
 				echo \Templates\Bmc\Publications\Helpers\Html::showSection($this->sections, "share", "metadata");
 				?>
 			</div>
@@ -154,7 +164,7 @@ $tabOverrides = array(
 					?>
 					<div class="more-files hide">
 						<?php
-						echo '<a href="' . Route::url('index.php?option=com_publications&id=' . $this->publication->get('id') . '&v=' . $this->publication->version->get('version_number') . '&active=supportingdocs#supportingdocs') . '">view all files</a>';
+						echo '<a href="' . Route::url($this->publication->link('version') . (!Request::getString('base_url') ? '&active=supportingdocs' : '&tab_active=supportingdocs') . '#supportingdocs') . '">view all files</a>';
 						?>
 					</div>
 				</div>
@@ -176,7 +186,6 @@ $tabOverrides = array(
 				?>
 			</nav>
 		</div>
-
 		<div class="content-wrapper">
 			<div class="content-display">
 				<?php

@@ -77,10 +77,17 @@
 }
 .title-wrapper .cta-wrapper .cta-buttons {
   text-align: center;
+  font-size: inherit;
 }
 .title-wrapper .cta-wrapper .cta-buttons p {
   display: inline-block;
-  margin: 0;
+  margin: 0.2ems;
+}
+.title-wrapper .cta-wrapper .cta-buttons .btn-group {
+  font-size: 100%;
+}
+.title-wrapper .cta-wrapper .cta-buttons .btn-group > .btn + .btn {
+  margin-left: -10px;
 }
 
 .isSticky {

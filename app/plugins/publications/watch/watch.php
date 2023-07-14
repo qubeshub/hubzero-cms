@@ -28,11 +28,11 @@ class plgPublicationsWatch extends \Qubeshub\Plugin\Plugin
 	 * @param   object  $publication  Current publication
 	 * @return  array
 	 */
-	public function &onPublicationSubAreas($publication)
+	public function &onPublicationAreas($publication, $version = 'default', $extended = true)
 	{
 		$areas = array();
 
-		if ($publication->category()->_params->get('plg_watch', 1) == 1)
+		if ($publication->_category->_params->get('plg_watch'))
 		{
 			$areas['watch'] = Lang::txt('PLG_PUBLICATION_WATCH');
 		}
@@ -41,14 +41,17 @@ class plgPublicationsWatch extends \Qubeshub\Plugin\Plugin
 	}
 
 	/**
-	 * Return data on a publication sub view (this will be some form of HTML)
+	 * Return data on a resource view (this will be some form of HTML)
 	 *
 	 * @param   object   $publication  Current publication
 	 * @param   string   $option       Name of the component
-	 * @param   integer  $miniview     View style
+	 * @param   array    $areas        Active area(s)
+	 * @param   string   $rtrn         Data to be returned
+	 * @param   string   $version      Version name
+	 * @param   boolean  $extended     Whether or not to show panel
 	 * @return  array
 	 */
-	public function onPublicationSub($publication, $option, $miniview=0)
+	public function onPublication($publication, $option, $areas, $rtrn='all', $version = 'default', $extended = true)
 	{
 		$arr = array(
 			'html'    => '',
@@ -56,33 +59,32 @@ class plgPublicationsWatch extends \Qubeshub\Plugin\Plugin
 			'name'    => 'watch'
 		);
 
-		// Check if our area is in the array of areas we want to return results for
-		$areas = array('watch');
-		if (!array_intersect($areas, $this->onPublicationSubAreas($publication))
-		 && !array_intersect($areas, array_keys($this->onPublicationSubAreas($publication))))
-		{
-			return false;
+		if (is_array($areas)) {
+			// Check if our area is in the array of areas we want to return results for
+			if (!array_intersect($areas, $this->onPublicationAreas($publication))
+		 	&& !array_intersect($areas, array_keys($this->onPublicationAreas($publication))))
+			{
+				$rtrn = 'metadata';
+			}
 		}
 
-		// Only show for logged-in users
-		/*if (User::isGuest())
+		if (!$publication->_category->_params->get('plg_watch'))
 		{
-			return false;
-		}*/
+			return $arr;
+		}
 
 		$this->publication = $publication;
-		$this->action = strtolower(Request::getWord('action', ''));
+		$arr['metadata'] = $this->_status();
 
-		switch ($this->action)
-		{
-			case 'subscribe':
-			case 'unsubscribe':
-				$arr['html'] = $this->_subscribe();
-			break;
-
-			default:
-				$arr['html'] = $this->_status();
-			break;
+		if ($rtrn != 'metadata') {
+			$this->action = strtolower(Request::getWord('action', ''));
+			switch ($this->action)
+			{
+				case 'subscribe':
+				case 'unsubscribe':
+					$arr['html'] = $this->_subscribe();
+				break;
+			}
 		}
 
 		return $arr;

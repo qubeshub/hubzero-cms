@@ -2130,7 +2130,10 @@ class Publication extends Obj
 			case 'reviews':
 			case 'comments':
 			case 'wishlist':
+			case 'forks':
+			case 'license':
 			case 'citations':
+			case 'watch':
 				$link = 'index.php?option=com_publications' . $id . '&v=' . $this->get('version_number') . '&active=' . strtolower($type);
 			break;
 
@@ -2234,6 +2237,9 @@ class Publication extends Obj
 		}
 
 		$this->_tblLog->logAccess($this->get('id'), $this->get('version_id'), $type, $logPath);
+
+		// Update solr -- implement asynchronously, with cron job, or with atomic updates
+		// Event::trigger('search.onAddIndex', array('#__publication_versions', $this->version));
 	}
 
 	/**

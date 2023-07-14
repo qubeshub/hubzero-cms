@@ -250,12 +250,14 @@ $(document).ready(function () {
     });
 
     const updateUrl = () => {
-        var url = '/publications/browse';
+        var url = location.pathname;
         
         var limit = $('#limit').val();
         var limitstart = $('input[name=limitstart]').val();
+        var sortby = $('input[name=sortby]').val();
         var queryParams = '?search=';
         var limitParams = `&limit=${limit}&limitstart=${limitstart}`;
+        var sortbyParams = `&sortby=${sortby}`;
         var query = $('#search').val();
         var encodedTerms = encodeURIComponent(query).replace(/%20/g, '+');
         var filters = $.merge(
@@ -266,7 +268,7 @@ $(document).ready(function () {
             .join(',');
         var filterParams = (filters !== '' ? `&fl=${filters}` : '');
 
-        urlToFetch = `${url}${queryParams}${encodedTerms}${filterParams}${limitParams}`;
+        urlToFetch = `${url}${queryParams}${encodedTerms}${filterParams}${limitParams}${sortbyParams}`;
         
         // Update hidden input
         $('input#fl').val(filters)
@@ -377,6 +379,29 @@ $(document).ready(function () {
         $('input[name=sortby]').val($(this).data('value'));
 
         $('#filter-form').submit();
+    });
+
+    // Submit Resource Btn
+	$('#submit-resource').fancybox({
+        type: 'ajax',
+        scrolling: true,
+        autoSize: false,
+        fitToView: true,
+        titleShow: false,
+        tpl: {
+            wrap:'<div class="fancybox-wrap"><div class="fancybox-skin"><div class="fancybox-outer"><div id="sbox-content" class="fancybox-inner"></div></div></div></div>'
+        },
+        beforeLoad: function() {
+            href = $(this).attr('href');
+            $(this).attr('href', href.nohtml());
+        },
+        afterShow: function() {
+			$('form.submit-options a.btn').on('click', (e) => {
+				e.preventDefault();
+				$.fancybox.close();
+				window.location = e.target.href;
+			});
+		}
     });
 
     // Mobile responsiveness

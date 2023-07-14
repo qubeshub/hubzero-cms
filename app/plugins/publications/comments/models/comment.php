@@ -92,7 +92,7 @@ class Comment extends ItemComment
 				// Little complicated to allow for supergroup overrides
 				$version = Version::one($this->get('item_id'));
 				$link = $version->link('versionid');
-				$link = $link . (!strpos($link, 'active=publications') ? '&active=comments' : '');
+				$link = $link . (!strpos($link, 'active=publications') ? '&active=comments' : '&tab_active=comments');
 			default:
 				$link .= '#c' . $this->get('id');
 			break;

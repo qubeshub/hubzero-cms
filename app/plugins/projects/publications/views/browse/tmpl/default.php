@@ -44,7 +44,7 @@ $i = 1;
 				</li>
 			<?php } else { ?>
 				<li>
-					<a class="icon-add btn" href="<?php echo Route::url($this->project->link('publications') . '&action=start'); ?>"><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_START_PUBLICATION'); ?></a>
+					<a class="icon-add btn" href="<?php echo Route::url($this->project->link('publications') . '&action=publication&base=' . $this->base); ?>"><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_START_PUBLICATION'); ?></a>
                 	</li>
 			<?php } ?>
 	</ul>
@@ -114,7 +114,7 @@ if (count($this->rows) > 0)
 }
 else
 {
-	echo '<p class="noresults">'.Lang::txt('PLG_PROJECTS_PUBLICATIONS_NO_PUBS_FOUND').' <span class="addnew"><a href="' . Route::url($this->project->link('publications') . '&action=start') . '"  >' . Lang::txt('PLG_PROJECTS_PUBLICATIONS_START_PUBLICATION') . '</a></span></p>';
+	echo '<p class="noresults">'.Lang::txt('PLG_PROJECTS_PUBLICATIONS_NO_PUBS_FOUND').' <span class="addnew"><a href="' . Route::url($this->project->link('publications') . '&action=publication&base=' . $this->base) . '"  >' . Lang::txt('PLG_PROJECTS_PUBLICATIONS_START_PUBLICATION') . '</a></span></p>';
 
 	// Show intro banner with publication steps
 	$this->view('intro')
