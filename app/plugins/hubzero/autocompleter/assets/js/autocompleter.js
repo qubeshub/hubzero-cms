@@ -972,6 +972,7 @@ HUB.Plugins.Autocomplete = {
 		$('.autocomplete').each(function(i, input) {
 			// Set some defaults
 			var option = 'tags',
+				stype = '',
 				type = 'multi',
 				actkn = '',
 				tagger = null,
@@ -994,6 +995,7 @@ HUB.Plugins.Autocomplete = {
 					option = params[0];
 					type   = params[1];
 					wsel   = params[2];
+					stype  = params[3];
 				}
 			}
 
@@ -1018,6 +1020,10 @@ HUB.Plugins.Autocomplete = {
 
 			if ($('#actkn')) {
 				actkn = '&admin=true';
+			}
+
+			if (stype) {
+				actkn += '&stype=' + stype;
 			}
 
 			// Are multiple entries allowable?
@@ -1128,8 +1134,8 @@ HUB.Plugins.Autocomplete = {
 				},
 				onAdd: function(item)
 				{
-					// pasting in comma separated items
-					if (item.name.indexOf(',') > -1 || item.name.indexOf(';') > -1)
+					// pasting in comma separated items (if not focus area)
+					if (stype !== 'focusareas' && (item.name.indexOf(',') > -1 || item.name.indexOf(';') > -1))
 					{
 						// remove original item
 						$('#'+id).tokenInput('remove', {id:item.id});

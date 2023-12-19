@@ -54,6 +54,7 @@ class plgHubzeroAutocompleter extends \Hubzero\Plugin\Plugin
 		$wsel  = (isset($atts[6])) ? $atts[6] : '';      // AC autopopulates a select list based on choice?
 		$type  = (isset($atts[7])) ? $atts[7] : 'multi'; // Allow single or multiple entries
 		$dsabl = (isset($atts[8])) ? $atts[8] : '';      // Readonly input
+		$stype = (isset($atts[9])) ? $atts[9] : '';      // Subtype for component (e.g. focusareas for tags component)
 
 		$base = rtrim(Request::root(true), '/');
 		$datascript = $base . (App::isAdmin() ? '/administrator' : '') . '/index.php';
@@ -76,25 +77,25 @@ class plgHubzeroAutocompleter extends \Hubzero\Plugin\Plugin
 			}
 			else if (file_exists(PATH_CORE . $templatecss))
 			{
-				$scripts .= $base . '/core' . $templatecss . '?v=' . filemtime(PATH_CORE . $templatecss);
+				$scripts .= $base . '/app' . $templatecss . '?v=' . filemtime(PATH_CORE . $templatecss);
 			}
 			else
 			{
-				$scripts .= $base . '/core' . $plugincss . '?v=' . filemtime(PATH_CORE . $plugincss);
+				$scripts .= $base . '/app' . $plugincss . '?v=' . filemtime(PATH_CORE . $plugincss);
 			}
 
 			$scripts .= '";</script>' . "\n";
-			$scripts .= '<script type="text/javascript" src="' . $base . '/core/plugins' . DS . $this->_type . DS . $this->_name . '/assets/js/' . $this->_name . '.js"></script>' . "\n";
+			$scripts .= '<script type="text/javascript" src="' . $base . '/app/plugins' . DS . $this->_type . DS . $this->_name . '/assets/js/' . $this->_name . '.js"></script>' . "\n";
 
 			$this->_pushscripts = false;
 		}
 
 		// Build the input tag
-		$html  = '<input type="text" name="' . $name . '" data-options="' . $opt . ',' . $type . ',' . $wsel . '"';
+		$html  = '<input type="text" name="' . $name . '" data-options="' . $opt . ',' . $type . ',' . $wsel . ',' . $stype . '"';
 		$html .= ($id)    ? ' id="' . $id . '"'             : '';
 		$html .= ($class) ? ' class="' . trim($class) . '"' : '';
 		$html .= ($size)  ? ' size="' . $size . '"'         : '';
-		$html .= ' placeholder="' . Lang::txt('PLG_HUBZERO_AUTOCOMPLETER_' . strtoupper($opt) . '_PLACEHOLDER') . '"';
+		$html .= ' placeholder="' . Lang::txt('PLG_HUBZERO_AUTOCOMPLETER_' . strtoupper($opt) . ($stype ? '_' . strtoupper($stype) : '') . '_PLACEHOLDER') . '"';
 		$html .= ' value="' . htmlentities($value, ENT_COMPAT, 'UTF-8') . '" autocomplete="off" data-css="" data-script="' . $datascript . '" />' . "\n";
 		$html .= $scripts;
 
@@ -152,6 +153,7 @@ class plgHubzeroAutocompleter extends \Hubzero\Plugin\Plugin
 		$params[] = '';
 		$params[] = 'multi';
 		$params[] = (isset($atts[6])) ? $atts[6] : '';
+		$params[] = (isset($atts[7])) ? $atts[7] : '';
 
 		return $this->onGetAutocompleter($params);
 	}
@@ -178,6 +180,7 @@ class plgHubzeroAutocompleter extends \Hubzero\Plugin\Plugin
 		$params[] = '';
 		$params[] = 'single';
 		$params[] = (isset($atts[6])) ? $atts[6] : '';
+		$params[] = (isset($atts[7])) ? $atts[7] : '';
 
 		return $this->onGetAutocompleter($params);
 	}
@@ -204,6 +207,7 @@ class plgHubzeroAutocompleter extends \Hubzero\Plugin\Plugin
 		$params[] = (isset($atts[6])) ? $atts[6] : 'ticketowner';
 		$params[] = 'single';
 		$params[] = (isset($atts[7])) ? $atts[7] : '';
+		$params[] = (isset($atts[8])) ? $atts[8] : '';
 
 		return $this->onGetAutocompleter($params);
 	}
