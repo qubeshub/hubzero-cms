@@ -8,8 +8,9 @@
 // No direct access.
 defined('_HZEXEC_') or die();
 
+$mtype = (new \Components\Publications\Models\Publication(null, 'default', $this->scope_id))->master_type;
 $fas = \Components\Tags\Models\FocusArea::fromTags($this->tags);
-$roots = $fas->parents(true); // Get root FAs
+$roots = $fas->parents(true)->orderByAlignment($mtype, 'P');
 
 $html = '';
 foreach ($roots as $root) {

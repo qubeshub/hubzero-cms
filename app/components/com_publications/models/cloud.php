@@ -118,6 +118,7 @@ class PubCloud extends Cloud
 						'layout'    => '_' . $type
 					));
 					$view->set('config', \Component::params('com_tags'))
+						->set('scope_id', $this->_scope_id)
 						->set('tags', $tags);
 
 					$this->_cache['tags.cloud.' . $type] = $view->loadTemplate();
