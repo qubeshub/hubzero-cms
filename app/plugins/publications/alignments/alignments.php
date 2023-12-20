@@ -100,7 +100,6 @@ class plgPublicationsAlignments extends \Qubeshub\Plugin\Plugin
 		$mtype = $publication->master_type;
 		$tags = $cloud->tags('list', array("type" => "focusareas"), true);
 		$fas = \Components\Tags\Models\FocusArea::fromTags($tags);
-		echo var_dump($fas->parents(true)->getTableColumns()); die;
 		$roots = $fas->parents(true)->orderByAlignment($mtype, 'P');
 		$view = $this->view('default', 'metadata')
 			->set('publication', $publication)
