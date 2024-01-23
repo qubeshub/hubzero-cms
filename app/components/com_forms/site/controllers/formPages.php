@@ -167,6 +167,15 @@ class FormPages extends SiteController
 		$updateTaskUrl = $this->_routes->pagesUpdateUrl($pageId);
 		$editFieldsUrl = $this->_routes->pagesFieldsEditUrl($pageId);
 
+		// Output HTML
+		if (Request::get('noview', null))
+		{
+			return $this->view->setName('formpages')
+			->set('action', $updateTaskUrl)
+			->set('form', $form)
+			->set('page', $page);
+		}
+
 		$this->view
 			->set('action', $updateTaskUrl)
 			->set('editFieldsUrl', $editFieldsUrl)
