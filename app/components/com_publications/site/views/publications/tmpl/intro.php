@@ -25,7 +25,7 @@ $this->css()
   </div>
 
   <div class="intro">
-    <p>The QUBES platform hosts hundreds of <strong>teaching materials</strong>, <strong>reference materials</strong>, and <strong>cloud-based software</strong> free to use and adapts using open Creative Commons licenses. <a class="modal-link" href="#modal"><span class="info-icon"> <svg viewbox="0 0 64 48" xmlns="http://www.w3.org/2000/svg"> <path d="M9.9,33.3c1.3,2.9,3,5.4,5.2,7.6c2.2,2.2,4.7,3.9,7.6,5.2c2.9,1.3,6,1.9,9.3,1.9c3.3,0,6.4-0.6,9.3-1.9
+    <p>The QUBES platform hosts hundreds of <strong>teaching materials</strong>, <strong>reference materials</strong>, and <strong>cloud-based software</strong> free to use and adapt using open Creative Commons licenses. <a class="modal-link" href="#modal"><span class="info-icon"> <svg viewbox="0 0 64 48" xmlns="http://www.w3.org/2000/svg"> <path d="M9.9,33.3c1.3,2.9,3,5.4,5.2,7.6c2.2,2.2,4.7,3.9,7.6,5.2c2.9,1.3,6,1.9,9.3,1.9c3.3,0,6.4-0.6,9.3-1.9
       c2.9-1.3,5.4-3,7.6-5.2c2.2-2.2,3.9-4.7,5.2-7.6c1.3-2.9,1.9-6,1.9-9.3c0-3.3-0.6-6.4-1.9-9.3c-1.3-2.9-3-5.4-5.2-7.6
       c-2.2-2.2-4.7-3.9-7.6-5.2C38.4,0.6,35.3,0,32,0c-3.3,0-6.4,0.6-9.3,1.9c-2.9,1.3-5.4,3-7.6,5.2c-2.2,2.2-3.9,4.7-5.2,7.6
       C8.6,17.6,8,20.7,8,24C8,27.3,8.6,30.4,9.9,33.3z M25.2,17.1c0-0.6,0.3-0.9,0.9-0.9h9.1c0.2,0,0.4,0.1,0.6,0.3

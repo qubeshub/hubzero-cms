@@ -13,6 +13,8 @@ use Components\Tags\Models\Alignment;
 use stdClass;
 
 require_once __DIR__ . DS . 'alignment.php';
+require_once __DIR__ . DS . 'log.php';
+
 /**
  * Model class for publication version author
  */
@@ -130,6 +132,37 @@ class FocusArea extends Relational
             ->deselect()
             ->select('DISTINCT P.*');
         return ($null ? $parents->whereIsNull('P.parent') : $parents->whereEquals('jos_focus_areas.id', $this->id));
+    }
+
+    /**
+     * Order focus areas by alignment with an object
+     *
+     * This method is helpful to reduce code duplication, but it is problematic
+     * since it needs to know what the table name is for joins. This is currently
+     * used after calling FocusArea::parents(), where the table name is 'P'.
+     * 
+     * @param   int     $objectid   Object id
+     * @param   string  $fa_name    Focus area table name (for joins)
+     * @param   string  $tbl        Object table
+     * @param   string  $dir        Order direction
+     * @return  object  Relational class
+     */
+    public function orderByAlignment($objectid, $fa_name = '#__focus_areas', $tbl='publication_master_types', $dir='asc') {
+        return $this->copy()
+            ->join('#__focus_areas_object AS O', $fa_name . '.id', 'O.faid', 'right')
+			->select('O.ordering')
+			->whereEquals('O.tbl', $tbl)
+			->whereEquals('O.objectid', $objectid)
+			->order('O.ordering', $dir);
+    }
+
+    public function ancestors($withme = 0) {
+        $fa = $this;
+        $ancestors = $withme ? array($fa) : array();
+        while ($parent_id = $fa->parent) {
+            $ancestors[] = ($fa = FocusArea::oneOrFail($parent_id));
+        }
+        return $ancestors;
     }
 
     /**
@@ -390,6 +423,53 @@ class FocusArea extends Relational
     }
 
     /**
+     * Realigns the focus area (i.e. recursively copies associations from children to parents).
+     * NOTE: Be careful - this will delete all object associations for the root focus area.
+     *
+     * @param int $depth The depth of the realignment.
+     * @return void
+     */
+    public function realign($depth = 0) {
+        // Recursively realign children and copy associations to parent
+        foreach ($this->children as $child) {
+            $child->realign($depth+1);
+            if (!is_null($this->parent)) {
+                $child->tag->copyTo($this->tag_id);
+            }
+        }
+        // Copy to all ancestors (except root)
+        if ($depth == 0) {
+            $fa = $this;
+            while (!is_null($fa->parent)) {
+                $parent = FocusArea::oneOrFail($fa->parent);
+                if (!is_null($parent->parent)) { // Don't store associations in root focus areas
+                    $fa->tag->copyTo($parent->tag_id);
+                }
+                $fa = $parent;
+            }
+            // $fa is at root - remove all associations
+            $entries = array();
+            foreach ($fa->tag->objects()->rows() as $row)
+		    {
+			    $row->destroy();
+                $entries[] = $row->objectid . ' (' . $row->tbl . ')';
+		    }
+            if (count($entries)) {
+                $data = new stdClass;
+			    $data->entries = $entries;
+
+                $log = Log::blank();
+                $log->set([
+                    'tag_id'   => $fa->tag_id,
+                    'action'   => 'objects_removed',
+                    'comments' => json_encode($data)
+                ]);
+                $log->save();
+            }
+        }
+    }
+
+    /**
 	 * Check status of focus area selection - are tags selected at minimal depths 
      *  across focus areas?
 	 *
@@ -414,7 +494,9 @@ class FocusArea extends Relational
             if (isset($depths[$levels[0]])) {
                 $fa = $levels[0];
             }
-            $depths[$fa][$levels[1]] = $depths[$fa][$levels[0]] + 1;
+            if (isset($depths[$fa][$levels[0]])) { // Needed in case tagged (i.e. selected) but alignment not set
+                $depths[$fa][$levels[1]] = $depths[$fa][$levels[0]] + 1;
+            }
         }
 
         // Check depths against mandatory depth
@@ -457,5 +539,47 @@ class FocusArea extends Relational
         }
 
         return array_keys($tags);
+    }
+
+    public static function getAutocomplete() {
+        $search = trim(Request::getString('value', ''));
+
+        $tbl = self::blank()->getTableName();
+
+        $rows = self::all()->purgeCache()
+            ->select($tbl . '.*')
+            ->limit(20)
+            ->start(0)
+            ->whereLike($tbl . '.label', $search, 1)
+            ->orWhereLike($tbl . '.about', $search, 1)
+            ->rows();
+
+        // Output search results in JSON format
+		$json = array();
+		if (count($rows) > 0)
+		{
+			foreach ($rows as $row)
+			{
+				$name = str_replace("\n", '', stripslashes(trim($row->get('label')))) . ' (' . $row->get('id') . ')';
+				$name = str_replace("\r", '', $name);
+
+				$item = array(
+					'id'   => $row->get('id'),
+					'name' => $name
+				);
+
+				// Push exact matches to the front
+				if ($row->get('label') == $search)
+				{
+					array_unshift($json, $item);
+				}
+				else
+				{
+					$json[] = $item;
+				}
+			}
+		}
+
+        return json_encode($json);
     }
 }
