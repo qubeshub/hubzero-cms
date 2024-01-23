@@ -16,6 +16,7 @@ use Components\Groups\Models\Tags;
 use Components\Groups\Models\Log;
 use Components\Groups\Models\Recent;
 use Components\Groups\Models\Orm\Field;
+use Components\Forms\Models\Form;
 use Filesystem;
 use Request;
 use Config;
@@ -752,6 +753,25 @@ class Groups extends Base
 				$field->saveGroupAnswers($group->get('gidNumber'));
 			}
 		}
+
+		// create group profile
+		$profile = $gParams->get('group_profile');
+
+		$db = \App::get('db');
+		$query = new \Hubzero\Database\Query;
+		$query->select('*');
+		$query->from('#__forms_forms');
+		$query->whereEquals('gid', $group->get('gidNumber'));
+		$query->whereEquals('name', $group->get('gidNumber') . '-group_profile');
+		$db->setQuery($query);
+		$num_rows = $db->loadRowList();
+
+		if (isset($profile) && $profile == 1) {
+			if (count($num_rows) < 1) {
+				$this->_createForm($group->get('gidNumber'));
+			}
+		}
+
 		// Process tags
 		$gt = new Tags($group->get('gidNumber'));
 		$gt->setTags($tags, User::get('id'));
@@ -936,6 +956,42 @@ class Groups extends Base
 
 		// Redirect back to the group page
 		App::redirect($url);
+	}
+
+	/**
+	 * Attempts to create form record for group profile
+	 *
+	 * @return   void
+	 */
+	public function _createForm($group)
+	{
+		require_once \Component::path('com_forms') . DS . 'models' . DS . 'form.php'; 
+
+		$formData = array();
+
+		$formData['created'] = Date::toSql();
+		$formData['created_by'] = User::get('id');
+		$formData['gid'] = $group;
+		$formData['name'] = $group . '-group_profile';
+		$formData['description'] = 'custom group profile';
+		$formData['responses_locked'] = 0;
+		$formData['opening_time'] = Date::toSql();
+		$formData['closing_time'] = date(mktime(0, 0, 0, 00, 00, 0000));
+
+		$form = Form::blank();
+		$form->set($formData);
+
+		if ($form->save())
+		{
+			$formId = $form->get('id');
+			// $forwardingUrl = $this->routes->formsEditUrl($formId);
+			$successMessage = Lang::txt('COM_FORMS_FORM_SAVE_SUCCESS');
+			// $this->crudHelper->successfulCreate($forwardingUrl, $successMessage);
+		}
+		else
+		{
+			$this->crudHelper->failedCreate($form);
+		}
 	}
 
 	/**

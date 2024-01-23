@@ -289,6 +289,36 @@ endif;
 					</fieldset>
 				<?php endif; ?>
 
+				<fieldset>
+					<legend><?php echo Lang::txt('COM_GROUPS_PROFILE_SETTING_TITLE'); ?></legend>
+					<p><?php echo Lang::txt('COM_GROUPS_PROFILE_SETTING_DESC'); ?>
+						<br>
+						<?php echo Lang::txt('COM_GROUPS_PROFILE_SETTING_DESC_NOTE'); ?>
+					</p>
+					
+
+					<fieldset>
+						<legend><?php echo Lang::txt('COM_GROUPS_PROFILE_SETTING_SECTION_LEGEND'); ?> <span class="optional"><?php echo Lang::txt('COM_GROUPS_OPTIONAL'); ?></span></legend>
+
+						<?php
+						$params   = new \Hubzero\Config\Registry($this->group->get('params'));
+						$profile = $params->get('group_profile', $this->config->get('group_profile', 0));
+						?>
+
+						<div class="form-group form-check">
+							<label for="param_group_profile" class="form-check-label">
+								<input type='hidden' name="params[group_profile]" value="0" />
+								<input type="checkbox" class="option form-check-input" name="params[group_profile]" id="param_group_profile" value="1" <?php
+									if (isset($profile) && $profile == 1) { echo ' checked="checked"'; } ?> />
+								<strong><?php echo Lang::txt('COM_GROUPS_PROFILE_SETTING_CREATE'); ?></strong> <br />
+								<span class="indent">
+									<?php echo Lang::txt('COM_GROUPS_PROFILE_SETTING_CREATE_NOTE'); ?>
+								</span>
+							</label>
+						</div>
+					</fieldset>
+				</fieldset>
+
 				<fieldset id="page-settings">
 					<legend><?php echo Lang::txt('COM_GROUPS_PAGES_SETTINGS_TITLE'); ?></legend>
 

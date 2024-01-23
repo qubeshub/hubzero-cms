@@ -15,6 +15,7 @@ use Components\Groups\Models\Page;
 use Components\Groups\Models\Log;
 use Components\Groups\Helpers\Gitlab;
 use Components\Groups\Models\Orm\Field;
+use Components\Forms\Models\Form;
 use Filesystem;
 use Request;
 use Config;
@@ -27,6 +28,7 @@ use Date;
 use App;
 
 include_once dirname(dirname(__DIR__)) . '/models/orm/field.php';
+
 
 /**
  * Groups controller class for managing membership and group info
@@ -371,6 +373,7 @@ class Manage extends AdminController
 		$gparams->set('membership_control', $membership_control);
 		$params = $gparams->toString();
 
+
 		// Set the group changes and save
 		$group->set('cn', $g['cn']);
 		$group->set('type', $g['type']);
@@ -411,6 +414,24 @@ class Manage extends AdminController
 			foreach ($customFields as $field)
 			{
 				$field->saveGroupAnswers($group->get('gidNumber'));
+			}
+		}
+
+		// create group profile
+		$profile = $g['params']['group_profile'];
+
+		$db = \App::get('db');
+		$query = new \Hubzero\Database\Query;
+		$query->select('*');
+		$query->from('#__forms_forms');
+		$query->whereEquals('gid', $group->get('gidNumber'));
+		$query->whereEquals('name', $group->get('gidNumber') . '-group_profile');
+		$db->setQuery($query);
+		$num_rows = $db->loadRowList();
+
+		if (isset($profile) && $profile == 1) {
+			if (count($num_rows) < 1) {
+				$this->_createForm($group->get('gidNumber'));
 			}
 		}
 
@@ -475,6 +496,42 @@ class Manage extends AdminController
 		}
 
 		$this->cancelTask();
+	}
+
+	/**
+	 * Attempts to create form record for group profile
+	 *
+	 * @return   void
+	 */
+	public function _createForm($group)
+	{
+		require_once \Component::path('com_forms') . DS . 'models' . DS . 'form.php'; 
+
+		$formData = array();
+
+		$formData['created'] = Date::toSql();
+		$formData['created_by'] = User::get('id');
+		$formData['gid'] = $group;
+		$formData['name'] = $group . '-group_profile';
+		$formData['description'] = 'custom group profile';
+		$formData['responses_locked'] = 0;
+		$formData['opening_time'] = Date::toSql();
+		$formData['closing_time'] = date(mktime(0, 0, 0, 00, 00, 0000));
+
+		$form = Form::blank();
+		$form->set($formData);
+
+		if ($form->save())
+		{
+			$formId = $form->get('id');
+			// $forwardingUrl = $this->routes->formsEditUrl($formId);
+			$successMessage = Lang::txt('COM_FORMS_FORM_SAVE_SUCCESS');
+			// $this->crudHelper->successfulCreate($forwardingUrl, $successMessage);
+		}
+		else
+		{
+			$this->crudHelper->failedCreate($form);
+		}
 	}
 
 	/**

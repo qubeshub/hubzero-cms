@@ -47,6 +47,7 @@ $display_system_users = $gparams->get('display_system_users', 'global');
 $comments             = $gparams->get('page_comments', $params->get('page_comments', 0));
 $author               = $gparams->get('page_author', $params->get('page_author', 0));
 $trusted              = $gparams->get('page_trusted', $params->get('page_trusted', 0));
+$profile			  = $gparams->get('group_profile', $params->get('group_profile', 0));
 
 Html::behavior('formvalidation');
 Html::behavior('keepalive');
@@ -315,6 +316,16 @@ $this->js();
 								</fieldset>
 							</fieldset>
 						<?php endif; ?>
+
+						<fieldset class="adminform">
+							<legend><span><?php echo Lang::txt('COM_GROUPS_PROFILE_SETTING'); ?></span></legend>
+
+							<div class="input-wrap">
+								<input type='hidden' name="group[params][group_profile]" value="0" />
+								<input type="checkbox" name="group[params][group_profile]" id="param-group_profile" value="1" <?php if ($profile == 1) { ?>checked="checked"<?php } ?> />
+								<label for="param-group_profile"><?php echo Lang::txt('COM_GROUPS_PROFILE_SETTING_CREATE'); ?></label>
+							</div>
+						</fieldset>
 					</div>
 				</div><!-- / .grid -->
 			</div>
