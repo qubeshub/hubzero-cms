@@ -1725,4 +1725,174 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 
 		$this->_output = $view->loadTemplate();
 	}
+
+	private function profileSettings()
+	{
+		// QUBES profile fields
+		include_once Component::path('com_members') . DS . 'models' . DS . 'profile' . DS . 'field.php';
+
+		$fields = Components\Members\Models\Profile\Field::all()
+			->including(['options', function ($option){
+				$option
+					->select('*')
+					->ordered();
+			}])
+			->where('action_edit', '!=', Components\Members\Models\Profile\Field::STATE_HIDDEN)
+			->ordered()
+			->rows();
+
+		// Check if profile form has been created
+		$db = \App::get('db');
+		$query = new \Hubzero\Database\Query;
+		$query->select('*');
+		$query->from('#__forms_forms');
+		$query->whereEquals('gid', $this->group->get('gidNumber'));
+		$query->whereEquals('name', $this->group->get('gidNumber') . '-group_profile');
+		$db->setQuery($query);
+		$num_rows = $db->loadObject();
+
+		// Load necessities for the com_forms controller
+		require_once \Component::path('com_forms') . DS . 'models' . DS . 'formPage.php'; 
+		require_once \Component::path('com_forms') . DS . 'site' . DS . 'controllers' . DS . 'formPages.php'; 
+
+		$lang = App::get('language');
+		$lang->load('com_forms', \Component::path('com_forms') . DS . 'site');
+
+		if (count($num_rows) > 0) {
+			$formId = $num_rows->id;
+
+			// Check if custom profile exists
+			$p_query = new \Hubzero\Database\Query;
+			$p_query->select('*');
+			$p_query->from('#__forms_form_pages');
+			$p_query->whereEquals('form_id', $formId);
+			$db->setQuery($p_query);
+			$p_result = $db->loadObject();
+
+			// Create the custom profile page
+			if (count($p_result) < 1) {
+
+				// Set the forms request up to make it look like the user made the request to the controller
+				Request::setVar('task', 'create');
+				Request::setVar('option', 'com_forms');
+				Request::setVar('form_id', $formId);
+
+				// Add some extra variables to let the tab view know we need a different base url
+				Request::setVar('base_url', 'index.php?option=' . $this->option . '&cn=' . $this->group->cn . '&active=members' . '&action=profilesettings');
+
+				// Added a noview variable to indicate to the controller that we do not want it to try to display the view, simply build it
+				// Request::setVar('noview', 1);
+
+				// Added a redirect variable to indicate to the controller that we do not want it redirect to the forms component
+				Request::setVar('redirect', 1);
+
+				// Instantiate the controller and have it execute (base_path needed so view knows where template files are located)
+				$newtest = new \Components\Forms\Site\Controllers\FormPages(
+					array('base_path' => \Component::path('com_forms') . DS . 'site')
+				);
+
+				// Execute the task
+				$newtest->execute();
+
+				// Add QUBES profile fields into the custom profile page
+				// Get the page
+				$p_query = new \Hubzero\Database\Query;
+				$p_query->select('*');
+				$p_query->from('#__forms_form_pages');
+				$p_query->whereEquals('form_id', $formId);
+				$db->setQuery($p_query);
+				$p_result = $db->loadObject();
+				$page = $p_result->id;
+
+				$sql = "";
+				$i = 0; // Order number
+
+				foreach  ($this->fields as $field)
+				{
+					$sql .= "INSERT INTO `#__forms_page_fields` 
+							( `page_id`, `order`, `type`, `required`, `label`, `name`, `help_text`, `values` ) 
+							VALUES ";
+
+					$sql .= "(" . $page . ", ";
+					$sql .= $i++ . ", "; // Order number
+					$sql .= "'" . (string)$field->get('type') . "', ";
+					$sql .= 0 . ", "; // Setting as not required, need to find where this is in the db
+					$sql .= "'" . (string)$field->get('label') . "', ";
+					$sql .= "'" . (string)$field->get('name') . "', ";
+
+					if (!empty((string)$field->get('description'))) {
+						$sql .= "'" . (string)$field->get('description') . "', ";
+					} else {
+						$sql .= NULL . ", ";
+					}
+
+					$values = array();
+					$field_options = new stdClass;
+					$options = $field->options;
+					
+					if ($options->count())
+					{
+						$field_options->options = array();
+						$i = 1;
+
+						foreach ($options as $option)
+						{
+							
+							$opt = new stdClass;
+							$opt->label = (string)$option->get('label');
+							$opt->value = (string)$option->get('value', $option->get('label'));
+							$dependents = $option->get('dependents', '[]');
+							$dependents = $dependents ? $dependents : '';
+							$dependents = json_decode($dependents);
+							$opt->dependents = implode(', ', $dependents);
+							$opt->id = $i++;
+
+							$field_options->options[] = $opt;
+						}
+
+						$values = $field_options->options;
+						
+					}
+					$sql .= "'" . json_encode($values) . "');";
+				}
+			} else {
+				$pageId = $p_result->id;
+				
+			}
+		}	
+
+			// Set the forms request up to make it look like the user made the request to the controller
+			Request::setVar('task', 'edit');
+			Request::setVar('option', 'com_forms');
+			Request::setVar('id', $pageId);
+
+			// Add some extra variables to let the tab view know we need a different base url
+			Request::setVar('base_url', 'index.php?option=' . $this->option . '&cn=' . $this->group->cn . '&active=members' . '&action=profilesettings');
+
+			// Added a noview variable to indicate to the controller that we do not want it to try to display the view, simply build it
+			Request::setVar('noview', 1);
+			
+			// Added a redirect variable to indicate to the controller that we do not want it redirect to the forms component
+			Request::setVar('redirect', 0);
+
+			// Instantiate the controller and have it execute (base_path needed so view knows where template files are located)
+			$newtest = new \Components\Forms\Site\Controllers\FormPages(
+				array('base_path' => \Component::path('com_forms') . DS . 'site')
+			);
+			$newtest->execute();
+
+			// Set up the return for the plugin 'view'
+			$formView = $newtest->view->loadTemplate();
+		
+		// Display form for profile settings
+		$view = $this->view('profilesettings', 'profile')
+			->set('form_view', $formView)
+			->set('group', $this->group)
+			->set('option', $this->_option)
+			->set('form_id', $formId)
+			->set('page_id', $pageId);
+
+		$this->_output = $view->loadTemplate();
+
+	}
 }

@@ -58,6 +58,9 @@ $option = 'com_groups';
 					<a class="icon-add add btn" href="<?php echo Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=addrole'); ?>">
 						<?php echo Lang::txt('PLG_GROUPS_MEMBERS_ADD_ROLE'); ?>
 					</a>
+					<a href="<?php echo Route::url('index.php?option=com_groups&cn=' . $this->group->get('cn') . '&active=members&action=profilesettings'); ?>" class="icon-config config btn">
+					<?php echo Lang::txt('PLG_GROUPS_MEMBERS_PROFILES_SETTINGS'); ?>
+				</a>
 				<?php endif; ?>
 			</li>
 		</ul>
