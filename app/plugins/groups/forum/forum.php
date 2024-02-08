@@ -123,6 +123,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 
 			//get the group members
 			$this->members = $group->get('members');
+			$this->managers = $group->get('managers'); // REFACTOR: $this->group->get('managers') can be replaced by this
 
 			//if set to nobody make sure cant access
 			if ($group_plugin_acl == 'nobody')
@@ -133,7 +134,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 
 			//check if guest and force login if plugin access is registered or members
 			if (User::isGuest()
-			 && ($group_plugin_acl == 'registered' || $group_plugin_acl == 'members'))
+			 && ($group_plugin_acl == 'registered' || $group_plugin_acl == 'members' || $group_plugin_acl == 'managers'))
 			{
 				$return = base64_encode(Request::getString('REQUEST_URI', Route::url('index.php?option=com_groups&cn=' . $group->get('cn') . '&active=' . $active, false, true), 'server'));
 				App::redirect(
@@ -153,6 +154,15 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 				return $arr;
 			}
 
+			// Check to see if user is manager and plugin access requires managers
+			if (!in_array(User::get('id'), $this->managers)
+			&& $group_plugin_acl == 'managers'
+			&& $authorized != 'admin')
+			{
+				$arr['html'] = '<p class="info">' . Lang::txt('GROUPS_PLUGIN_REQUIRES_MANAGER', ucfirst($active_real)) . '</p>';
+				return $arr;
+			}
+		   
 			//user vars
 			$this->group_plugin_acl = $group_plugin_acl;
 			$this->authorized = $authorized;
