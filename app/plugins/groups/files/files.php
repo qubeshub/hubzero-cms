@@ -113,8 +113,9 @@ class plgGroupsFiles extends \Hubzero\Plugin\Plugin
 			//set group members plugin access level
 			$group_plugin_acl = $access[$active];
 
-			//get the group members
+			// Get the group members and managers
 			$members = $group->get('members');
+			$managers = $group->get('managers');
 
 			//if set to nobody make sure cant access
 			if ($group_plugin_acl == 'nobody')
@@ -125,7 +126,7 @@ class plgGroupsFiles extends \Hubzero\Plugin\Plugin
 
 			//check if guest and force login if plugin access is registered or members
 			if (User::isGuest()
-			 && ($group_plugin_acl == 'registered' || $group_plugin_acl == 'members'))
+				&& ($group_plugin_acl == 'registered' || $group_plugin_acl == 'members' || $group_plugin_acl == 'managers'))
 			{
 				$url = Route::url('index.php?option=com_groups&cn='.$group->get('cn').'&active='.$active, false, true);
 
@@ -149,6 +150,15 @@ class plgGroupsFiles extends \Hubzero\Plugin\Plugin
 			 && $authorized != 'admin')
 			{
 				$arr['html'] = '<p class="info">' . Lang::txt('GROUPS_PLUGIN_REQUIRES_MEMBER', ucfirst($active)) . '</p>';
+				return $arr;
+			}
+
+			// Check to see if user is manager and plugin access requires managers
+			if (!in_array(User::get('id'), $managers)
+			 && $group_plugin_acl == 'managers'
+			 && $authorized != 'admin')
+			{
+				$arr['html'] = '<p class="info">' . Lang::txt('GROUPS_PLUGIN_REQUIRES_MANAGER', ucfirst($active)) . '</p>';
 				return $arr;
 			}
 
