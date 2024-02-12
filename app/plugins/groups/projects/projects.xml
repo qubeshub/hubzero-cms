@@ -26,6 +26,7 @@
 					<option value="anyone">PLG_GROUPS_PROJECTS_PARAM_PLUGINACCESS_ANYONE</option>
 					<option value="registered">PLG_GROUPS_PROJECTS_PARAM_PLUGINACCESS_REGISTERED</option>
 					<option value="members">PLG_GROUPS_PROJECTS_PARAM_PLUGINACCESS_MEMBERS</option>
+					<option value="managers">PLG_GROUPS_PROJECTS_PARAM_PLUGINACCESS_MANAGERS</option>
 					<option value="nobody">PLG_GROUPS_PROJECTS_PARAM_PLUGINACCESS_NOBODY</option>
 				</field>
 				<field name="display_tab" type="list" default="1" label="PLG_GROUPS_PROJECTS_PARAM_DISPLAYTAB_LABEL" description="PLG_GROUPS_PROJECTS_PARAM_DISPLAYTAB_DESC">
