@@ -69,6 +69,14 @@ Filter out the core extension from the history into the new branch:
 [extension]$ git filter-branch --subdirectory-filter <path to core extension>
 ``` 
 
+NOTE: Git is yelling about not using this and moving to `filter-repo`. Here is what appears to be an equivalent command using `filter-repo`:
+
+```
+git filter-repo --subdirectory-filter <path to core extension> --refs=<extension>
+```
+
+You might have to use `--force` on these commands, and note that `<extension>` is the name of the branch that you just created.
+
 Add the new remote on GitHub:
 
 ```

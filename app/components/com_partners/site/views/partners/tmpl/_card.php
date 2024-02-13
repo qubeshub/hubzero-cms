@@ -17,7 +17,8 @@ defined('_HZEXEC_') or die();
 	<div class="card__expander">
 	   <i class="fa fa-close [ js-collapser ]" aria-hidden="true"></i>
 	   <div class="inner-expander">
-	       <?php echo 'About: ' . '<p>' . $this->record->get('about') . '</p>'; ?>
+		   <h3><?php echo $this->record->get('name'); ?></h3>
+	       <?php echo '<p>' . $this->record->get('about') . '</p>'; ?>
 		   <div class="social">
 			   <?php if($this->record->get('groups_cn') || $this->record->get('site_url')) { ?>
 					<a href="<?php echo ($this->record->get('groups_cn') ? Route::url('groups' . DS . $this->record->get('groups_cn')) : $this->record->get('site_url')); ?>"><span class="social-icon"><?php echo file_get_contents(PATH_CORE . DS . "assets/icons/globe.svg") ?></span>website</a>
