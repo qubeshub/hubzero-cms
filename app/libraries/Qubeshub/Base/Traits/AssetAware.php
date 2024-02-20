@@ -13,6 +13,7 @@ require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Document' . D
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'ControllerInterface.php';
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Plugin.php';
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Module' . DS . 'Module.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'View.php';
 
 use Qubeshub\Document\Asset\Image;
 use Qubeshub\Document\Asset\Javascript;
@@ -20,6 +21,7 @@ use Qubeshub\Document\Asset\Stylesheet;
 use Qubeshub\Component\ControllerInterface;
 use Qubeshub\Plugin\Plugin;
 use Qubeshub\Module\Module;
+use Qubeshub\Component\View;
 
 /**
  * Asset Aware trait.
@@ -135,6 +137,10 @@ trait AssetAware
 		else if ($this instanceof Module)
 		{
 			return $this->module->module;
+		}
+		else if ($this instanceof View)
+		{
+			return $this->option;
 		}
 
 		return '';
