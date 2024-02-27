@@ -11,6 +11,7 @@ require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'View' . DS . 
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'View' . DS . 'Helper' . DS . 'Js.php';
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'View' . DS . 'Helper' . DS . 'Editor.php';
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'View' . DS . 'Helper' . DS . 'Autocompleter.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'View' . DS . 'Helper' . DS . 'Pagination.php';
 
 use Hubzero\Base\Obj;
 use Qubeshub\View\Exception\InvalidLayoutException;
