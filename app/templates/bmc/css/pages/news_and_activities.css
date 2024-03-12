@@ -70,7 +70,6 @@
 
 .row {
   background-color: #f1f1f1;
-  height: -webkit-fit-content;
   height: -moz-fit-content;
   height: fit-content;
   margin-top: 3em;
@@ -115,9 +114,15 @@
 }
 @media only screen and (min-width: 47.5em) {
   .blogs,
-.newsletters {
+  .newsletters {
     width: 50%;
   }
+}
+.blogs .module,
+.newsletters .module {
+  text-align: center;
+  border-top: none;
+  padding-top: 0;
 }
 
 .module-blogs {
@@ -170,11 +175,9 @@
   position: static;
 }
 .module-newsletters .newsletter-title a {
-  display: block;
-  /* Fallback for non-webkit */
+  display: block; /* Fallback for non-webkit */
   display: -webkit-box;
-  height: 2.4em;
-  /* Fallback for non-webkit */
+  height: 2.4em; /* Fallback for non-webkit */
   font-family: "montserratregular", Helvetica Neue, Helvetica, sans-serif;
   margin: 0 auto;
   font-size: 1em;
@@ -244,11 +247,9 @@
 }
 
 .blog-title a {
-  display: block;
-  /* Fallback for non-webkit */
+  display: block; /* Fallback for non-webkit */
   display: -webkit-box;
-  height: 3.6rem;
-  /* Fallback for non-webkit */
+  height: 3.6rem; /* Fallback for non-webkit */
   margin: 0 auto;
   font-size: 1rem;
   line-height: 1.2;
@@ -304,11 +305,9 @@
   position: static;
 }
 .newsletter-title a {
-  display: block;
-  /* Fallback for non-webkit */
+  display: block; /* Fallback for non-webkit */
   display: -webkit-box;
-  height: 4.8em;
-  /* Fallback for non-webkit */
+  height: 4.8em; /* Fallback for non-webkit */
   font-family: "montserratregular", Helvetica Neue, Helvetica, sans-serif;
   margin: 0 auto;
   font-size: 1em;
