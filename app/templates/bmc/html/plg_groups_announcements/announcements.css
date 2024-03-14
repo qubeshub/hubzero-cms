@@ -1,0 +1,8 @@
+@import url('/core/plugins/groups/announcements/assets/css/announcements.css');
+
+.announcement-container .announcement {
+    background-color: #fbf1be;
+    border-color: #e9e1bc;
+    color: #80744a;
+    word-wrap: break-word;
+}
