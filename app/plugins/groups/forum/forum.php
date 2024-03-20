@@ -14,10 +14,13 @@ use Components\Forum\Models\Attachment;
 // No direct access
 defined('_HZEXEC_') or die();
 
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Plugin.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Params.php';
+
 /**
  * Groups Plugin class for forum entries
  */
-class plgGroupsForum extends \Hubzero\Plugin\Plugin
+class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 {
 	/**
 	 * Affects constructor behavior. If true, language files will be loaded automatically.
@@ -2158,9 +2161,15 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 
 		$row = \Qubeshub\Plugin\Params::oneByPlugin($this->group->get('gidNumber'), $this->_type, $this->_name);
 
+		if ($row->isNew()) {
+			$row = \Qubeshub\Plugin\Params::blank();
+			$row->set('object_id', $this->group->get('gidNumber'));
+			$row->set('folder', $this->_type);
+			$row->set('element', $this->_name);
+		}
+
 		// Get parameters
 		$params = new \Hubzero\Config\Registry(Request::getArray('params', array(), 'post'));
-
 		$row->set('params', $params->toString());
 
 		// Store new content

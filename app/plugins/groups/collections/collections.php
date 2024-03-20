@@ -2121,9 +2121,15 @@ class plgGroupsCollections extends \Qubeshub\Plugin\Plugin
 
 		$row = \Qubeshub\Plugin\Params::oneByPlugin($this->group->get('gidNumber'), $this->_type, $this->_name);
 
+		if ($row->isNew()) {
+			$row = \Qubeshub\Plugin\Params::blank();
+			$row->set('object_id', $this->group->get('gidNumber'));
+			$row->set('folder', $this->_type);
+			$row->set('element', $this->_name);
+		}
+
 		// Get parameters
 		$params = new \Hubzero\Config\Registry(Request::getArray('params', array(), 'post'));
-
 		$row->set('params', $params->toString());
 
 		// Store new content

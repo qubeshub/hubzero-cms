@@ -8,10 +8,13 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Plugin.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Params.php';
+
 /**
  * Groups Plugin class for blog entries
  */
-class plgGroupsBlog extends \Hubzero\Plugin\Plugin
+class plgGroupsBlog extends \Qubeshub\Plugin\Plugin
 {
 	/**
 	 * Affects constructor behavior. If true, language files will be loaded automatically.
@@ -156,7 +159,7 @@ class plgGroupsBlog extends \Hubzero\Plugin\Plugin
 			$this->database   = App::get('db');
 
 			//get the plugins params
-			$this->params = Hubzero\Plugin\Params::getParams($group->gidNumber, 'groups', $this->_name);
+			$this->params = \Qubeshub\Plugin\Params::getParams($group->gidNumber, 'groups', $this->_name);
 
 			if ($authorized == 'manager' || $authorized == 'admin')
 			{
@@ -1078,19 +1081,12 @@ class plgGroupsBlog extends \Hubzero\Plugin\Plugin
 			return $this->_browse();
 		}
 
-		$settings = Hubzero\Plugin\Params::oneByPlugin(
-			$this->group->gidNumber,
-			$this->_type,
-			$this->_name
-		);
-
 		// Output HTML
 		$view = $this->view('default', 'settings')
 			->set('option', $this->option)
 			->set('group', $this->group)
 			->set('task', $this->action)
 			->set('config', $this->params)
-			->set('settings', $settings)
 			->set('model', $this->model)
 			->set('authorized', $this->authorized)
 			->setErrors($this->getErrors());
@@ -1120,14 +1116,18 @@ class plgGroupsBlog extends \Hubzero\Plugin\Plugin
 		// Check for request forgeries
 		Request::checkToken();
 
-		$settings = Request::getArray('settings', array(), 'post');
+		$row = \Qubeshub\Plugin\Params::oneByPlugin($this->group->get('gidNumber'), $this->_type, $this->_name);
 
-		$row = Hubzero\Plugin\Params::blank()->set($settings);
+		if ($row->isNew()) {
+			$row = \Qubeshub\Plugin\Params::blank();
+			$row->set('object_id', $this->group->get('gidNumber'));
+			$row->set('folder', $this->_type);
+			$row->set('element', $this->_name);
+		}
 
 		// Get parameters
-		$p = new Hubzero\Config\Registry(Request::getArray('params', array(), 'post'));
-
-		$row->set('params', $p->toString());
+		$params = new \Hubzero\Config\Registry(Request::getArray('params', array(), 'post'));
+		$row->set('params', $params->toString());
 
 		// Store new content
 		if (!$row->save())
