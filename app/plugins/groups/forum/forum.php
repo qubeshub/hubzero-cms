@@ -168,7 +168,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 			$this->authorized = $authorized;
 
 			// Get the plugins params
-			$this->params = \Hubzero\Plugin\Params::getParams($this->group->get('gidNumber'), 'groups', $this->_name);
+			$this->params = \Qubeshub\Plugin\Params::getParams($this->group->get('gidNumber'), 'groups', $this->_name);
 			$this->params->def('allow_anonymous', 1);
 			$this->params->def('threading', 'list');
 			$this->params->def('threading_depth', 3);
@@ -2122,19 +2122,12 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 			return $this->sections();
 		}
 
-		$settings = \Hubzero\Plugin\Params::oneByPlugin(
-			$this->group->get('gidNumber'),
-			$this->_type,
-			$this->_name
-		);
-
 		// Output HTML
 		$view = $this->view('default', 'settings')
 			->set('option', $this->option)
 			->set('group', $this->group)
 			->set('model', $this->forum)
 			->set('config', $this->params)
-			->set('settings', $settings)
 			->set('authorized', $this->authorized)
 			->setErrors($this->getErrors());
 
@@ -2163,14 +2156,12 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 		// Check for request forgeries
 		Request::checkToken();
 
-		$settings = Request::getArray('settings', array(), 'post');
-
-		$row = \Hubzero\Plugin\Params::blank()->set($settings);
+		$row = \Qubeshub\Plugin\Params::oneByPlugin($this->group->get('gidNumber'), $this->_type, $this->_name);
 
 		// Get parameters
-		$p = new \Hubzero\Config\Registry(Request::getArray('params', array(), 'post'));
+		$params = new \Hubzero\Config\Registry(Request::getArray('params', array(), 'post'));
 
-		$row->set('params', $p->toString());
+		$row->set('params', $params->toString());
 
 		// Store new content
 		if (!$row->save())

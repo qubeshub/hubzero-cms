@@ -70,8 +70,8 @@ class Params extends Relational
 	{
 		return self::all()
 			->whereEquals('object_id', (int) $oid)
-			->whereEquals('folder', (int) $folder)
-			->whereEquals('element', (int) $element)
+			->whereEquals('folder', $folder)
+			->whereEquals('element', $element)
 			->row();
 	}
 
