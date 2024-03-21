@@ -2119,14 +2119,7 @@ class plgGroupsCollections extends \Qubeshub\Plugin\Plugin
 		// Check for request forgeries
 		Request::checkToken();
 
-		$row = \Qubeshub\Plugin\Params::oneByPlugin($this->group->get('gidNumber'), $this->_type, $this->_name);
-
-		if ($row->isNew()) {
-			$row = \Qubeshub\Plugin\Params::blank();
-			$row->set('object_id', $this->group->get('gidNumber'));
-			$row->set('folder', $this->_type);
-			$row->set('element', $this->_name);
-		}
+		$row = \Qubeshub\Plugin\Params::oneByPluginOrNew($this->group->get('gidNumber'), $this->_type, $this->_name);
 
 		// Get parameters
 		$params = new \Hubzero\Config\Registry(Request::getArray('params', array(), 'post'));
