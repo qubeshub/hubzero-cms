@@ -1751,9 +1751,6 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 	protected function _shouldUserReceiveEmail($userId, $memberoptions, $categorySubscriptionsEnabled, $category)
 	{
 		$categoryId = $category->get('id');
-		echo "Category: " . $categorySubscriptionsEnabled;
-		echo "Member Options: " . $memberoptions;
-		die;
 
 		if ($categorySubscriptionsEnabled)
 		{
