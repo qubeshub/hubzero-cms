@@ -246,13 +246,12 @@ jQuery(document).ready(function(jq){
 			window.open(this.href).focus();
 		} 
 	})
-	.on('submit', '.fancybox-inner form', function(e) {
+	.on('submit', '.fancybox-inner form:not(#commentform)', function(e) {
 		e.preventDefault();
 
 		// Send forms via AJAX - if successful, close pop-up
 		var el = $(this);
 		var formData = new FormData(this);
-		console.log("Sending form...");
 		$.ajax({
 			method: 'POST',
 			url: $(this).attr('action').nohtml(),
