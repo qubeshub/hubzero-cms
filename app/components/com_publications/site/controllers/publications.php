@@ -936,6 +936,7 @@ class Publications extends SiteController
 
 		$type = '';
 		$role = 1;
+		$access = 0; // Default instructor access to false
 
 		// Individual attachment is requested? Find element ID
 		if ($aid)
