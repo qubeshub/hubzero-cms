@@ -83,6 +83,7 @@ $relevance_classes = implode($relevance_classes, ' ');
                         // Calling cards view
                         echo $this->view('cards')
                             ->set('results', $this->results)
+                            ->set('base', $this->base)
                             ->set('pageNav', $this->pageNav)
                             ->loadTemplate();
                         ?>
