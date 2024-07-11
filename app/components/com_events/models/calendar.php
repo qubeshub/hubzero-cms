@@ -19,6 +19,8 @@ use User;
 
 // include tables
 require_once dirname(__DIR__) . DS . 'tables' . DS . 'calendar.php';
+require_once dirname(__DIR__) . DS . 'tables' . DS . 'event.php';
+require_once dirname(__DIR__) . DS . 'models' . DS . 'event.php';
 
 // include icalendar file reader
 require_once PATH_CORE . DS . 'plugins' . DS . 'groups' . DS . 'calendar' . DS . 'icalparser.php';
@@ -147,6 +149,12 @@ class Calendar extends Model
 					unset($filters['publish_up']);
 					unset($filters['publish_down']);
 
+					$until = null;
+					if (isset($filters['until'])) {
+						$until = Date::of($filters['until']);
+						unset($filters['until']);
+					}
+
 					// find any events that match our filters
 					$tbl = new Tables\Event($this->_db);
 					if ($results = $tbl->find($filters))
@@ -157,6 +165,9 @@ class Calendar extends Model
 
 							// get the repeating & pass start date
 							$rule = new \Recurr\Rule($result->repeating_rule, $start);
+							if (isset($until)) {
+								$rule->setUntil($until);
+							}
 
 							// create transformmer & generate occurences
 							$transformer = new \Recurr\Transformer\ArrayTransformer();
