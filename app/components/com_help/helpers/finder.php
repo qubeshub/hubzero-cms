@@ -33,12 +33,6 @@ class Finder
 
 		$paths = array(
 			// Template override help page
-			PATH_APP . DS . 'templates' . DS . $tmpl . DS .  'html' . DS . 'plg_' . $name . '_' . $page . DS . 'help' . DS . $lang . DS . 'index.' . self::$ext,
-			PATH_APP . DS . 'templates' . DS . $tmpl . DS .  'html' . DS . $component  . DS . 'help' . DS . $lang . DS . $page . '.' . self::$ext,
-
-			PATH_CORE . DS . 'templates' . DS . $tmpl . DS .  'html' . DS . 'plg_' . $name . '_' . $page . DS . 'help' . DS . $lang . DS . 'index.' . self::$ext,
-			PATH_CORE . DS . 'templates' . DS . $tmpl . DS .  'html' . DS . $component  . DS . 'help' . DS . $lang . DS . $page . '.' . self::$ext,
-
 			$tmpl . DS .  'html' . DS . 'plg_' . $name . '_' . $page . DS . 'help' . DS . $lang . DS . 'index.' . self::$ext,
 			$tmpl . DS .  'html' . DS . $component  . DS . 'help' . DS . $lang . DS . $page . '.' . self::$ext
 		);
@@ -50,7 +44,7 @@ class Finder
 		// If we have an extension
 		if ($extension)
 		{
-			$paths[2] = PATH_CORE . DS . 'plugins' . DS . $name . DS . $extension . DS . 'help' . DS . $lang . DS . $page . '.' . self::$ext;
+			$paths[2] = \Plugin::path($name, $extension) . DS . 'help' . DS . $lang . DS . $page . '.' . self::$ext;
 			$paths[0] = $tmpl . DS .  'html' . DS . 'plg_' . $name . '_' . $extension . DS . 'help' . DS . $lang . DS . $page . '.' . self::$ext;
 		}
 
