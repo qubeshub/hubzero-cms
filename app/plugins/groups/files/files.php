@@ -200,15 +200,10 @@ class plgGroupsFiles extends \Hubzero\Plugin\Plugin
 
 		$view->activeFolder = '/' . trim($view->activeFolder, '/');
 
-		// regular groups can only access inside /uploads
-		//if (!$this->group->isSuperGroup())
-		//{
-			$pathInfo = pathinfo($view->activeFolder);
-			if ($pathInfo['dirname'] != '/uploads')
-			{
-				$view->activeFolder = '/uploads';
-			}
-		//}
+		if (preg_match('/^\/uploads(?!.*\/\.\.).*$/', $view->activeFolder) == 0)
+		{
+			$view->activeFolder = '/uploads';
+		}
 
 		// make sure we have a path
 		$this->_createGroupFolder($this->path);

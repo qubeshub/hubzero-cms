@@ -28,7 +28,6 @@
 		position: relative;
 		min-height: 50em;
 		width: 100%;
-		height: 100%;
 		display: table;
 		vertical-align: top;
 	}
@@ -106,16 +105,12 @@
 	}
 	.action-addfolder {
 		display: inline-block;
-		width: 1em;
 		overflow: hidden;
 		white-space: nowrap;
 	}
 	.action-addfolder:hover {
 		border: none;
 		text-decoration: none;
-	}
-	.action-addfolder:before {
-		margin-right: 2em;
 	}
 
 /* Folder Tree List */
