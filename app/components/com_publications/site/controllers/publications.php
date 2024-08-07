@@ -608,7 +608,7 @@ class Publications extends SiteController
 		// Modify this route if coming from supergroup (base_url should point to supergroup_cn/publications)
 		$this->_route = (Request::getString('base_url') ? Request::getString('base_url') . '&id=' . $this->_identifier . '&tab_active=' . $tab : $this->_route);
 
-		// Get our model and load publication data
+		// Get our model and load publication data (consider moving to execute function)
 		$this->model = new Models\Publication($this->_identifier, $this->_version);
 
 		// Last public release
@@ -730,24 +730,16 @@ class Publications extends SiteController
 				'publication_id' => $this->model->get('id'),
 				'publication_version_id' => $publicationVersionId
 			]);
-			// Build the HTML of the "about" tab
-			$view = new \Qubeshub\Component\View(array(
-				'name'   => 'about',
-				'layout' => 'default',
-				'base_path' => $this->_base_path
-			));
-			$view->option      = $this->_option;
-			$view->controller  = $this->_controller;
-			$view->task        = $this->_task;
-			$view->config      = $this->config;
-			$view->database    = $this->database;
-			$view->publication = $this->model;
-			$view->authorized  = $authorized;
-			$view->restricted  = $restricted;
-			$view->version     = $publicationVersionId;
-			$view->bundle      = $bundle;
-			$view->sections    = $sections;
-			$body              = $view->loadTemplate();
+
+			$this->setView('about', 'default');
+			$this->view->config      = $this->config;
+			$this->view->publication = $this->model;
+			$this->view->authorized  = $authorized;
+			$this->view->restricted  = $restricted;
+			$this->view->version     = $publicationVersionId;
+			$this->view->bundle      = $bundle;
+			$this->view->sections    = $sections;
+			$body = $this->view->loadTemplate();
 
 			// Log page view (public pubs only)
 			if ($this->_logging && $this->_task == 'view')
