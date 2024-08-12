@@ -215,7 +215,7 @@ jQuery(document).ready(function(jq){
 	});
 
 	// Handle link navigation
-	$(document).on('click', '.fancybox-inner a:not(.primary):not(.google)', function(e) {
+	$(document).on('click', '.fancybox-inner a:not(.primary):not(.google):not(.new-pub)', function(e) {
 		e.preventDefault();
 
 		var target = $(this);
