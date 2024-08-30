@@ -103,12 +103,10 @@ class Miner extends Obj implements Provider
 	 */
 	public function sets()
 	{
-		$query = "SELECT alias, name AS type, description, " . $this->database->quote($this->name()) . " as base
-				FROM `#__publication_categories`";
-		if ($type = $this->get('type'))
-		{
-			$query .= " WHERE id=" . $this->database->quote($type);
-		}
+		$query = "SELECT cn AS alias, description AS type, public_desc AS description, " . $this->database->quote($this->name()) . " as base 
+			FROM `#__xgroups` 
+			WHERE type IN (1,3) 
+			ORDER BY cn";
 
 		return $query;
 	}
@@ -123,28 +121,41 @@ class Miner extends Obj implements Provider
 	{
 		if (isset($filters['set']) && $filters['set'])
 		{
-			if (!preg_match('/^publications\:(.+)/i', $filters['set'], $matches))
+			if (!preg_match('/^\bpublications(?:\:)?(.+)?\b/i', $filters['set'], $matches))
 			{
 				return '';
 			}
 
-			$set = trim($matches[1]);
-			$this->database->setQuery("SELECT t.id FROM `#__publication_categories` AS t WHERE t.alias=" . $this->database->quote($set));
-			$this->set('type', $this->database->loadResult());
-			if (!$this->get('type'))
-			{
-				return '';
+			if (isset($matches[1])) {
+				$set = trim($matches[1]);
+				$this->database->setQuery("SELECT gidNumber
+					FROM `#__xgroups` 
+					WHERE cn=" . $this->database->quote($set));
+				if (!($gid = $this->database->loadResult())) {
+					return '';
+				}
+			} else {
+				$gid = 0;
+				$set = '';
 			}
+			$this->set('type', $set);
 		}
 
 		$query = "SELECT CONCAT(p.id, ':', pv.version_number) AS id, " . $this->database->quote($this->name()) . " AS `base`
 				FROM `#__publications` AS p
-				INNER JOIN `#__publication_versions` AS pv ON pv.publication_id = p.id
-				WHERE pv.state=1";
-
-		if ($type = $this->get('type'))
-		{
-			$query .= " AND p.category=" . $this->database->quote($type);
+				INNER JOIN `#__publication_versions` AS pv 
+				ON pv.publication_id = p.id";
+		
+		if ($gid) {
+			$query .= " INNER JOIN `#__projects` pp
+				ON pp.id = p.project_id
+				WHERE (p.group_owner = " . $gid . " 
+				  OR p.group_owner IN (SELECT child FROM `#__xgroups_groups` WHERE parent = " . $gid . ") 
+				  OR pp.owned_by_group = " . $gid . " 
+				  OR pp.owned_by_group IN (SELECT child FROM `#__xgroups_groups` WHERE parent = " . $gid . "))
+				AND pv.state=1";
+		} else {
+			$query .= " WHERE pv.state=1";
 		}
 
 		if (isset($filters['from']) && $filters['from'])
@@ -269,11 +280,11 @@ class Miner extends Obj implements Provider
 		$record->id = $id;
 
 		$record->base = $this->name();
-		$record->type = $record->base . ':' . $record->type;
+		// $record->type = $record->base . ':' . $record->type;
+		$record->spec = $record->base . ':' . $this->type;
 
 		$record->title .= ' [version ' . $record->version_label . ']';
-		$record->description = strip_tags($record->description);
-		$record->description = trim($record->description);
+		$record->description = trim(strip_tags($record->abstract));
 		$record->identifier  = $this->identifier($id, $record->identifier, $revision);
 
 		$this->database->setQuery(
@@ -306,12 +317,31 @@ class Miner extends Obj implements Provider
 		$record->creator = $this->database->loadColumn();
 
 		$this->database->setQuery(
+			"SELECT L.url
+			FROM `#__publication_licenses` AS L
+			INNER JOIN `#__publication_versions` AS V
+			ON V.license_type = L.id
+			WHERE V.id = " . $this->database->quote($record->version_id)
+		);
+		$record->rights = $this->database->loadResult();
+
+		// Keywords
+		$this->database->setQuery(
 			"SELECT DISTINCT t.raw_tag
 			FROM `#__tags` t, `#__tags_object` tos
 			WHERE t.id = tos.tagid AND tos.objectid=" . $this->database->quote($record->version_id) . " AND tos.tbl='publications' AND t.admin=0
 			ORDER BY t.raw_tag"
 		);
 		$record->subject = $this->database->loadColumn();
+
+		// Focus areas
+		$this->database->setQuery(
+			"SELECT DISTINCT fa.label
+			FROM `#__tags` t, `#__tags_object` tos, `#__focus_areas` fa
+			WHERE t.id = tos.tagid AND t.id = fa.tag_id AND tos.objectid=" . $this->database->quote($record->version_id) . " AND tos.tbl='publications'
+			ORDER BY fa.label"
+		);
+		$record->subject = array_merge($record->subject, $this->database->loadColumn());
 
 		// Relations
 		$record->relation = array();
