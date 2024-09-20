@@ -119,7 +119,7 @@ $heights = array();
 
 <?php } else { ?>
 	<div id="no-usage">
-		<p class="warning"><?php echo Lang::txt('PLG_PUBLICATIONS_USAGE_NO_DATA_AVAILABLE'); ?></p>
+		<p class="warning"><?php echo Lang::txt('PLG_PUBLICATION_USAGE_NO_DATA_AVAILABLE'); ?></p>
 	</div>
 <?php } ?>
 </form>
