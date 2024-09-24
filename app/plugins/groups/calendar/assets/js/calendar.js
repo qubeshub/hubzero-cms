@@ -159,8 +159,12 @@ HUB.Plugins.GroupCalendar = {
 			}
 		});
 
+		// Get local timezone
+		const queryParams = { tz: Intl.DateTimeFormat().resolvedOptions().timeZone };
+		const queryString = new URLSearchParams(queryParams).toString();
+
 		// async load sources
-		$.getJSON($base + '/eventsources', function(sources) {
+		$.getJSON($base + '/eventsources?' + queryString, function(sources) {
 			jQuery.each(sources, function(index, source) {
 				$calendar.fullCalendar('addEventSource', source);
 			});

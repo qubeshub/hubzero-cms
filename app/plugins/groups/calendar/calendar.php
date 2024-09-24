@@ -353,6 +353,8 @@ class plgGroupsCalendar extends \Hubzero\Plugin\Plugin
 		// array to hold sources
 		$sources = array();
 
+		$tz = urlencode(Request::getVar('tz'));
+
 		// get calendars
 		$eventsCalendarArchive = \Components\Events\Models\Calendar\Archive::getInstance();
 		$calendars = $eventsCalendarArchive->calendars('list', array(
@@ -365,7 +367,7 @@ class plgGroupsCalendar extends \Hubzero\Plugin\Plugin
 		{
 			$source            = new stdClass;
 			$source->title     = $calendar->get('title');
-			$source->url       = Route::url('index.php?option=com_groups&cn=' . $this->group->get('cn') . '&active=calendar&action=events&calendar_id=' . $calendar->get('id'));
+			$source->url       = Route::url('index.php?option=com_groups&cn=' . $this->group->get('cn') . '&active=calendar&action=events&calendar_id=' . $calendar->get('id')) . '&tz=' . $tz;
 			$source->className = ($calendar->get('color')) ? 'fc-event-' . $calendar->get('color') : 'fc-event-default';
 			array_push($sources, $source);
 		}
@@ -373,7 +375,7 @@ class plgGroupsCalendar extends \Hubzero\Plugin\Plugin
 		// add uncategorized source
 		$source            = new stdClass;
 		$source->title     = 'Uncategorized';
-		$source->url       = Route::url('index.php?option=com_groups&cn=' . $this->group->get('cn') . '&active=calendar&action=events&calendar_id=0');
+		$source->url       = Route::url('index.php?option=com_groups&cn=' . $this->group->get('cn') . '&active=calendar&action=events&calendar_id=0') . '&tz=' . $tz;
 		$source->className = 'fc-event-default';
 		array_push($sources, $source);
 
@@ -393,10 +395,14 @@ class plgGroupsCalendar extends \Hubzero\Plugin\Plugin
 		// array to hold events
 		$events = array();
 
+		// create user localizer
+		$userLocalizer = new UserLocalizer();
+
 		// get request params
 		$start      = Request::getString('start');
 		$end        = Request::getString('end');
 		$calendarId = Request::getInt('calendar_id', 0);
+		$timezone = Request::getVar('tz', $userLocalizer->getTimezone());
 
 		if ($start && !preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/', $start))
 		{
@@ -411,7 +417,6 @@ class plgGroupsCalendar extends \Hubzero\Plugin\Plugin
 		$start = Date::of($start . ' 00:00:00');
 		$end   = Date::of($end . ' 00:00:00');
 		$end->modify('-1 second');
-		$userLocalizer = new UserLocalizer();
 
 		// get calendar events
 		$eventsCalendar = \Components\Events\Models\Calendar::getInstance();
@@ -438,8 +443,6 @@ class plgGroupsCalendar extends \Hubzero\Plugin\Plugin
 
 		// merge events with repeating events
 		$rawEvents = $rawEvents->merge($rawEventsRepeating);
-
-		$timezone = $userLocalizer->getTimezone();
 
 		// loop through each event to return it
 		foreach ($rawEvents as $rawEvent)
