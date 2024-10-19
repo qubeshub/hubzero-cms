@@ -1596,7 +1596,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 				$html = $eview->loadTemplate();
 				$msg['multipart'] = str_replace("\n", "\r\n", $html);
 
-				$subject = Lang::txt('PLG_GROUPS_FORUM') . ': ' . $this->group->get('cn') . ' - ' . $thread->get('title');
+				$subject = Lang::txt('PLG_GROUPS_FORUM') . ': ' . $this->group->get('description') . ' - ' . $thread->get('title');
 
 				if (!Event::trigger('xmessage.onSendMessage', array('group_message', $subject, $msg, $from, array($userID), $this->option, null, '', $this->group->get('gidNumber'), false, $post->get('anonymous', 0))))
 				{
@@ -2221,6 +2221,9 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 			);
 		}
 
+		// Get the option, if it exists
+		$option = Request::getInt('o', 0);
+
 		// get the token lib
 		$encryptor = new \Hubzero\Mail\Token();
 
@@ -2251,14 +2254,14 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 		$groupMemberOption->set('gidNumber', $this->group->get('gidNumber'));
 		$groupMemberOption->set('userid', $tokenDetails[0]);
 		$groupMemberOption->set('optionname', 'receive-forum-email');
-		$groupMemberOption->set('optionvalue', 0);
+		$groupMemberOption->set('optionvalue', $option);
 
 		// attempt to update
 		if (!$groupMemberOption->save())
 		{
 			App::redirect(
 				Route::url($rtrn),
-				Lang::txt('PLG_GROUPS_FORUM_UNSUBSCRIBE_UNABLE_TO_UNSUBSCRIBE'),
+				($option == 0 ? Lang::txt('PLG_GROUPS_FORUM_UNSUBSCRIBE_UNABLE_TO_UNSUBSCRIBE') : Lang::txt('PLG_GROUPS_FORUM_UNSUBSCRIBE_UNABLE_TO_CHANGE')),
 				'error'
 			);
 		}
@@ -2266,7 +2269,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 		// success
 		App::redirect(
 			Route::url($rtrn),
-			Lang::txt('PLG_GROUPS_FORUM_UNSUBSCRIBE_SUCCESSFULLY_UNSUBSCRIBED')
+			($option == 0 ? Lang::txt('PLG_GROUPS_FORUM_UNSUBSCRIBE_SUCCESSFULLY_UNSUBSCRIBED') : Lang::txt('PLG_GROUPS_FORUM_UNSUBSCRIBE_SUCCESSFULLY_CHANGED'))
 		);
 	}
 

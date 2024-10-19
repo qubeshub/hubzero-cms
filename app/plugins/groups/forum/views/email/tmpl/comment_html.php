@@ -9,8 +9,14 @@
 defined('_HZEXEC_') or die();
 
 $base = rtrim(Request::base(), '/');
-$sef  = Route::url($this->thread->link());
-$link = $base . '/' . trim($sef, '/');
+
+$thread_link = $base . '/' . trim(Route::url($this->thread->link()), '/');
+$comment_link = $base . '/' . trim(Route::url($this->thread->link('permalink', array('limit' => 1000)) . '#c' . $this->post->id), '/');
+$category_link = $base . '/' . trim(Route::url($this->category->link()), '/');
+$section_link = $base . '/' . trim(Route::url($this->section->link()), '/');
+									
+// get the group
+$groupLink = rtrim(Request::base(), '/') . '/groups/' . $this->group->get('cn');
 
 $bgcolor = '#f1f1f1';
 $bdcolor = '#e1e1e1';
@@ -43,18 +49,14 @@ $bdcolor = '#e1e1e1';
 	<table class="tbl-header" width="100%" cellpadding="0" cellspacing="0" border="0">
 		<tbody>
 			<tr>
-				<td width="10%" align="left" valign="bottom" nowrap="nowrap" class="sitename">
-					<?php echo Config::get('sitename'); ?>
+				<td width="1%" align="left" valign="middle">
+					<img src="https://qubeshub.org/app/site/media/images/emails/comment-solid.png" width="24" height="24" style="border:none;" alt="Comment icon"/>
 				</td>
-				<td width="80%" align="left" valign="bottom" class="tagline mobilehide">
-					<span class="home">
-						<a href="<?php echo Request::base(); ?>"><?php echo Request::base(); ?></a>
-					</span>
-					<br />
-					<span class="description"><?php echo Config::get('MetaDesc'); ?></span>
+				<td width="9%" align="right" valign="bottom" nowrap="nowrap" class="component left">
+					Forum Post
 				</td>
-				<td width="10%" align="right" valign="bottom" nowrap="nowrap" class="component">
-					<?php echo Lang::txt('COM_GROUPS'); ?>
+				<td width="90%" align="right" valign="bottom" nowrap="nowrap" class="sitename group">
+					<?php echo $this->group->get('description'); ?>
 				</td>
 			</tr>
 		</tbody>
@@ -71,72 +73,30 @@ $bdcolor = '#e1e1e1';
 	</table>
 	<!-- End Spacer -->
 
-	<table id="ticket-info" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; border: 1px solid <?php echo $bdcolor; ?>; background: <?php echo $bgcolor; ?>; font-size: 0.9em; line-height: 1.6em; background-image: -webkit-gradient(linear, 0 0, 100% 100%,
-										color-stop(.25, rgba(255, 255, 255, .075)), color-stop(.25, transparent),
-										color-stop(.5, transparent), color-stop(.5, rgba(255, 255, 255, .075)),
-										color-stop(.75, rgba(255, 255, 255, .075)), color-stop(.75, transparent),
-										to(transparent));
-	background-image: -webkit-linear-gradient(-45deg, rgba(255, 255, 255, .075) 25%, transparent 25%,
-									transparent 50%, rgba(255, 255, 255, .075) 50%, rgba(255, 255, 255, .075) 75%,
-									transparent 75%, transparent);
-	background-image: -moz-linear-gradient(-45deg, rgba(255, 255, 255, .075) 25%, transparent 25%,
-									transparent 50%, rgba(255, 255, 255, .075) 50%, rgba(255, 255, 255, .075) 75%,
-									transparent 75%, transparent);
-	background-image: -ms-linear-gradient(-45deg, rgba(255, 255, 255, .075) 25%, transparent 25%,
-									transparent 50%, rgba(255, 255, 255, .075) 50%, rgba(255, 255, 255, .075) 75%,
-									transparent 75%, transparent);
-	background-image: -o-linear-gradient(-45deg, rgba(255, 255, 255, .075) 25%, transparent 25%,
-									transparent 50%, rgba(255, 255, 255, .075) 50%, rgba(255, 255, 255, .075) 75%,
-									transparent 75%, transparent);
-	background-image: linear-gradient(-45deg, rgba(255, 255, 255, .075) 25%, transparent 25%,
-									transparent 50%, rgba(255, 255, 255, .075) 50%, rgba(255, 255, 255, .075) 75%,
-									transparent 75%, transparent);
-									-webkit-background-size: 30px 30px;
-									-moz-background-size: 30px 30px;
-									background-size: 30px 30px;">
-		<?php /*<thead class="mobilehide">
-			<tr>
-				<th style="font-weight: normal; border-bottom: 1px solid <?php echo $bdcolor; ?>; padding: 8px; text-align: left" align="left">
-					<?php echo $this->escape($this->thread->get('title')); ?>
-				</th>
-			</tr>
-		</thead> */?>
+	<table id="ticket-info" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; border: 1px solid <?php echo $bdcolor; ?>; background: <?php echo $bgcolor; ?>; font-size: 0.9em; line-height: 1.6em;">
 		<tbody>
 			<tr>
 				<td width="100%" style="padding: 8px;">
-					<div class="mobilehide" id="ticket-number" style="float: left; font-weight: bold; text-align: center; padding: 10px;" align="center">
-						<?php if ($this->group->get('logo')) {
-							?><img src="<?php echo rtrim(Request::root(), '/') . '/' . ltrim($this->group->getLogo(), '/'); ?>" width="100" alt="<?php echo $this->escape($this->group->get('description')); ?>" /><?php
-						} else {
-							?><div style="width: 1.2em; font-size: 4em; padding: 20px;">&#8220;</div><?php
-						}
-						?>
-					</div>
-					<table style="border-collapse: collapse; font-size: 0.9em;" cellpadding="0" cellspacing="0" border="0">
+					<table style="border-collapse: collapse; font-size: 1.1em;" cellpadding="0" cellspacing="0" border="0">
 						<tbody>
+							<?php if ($this->group->get('logo')) { ?>
 							<tr>
-								<th style="text-align: right; padding: 0 0.5em; font-weight: bold; white-space: nowrap;" align="right"><?php echo Lang::txt('PLG_GROUPS_FORUM_DETAILS_THREAD'); ?>:</th>
-								<td style="text-align: left; padding: 0 0.5em;" align="left"><?php echo $this->escape($this->thread->get('title')); ?></td>
+								<td valign="top" rowspan="4">
+									<img style="max-height: 75px; max-width: 100px; width: auto; height: auto;" src="<?php echo rtrim(Request::root(), '/') . '/' . ltrim($this->group->getLogo(), '/'); ?>" alt="<?php echo $this->escape($this->group->get('description')); ?>" />
+								</td>
+							</tr>
+							<?php } ?>
+							<tr>
+								<th style="text-align: right; padding: 0 0.5em 0 0.75em; font-weight: bold; white-space: nowrap;" align="right"><?php echo Lang::txt('PLG_GROUPS_FORUM_DETAILS_SECTION'); ?>:</th>
+								<td style="text-align: left; padding: 0 0.5em;" align="left"><a href="<?php echo $section_link; ?>"><?php echo $this->escape($this->section->get('title')); ?></a></td>
 							</tr>
 							<tr>
-								<th style="text-align: right; padding: 0 0.5em; font-weight: bold; white-space: nowrap;" align="right"><?php echo Lang::txt('PLG_GROUPS_FORUM_DETAILS_CREATED'); ?>:</th>
-								<td style="text-align: left; padding: 0 0.5em;" align="left"><?php echo Lang::txt('PLG_GROUPS_FORUM_CREATED', $this->thread->created('time'), $this->thread->created('date')); ?></td>
+								<th style="text-align: right; padding: 0 0.5em 0 0.75em; font-weight: bold; white-space: nowrap;" align="right"><?php echo Lang::txt('PLG_GROUPS_FORUM_DETAILS_CATEGORY'); ?>:</th>
+								<td style="text-align: left; padding: 0 0.5em;" align="left"><a href="<?php echo $category_link; ?>"><?php echo $this->escape($this->category->get('title')); ?></a></td>
 							</tr>
 							<tr>
-								<th style="text-align: right; padding: 0 0.5em; font-weight: bold; white-space: nowrap;" align="right"><?php echo Lang::txt('PLG_GROUPS_FORUM_DETAILS_GROUP'); ?>:</th>
-								<td style="text-align: left; padding: 0 0.5em;" align="left"><?php echo $this->escape($this->group->get('description')); ?></td>
-							</tr>
-							<tr>
-								<th style="text-align: right; padding: 0 0.5em; font-weight: bold; white-space: nowrap;" align="right"><?php echo Lang::txt('PLG_GROUPS_FORUM_DETAILS_SECTION'); ?>:</th>
-								<td style="text-align: left; padding: 0 0.5em;" align="left"><?php echo $this->escape($this->section->get('title')); ?></td>
-							</tr>
-							<tr>
-								<th style="text-align: right; padding: 0 0.5em; font-weight: bold; white-space: nowrap;" align="right"><?php echo Lang::txt('PLG_GROUPS_FORUM_DETAILS_CATEGORY'); ?>:</th>
-								<td style="text-align: left; padding: 0 0.5em;" align="left"><?php echo $this->escape($this->category->get('title')); ?></td>
-							</tr>
-							<tr>
-								<th style="text-align: right; padding: 0 0.5em; font-weight: bold; white-space: nowrap;" align="right"><?php echo Lang::txt('PLG_GROUPS_FORUM_DETAILS_LINK'); ?>:</th>
-								<td style="text-align: left; padding: 0 0.5em;" align="left"><a href="<?php echo $link; ?>"><?php echo $link; ?></a></td>
+								<th style="text-align: right; vertical-align: top; padding: 0 0.5em 0 0.75em; font-weight: bold; white-space: nowrap;" align="right"><?php echo Lang::txt('PLG_GROUPS_FORUM_DETAILS_THREAD'); ?>:</th>
+								<td style="text-align: left; padding: 0 0.5em;" align="left"><a href="<?php echo $thread_link; ?>"><?php echo $this->escape($this->thread->get('title')); ?></a></td>
 							</tr>
 						</tbody>
 					</table>
@@ -145,43 +105,63 @@ $bdcolor = '#e1e1e1';
 		</tbody>
 	</table>
 
-	<table width="100%" id="ticket-comments" style="border-collapse: collapse; margin: 2em 0 0 0; padding: 0" cellpadding="0" cellspacing="0" border="0">
+	<table width="100%" id="ticket-comments" style="border-collapse: collapse; margin: 2em 0 0 0; padding: 0; line-height: 1.1em;" cellpadding="0" cellspacing="0" border="0">
 		<tbody>
 			<tr>
-				<th style="text-align: left;" align="left"><?php echo (!$this->post->get('anonymous')) ? $this->post->creator->get('name') : Lang::txt('JANONYMOUS'); ?></th>
-				<th class="timestamp" style="color: #999; text-align: right;" align="right"><span class="mobilehide"><?php echo Lang::txt('PLG_GROUPS_FORUM_CREATED', $this->post->created('time'), $this->post->created('date')); ?></span></th>
-			</tr>
-			<tr>
-				<td colspan="2" style="padding: 0 2em;">
-					<div style="line-height: 1.6em; margin: 0; padding: 0; text-align: left;"><?php echo $this->post->comment; ?></div>
-					<?php
-					$attachments = $this->post->attachments()
-						->whereIn('state', array(Components\Forum\Models\Post::STATE_PUBLISHED))
-						->rows();
-
-					if ($attachments->count() > 0) { ?>
-						<div class="comment-attachments" style="margin: 2em 0 0 0; padding: 0; text-align: left;">
+				<td width="75" valign="top" style="padding-top: 10px;">
+					<img width="50" src="<?php echo Request::root() . '/members/' . $this->post->created_by . '/Image:thumb.png'; ?>" alt="Post author"/>
+				</td>
+				<td style="padding: 10px 0;">
+					<div style="position: relative; border: 1px solid #CCCCCC; padding: 12px; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;">
+						<div style="background: #FFFFFF; border: 1px solid #CCCCCC; width: 15px; height: 15px;
+							position: absolute; top: 24px; left: -10px; margin-top: -7px;
+							transform:rotate(45deg); -ms-transform:rotate(45deg); -webkit-transform:rotate(45deg);"></div>
+						<div style="background: #FFFFFF; width: 11px; height: 23px; position: absolute; top: 24px; left: -1px; margin-top: -10px;"></div>
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<th style="text-align: left;" align="left">
+									<strong><a href="<?php echo Request::root() . 'members/' . $this->post->created_by; ?>"><?php echo (!$this->post->get('anonymous')) ? $this->post->creator->get('name') : Lang::txt('JANONYMOUS'); ?></a></strong>
+								</th>
+								<th style="text-align: right; color: #666; font-size: 0.9em;"" align="right">
+									<?php echo Lang::txt('PLG_GROUPS_FORUM_CREATED', $this->post->created('time'), $this->post->created('date')); ?>
+								</th>
+							</tr>
+						</table>
+						<div style="padding: 0 0.5em;">
+							<?php echo $this->post->comment; ?>
 							<?php
-							foreach ($attachments as $attachment)
-							{
-								if (!trim($attachment->get('description')))
-								{
-									$attachment->set('description', $attachment->get('filename'));
-								}
-								echo '<p class="attachment" style="margin: 0.5em 0; padding: 0; text-align: left;"><a class="' . ($attachment->isImage() ? 'img' : 'file') . '" data-filename="' . $attachment->get('filename') . '" href="' . $base . '/' . trim(Route::url($this->thread->link()), '/') . '/' . $attachment->get('post_id') . '/' . $attachment->get('filename') . '">' . $attachment->get('description') . '</a></p>';
-							}
-							?>
-						</div><!-- / .comment-body -->
-					<?php } ?>
+							$attachments = $this->post->attachments()
+								->whereIn('state', array(Components\Forum\Models\Post::STATE_PUBLISHED))
+								->rows();
+
+							if ($attachments->count() > 0) { ?>
+								<div class="comment-attachments" style="margin: 2em 0 0 0; padding: 0; text-align: left;">
+									<span><strong>Attachments:</strong></span>
+									<?php
+									foreach ($attachments as $attachment)
+									{
+										if (!trim($attachment->get('description')))
+										{
+											$attachment->set('description', $attachment->get('filename'));
+										}
+										echo '<p class="attachment" style="margin: 0.5em 0; padding: 0 0 0 0.5em; text-align: left;"><a class="' . ($attachment->isImage() ? 'img' : 'file') . '" data-filename="' . $attachment->get('filename') . '" href="' . $base . '/' . trim(Route::url($this->thread->link()), '/') . '/' . $attachment->get('post_id') . '/' . $attachment->get('filename') . '">' . $attachment->get('description') . '</a></p>';
+									}
+									?>
+								</div>
+							<?php } ?>
+						</div>
+						<table width="100%" cellpadding="0" cellspacing="0" border="0">
+							<tr>
+								<td>
+								</td>
+								<td style="text-align: right; color: #666; font-size: 0.8em;"" align="right">
+									<a href="<?php echo $comment_link; ?>">View this post on <?php echo Config::get('sitename'); ?></a>
+								</td>
+							</tr>
+						</table>
+					</div>
 				</td>
 			</tr>
-			<?php if ($this->unsubscribe) { ?>
-				<tr>
-					<td colspan="2" style="padding: 2em 0 0 0; font-size: 0.9em;">
-						<?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_UNSUBSCRIBE'); ?>:<br /><a href="<?php echo $this->get('unsubscribe'); ?>"><?php echo $this->get('unsubscribe'); ?></a>
-					</td>
-				</tr>
-			<?php } ?>
 		</tbody>
 	</table>
 
@@ -194,3 +174,19 @@ $bdcolor = '#e1e1e1';
 		</tbody>
 	</table>
 	<!-- End Spacer -->
+
+	<!-- Start Footer -->
+	<?php if ($this->unsubscribe) { ?>
+	<table class="tbl-footer group" width="100%" cellpadding="0" cellspacing="0" border="0">
+		<tbody>
+			<tr>
+				<td align="center" valign="bottom">
+					<span>You received this message because you subscribed to the <a href="<?php echo $groupLink; ?>"><?php echo $this->group->get('description'); ?></a> forum on <a href="<?php echo Request::base(); ?>"><?php echo Config::get('sitename'); ?></a>.</span><br />
+					<span>Change your forum notifications to a <a href="<?php echo $this->get('unsubscribe'); ?>&o=2">daily</a> / <a href="<?php echo $this->get('unsubscribe'); ?>&o=3">weekly</a> / <a href="<?php echo $this->get('unsubscribe'); ?>&o=4">monthly</a> digest.</span><br />
+					<span><a href="<?php echo $this->get('unsubscribe'); ?>">Unsubscribe</a> from <a href="<?php echo $groupLink; ?>"><?php echo $this->group->get('description'); ?></a> forum posts.
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<?php } ?>
+	<!-- End Footer -->
