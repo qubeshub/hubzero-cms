@@ -79,7 +79,7 @@ if ($this->announcement->priority == 1)
 		</tbody>
 	</table>
 
-	<table id="announcement" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; line-height: 1.1em; margin: 1em 0 0 0">
+	<table id="announcement" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse; line-height: 1.2em; margin: 1em 0 0 0">
 		<tbody>
 			<tr>
 				<td>
@@ -95,19 +95,11 @@ if ($this->announcement->priority == 1)
 				</td>
 			</tr>
 			<tr>
-				<td>
-					<table width="100%" style="border-collapse: collapse; padding: 0 1em 0 1em;" cellpadding="0" cellspacing="0" border="0">
-						<tbody>
-							<tr>
-								<td>
-								</td>
-								<td style="text-align: right; color: #666; font-size: 0.8em; padding: 0 1em 0 1em;" align="right">
-									<a href="<?php echo $groupLink . '/announcements'; ?>">View this announcement on <?php echo Config::get('sitename'); ?></a>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</td>
+                <td align="center" style="padding-top:10px;">
+					<a href="<?php echo $groupLink . '/announcements'; ?>" style="display: inline-block; padding: 12px 24px; color: white; background-color: #597F2F; text-decoration: none; border-radius: 5px; border: 1px solid #597F2F;">
+						View announcement on <?php echo Config::get('sitename'); ?>
+					</a>
+                </td>
 			</tr>
 		</tbody>
 	</table>

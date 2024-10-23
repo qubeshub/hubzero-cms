@@ -105,7 +105,7 @@ $bdcolor = '#e1e1e1';
 		</tbody>
 	</table>
 
-	<table width="100%" id="ticket-comments" style="border-collapse: collapse; margin: 2em 0 0 0; padding: 0; line-height: 1.1em;" cellpadding="0" cellspacing="0" border="0">
+	<table width="100%" id="ticket-comments" style="border-collapse: collapse; margin: 2em 0 0 0; padding: 0; line-height: 1.2em;" cellpadding="0" cellspacing="0" border="0">
 		<tbody>
 			<tr>
 				<td width="75" valign="top" style="padding-top: 10px;">
@@ -150,17 +150,15 @@ $bdcolor = '#e1e1e1';
 								</div>
 							<?php } ?>
 						</div>
-						<table width="100%" cellpadding="0" cellspacing="0" border="0">
-							<tr>
-								<td>
-								</td>
-								<td style="text-align: right; color: #666; font-size: 0.8em;"" align="right">
-									<a href="<?php echo $comment_link; ?>">View this post on <?php echo Config::get('sitename'); ?></a>
-								</td>
-							</tr>
-						</table>
 					</div>
 				</td>
+			</tr>
+			<tr>
+                <td colspan="2" align="center" style="padding-top:10px;">
+					<a href="<?php echo $comment_link; ?>" style="display: inline-block; padding: 12px 24px; color: white; background-color: #597F2F; text-decoration: none; border-radius: 5px; border: 1px solid #597F2F;">
+						View post on <?php echo Config::get('sitename'); ?>
+					</a>
+                </td>
 			</tr>
 		</tbody>
 	</table>
@@ -182,8 +180,9 @@ $bdcolor = '#e1e1e1';
 			<tr>
 				<td align="center" valign="bottom">
 					<span>You received this message because you subscribed to the <a href="<?php echo $groupLink; ?>"><?php echo $this->group->get('description'); ?></a> forum on <a href="<?php echo Request::base(); ?>"><?php echo Config::get('sitename'); ?></a>.</span><br />
+					<span>You are currently receiving individual emails for each forum post.</span><br />
 					<span>Change your forum notifications to a <a href="<?php echo $this->get('unsubscribe'); ?>&o=2">daily</a> / <a href="<?php echo $this->get('unsubscribe'); ?>&o=3">weekly</a> / <a href="<?php echo $this->get('unsubscribe'); ?>&o=4">monthly</a> digest.</span><br />
-					<span><a href="<?php echo $this->get('unsubscribe'); ?>">Unsubscribe</a> from <a href="<?php echo $groupLink; ?>"><?php echo $this->group->get('description'); ?></a> forum posts.
+					<span><a href="<?php echo $this->get('unsubscribe'); ?>">Unsubscribe</a> from all <a href="<?php echo $groupLink; ?>"><?php echo $this->group->get('description'); ?></a> forum posts.
 				</td>
 			</tr>
 		</tbody>

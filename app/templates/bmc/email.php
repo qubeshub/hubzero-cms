@@ -182,6 +182,7 @@ $tblColor = '#ffffff';
 		}
 		table.tbl-footer table.social table tr td:nth-child(2) {
 			padding-left: 5px;
+			padding-top: 3px;
 		}
 
 		@media only screen and (max-device-width: 480px) {
@@ -268,7 +269,7 @@ $tblColor = '#ffffff';
 											<tbody>
 												<tr> <!-- Donation -->
 													<td align="center" valign="bottom">
-														<span>Check out our <a href="https://secure.givelively.org/donate/bioquest-curriculum-consortium" style="color:#0000FF;text-decoration:underline;" title="donation page">donation page</a> to learn how to support <a href="<?php echo Request::base(); ?>"><?php echo Config::get('sitename'); ?></a> and <a href="<?php echo Request::base(); ?>groups/bioquest">BioQUEST</a>.</span>
+														<span>Check out our <a href="https://secure.givelively.org/donate/bioquest-curriculum-consortium" style="color:#0000FF;text-decoration:underline;" title="donation page">donation page</a> to support <a href="<?php echo Request::base(); ?>groups/bioquest">BioQUEST</a>, the organization that hosts the <a href="<?php echo Request::base(); ?>"><?php echo Config::get('sitename'); ?></a> platform.</span>
 													</td>
 												</tr> <!-- Donation -->
 												<tr>
@@ -288,72 +289,72 @@ $tblColor = '#ffffff';
 															</thead>
 															<tbody>
 																<tr>
-																	<td align="center" valign="top">
-																		<table width="100px" cellpadding="0" cellspacing="0" border="0">
+																	<td width="25%" align="center" valign="top">
+																		<table cellpadding="0" cellspacing="0" border="0">
 																			<tbody>
 																				<tr>
-																					<td align="center" valign="middle">
+																					<td width="24px" align="center" valign="middle">
 																						<a href="https://www.facebook.com/BioQUESTed" title="Facebook" style="color:#0000FF;text-decoration:underline;">
 																							<img src="https://qubeshub.org/app/site/media/images/emails/facebook_email_icon.png" alt="Facebook" width="24" height="24" style="border:none;" />
 																						</a>
 																					</td>
-																					<td align="left" valign="middle">
+																					<td class="mobilehide" align="left" valign="middle">
 																						<a href="https://www.facebook.com/BioQUESTed" title="Facebook" style="color:#0000FF;text-decoration:underline;">
-																							Facebook
+																							<span>Facebook</span>
 																						</a>
 																					</td>
 																				</tr>
 																			</tbody>
 																		</table>
 																	</td>
-																	<td align="center" valign="top">
-																		<table width="100px" cellpadding="0" cellspacing="0" border="0">
+																	<td width="25%" align="center" valign="top">
+																		<table cellpadding="0" cellspacing="0" border="0">
 																			<tbody>
 																				<tr>
-																					<td align="center" valign="middle">
+																					<td width="24px" align="center" valign="middle">
 																						<a href="https://twitter.com/bioquested" title="Twitter/X" style="color:#0000FF;text-decoration:underline;">
 																							<img src="https://qubeshub.org/app/site/media/images/emails/twitter_email_icon.png" alt="Twitter/X" width="24" height="24" style="border:none;" />
 																						</a>
 																					</td>
-																					<td align="left" valign="middle">
+																					<td class="mobilehide" align="left" valign="middle">
 																						<a href="https://twitter.com/bioquested" title="Twitter/X" style="color:#0000FF;text-decoration:underline;">
-																							Twitter/X
+																							<span>Twitter/X</span>
 																						</a>
 																					</td>
 																				</tr>
 																			</tbody>
 																		</table>
 																	</td>
-																	<td align="center" valign="top">
-																		<table width="100px" cellpadding="0" cellspacing="0" border="0">
+																	<td width="25%" align="center" valign="top">
+																		<table cellpadding="0" cellspacing="0" border="0">
 																			<tbody>
 																				<tr>
-																					<td align="center" valign="middle">
+																					<td width="24px" align="center" valign="middle">
 																						<a href="https://www.linkedin.com/company/bioquest-curriculum-consortium" title="LinkedIn" style="color:#0000FF;text-decoration:underline;">
 																							<img src="https://qubeshub.org/app/site/media/images/emails/linkedin_email_icon.png" alt="LinkedIn" width="24" height="24" style="border:none;" />
 																						</a>
 																					</td>
-																					<td align="left" valign="middle">
+																					<td class="mobilehide" align="left" valign="middle">
 																						<a href="https://www.linkedin.com/company/bioquest-curriculum-consortium" title="LinkedIn" style="color:#0000FF;text-decoration:underline;">
-																							LinkedIn
+																							<span>LinkedIn</span>
 																						</a>
 																					</td>
 																				</tr>
 																			</tbody>
 																		</table>
 																	</td>
-																	<td align="center" valign="top">
-																		<table width="100px" cellpadding="0" cellspacing="0" border="0">
+																	<td width="25%" align="center" valign="top">
+																		<table cellpadding="0" cellspacing="0" border="0">
 																			<tbody>
 																				<tr>
-																					<td align="center" valign="middle">
+																					<td width="24px" align="center" valign="middle">
 																						<a href="https://www.instagram.com/bioquested" title="LinkedIn" style="color:#0000FF;text-decoration:underline;">
 																							<img src="https://qubeshub.org/app/site/media/images/emails/instagram_email_icon.png" alt="LinkedIn" width="24" height="24" style="border:none;" />
 																						</a>
 																					</td>
-																					<td align="left" valign="middle">
+																					<td class="mobilehide" align="left" valign="middle">
 																						<a href="https://www.instagram.com/bioquested" title="LinkedIn" style="color:#0000FF;text-decoration:underline;">
-																							Instagram
+																							<span>Instagram</span>
 																						</a>
 																					</td>
 																				</tr>
