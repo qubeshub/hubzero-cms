@@ -108,21 +108,17 @@ $bdcolor = '#e1e1e1';
 	<table width="100%" id="ticket-comments" style="border-collapse: collapse; margin: 2em 0 0 0; padding: 0; line-height: 1.2em;" cellpadding="0" cellspacing="0" border="0">
 		<tbody>
 			<tr>
-				<td width="75" valign="top" style="padding-top: 10px;">
-					<img width="50" src="<?php echo Request::root() . '/members/' . $this->post->created_by . '/Image:thumb.png'; ?>" alt="Post author"/>
-				</td>
 				<td style="padding: 10px 0;">
 					<div style="position: relative; border: 1px solid #CCCCCC; padding: 12px; -webkit-border-radius: 4px; -moz-border-radius: 4px; border-radius: 4px;">
-						<div style="background: #FFFFFF; border: 1px solid #CCCCCC; width: 15px; height: 15px;
-							position: absolute; top: 24px; left: -10px; margin-top: -7px;
-							transform:rotate(45deg); -ms-transform:rotate(45deg); -webkit-transform:rotate(45deg);"></div>
-						<div style="background: #FFFFFF; width: 11px; height: 23px; position: absolute; top: 24px; left: -1px; margin-top: -10px;"></div>
 						<table width="100%" cellpadding="0" cellspacing="0" border="0">
 							<tr>
-								<th style="text-align: left;" align="left">
+								<th width="50px" style="text-align: left;" align="left" valign="left">
+									<img width="50" src="<?php echo Request::root() . '/members/' . $this->post->created_by . '/Image:thumb.png'; ?>" alt="Post author"/>
+								</th>
+								<th style="text-align: left; padding-left: 10px;" align="left" valign="top">
 									<strong><a href="<?php echo Request::root() . 'members/' . $this->post->created_by; ?>"><?php echo (!$this->post->get('anonymous')) ? $this->post->creator->get('name') : Lang::txt('JANONYMOUS'); ?></a></strong>
 								</th>
-								<th style="text-align: right; color: #666; font-size: 0.9em;"" align="right">
+								<th style="text-align: right; color: #666; font-size: 0.9em;"" align="right" valign="top">
 									<?php echo Lang::txt('PLG_GROUPS_FORUM_CREATED', $this->post->created('time'), $this->post->created('date')); ?>
 								</th>
 							</tr>
