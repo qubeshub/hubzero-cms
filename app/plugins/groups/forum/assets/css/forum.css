@@ -239,20 +239,20 @@
 		width: 50%;
 	}
 
-	.instructions {
+	.group_forum .instructions {
 		width: 30em;
 		margin: 90px auto;
 		padding: 5em 0 0 0;
 		text-align: center;
 		position: relative;
 	}
-	.instructions p {
+	.group_forum .instructions p {
 		font-size: 1.5em;
 		line-height: 1.8em;
 		font-weight: 300;
 		margin: 0 0 2em 0;
 	}
-	.instructions:before {
+	.group_forum .instructions:before {
 		position: absolute;
 		top: 0px;
 		left: 50%;
@@ -261,21 +261,21 @@
 		content: "\f086";
 		font-family: "Fontcons";
 	}
-	.instructions legend,
-	.instructions label {
+	.group_forum .instructions legend,
+	.group_forum .instructions label {
 		display: none;
 	}
-	.instructions .input-wrap {
+	.group_forum .instructions .input-wrap {
 		display: table;
 		width: 100%;
 	}
-	.instructions .input-cell {
+	.group_forum .instructions .input-cell {
 		display: table-cell;
 	}
-	.instructions .input-cell input[type=text] {
+	.group_forum .instructions .input-cell input[type=text] {
 		width: 100%;
 	}
-	.instructions .input-cell:last-child {
+	.group_forum .instructions .input-cell:last-child {
 		width: 5.75em;
 		text-align: right;
 	}
