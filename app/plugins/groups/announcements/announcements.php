@@ -440,12 +440,13 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 		// Does user want to email and should we email yet?
 		if ($email === true && $model->inPublishWindow())
 		{
-			// Email announcement
-			self::send($model, $this->group);
-
 			// Set that we sent it and resave
+			// Save before send to avoid double send with cron job
 			$model->set('sent', 1);
 			$model->save();
+
+			// Email announcement
+			self::send($model, $this->group);
 		}
 
 		$url = 'index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=' . $this->_name;
