@@ -120,7 +120,9 @@ if ($this->announcement->priority == 1)
 			<tr>
 				<td align="center" valign="bottom">
 					<span>You received this message because you are a member of the <a href="<?php echo $groupLink; ?>"><?php echo $group->get('description'); ?></a> group on <a href="<?php echo Request::base(); ?>"><?php echo Config::get('sitename'); ?></a>.</span><br />
-					<span>To unsubscribe from <a href="<?php echo $groupLink; ?>"><?php echo $group->get('description'); ?></a> announcements, you must <a href="<?php echo $groupLink . '/cancel'; ?>">cancel your group membership</a>.
+					<?php if ($this->unsubscribeLink) { ?>
+						<span>To <a href="<?php echo $this->unsubscribeLink; ?>">unsubscribe</a> from <a href="<?php echo $groupLink; ?>"><?php echo $group->get('description'); ?></a> announcements, you must <a href="<?php echo $this->unsubscribeLink; ?>">cancel your group membership</a>.
+					<?php } ?>
 				</td>
 			</tr>
 		</tbody>

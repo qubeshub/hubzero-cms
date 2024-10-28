@@ -139,6 +139,9 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 			'metadata' => array()
 		);
 
+		// Get token (in case we need it depending on action - probably just passing through)
+		$token = Request::getCmd('t', '');
+
 		// Get this area details
 		$this_area = $this->onGroupAreas();
 
@@ -182,7 +185,7 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 				if (User::isGuest()
 				 && ($group_plugin_acl == 'registered' || $group_plugin_acl == 'members'))
 				{
-					$url = Route::url('index.php?option=com_groups&cn=' . $group->get('cn') . '&active=' . $active, false, true);
+					$url = Route::url('index.php?option=com_groups&cn=' . $group->get('cn') . '&active=' . $active . ($action ? '&action=' . $action : '') . ($token ? '&t=' . $token : ''), false, true);
 
 					App::redirect(
 						Route::url('index.php?option=com_users&view=login&return=' . base64_encode($url)),
@@ -214,6 +217,9 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 					break;
 				case 'delete':
 					$arr['html'] .= $this->_delete();
+					break;
+				case 'unsubscribe':
+					$arr['html'] .= $this->_unsubscribe();
 					break;
 				default:
 					$arr['html'] .= $this->_list();
@@ -477,6 +483,61 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 	}
 
 	/**
+	 * Unsubscribe from announcements (i.e. cancel membership)
+	 * 
+	 * @return  void
+	 */
+	public function _unsubscribe()
+	{
+		$rtrn = 'index.php?option=com_groups&cn=' . $this->group->get('cn') . '&active=' . $this->_name;
+
+		// get the token
+		$token = Request::getCmd('t', '');
+
+		//token is required
+		if ($token == '')
+		{
+			App::redirect(
+				Route::url($rtrn),
+				Lang::txt('PLG_GROUPS_ANNOUNCEMENTS_UNSUBSCRIBE_MISSING_TOKEN'),
+				'error'
+			);
+		}
+
+		// Check if guest and force login
+		if (User::isGuest())
+	    {
+		   $url = Route::url($rtrn . '&action=unsubscribe&t=' . $token, false, true);
+
+		   App::redirect(
+			   Route::url('index.php?option=com_users&view=login&return=' . base64_encode($url)),
+			   Lang::txt('PLG_GROUPS_ANNOUNCEMENTS_UNSUBSCRIBE_LOGIN'),
+			   'warning'
+		   );
+		   return;
+	   	}
+
+		$user = User::getInstance();
+		$encryptor = new \Hubzero\Mail\Token();
+		$tokenDetails = $encryptor->decryptEmailToken($token);
+
+		// make sure token details are good (user id and group id are correct)
+		if (empty($tokenDetails) || 
+	   		!isset($tokenDetails[0]) || $user->get('id') != $tokenDetails[0] ||
+		    !isset($tokenDetails[1]) || $this->group->get('gidNumber') != $tokenDetails[1])
+		{
+			App::redirect(
+				Route::url($rtrn),
+				Lang::txt('PLG_GROUPS_ANNOUNCEMENTS_UNSUBSCRIBE_INVALID_TOKEN'),
+				'error'
+			);
+		}
+
+		// remove user from group
+		App::redirect(Route::url('index.php?option=com_groups&cn=' . $this->group->get('cn')) . '/cancel');
+	}
+
+	/**
 	 * Mark an entry as deleted
 	 *
 	 * @return  mixed  An html view on error, redirects on success
@@ -574,7 +635,7 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 					continue;
 				}
 
-				$groupMembers[$profile->get('email')] = $profile->get('name');
+				$groupMembers[$profile->get('id')] = array('email' => $profile->get('email'), 'name' => $profile->get('name'));
 			}
 		}
 
@@ -600,19 +661,9 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 		// Create view object
 		$eview = new Hubzero\Mail\View(array(
 			'base_path' => __DIR__,
-			'name'      => 'email',
-			'layout'    => 'announcement_plain'
+			'name'      => 'email'
 		));
-
-		// Plain text
 		$eview->set('announcement', $announcement);
-		$plain = $eview->loadTemplate(false);
-		$plain = str_replace("\n", "\r\n", $plain);
-
-		// HTML
-		$eview->setLayout('announcement_html');
-		$html = $eview->loadTemplate();
-		$html = str_replace("\n", "\r\n", $html);
 
 		// Set from address
 		$from = array(
@@ -623,10 +674,42 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 		// Define subject
 		$subject = Lang::txt('PLG_GROUPS_ANNOUNCEMENTS_EMAIL_SUBJECT', $group->get('description'));
 
-		foreach ($groupMembers as $email => $name)
+		// Email unsubscribe token
+		$includeUnsubscribe = true;
+		try
 		{
+			$encryptor = new \Hubzero\Mail\Token();
+		}
+		catch (Exception $e)
+		{
+			$includeUnsubscribe = false;
+		}
+		
+		foreach ($groupMembers as $userID => $member)
+		{
+			$email = $member['email'];
+			$name = $member['name'];
+
 			// Create message object
 			$message = new Hubzero\Mail\Message();
+
+			$unsubscribeLink = '';
+			if ($includeUnsubscribe)
+			{
+				$unsubscribeToken = $encryptor->buildEmailToken(1, 3, $userID, $group->get('gidNumber'));
+				$unsubscribeLink  = rtrim(Request::base(), '/') . '/groups/' . $group->get('cn') . '/announcements/unsubscribe?t=' . $unsubscribeToken;
+			}
+			$eview->set('unsubscribeLink', $unsubscribeLink);
+
+			// Plain text
+			$eview->setLayout('announcement_plain');
+			$plain = $eview->loadTemplate();
+			$plain = str_replace("\n", "\r\n", $plain);
+
+			// HTML
+			$eview->setLayout('announcement_html');
+			$html = $eview->loadTemplate();
+			$html = str_replace("\n", "\r\n", $html);
 
 			// Set message details and send
 			$message->setSubject($subject)
