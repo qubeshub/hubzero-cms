@@ -2211,6 +2211,9 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 		// get the token
 		$token = Request::getCmd('t', '');
 
+		// Get the option, if it exists
+		$option = Request::getInt('o', 0);
+
 		//token is required
 		if ($token == '')
 		{
@@ -2221,17 +2224,26 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 			);
 		}
 
-		// Get the option, if it exists
-		$option = Request::getInt('o', 0);
+		// Check if guest and force login
+		if (User::isGuest())
+	    {
+		   $url = Route::url($rtrn . '&action=unsubscribe&t=' . $token . '&o=' . $option, false, true);
 
-		// get the token lib
+		   App::redirect(
+			   Route::url('index.php?option=com_users&view=login&return=' . base64_encode($url)),
+			   Lang::txt('PLG_GROUPS_FORUM_UNSUBSCRIBE_LOGIN'),
+			   'warning'
+		   );
+		   return;
+	   	}
+
 		$encryptor = new \Hubzero\Mail\Token();
-
-		// get token details
 		$tokenDetails = $encryptor->decryptEmailToken($token);
 
-		// make sure token details are good
-		if (empty($tokenDetails) || !isset($tokenDetails[1]) || $this->group->get('gidNumber') != $tokenDetails[1])
+		// make sure token details are good (user id and group id are correct)
+		if (empty($tokenDetails) || 
+	   		!isset($tokenDetails[0]) || User::get('id') != $tokenDetails[0] ||
+		    !isset($tokenDetails[1]) || $this->group->get('gidNumber') != $tokenDetails[1])
 		{
 			App::redirect(
 				Route::url($rtrn),
@@ -2240,7 +2252,18 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 			);
 		}
 
-		// neede member option lib
+		$members = $this->group->get('members');
+		// member of group?
+		if (!in_array(User::get('id'), $members))
+		{
+			App::redirect(
+				Route::url($rtrn),
+				Lang::txt('PLG_GROUPS_FORUM_UNSUBSCRIBE_NOT_MEMBER'),
+				'error'
+			);
+		}
+
+		// need member option lib
 		include_once PATH_APP . DS . 'plugins' . DS . 'groups' . DS . 'memberoptions' . DS . 'models' . DS . 'memberoption.php';
 
 		// Find the user's group settings, do they want to get email (0 or 1)?

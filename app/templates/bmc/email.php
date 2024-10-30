@@ -267,13 +267,16 @@ $tblColor = '#ffffff';
 										<!-- Start Footer -->
 										<table class="tbl-footer" width="100%" cellpadding="0" cellspacing="0" border="0">
 											<tbody>
-												<tr> <!-- Donation -->
-													<td align="center" valign="bottom">
-														<span>Check out our <a href="https://secure.givelively.org/donate/bioquest-curriculum-consortium" style="color:#0000FF;text-decoration:underline;" title="donation page">donation page</a> to support <a href="<?php echo Request::base(); ?>groups/bioquest">BioQUEST</a>, the organization that hosts the <a href="<?php echo Request::base(); ?>"><?php echo Config::get('sitename'); ?></a> platform.</span>
+												<tr> <!-- Who are we -->
+													<td align="center" valign="middle">
+														<span>
+															<a href="<?php echo Request::root(); ?>groups/bioquest" title="BioQUEST" style="color:#0000FF;text-decoration:underline;"><img src="https://qubeshub.org/app/site/media/images/emails/bioquest_logo_transparent.png" alt="BioQUEST logo" title="BioQUEST" height="30" style="border:none; vertical-align: middle; padding: 0 0 2px 0;" /></a>
+															<!-- <a href="<?php echo Request::root(); ?>" title="<?php echo Config::get('sitename'); ?>" style="color:#0000FF;text-decoration:underline;"><img src="https://qubeshub.org/app/site/media/images/emails/qubes_bioquest_logo.png" alt="QUBES logo" title="QUBES" height="30" style="border:none; vertical-align: middle; padding-bottom: 0 0 2px 20px;" /></a> -->
+														</span>
 													</td>
-												</tr> <!-- Donation -->
+												</tr>
 												<tr>
-													<td align="center" valign="bottom">
+													<td align="center" valign="bottom" style="padding: 0;">
 														<span><a href="https://qubeshub.org/news/newsletter/subscribe" title="Newsletter Subscribe" style="color:#0000FF;text-decoration:underline;">Sign up</a> for our newsletter.</span>
 													</td>
 												</tr>
@@ -366,13 +369,18 @@ $tblColor = '#ffffff';
 														</table>
 													</td>
 												</tr> <!-- Socal media -->
+												<tr> <!-- Donation -->
+													<td align="center" valign="bottom">
+														<span>Check out our <a href="https://secure.givelively.org/donate/bioquest-curriculum-consortium" style="color:#0000FF;text-decoration:underline;" title="donation page">donation page</a> to support <a href="<?php echo Request::root(); ?>groups/bioquest">BioQUEST</a>, the organization that hosts the <a href="<?php echo Request::root(); ?>"><?php echo Config::get('sitename'); ?></a> platform.</span>
+													</td>
+												</tr> <!-- Donation -->
 												<tr> <!-- Support ticket -->
-													<td align="center" valign="top">
+													<td align="center" valign="bottom">
 														<span>Comments or concerns? <a href="https://qubeshub.org/support/ticket/new" style="color:#0000FF;text-decoration:underline;">Submit a support ticket</a>.</span>
 													</td>
 												</tr>
 												<tr> <!-- Address -->
-													<td align="center" valign="top">
+													<td align="center" valign="bottom">
 														<table width="100%" cellpadding="0" cellspacing="0" border="0">
 															<tbody>
 																<tr>

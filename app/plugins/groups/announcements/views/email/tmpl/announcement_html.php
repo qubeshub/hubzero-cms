@@ -10,7 +10,7 @@ defined('_HZEXEC_') or die();
 
 // get the group
 $group = \Hubzero\User\Group::getInstance($this->announcement->get('scope_id'));
-$groupLink = rtrim(Request::base(), '/') . '/groups/' . $group->get('cn');
+$groupLink = rtrim(Request::root(), '/') . '/groups/' . $group->get('cn');
 
 // define color
 $bgcolor = '#FBF1BE';
@@ -60,7 +60,7 @@ if ($this->announcement->priority == 1)
 							<?php if ($group->get('logo')) { ?>
 							<tr>
 								<td valign="top" rowspan="3">
-									<img style="max-height: 75px; max-width: 100px; width: auto; height: auto;" src="<?php echo rtrim(Request::root(), '/') . '/' . ltrim($group->getLogo(), '/'); ?>" alt="<?php echo $this->escape($group->get('description')); ?>" />
+									<img style="max-height: 75px; max-width: 100px; width: auto; height: auto;" src="<?php echo rtrim(Request::root(), '/') . '/' . ltrim($group->getLogo('path'), '/'); ?>" alt="<?php echo $this->escape($group->get('description')); ?>" />
 								</td>
 							</tr>
 							<?php } ?>
@@ -119,7 +119,7 @@ if ($this->announcement->priority == 1)
 		<tbody>
 			<tr>
 				<td align="center" valign="bottom">
-					<span>You received this message because you are a member of the <a href="<?php echo $groupLink; ?>"><?php echo $group->get('description'); ?></a> group on <a href="<?php echo Request::base(); ?>"><?php echo Config::get('sitename'); ?></a>.</span><br />
+					<span>You received this message because you are a member of the <a href="<?php echo $groupLink; ?>"><?php echo $group->get('description'); ?></a> group on <a href="<?php echo Request::root(); ?>"><?php echo Config::get('sitename'); ?></a>.</span><br />
 					<?php if ($this->unsubscribeLink) { ?>
 						<span>To <a href="<?php echo $this->unsubscribeLink; ?>">unsubscribe</a> from <a href="<?php echo $groupLink; ?>"><?php echo $group->get('description'); ?></a> announcements, you must <a href="<?php echo $this->unsubscribeLink; ?>">cancel your group membership</a>.
 					<?php } ?>

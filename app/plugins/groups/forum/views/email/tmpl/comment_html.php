@@ -82,7 +82,7 @@ $bdcolor = '#e1e1e1';
 							<?php if ($this->group->get('logo')) { ?>
 							<tr>
 								<td valign="top" rowspan="4">
-									<img style="max-height: 75px; max-width: 100px; width: auto; height: auto;" src="<?php echo rtrim(Request::root(), '/') . '/' . ltrim($this->group->getLogo(), '/'); ?>" alt="<?php echo $this->escape($this->group->get('description')); ?>" />
+									<img style="max-height: 75px; max-width: 100px; width: auto; height: auto;" src="<?php echo rtrim(Request::root(), '/') . '/' . ltrim($this->group->getLogo('path'), '/'); ?>" alt="<?php echo $this->escape($this->group->get('description')); ?>" />
 								</td>
 							</tr>
 							<?php } ?>

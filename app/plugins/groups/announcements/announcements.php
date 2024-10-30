@@ -698,7 +698,7 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 			if ($includeUnsubscribe)
 			{
 				$unsubscribeToken = $encryptor->buildEmailToken(1, 3, $userID, $group->get('gidNumber'));
-				$unsubscribeLink  = rtrim(Request::base(), '/') . '/groups/' . $group->get('cn') . '/announcements/unsubscribe?t=' . $unsubscribeToken;
+				$unsubscribeLink  = rtrim(Request::root(), '/') . '/groups/' . $group->get('cn') . '/announcements/unsubscribe?t=' . $unsubscribeToken;
 			}
 			$eview->set('unsubscribeLink', $unsubscribeLink);
 
