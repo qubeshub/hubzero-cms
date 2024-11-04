@@ -37,45 +37,19 @@ if ($comment)
 <table class="tbl-header" width="100%" cellpadding="0" cellspacing="0" border="0">
 	<tbody>
 		<tr>
-			<td width="10%" align="left" valign="bottom" nowrap="nowrap" class="sitename">
-				<?php echo Config::get('sitename'); ?>
+			<td width="1%" align="left" valign="middle">
+				<img src="https://qubeshub.org/app/site/media/images/emails/book-solid.png" width="24" height="24" style="border:none;" />
 			</td>
-			<td width="80%" align="left" valign="bottom" class="tagline mobilehide">
-				<span class="home">
-					<a href="<?php echo $base; ?>"><?php echo $base; ?></a>
-				</span>
-				<br />
-				<span class="description"><?php echo Config::get('MetaDesc'); ?></span>
+			<td width="9%" align="right" valign="bottom" nowrap="nowrap" class="component left">
+				Resource
 			</td>
-			<td width="10%" align="right" valign="bottom" nowrap="nowrap" class="component">
-				<?php echo Lang::txt('Publications'); ?>
+			<td width="90%" align="right" valign="bottom" class="sitename group">
+				<?php echo $this->subject; ?>
 			</td>
 		</tr>
 	</tbody>
 </table>
 <!-- End Header -->
-
-<!-- Start Spacer -->
-<table class="tbl-spacer" width="100%" cellpadding="0" cellspacing="0" border="0">
-	<tbody>
-		<tr>
-			<td height="30"></td>
-		</tr>
-	</tbody>
-</table>
-<!-- End Spacer -->
-
-<!-- Start Message -->
-<table class="tbl-message" width="100%" cellpadding="0" cellspacing="0" border="0">
-	<tbody>
-		<tr>
-			<td align="left" valign="bottom" style="border-collapse: collapse; color: #666; line-height: 1; padding: 5px; text-align: center;">
-			<?php echo $this->subject; ?>
-			</td>
-		</tr>
-	</tbody>
-</table>
-<!-- End Message -->
 
 <!-- Start Spacer -->
 <table class="tbl-spacer" width="100%" cellpadding="0" cellspacing="0" border="0">

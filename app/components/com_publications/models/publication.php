@@ -2112,7 +2112,7 @@ class Publication extends Obj
 			break;
 
 			case 'curate':
-				$link = $this->_base . '&controller=curation' . '&version=' . $this->get('version_number');
+				$link = 'index.php?option=com_publications&controller=curation' . $id . '&version=' . $this->get('version_number');
 			break;
 
 			case 'version':
