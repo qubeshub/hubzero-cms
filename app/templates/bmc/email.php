@@ -282,7 +282,7 @@ $tblColor = '#ffffff';
 												</tr>
 												<tr> <!-- Socal media -->
 													<td align="center" valign="top">
-														<table class="social" width="100%" cellpadding="0" cellspacing="0" border="0">
+														<table class="social" width="250px" cellpadding="0" cellspacing="0" border="0">
 															<thead>
 																<tr>
 																	<th colspan="4" align="center" valign="top">
@@ -292,93 +292,51 @@ $tblColor = '#ffffff';
 															</thead>
 															<tbody>
 																<tr>
-																	<td width="25%" align="center" valign="top">
-																		<table cellpadding="0" cellspacing="0" border="0">
-																			<tbody>
-																				<tr>
-																					<td width="24px" align="center" valign="middle">
-																						<a href="https://www.facebook.com/BioQUESTed" title="Facebook" style="color:#0000FF;text-decoration:underline;">
-																							<img src="https://qubeshub.org/app/site/media/images/emails/facebook_email_icon.png" alt="Facebook" width="24" height="24" style="border:none;" />
-																						</a>
-																					</td>
-																					<td class="mobilehide" align="left" valign="middle">
-																						<a href="https://www.facebook.com/BioQUESTed" title="Facebook" style="color:#0000FF;text-decoration:underline;">
-																							<span>Facebook</span>
-																						</a>
-																					</td>
-																				</tr>
-																			</tbody>
-																		</table>
+																	<td width="30px" align="center" valign="top">
+																		<a href="https://www.facebook.com/BioQUESTed" title="Facebook" style="color:#0000FF;text-decoration:underline;">
+																			<img src="https://qubeshub.org/app/site/media/images/emails/facebook_email_icon.png" alt="Facebook" width="24" height="24" style="border:none;" />
+																		</a>
 																	</td>
-																	<td width="25%" align="center" valign="top">
-																		<table cellpadding="0" cellspacing="0" border="0">
-																			<tbody>
-																				<tr>
-																					<td width="24px" align="center" valign="middle">
-																						<a href="https://twitter.com/bioquested" title="Twitter/X" style="color:#0000FF;text-decoration:underline;">
-																							<img src="https://qubeshub.org/app/site/media/images/emails/twitter_email_icon.png" alt="Twitter/X" width="24" height="24" style="border:none;" />
-																						</a>
-																					</td>
-																					<td class="mobilehide" align="left" valign="middle">
-																						<a href="https://twitter.com/bioquested" title="Twitter/X" style="color:#0000FF;text-decoration:underline;">
-																							<span>Twitter/X</span>
-																						</a>
-																					</td>
-																				</tr>
-																			</tbody>
-																		</table>
+																	<td width="30px" align="center" valign="top">
+																		<a href="https://twitter.com/bioquested" title="Twitter/X" style="color:#0000FF;text-decoration:underline;">
+																			<img src="https://qubeshub.org/app/site/media/images/emails/twitter_email_icon.png" alt="Twitter/X" width="24" height="24" style="border:none;" />
+																		</a>
 																	</td>
-																	<td width="25%" align="center" valign="top">
-																		<table cellpadding="0" cellspacing="0" border="0">
-																			<tbody>
-																				<tr>
-																					<td width="24px" align="center" valign="middle">
-																						<a href="https://www.linkedin.com/company/bioquest-curriculum-consortium" title="LinkedIn" style="color:#0000FF;text-decoration:underline;">
-																							<img src="https://qubeshub.org/app/site/media/images/emails/linkedin_email_icon.png" alt="LinkedIn" width="24" height="24" style="border:none;" />
-																						</a>
-																					</td>
-																					<td class="mobilehide" align="left" valign="middle">
-																						<a href="https://www.linkedin.com/company/bioquest-curriculum-consortium" title="LinkedIn" style="color:#0000FF;text-decoration:underline;">
-																							<span>LinkedIn</span>
-																						</a>
-																					</td>
-																				</tr>
-																			</tbody>
-																		</table>
+																	<td width="30px" align="center" valign="top">
+																		<a href="https://www.linkedin.com/company/bioquest-curriculum-consortium" title="LinkedIn" style="color:#0000FF;text-decoration:underline;">
+																			<img src="https://qubeshub.org/app/site/media/images/emails/linkedin_email_icon.png" alt="LinkedIn" width="24" height="24" style="border:none;" />
+																		</a>
 																	</td>
-																	<td width="25%" align="center" valign="top">
-																		<table cellpadding="0" cellspacing="0" border="0">
-																			<tbody>
-																				<tr>
-																					<td width="24px" align="center" valign="middle">
-																						<a href="https://www.instagram.com/bioquested" title="LinkedIn" style="color:#0000FF;text-decoration:underline;">
-																							<img src="https://qubeshub.org/app/site/media/images/emails/instagram_email_icon.png" alt="LinkedIn" width="24" height="24" style="border:none;" />
-																						</a>
-																					</td>
-																					<td class="mobilehide" align="left" valign="middle">
-																						<a href="https://www.instagram.com/bioquested" title="LinkedIn" style="color:#0000FF;text-decoration:underline;">
-																							<span>Instagram</span>
-																						</a>
-																					</td>
-																				</tr>
-																			</tbody>
-																		</table>
+																	<td width="30px" align="center" valign="top">
+																		<a href="https://www.instagram.com/bioquested" title="LinkedIn" style="color:#0000FF;text-decoration:underline;">
+																			<img src="https://qubeshub.org/app/site/media/images/emails/instagram_email_icon.png" alt="LinkedIn" width="24" height="24" style="border:none;" />
+																		</a>
 																	</td>
 																</tr>
 															</tbody>
 														</table>
 													</td>
 												</tr> <!-- Socal media -->
-												<tr> <!-- Donation -->
+												<tr> <!-- QUBES platform -->
 													<td align="center" valign="bottom">
-														<span>Check out our <a href="https://secure.givelively.org/donate/bioquest-curriculum-consortium" style="color:#0000FF;text-decoration:underline;" title="donation page">donation page</a> to support <a href="<?php echo Request::root(); ?>groups/bioquest">BioQUEST</a>, the organization that hosts the <a href="<?php echo Request::root(); ?>"><?php echo Config::get('sitename'); ?></a> platform.</span>
+														<span>BioQUEST is proud to host the <a href="<?php echo Request::root(); ?>"><?php echo Config::get('sitename'); ?></a> platform.</span>
 													</td>
-												</tr> <!-- Donation -->
+												</tr> <!-- QUBES platform -->
+												<tr> <!-- QUBES platform logo -->
+													<td align="center" valign="bottom">
+														<a href="<?php echo Request::root(); ?>" title="<?php echo Config::get('sitename'); ?>" style="color:#0000FF;text-decoration:underline;"><img src="https://qubeshub.org/app/site/media/images/emails/qubes_bioquest_logo.png" alt="QUBES logo" title="QUBES" height="30" style="border:none; vertical-align: middle;" /></a>
+													</td>
+												</tr> <!-- QUBES platform logo -->
 												<tr> <!-- Support ticket -->
 													<td align="center" valign="bottom">
 														<span>Comments or concerns? <a href="https://qubeshub.org/support/ticket/new" style="color:#0000FF;text-decoration:underline;">Submit a support ticket</a>.</span>
 													</td>
-												</tr>
+												</tr> <!-- Support ticket -->
+												<tr> <!-- Contact -->
+													<td align="center" valign="bottom">
+														<span>Add <a href="mailto:support@qubeshub.org" style="color:#0000FF;text-decoration:underline;">support@qubeshub.org</a> to your address book or safe list to ensure delivery.</span>
+													</td>
+												</tr> <!-- Contact -->
 												<tr> <!-- Address -->
 													<td align="center" valign="bottom">
 														<table width="100%" cellpadding="0" cellspacing="0" border="0">

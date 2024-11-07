@@ -176,12 +176,18 @@ class plgCronForum extends \Hubzero\Plugin\Plugin
 	 **/
 	private function sendEmail($user, $posts, $interval='daily')
 	{
+		// Unsubscribe token
+		$encryptor = null;
+		try { $encryptor = new \Hubzero\Mail\Token(); } catch (Exception $e) {}
+
 		$eview = new Hubzero\Mail\View(array(
 			'base_path' => Component::path('com_forum') . DS . 'site',
 			'name'      => 'emails',
 			'layout'    => 'digest_plain'
 		));
 		$eview->option    = 'com_forum';
+		$eview->encryptor = $encryptor;
+		$eview->user 	  = $user;
 		$eview->delimiter = '~!~!~!~!~!~!~!~!~!~!';
 		$eview->posts     = $posts;
 		$eview->interval  = $interval;

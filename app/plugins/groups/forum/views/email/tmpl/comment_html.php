@@ -49,10 +49,10 @@ $bdcolor = '#e1e1e1';
 	<table class="tbl-header" width="100%" cellpadding="0" cellspacing="0" border="0">
 		<tbody>
 			<tr>
-				<td width="1%" align="left" valign="middle">
+				<td align="left" valign="middle" style="width: 24px !important;">
 					<img src="https://qubeshub.org/app/site/media/images/emails/comment-solid.png" width="24" height="24" style="border:none;" alt="Comment icon"/>
 				</td>
-				<td width="9%" align="right" valign="bottom" nowrap="nowrap" class="component left">
+				<td align="right" valign="bottom" nowrap="nowrap" class="component left" style="padding: 5px 10px 5px 10px !important;">
 					Forum Post
 				</td>
 				<td width="90%" align="right" valign="bottom" nowrap="nowrap" class="sitename group">
