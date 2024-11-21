@@ -188,7 +188,15 @@ class Html
 						<a class="user-account-link" href="<?php echo Route::url('index.php?option=com_users&view=login&return=' . base64_encode($return)); ?>" title="Login">Login</a> to access supporting documents
 					<?php } else if (!$publication->access('member')) { ?>						
 						<a href="<?php echo $return; ?>" title="Join">Become a member</a> to access supporting documents
-					<?php } ?>
+					<?php } else if ($publication->params->get('instructor_only') && 
+                        $publication->hasInstructorAttachments() &&
+                        !$publication->access('instructor')) {
+							$request  = '<em><p>This publication contains instructor-only materials.</p>';
+                            $request .= '<a class="btn instructor-access" href="' . Route::url('index.php?option=com_groups&cn=' . $publication->params->get('instructor_group')) . DS . 'join">';
+                            $request .= Lang::txt('COM_PUBLICATIONS_REQUEST_INSTRUCTOR_ACCESS');
+                            $request .= '</a></em>';
+                            echo $request;
+                        } ?>
 					</p>
 				<?php } ?>
                 <div class="pub-content">
