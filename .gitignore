@@ -1,15 +1,4 @@
-app
-!app/index.php
-!app/bootstrap
-!app/cache/index.html
-!app/components/index.html
-!app/config/index.html
-!app/language/index.html
-!app/migrations/index.html
-!app/modules/index.html
-!app/plugins/index.html
-!app/templates/index.html
-!app/tmp/index.html
+app/**
 core/vendor/**
 administrator/cache/**
 logs/**
