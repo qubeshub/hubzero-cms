@@ -1333,12 +1333,12 @@ class Html
 			self::getMIMEtypesOfPrimarySupportFiles($publication_id, $publication_version_id, $secret, 1, $attachments, $mimeTypes);
 		}
 		
-		if (array_key_exists(2, $attachments))
+		if (is_array($attachments) && array_key_exists(2, $attachments))
 		{
 			self::getMIMEtypesOfPrimarySupportFiles($publication_id, $publication_version_id, $secret, 2, $attachments, $mimeTypes);
 		}
 		
-		if (array_key_exists(3, $attachments))
+		if (is_array($attachments) && array_key_exists(3, $attachments))
 		{
 			self::getMIMEtypesOfGalleryFile($publication_id, $publication_version_id, $mimeTypes);
 		}
