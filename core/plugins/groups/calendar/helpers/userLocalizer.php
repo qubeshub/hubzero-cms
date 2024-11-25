@@ -9,9 +9,6 @@
 defined('_HZEXEC_') or die();
 
 use Hubzero\Utility\Arr;
-use App;
-use Config;
-use User;
 
 class UserLocalizer
 {
