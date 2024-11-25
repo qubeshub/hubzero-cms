@@ -149,7 +149,7 @@ class plgPublicationsJsonld extends \Hubzero\Plugin\Plugin
 					'name'  => $contributor->organization
 				);
 				
-				if ($contributor->orgid)
+				if (isset($contributor->orgid) && $contributor->orgid)
 				{
 					$org['@id'] = $contributor->orgid;
 				}
