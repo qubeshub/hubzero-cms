@@ -79,7 +79,7 @@ class Helper extends Module
 		$nullDate = $db->getNullDate();
 		$now      = $date->toSql();
 		$related  = array();
-		$query    = $db->getQuery(true);
+		$query    = $db->getQuery();
 
 		if ($option == 'com_content' && $view == 'article' && $id)
 		{

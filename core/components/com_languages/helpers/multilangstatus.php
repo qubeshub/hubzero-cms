@@ -23,7 +23,7 @@ abstract class Multilangstatus
 	{
 		// Check for multiple Home pages
 		$db = App::get('db');
-		$query = $db->getQuery(true);
+		$query = $db->getQuery();
 		$query->select('COUNT(*)');
 		$query->from('#__menu');
 		$query->where('home', '=', 1);
@@ -42,7 +42,7 @@ abstract class Multilangstatus
 	{
 		// Check if switcher is published
 		$db = App::get('db');
-		$query = $db->getQuery(true);
+		$query = $db->getQuery();
 		$query->select('COUNT(*)');
 		$query->from('#__modules');
 		$query->where('module', '=', $db->quote('mod_languages'));
@@ -61,7 +61,7 @@ abstract class Multilangstatus
 	{
 		// Check for published Content Languages
 		$db = App::get('db');
-		$query = $db->getQuery(true);
+		$query = $db->getQuery();
 		$query->select('a.lang_code AS lang_code');
 		$query->select('a.published AS published');
 		$query->from('#__languages AS a');
@@ -78,7 +78,7 @@ abstract class Multilangstatus
 	{
 		// check for published Site Languages
 		$db = App::get('db');
-		$query = $db->getQuery(true);
+		$query = $db->getQuery();
 		$query->select('a.element AS element');
 		$query->from('#__extensions AS a');
 		$query->where('a.type', '=', $db->Quote('language'));
@@ -96,7 +96,7 @@ abstract class Multilangstatus
 	{
 		// Check for Home pages languages
 		$db = App::get('db');
-		$query = $db->getQuery(true);
+		$query = $db->getQuery();
 		$query->select('language');
 		$query->select('id');
 		$query->from('#__menu');
@@ -116,7 +116,7 @@ abstract class Multilangstatus
 	{
 		//check for combined status
 		$db = App::get('db');
-		$query = $db->getQuery(true);
+		$query = $db->getQuery();
 
 		// Select all fields from the languages table.
 		$query->select('a.*', 'l.home');

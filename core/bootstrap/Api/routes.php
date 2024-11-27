@@ -20,7 +20,7 @@
 $router->rules('build')->append('component', function ($uri)
 {
 	$route = $uri->getPath();
-	$query = $uri->getQuery(true);
+	$query = $uri->getQuery();
 	$tmp   = '';
 
 	if (!isset($query['option']))

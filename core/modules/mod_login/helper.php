@@ -33,7 +33,7 @@ class Helper extends Module
 		if ($itemid =  $params->get($type))
 		{
 			$db = App::get('db');
-			$query = $db->getQuery(true);
+			$query = $db->getQuery();
 
 			$query->select($db->quoteName('link'));
 			$query->from('#__menu');

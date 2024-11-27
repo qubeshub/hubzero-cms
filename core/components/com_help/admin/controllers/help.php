@@ -95,7 +95,7 @@ class Help extends AdminController
 		// Initialise variables.
 		$lang   = Lang::getRoot();
 		$db     = App::get('db');
-		$query  = $db->getQuery(true);
+		$query  = $db->getQuery();
 		$result = array();
 		$langs  = array();
 

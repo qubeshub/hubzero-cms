@@ -107,7 +107,7 @@ class plgContentPagenavigation extends \Hubzero\Plugin\Plugin
 				' AND (publish_down IS NULL OR publish_down = ' . $db->quote($nullDate) . ' OR publish_down >= ' . $db->quote($now) . ')';
 
 			// Array of articles in same category correctly ordered.
-			$query = $db->getQuery(true);
+			$query = $db->getQuery();
 			//sqlsrv changes
 			$case_when = ' CASE WHEN ';
 			$case_when .= $query->charLength('a.alias');

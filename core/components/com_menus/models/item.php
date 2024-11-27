@@ -1361,7 +1361,7 @@ class Item extends Nested
 
 		$table = $this->getTable();
 		$db = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->getQuery();
 		$i = 0;
 
 		// Check that the parent exists
@@ -1511,7 +1511,7 @@ class Item extends Nested
 
 		$table = $this->getTable();
 		$db = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->getQuery();
 
 		// Check that the parent exists.
 		if ($parentId)

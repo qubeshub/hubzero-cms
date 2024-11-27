@@ -138,7 +138,7 @@ class Assetgroupv1_0 extends base
 		{
 			$p     = new Registry('');
 			$db    = App::get('db');
-			$query = $db->getQuery(true);
+			$query = $db->getQuery();
 
 			$query->select('folder AS type, element AS name, params')
 			      ->from('#__extensions')
