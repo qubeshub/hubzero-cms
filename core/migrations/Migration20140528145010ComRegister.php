@@ -86,26 +86,9 @@ class Migration20140528145010ComRegister extends Base
 			$this->db->setQuery($query);
 			$this->db->query();
 
-			// If we have the nested set class available, use it to rebuild lft/rgt
-			if (class_exists('JTableNested') && method_exists('JTableNested', 'rebuild'))
-			{
-				// Use the MySQL driver for this
-				$config = \App::get('config');
-				$database = \Hubzero\Database\Driver::getInstance(
-					array(
-						'driver'   => 'mysql',
-						'host'     => $config->get('host'),
-						'user'     => $config->get('user'),
-						'password' => $config->get('password'),
-						'database' => $config->get('db')
-					)
-				);
-
-				$table = new \JTableMenu($database);
-				$table->rebuild();
-
-				unset($database);
-			}
+			require_once PATH_CORE . '/components/com_menus/models/menu.php';
+			$table = Components\Menus\Models\Menu::blank();
+			$table->rebuild();
 		}
 
 		$this->deleteComponentEntry('register');

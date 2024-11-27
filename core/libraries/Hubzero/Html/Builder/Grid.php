@@ -124,13 +124,13 @@ class Grid
 		$userid = User::get('id');
 
 		$result = false;
-		if ($row instanceof \JTable)
+		if ($row instanceof \Hubzero\Database\Table)
 		{
 			$result = $row->isCheckedOut($userid);
 		}
 		else
 		{
-			$result = \JTable::isCheckedOut($userid, $row->checked_out);
+			$result = \Hubzero\Database\Table::isCheckedOut($userid, $row->checked_out);
 		}
 
 		$checked = '';

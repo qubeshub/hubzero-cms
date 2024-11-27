@@ -46,7 +46,7 @@ class Database extends Store
 	 */
 	public function __construct($options = array())
 	{
-		if (!isset($options['database']) || !($options['database'] instanceof \JDatabase))
+		if (!isset($options['database']) || !($options['database'] instanceof Database))
 		{
 			$options['database'] = \App::get('db');
 		}
