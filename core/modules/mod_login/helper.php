@@ -36,7 +36,7 @@ class Helper extends Module
 			$query = $db->getQuery(true);
 
 			$query->select($db->quoteName('link'));
-			$query->from($db->quoteName('#__menu'));
+			$query->from('#__menu');
 			$query->where($db->quoteName('published'), '=', 1);
 			$query->where($db->quoteName('id'), '=', $db->quote($itemid));
 

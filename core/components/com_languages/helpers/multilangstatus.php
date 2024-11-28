@@ -25,7 +25,7 @@ abstract class Multilangstatus
 		$db = App::get('db');
 		$query = $db->getQuery(true);
 		$query->select('COUNT(*)');
-		$query->from($db->quoteName('#__menu'));
+		$query->from('#__menu');
 		$query->where('home', '=', 1);
 		$query->where('published', '=', 1);
 		$query->where('client_id', '=', 0);
@@ -44,7 +44,7 @@ abstract class Multilangstatus
 		$db = App::get('db');
 		$query = $db->getQuery(true);
 		$query->select('COUNT(*)');
-		$query->from($db->quoteName('#__modules'));
+		$query->from('#__modules');
 		$query->where('module', '=', $db->quote('mod_languages'));
 		$query->where('published', '=', 1);
 		$query->where('client_id', '=', 0);
@@ -99,7 +99,7 @@ abstract class Multilangstatus
 		$query = $db->getQuery(true);
 		$query->select('language');
 		$query->select('id');
-		$query->from($db->quoteName('#__menu'));
+		$query->from('#__menu');
 		$query->where('home', '=', 1);
 		$query->where('published', '=', 1);
 		$query->where('client_id', '=', 0);
