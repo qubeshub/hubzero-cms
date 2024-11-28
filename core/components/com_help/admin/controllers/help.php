@@ -105,9 +105,9 @@ class Help extends AdminController
 
 		// Filter on the enabled states.
 		$query->leftJoin('#__extensions AS e ON m.component_id = e.extension_id');
-		$query->where('m.client_id = 1');
-		$query->where('e.enabled = 1');
-		$query->where('m.id > 1');
+		$query->where('m.client_id', '=', 1);
+		$query->where('e.enabled', '=', 1);
+		$query->where('m.id', '>', 1);
 
 		// Order by lft.
 		$query->order('m.lft');

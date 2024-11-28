@@ -70,7 +70,7 @@ class Course extends Table
 			$query = $db->getQuery(true);
 			$query->select('id');
 			$query->from('#__assets');
-			$query->where('name = ' . $db->quote('com_courses'));
+			$query->where('name', '=', $db->quote('com_courses'));
 
 			// Get the asset id from the database.
 			$db->setQuery($query);

@@ -86,7 +86,7 @@ class Helper extends Module
 			// Select the meta keywords from the item
 			$query->select('metakey');
 			$query->from('#__content');
-			$query->where('id = ' . (int) $id);
+			$query->where('id', '=', (int) $id);
 			$db->setQuery($query);
 
 			if ($metakey = trim($db->loadResult()))
@@ -138,10 +138,11 @@ class Helper extends Module
 					$query->from('#__content AS a');
 					$query->leftJoin('#__content_frontpage AS f ON f.content_id = a.id');
 					$query->leftJoin('#__categories AS cc ON cc.id = a.catid');
-					$query->where('a.id != ' . (int) $id);
-					$query->where('a.state = 1');
-					$query->where('a.access IN (' . $groups . ')');
+					$query->where('a.id', '!=', (int) $id);
+					$query->where('a.state', '=', 1);
+					$query->where('a.access', 'IN', '(' . $groups . ')');
 					$concat_string = $query->concatenate(array('","', ' REPLACE(a.metakey, ", ", ",")', ' ","'));
+					// TODO: Fix the where clauses below. Not sure how to break the params out to work with the new where clause
 					$query->where('(' . $concat_string . ' LIKE "%' . implode('%" OR ' . $concat_string . ' LIKE "%', $likes) . '%")'); //remove single space after commas in keywords)
 					$query->where('(a.publish_up IS NULL OR a.publish_up = ' . $db->quote($nullDate).' OR a.publish_up <= ' . $db->quote($now) . ')');
 					$query->where('(a.publish_down IS NULL OR a.publish_down = ' . $db->quote($nullDate).' OR a.publish_down >= ' . $db->quote($now) . ')');

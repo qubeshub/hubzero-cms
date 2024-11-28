@@ -127,11 +127,12 @@ class plgContentPagenavigation extends \Hubzero\Plugin\Plugin
 			$query->select('a.id, a.language,' . $case_when . ',' . $case_when1);
 			$query->from('#__content AS a');
 			$query->leftJoin('#__categories AS cc ON cc.id = a.catid');
+			// TODO: Fix where clause
 			$query->where('a.catid = ' . (int)$row->catid . ' AND a.state = '. (int)$row->state . ($canPublish ? '' : ' AND a.access = ' .(int)$row->access) . $xwhere);
 			$query->order($orderby);
 			if (App::isSite() && App::get('language.filter'))
 			{
-				$query->where('a.language in (' . $db->quote(Lang::getTag()) . ',' . $db->quote('*') . ')');
+				$query->where('a.language', 'in', '(' . $db->quote(Lang::getTag()) . ',' . $db->quote('*') . ')');
 			}
 
 			$db->setQuery($query);
