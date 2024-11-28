@@ -306,7 +306,7 @@ class plgAuthenticationShibboleth extends \Hubzero\Plugin\Plugin
 	{
 		self::log('status');
 		$sess = null;
-		if (($key = trim(isset($_COOKIE['shib-session']) ? $_COOKIE['shib-session'] : (isset($_GET['shib-session']) ? $_GET['shib-session'] : null))))
+		if (($key = trim(isset($_COOKIE['shib-session']) ? $_COOKIE['shib-session'] : (isset($_GET['shib-session']) ? $_GET['shib-session'] : ''))))
 		{
 			self::log('status', $key);
 			$dbh = App::get('db');
