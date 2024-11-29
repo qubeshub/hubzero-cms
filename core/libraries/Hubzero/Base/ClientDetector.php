@@ -82,6 +82,13 @@ class ClientDetector
 					return $client;
 				}
 
+				if (defined($const)
+				  && !defined(JPATH_BASE)
+				  && JPATH_ROOT . $this->request->base(true) == constant($const))
+				{
+					return $client;
+				}
+
 				// Check based on request path
 				//    Ex: http://somehub.org/api
 				if ($this->request->segment(1) == $url
