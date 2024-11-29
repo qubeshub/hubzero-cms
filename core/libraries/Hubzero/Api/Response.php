@@ -23,6 +23,16 @@ class Response extends BaseResponse
 	public $original;
 
 	/**
+	 * @throws \InvalidArgumentException When the HTTP status code is not valid
+	 */
+	public function __construct($content = '', int $status = 200, array $headers = [])
+	{
+		// setContent() references $status so we need to set it here
+		$this->setStatusCode($status);
+		parent::__construct($content, $status, $headers);
+	}
+
+	/**
 	 * Set the content on the response.
 	 *
 	 * @param   mixed   $content
