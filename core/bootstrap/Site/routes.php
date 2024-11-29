@@ -70,7 +70,7 @@ $router->rules('build')->append('content', function ($uri)
 $router->rules('build')->append('content', function ($uri)
 {
 	$route = $uri->getPath();
-	$query = $uri->getQuery();
+	$query = $uri->getQuery(true);
 
 	if (!isset($query['option']) || (isset($query['option']) && $query['option'] == 'com_content' && isset($query['task']) && $query['task'] == 'view'))
 	{
@@ -140,7 +140,7 @@ $router->rules('build')->append('content', function ($uri)
 $router->rules('build')->append('component', function ($uri)
 {
 	$route = $uri->getPath();
-	$query = $uri->getQuery();
+	$query = $uri->getQuery(true);
 	$tmp   = '';
 
 	if (!isset($query['option']) && !isset($query['Itemid']))
@@ -355,7 +355,7 @@ $router->rules('parse')->append('menu', function ($uri)
 	}
 
 	// Get the variables from the uri
-	$query = $uri->getQuery();
+	$query = $uri->getQuery(true);
 
 	// Handle an empty URL (special case)
 	if (empty($route) && \App::get('request')->getVar('option', '', 'post') == '')
@@ -712,7 +712,7 @@ $router->rules('parse')->append('redirect', function ($uri)
 	{
 		$myuri = new \Hubzero\Utility\Uri($row->new_url);
 
-		$vars = $myuri->getQuery();
+		$vars = $myuri->getQuery(true);
 
 		foreach ($vars as $key => $var)
 		{
