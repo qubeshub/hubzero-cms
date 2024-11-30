@@ -805,6 +805,7 @@ class Entries extends SiteController
 		if (!User::isGuest())
 		{
 			$asset  = $this->_option;
+			$at = '';
 
 			if ($assetId)
 			{
