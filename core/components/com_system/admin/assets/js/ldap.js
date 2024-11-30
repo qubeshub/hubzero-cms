@@ -14,10 +14,6 @@ jQuery(document).ready(function(jq){
 
 	_DEBUG = document.getElementById('system-debug') ? true : false;
 
-	$('#importHubConfig').on('click', function(e){
-		return Hubzero.submitbutton('importHubConfig');
-	});
-
 	$('#deleteUsers').on('click', function(e){
 		return Hubzero.submitbutton('deleteUsers');
 	});

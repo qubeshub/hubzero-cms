@@ -18,19 +18,6 @@ $this->css('ldap')
 <form action="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller); ?>" method="post" name="adminForm" id="item-form">
 	<div class="grid">
 		<div class="col span6">
-			<fieldset class="adminform">
-				<legend><?php echo Lang::txt('COM_SYSTEM_LDAP_HUBCONFIG'); ?></legend>
-				<table class="admintable">
-					<tbody>
-						<tr>
-							<td class="key"><input type="submit" name="importHubConfig" id="importHubConfig" value="<?php echo Lang::txt('COM_SYSTEM_LDAP_IMPORT'); ?>" /></td>
-							<td><?php echo Lang::txt('COM_SYSTEM_LDAP_IMPORT_HUBCONFIG'); ?></td>
-						</tr>
-					</tbody>
-				</table>
-			</fieldset>
-		</div>
-		<div class="col span6">
 			<p class="warning"><?php echo Lang::txt('COM_SYSTEM_LDAP_WARNING_IRREVERSIBLE'); ?></p>
 
 			<fieldset class="adminform">
