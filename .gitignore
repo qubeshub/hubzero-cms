@@ -5,7 +5,6 @@ logs/**
 js_apps/**
 google*.html
 bans
-configuration.php
 hubconfiguration.php
 robots.txt
 auto-deployments.log
