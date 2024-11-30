@@ -1288,12 +1288,12 @@ class Sessions extends SiteController
 
 		if (!isset($output->code))
 		{
-			$output->code = 'VncViewer.class';
+			$output->code = '';
 		}
 
 		if (!isset($output->archive))
 		{
-			$output->archive =  rtrim(Request::base(true), '/') . '/core/components/com_tools/scripts/VncViewer-20150319-01.jar';
+			$output->archive =  '';
 		}
 
 		if (!isset($output->id))

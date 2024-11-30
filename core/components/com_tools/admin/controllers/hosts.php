@@ -156,7 +156,7 @@ class Hosts extends AdminController
 			$retval = 0;
 		}
 
-		// Print out the applet tags or the error message, as the case may be.
+		// Print out the viewer  tags or the error message, as the case may be.
 		foreach ($output as $line)
 		{
 			// If it's a new session, catch the session number...
