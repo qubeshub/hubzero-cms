@@ -22,3 +22,52 @@ HUBzero depends on numerous PHP packages made available through the Composer
 Dependency Manager for PHP and the Packagist Composer package repository. Each
 of these packages retain the copyright of the authors. See core/composer.json.
 
+
+Contributors to HUBzero CMS have been:
+
+- Shawn Rice
+- Nicholas Kisseberth
+- Alissa Nedossekina
+- Christopher Smoak
+- Sam Wilson
+- Ilya Shunko
+- Steve Snyder
+- Kevin Wojkovich
+- Zach Weidner
+- Patrick Mulligan
+- Anthony Fuentes
+- Pascal Menunier
+- David Benham
+- Erich Huebner
+- Jesse Woo
+- Jeanette Sperhac
+- Jack Smith
+- Jesse Erdmann
+- Daniel Mejia
+- Dwight McKay
+- Claire Strim
+- Nathan T. Denny
+- Jeff Kayser
+- Damion Junk
+- Jeffrey A. Turkstra
+- James B. Graves
+- Adam Brooks
+- Jiayi (Angel) Kou
+- Tiger Huang
+- Guocheng Wei
+- Aleksandr Patsekin
+- Jimm Domingo
+
+- Jerry Kuang
+- Sumudinie Fernando
+- Sudheera R. Fernando
+- Rajesh Kalyanam
+- Andres Bejarano
+- Drew Thoennes
+- M. Drew LaMar
+- Minh To
+- Matthew Bishop
+- Andrew Magill
+- Katrin Leinweber
+- Thomas Chen
+
