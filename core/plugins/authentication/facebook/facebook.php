@@ -105,7 +105,12 @@ class plgAuthenticationFacebook extends \Hubzero\Plugin\OauthClient
 			});
 		});";
 
-		Document::addScriptDeclaration($js);
+		// channel.phtml was removed from document root. It has not worked on our production
+		// hub configurations for a long time so I am disabling its usage here until we can determine
+		// if it can still be used in some way. If it can it will need to be refactored
+		// to not serve php out of that location. *njk*
+
+		// Document::addScriptDeclaration($js);
 	}
 
 	/**
