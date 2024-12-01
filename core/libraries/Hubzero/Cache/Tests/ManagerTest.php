@@ -15,7 +15,7 @@ use Hubzero\Config\Registry;
 /**
  * ManagerTest
  */
-class ManagerTest extends \PHPUnit_Framework_TestCase
+class ManagerTest extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * Cache manager

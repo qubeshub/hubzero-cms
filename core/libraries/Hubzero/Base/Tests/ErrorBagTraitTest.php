@@ -28,7 +28,7 @@ class ErrorBagTraitTest extends Basic
 	 *
 	 * @return  void
 	 */
-	public function setUp()
+	public function setUp(): void
 	{
 		$this->obj = $this->getObjectForTrait('Hubzero\Base\Traits\ErrorBag');
 
