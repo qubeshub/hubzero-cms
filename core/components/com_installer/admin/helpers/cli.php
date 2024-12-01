@@ -220,12 +220,12 @@ class Cli
 
 		if ($user == 'apache')
 		{
-			$cmd = PATH_ROOT . DS . 'muse' . ' ' . $task . ' ' . $cmd . ' ' . ((!empty($args)) ? implode(' ', $args) : '') . ' --format=json';
+			$cmd = PATH_CORE . '/bin/muse' . ' ' . $task . ' ' . $cmd . ' ' . ((!empty($args)) ? implode(' ', $args) : '') . ' --format=json';
 		}
 		else
 		{
 			$sudo = ($processUser != $user) ? '/usr/bin/sudo -u ' . $user . ' ' : '';
-			$cmd = $sudo . PATH_ROOT . DS . 'muse' . ' ' . $task . ' ' . $cmd . ' ' . ((!empty($args)) ? implode(' ', $args) : '') . ' --format=json';
+			$cmd = $sudo . PATH_CORE . '/bin/muse' . ' ' . $task . ' ' . $cmd . ' ' . ((!empty($args)) ? implode(' ', $args) : '') . ' --format=json';
 		}
 
 		return shell_exec($cmd);
