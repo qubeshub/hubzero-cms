@@ -540,7 +540,7 @@ class Manager extends Obj
 		session_start();
 
 		// Regenerate session id if passed a session id that no longer exists
-		if ($_SESSION === array())
+		if (!isset($_SESSION) || $_SESSION === array())
 		{
 			session_destroy();
 			session_id($this->createId());
