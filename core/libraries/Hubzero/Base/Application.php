@@ -40,6 +40,13 @@ class Application extends Container
 	protected $booted = false;
 
 	/**
+	 * Indicates if the application has "loaded".
+	 *
+	 * @var  boolean
+	 */
+	protected $loaded = false;
+
+	/**
 	 * All of the registered service providers.
 	 *
 	 * @var  array
@@ -53,7 +60,7 @@ class Application extends Container
 	 * @param   object  $response  Response object
 	 * @return  void
 	 */
-	public function __construct(Request $request = null, Response $response = null)
+	public function __construct($client = '', Request $request = null, Response $response = null)
 	{
 		// Work around for issues with SCRIPT_NAME and PHP_SELF set incorrectly by php-fpm
 		// GH-12996 https://github.com/php/php-src/issues/12996 fixed in 8.2.16
@@ -75,6 +82,7 @@ class Application extends Container
 
 		$this['request']  = ($request  ?: Request::createFromGlobals());
 		$this['response'] = ($response ?: new Response());
+		$this['app'] = $this;
 	}
 
 	/**
@@ -344,6 +352,65 @@ class Application extends Container
 		return md5($this['config']->get('secret') . $seed);
 	}
 
+	public function load($client = null, $environments = null)
+	{
+		if ($this->loaded)
+		{
+			return;
+		}
+
+		if ($client == null)
+		{
+			if ($environments == null)
+			{
+				$environments = array(
+					'administrator' => 'administrator',
+					'api'           => 'api',
+					'cli'           => 'cli',
+					'install'       => 'install',
+					'files'         => 'files',
+				);
+			}
+
+			$this->detectClient($environments);
+		}
+		else
+		{
+			$this['client'] = ClientManager::client($client, true);
+		}
+
+		$client = $this['client']->name;
+
+		$this['config'] = new \Hubzero\Config\Repository($client);
+
+		$providers = PATH_CORE . '/bootstrap/' . $client . '/services.php';
+		$services  = file_exists($providers) ? require $providers : array();
+
+		$providers = PATH_CORE . '/bootstrap/' . ucfirst($client) . '/services.php';
+		$services  = file_exists($providers) ? array_merge($services, require $providers) : $services;
+
+		$providers = PATH_APP . '/bootstrap/' . $client . '/services.php';
+		$services  = file_exists($providers) ? array_merge($services, require $providers) : $services;
+
+		foreach ($services as $service)
+		{
+			$this->register($service);
+		}
+
+		$facades = PATH_CORE . '/bootstrap/' . $client . '/aliases.php';
+		$aliases = file_exists($facades) ? require $facades : array();
+
+		$facades = PATH_CORE . '/bootstrap/' . ucfirst($client) . '/aliases.php';
+		$aliases = file_exists($facades) ? array_merge($aliases, require $facades) : $aliases;
+
+		$facades = PATH_APP . '/bootstrap/' . $client . '/aliases.php';
+		$aliases = file_exists($facades) ? array_merge($aliases, require $facades) : $aliases;
+
+		$this->registerFacades($aliases);
+
+		$this->loaded = true;
+	}
+
 	/**
 	 * Boot the application's service providers.
 	 *
@@ -355,6 +422,8 @@ class Application extends Container
 		{
 			return;
 		}
+
+		$this->load();
 
 		array_walk($this->serviceProviders, function($p)
 		{
