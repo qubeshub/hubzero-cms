@@ -24,3 +24,5 @@ deployments.log
 freeze-auto-deployments
 config/
 favicon.ico
+.phan/**
+psalm.xml
