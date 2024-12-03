@@ -54,9 +54,10 @@
 				</field>-->
 				<field name="skin" type="list" default="0" description="Editor Skin" label="Editor Skin">
 					<option value="moono">Moono</option>
+					<option value="moono-lisa">Moono-Lisa</option>
 					<option value="moonocolor">Moono Color</option>
 					<option value="moono-dark">Moono Dark</option>
-					<option value="bootstrapck">Bootstrap CK</option>
+					<option value="bootstrapck">BootstrapCK4</option>
 					<option value="office2013">Office 2013</option>
 				</field>
 				<field name="filebrowserBrowseUrl" type="text" size="5" default="" label="File Browser URL" description="The location of an external file browser that should be launched when the Browse Server button is pressed." />
