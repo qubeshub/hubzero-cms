@@ -313,7 +313,7 @@ class plgEditorCkeditor extends \Hubzero\Plugin\Plugin
 		$config->hubzeroAutogrow_minHeight     = 200;
 		$config->hubzeroAutogrow_maxHeight     = 1000;
 		$config->toolbarCanCollapse            = true;
-		$config->extraPlugins                  = 'tableresize,iframedialog,hubzeroequation,hubzerogrid,hubzeromacro,hubzerohighlight';
+		$config->extraPlugins                  = 'tableresize,iframedialog,hubzeroequation,hubzerogrid,hubzeromacro,hubzerohighlight,wordcount';
 		$config->removePlugins                 = '';
 		$config->resize_enabled                = true;
 		$config->emailProtection               = '';
@@ -396,6 +396,32 @@ class plgEditorCkeditor extends \Hubzero\Plugin\Plugin
 		if (in_array('no-footer', $this->params->get('class')))
 		{
 			$config->removePlugins = 'elementspath';
+		}
+
+		$config->wordcount = new stdClass;
+		$config->wordcount->showRemaining = false;
+		$config->wordcount->showParagraphs = false;
+		$config->wordcount->showCharCount = false;
+		$config->wordcount->showWordCount = false;
+		$config->wordcount->countBytesAsChars = true;
+		$config->wordcount->countSpacesAsChars = true;
+		$config->wordcount->countHTML = true;
+		$config->wordcount->countLineBreaks = true;
+		$config->wordcount->hardLimit = true;
+		$config->wordcount->warnOnLimitOnly = false;
+		$config->wordcount->maxWordCount = -1;
+		$config->wordcount->maxCharCount = -1;
+		$config->wordcount->maxParagraphs = -1;
+		$config->wordcount->pasteWarningDuration = 0;
+
+		$wordcount = $this->params->get('wordcount');
+
+		if (is_array($wordcount))
+		{
+			foreach($wordcount as $key => $value)
+			{
+				$config->wordcount->$key = $value;
+			}
 		}
 
 		// Setup codemirror
