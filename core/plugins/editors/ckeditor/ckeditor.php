@@ -314,7 +314,7 @@ class plgEditorCkeditor extends \Hubzero\Plugin\Plugin
 		$config->hubzeroAutogrow_minHeight     = 200;
 		$config->hubzeroAutogrow_maxHeight     = 1000;
 		$config->toolbarCanCollapse            = true;
-		$config->extraPlugins                  = 'tableresize,iframedialog,hubzeroequation,hubzerogrid,hubzeromacro,hubzerohighlight,wordcount';
+		$config->extraPlugins                  = 'tableresize,iframedialog,hubzeroequation,hubzerogrid,hubzeromacro,hubzerohighlight,wordcount,mentions';
 		$config->removePlugins                 = '';
 		$config->resize_enabled                = true;
 		$config->emailProtection               = '';
@@ -423,6 +423,13 @@ class plgEditorCkeditor extends \Hubzero\Plugin\Plugin
 			{
 				$config->wordcount->$key = $value;
 			}
+		}
+
+		$mentions = $this->params->get('mentions');
+
+		if (is_array($mentions))
+		{
+			$config->mentions = $mentions;
 		}
 
 		// Setup codemirror
