@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Mail;
+namespace Qubeshub\Mail;
 
 /**
  * Class for creating and sending email

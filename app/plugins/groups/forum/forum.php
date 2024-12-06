@@ -16,6 +16,7 @@ defined('_HZEXEC_') or die();
 
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Plugin.php';
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Params.php';
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Mail' . DS . 'View.php';
 
 /**
  * Groups Plugin class for forum entries
@@ -1572,7 +1573,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 				$msg = array();
 
 				// create view object
-				$eview = new \Hubzero\Mail\View(array(
+				$eview = new Qubeshub\Mail\View(array(
 					'base_path' => __DIR__,
 					'name'      => 'email',
 					'layout'    => 'comment_plain'

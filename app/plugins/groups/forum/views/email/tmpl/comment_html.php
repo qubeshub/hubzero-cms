@@ -20,7 +20,15 @@ $groupLink = rtrim(Request::base(), '/') . '/groups/' . $this->group->get('cn');
 
 $bgcolor = '#f1f1f1';
 $bdcolor = '#e1e1e1';
+
+// Text for preheader
+$preheader = (!$this->post->get('anonymous') ? $this->post->creator->get('name') : Lang::txt('JANONYMOUS')) . ' said "' . $this->post->comment . '" | ';
 ?>
+
+<!-- Start Preheader -->
+<span class="preheader"><?php echo $preheader; ?></span>
+<!-- End Preheader -->
+
 <?php if ($this->delimiter) { ?>
 	<!-- Start Header Spacer -->
 	<table class="tbl-delimiter" width="100%" cellpadding="0" cellspacing="0" border="0" style="border: 1px dashed #b5c6b5;">

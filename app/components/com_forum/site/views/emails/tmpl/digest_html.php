@@ -18,7 +18,20 @@ array_walk($this->posts, function($val, $idx) use (&$posts)
 {
 	$posts += $val->count();
 });
+
+// Text for preheader
+$preheader = "You have " . $posts . " new post" . ($posts > 1 ? 's' : '') . " across " . $groups . " of your groups (";
+$ct = 0;
+foreach ($this->posts as $gid => $gposts) {
+	$preheader .= ($ct++ > 0 ? '; ' : '') . $gposts->count() . ' new post' . ($gposts->count() > 1 ? 's' : '') . ' in ' . Hubzero\User\Group::getInstance($gid)->get('description');
+}
+$preheader .= ') | ';
 ?>
+
+<!-- Start Preheader -->
+<span class="preheader"><?php echo $preheader; ?></span>
+<!-- End Preheader -->
+
 <!-- Start Header -->
 <table class="tbl-header" width="100%" cellpadding="0" cellspacing="0" border="0">
 	<tbody>

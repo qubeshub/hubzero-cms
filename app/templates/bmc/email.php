@@ -41,6 +41,17 @@ $tblColor = '#ffffff';
 			text-rendering: optimizeLegibility;
 			height: 100%;
 		}
+		span.preheader {
+			display: none !important;
+			font-size: 1px;
+			color: <?php echo $bgColor; ?>;
+			line-height: 1px;
+			max-height: 0px;
+			max-width: 0px;
+			opacity: 0;
+			overflow: hidden;
+			margin-right: 100%;
+		}
 		<?php /* Prevent Webkit and Windows Mobile platforms from changing default font sizes, while not breaking desktop design. */ ?>
 		<?php /* Force Hotmail to display emails at full width */ ?>
 		.ExternalClass {

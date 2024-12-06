@@ -5,8 +5,11 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Mail;
+namespace Qubeshub\Mail;
 
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Mail' . DS . 'Template.php';
+
+use Qubeshub\Mail\Template;
 use Hubzero\View\View as AbstractView;
 
 /**

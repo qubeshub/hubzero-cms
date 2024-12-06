@@ -23,6 +23,10 @@ if ($this->announcement->priority == 1)
 	$bdcolor = '#e9bcbc';
 }
 ?>
+	<!-- Start Preheader -->
+	<span class="preheader"><?php echo $this->announcement->get('content') . ' | '; ?></span>
+	<!-- End Preheader -->
+
 	<!-- Start Header -->
 	<table class="tbl-header" width="100%" cellpadding="0" cellspacing="0" border="0">
 		<tbody>

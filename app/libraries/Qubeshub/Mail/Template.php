@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Mail;
+namespace Qubeshub\Mail;
 
 use Hubzero\Document\Type\Html;
 use App;
@@ -79,6 +79,7 @@ class Template extends Html
 			$data = str_replace('&#', '{_ANDNUM_}', $data);
 			$emogrifier = new \Pelago\Emogrifier();
 			$emogrifier->preserveEncoding = true;
+			$emogrifier->disableInvisibleNodeRemoval();
 			$emogrifier->setHtml($data);
 			//$emogrifier->setCss($css);
 

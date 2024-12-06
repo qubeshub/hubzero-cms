@@ -5,7 +5,7 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-namespace Hubzero\Mail\Transport;
+namespace Qubeshub\Mail\Transport;
 
 use Hubzero\Error\Exception\RuntimeException;
 use Mandrill as MandrillApi;
