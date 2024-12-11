@@ -2302,7 +2302,7 @@ class Resources extends SiteController
 		$xserver = new \Hubzero\Content\Server();
 		$xserver->filename($path);
 		$xserver->disposition($d);
-		$xserver->acceptranges(false); // @TODO fix byte range support
+		$xserver->acceptranges(true);
 
 		if (!$xserver->serve())
 		{
@@ -2368,7 +2368,7 @@ class Resources extends SiteController
 		$xserver = new \Hubzero\Content\Server();
 		$xserver->filename($tarpath . $tarname);
 		$xserver->disposition('attachment');
-		$xserver->acceptranges(false); // @TODO fix byte range support
+		$xserver->acceptranges(true);
 		$xserver->saveas($tarname);
 
 		if (!$xserver->serve_attachment($tarpath . $tarname, $tarname, false))
