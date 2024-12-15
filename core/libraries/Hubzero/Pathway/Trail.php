@@ -148,7 +148,7 @@ class Trail implements \Iterator, \ArrayAccess, \Countable
 	#[\ReturnTypeWillChange]
 	public function rewind()
 	{
-		reset($this->items);
+		return reset($this->items);
 	}
 
 	/**
