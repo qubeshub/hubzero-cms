@@ -53,7 +53,7 @@ class ContainerTest extends Basic
 
 		$this->assertEquals('bar', $container->get('foo'));
 
-		$this->setExpectedException('InvalidArgumentException');
+		$this->expectException(\InvalidArgumentException::class);
 
 		$container->get('lorem');
 	}
@@ -162,7 +162,7 @@ class ContainerTest extends Basic
 
 		$this->assertSame($service, $container->raw('service'));
 
-		$this->setExpectedException('InvalidArgumentException');
+		$this->expectException(\InvalidArgumentException::class);
 
 		$container->raw('lorem');
 	}
@@ -202,7 +202,7 @@ class ContainerTest extends Basic
 	{
 		$container = new Container();
 
-		$this->setExpectedException('InvalidArgumentException');
+		$this->expectException(\InvalidArgumentException::class);
 
 		$container->extend(
 			'lorem',
@@ -224,7 +224,7 @@ class ContainerTest extends Basic
 		$container = new Container();
 		$container['param'] = 'value';
 
-		$this->setExpectedException('InvalidArgumentException');
+		$this->expectException(\InvalidArgumentException::class);
 
 		$container->extend(
 			'param',
@@ -246,7 +246,7 @@ class ContainerTest extends Basic
 		$container = new Container();
 		$container['param'] = 'value';
 
-		$this->setExpectedException('InvalidArgumentException');
+		$this->expectException(\InvalidArgumentException::class);
 
 		$container->extend(
 			'param',
