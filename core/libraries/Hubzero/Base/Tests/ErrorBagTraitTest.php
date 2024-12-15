@@ -21,7 +21,7 @@ class ErrorBagTraitTest extends Basic
 	 *
 	 * @var  object
 	 */
-	private $traitObject;
+	private $obj;
 
 	/**
 	 * Sets up the fixture.
