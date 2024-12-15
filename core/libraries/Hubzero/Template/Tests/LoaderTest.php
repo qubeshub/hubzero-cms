@@ -23,12 +23,14 @@ class LoaderTest extends Database
 	 */
 	private $instance;
 
+	private $loader;
+
 	/**
 	 * Sets up the tests...called prior to each test
 	 *
 	 * @return  void
 	 */
-	public function setUp()
+	public function setUp(): void
 	{
 		\Hubzero\Database\Relational::setDefaultConnection($this->getMockDriver());
 

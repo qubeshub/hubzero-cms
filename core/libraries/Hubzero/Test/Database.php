@@ -10,7 +10,7 @@ namespace Hubzero\Test;
 /**
  * PHPUnit test that requires the extended database features
  */
-class Database extends \PHPUnit_Extensions_Database_TestCase
+class Database extends \PHPUnit\DbUnit\TestCase
 {
 	/**
 	 * The database pdo object
@@ -101,7 +101,7 @@ class Database extends \PHPUnit_Extensions_Database_TestCase
 		{
 			self::$dbo = $this->getMockBuilder('Hubzero\Database\Driver\Pdo')
 			            ->disableOriginalConstructor()
-			            ->setMethods(null)
+			            ->onlyMethods(array())
 			            ->getMock();
 
 			$this->getConnection();
@@ -119,7 +119,7 @@ class Database extends \PHPUnit_Extensions_Database_TestCase
 	 *
 	 * @return  void
 	 */
-	public static function tearDownAfterClass()
+	public static function tearDownAfterClass(): void
 	{
 		self::$dbo = null;
 		self::$pdo = null;
