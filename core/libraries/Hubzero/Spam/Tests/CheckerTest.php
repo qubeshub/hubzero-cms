@@ -51,7 +51,7 @@ class CheckerTest extends Basic
 
 		$this->assertInstanceOf('Hubzero\Spam\Checker', $service->registerDetector(new Detector()));
 
-		$this->setExpectedException('RuntimeException');
+		$this->expectException(\RuntimeException::class);
 
 		$service->registerDetector(new Detector());
 	}
