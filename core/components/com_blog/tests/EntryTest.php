@@ -22,7 +22,7 @@ class EntryTest extends Database
 	 *
 	 * @return  void
 	 */
-	public function setUp()
+	public function setUp(): void
 	{
 		\Hubzero\Database\Relational::setDefaultConnection($this->getMockDriver());
 	}
@@ -61,6 +61,8 @@ class EntryTest extends Database
 	 **/
 	public function testOneOrFailThrowsException()
 	{
+		$this->expectException(\Hubzero\Error\Exception\RuntimeException::class);
+
 		Entry::oneOrFail(0);
 	}
 
