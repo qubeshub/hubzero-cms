@@ -231,7 +231,7 @@ class StrTest extends Basic
 
 		$this->assertEquals(strlen($result), 4);
 		$this->assertEquals(substr($result, 0, 3), '000');
-		$this->assertEquals(substr($result, -1), $string);
+		$this->assertEquals(substr($result, -1), '5');
 
 		$string = '12345';
 
