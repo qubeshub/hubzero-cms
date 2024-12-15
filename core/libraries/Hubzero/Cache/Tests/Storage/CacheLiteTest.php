@@ -10,14 +10,14 @@ namespace Hubzero\Cache\Tests\Storage;
 /**
  * CacheLiteTest
  */
-class CacheLiteTest extends AbstractCacheTest
+class CacheLiteTest extends AbstractCache
 {
 	/**
 	 * Test setup
 	 *
 	 * @return  void
 	 */
-	public function setUp()
+	public function setUp(): void
 	{
 		@include_once 'Cache' . DS . 'Lite.php';
 

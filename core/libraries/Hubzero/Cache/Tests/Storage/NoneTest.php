@@ -29,7 +29,7 @@ class NoneTest extends Basic
 	 *
 	 * @return  void
 	 */
-	public function setUp()
+	public function setUp(): void
 	{
 		$configurationFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'config.json';
 

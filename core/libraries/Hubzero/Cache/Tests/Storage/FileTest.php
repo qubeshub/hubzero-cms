@@ -10,14 +10,14 @@ namespace Hubzero\Cache\Tests\Storage;
 /**
  * FileTest
  */
-class FileTest extends AbstractCacheTest
+class FileTest extends AbstractCache
 {
 	/**
 	 * Test setup
 	 *
 	 * @return  void
 	 */
-	public function setup()
+	public function setup(): void
 	{
 		parent::setup();
 
@@ -29,7 +29,7 @@ class FileTest extends AbstractCacheTest
 	 *
 	 * @return  void
 	 */
-	public function tearDown()
+	public function tearDown(): void
 	{
 		$this->cache->clean();
 	}

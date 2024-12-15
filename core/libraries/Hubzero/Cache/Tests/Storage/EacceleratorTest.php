@@ -10,14 +10,14 @@ namespace Hubzero\Cache\Tests\Storage;
 /**
  * EacceleratorTest
  */
-class EacceleratorTest extends AbstractCacheTest
+class EacceleratorTest extends AbstractCache
 {
 	/**
 	 * Test setup
 	 *
 	 * @return  void
 	 */
-	public function setUp()
+	public function setUp(): void
 	{
 		@include_once 'Cache' . DS . 'Lite.php';
 

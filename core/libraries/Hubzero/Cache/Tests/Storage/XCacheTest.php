@@ -10,14 +10,14 @@ namespace Hubzero\Cache\Tests\Storage;
 /**
  * XcacheTest
  */
-class XcacheTest extends AbstractCacheTest
+class XcacheTest extends AbstractCache
 {
 	/**
 	 * Test setup
 	 *
 	 * @return  void
 	 */
-	public function setUp()
+	public function setUp(): void
 	{
 		if (!extension_loaded('xcache'))
 		{

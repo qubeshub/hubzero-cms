@@ -10,14 +10,14 @@ namespace Hubzero\Cache\Tests\Storage;
 /**
  * MemcacheTest
  */
-class MemcacheTest extends AbstractCacheTest
+class MemcacheTest extends AbstractCache
 {
 	/**
 	 * Test setup
 	 *
 	 * @return  void
 	 */
-	public function setUp()
+	public function setUp(): void
 	{
 		if (!extension_loaded('memcache') || !class_exists('\Memcache'))
 		{

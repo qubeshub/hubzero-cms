@@ -15,7 +15,7 @@ use Hubzero\Cache\Manager;
 /**
  * AbstractCacheTest
  */
-abstract class AbstractCacheTest extends Basic
+abstract class AbstractCache extends Basic
 {
 	/**
 	 * Cache manager
@@ -29,7 +29,7 @@ abstract class AbstractCacheTest extends Basic
 	 *
 	 * @return  void
 	 */
-	public function setup()
+	public function setup(): void
 	{
 		$configurationFile = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'config.json';
 
@@ -53,7 +53,7 @@ abstract class AbstractCacheTest extends Basic
 	/**
 	 * @return  array
 	 */
-	public function dataProvider()
+	static public function dataProvider()
 	{
 		return [
 			['key1', 'value1', 1],
