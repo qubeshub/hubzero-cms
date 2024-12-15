@@ -701,6 +701,11 @@ class Validate
 	 */
 	protected static function _check($check, $regex)
 	{
+		if ($check === null)
+		{
+			$check = '';
+		}
+
 		if (is_string($regex) && preg_match($regex, $check))
 		{
 			return true;
