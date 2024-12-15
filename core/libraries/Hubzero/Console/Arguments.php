@@ -231,7 +231,7 @@ class Arguments
 		// Aliases take precedence, so parse for them first
 		if ($aliases = Config::get('aliases'))
 		{
-			if (array_key_exists($command, $aliases))
+			if (property_exists($aliases, $command))
 			{
 				if (strpos($aliases->$command, '::') !== false)
 				{
@@ -335,7 +335,7 @@ class Arguments
 		// Aliases take precedence, so parse for them first
 		if ($aliases = Config::get('aliases'))
 		{
-			if (array_key_exists($command, $aliases))
+			if (property_exists($aliases, $command))
 			{
 				if (strpos($aliases->$command, '::') !== false)
 				{
