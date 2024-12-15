@@ -21,7 +21,7 @@ class ArgumentsTest extends Basic
 	 *
 	 * @return  void
 	 **/
-	public function setup()
+	public function setup(): void
 	{
 		$config = m::mock('alias:\Hubzero\Console\Config');
 
@@ -169,6 +169,9 @@ class ArgumentsTest extends Basic
 		];
 
 		$arguments = new Arguments($args);
+
+		$this->expectException(\Hubzero\Console\Exception\UnsupportedCommandException::class);
+
 		$arguments->parse();
 	}
 
