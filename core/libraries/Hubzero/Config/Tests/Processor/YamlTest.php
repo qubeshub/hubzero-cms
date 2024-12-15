@@ -31,6 +31,13 @@ class YamlTest extends Basic
 	private $obj = null;
 
 	/**
+	 * Expected datain array form
+	 *
+	 * @var  array
+	 */
+	private $arr = null;
+
+	/**
 	 * Expected data as a string
 	 *
 	 * @var  string
@@ -62,7 +69,7 @@ seo:
 	 *
 	 * @return  void
 	 */
-	protected function setUp()
+	protected function setUp(): void
 	{
 		$data = new stdClass();
 
@@ -139,9 +146,9 @@ seo:
 
 		$this->assertEquals($this->arr, $result);
 
-		$this->setExpectedException('Hubzero\Config\Exception\ParseException');
+		$this->expectException(\Hubzero\Config\Exception\ParseException::class);
 
-		$result = $this->processor->parse(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Files' . DIRECTORY_SEPARATOR . 'test.xml');
+		$result = $this->processor->parse(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Files' . DIRECTORY_SEPARATOR . 'test.php');
 	}
 
 	/**
@@ -184,7 +191,7 @@ seo:
 		$this->assertEquals($this->obj, $result);
 
 		// Test that an unparsable string throws an exception
-		$this->setExpectedException('Hubzero\Config\Exception\ParseException');
+		$this->expectException(\Hubzero\Config\Exception\ParseException::class);
 
 		$result = $this->processor->stringToObject("foo:\n	bar");
 	}

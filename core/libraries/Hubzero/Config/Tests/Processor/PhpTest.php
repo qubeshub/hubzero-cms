@@ -71,7 +71,7 @@ class Config
 	 *
 	 * @return  void
 	 */
-	protected function setUp()
+	protected function setUp(): void
 	{
 		$data = new stdClass();
 
@@ -171,7 +171,7 @@ class Config
 	 **/
 	public function testParseException()
 	{
-		$this->setExpectedException(ParseException::class);
+		$this->expectException(ParseException::class);
 		$result = $this->processor->parse(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Files' . DIRECTORY_SEPARATOR . 'testException.php');
 	}
 
@@ -183,7 +183,7 @@ class Config
 	 **/
 	public function testParseEmptyFile()
 	{
-		$this->setExpectedException(UnsupportedFormatException::class);
+		$this->expectException(UnsupportedFormatException::class);
 		$result = $this->processor->parse(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Files' . DIRECTORY_SEPARATOR . 'testEmpty.php');
 	}
 

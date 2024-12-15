@@ -26,8 +26,7 @@ class LegacyTest extends Basic
 		$path = __DIR__ . '/Files';
 
 		$loader = new Legacy($path);
-
-		$this->setExpectedException('Hubzero\\Config\\Exception\\FileNotFoundException');
+		$this->expectException(\Hubzero\Config\Exception\FileNotFoundException::class);
 
 		$loader->read($path . '/configuration.php');
 	}
@@ -44,8 +43,7 @@ class LegacyTest extends Basic
 
 		$loader = new Legacy($path);
 
-		$this->setExpectedException('Hubzero\\Config\\Exception\\UnsupportedFormatException');
-
+		$this->expectException(\Hubzero\Config\Exception\UnsupportedFormatException::class);
 		$loader->read($path . '/Legacy/Invalid/configuration.php');
 	}
 

@@ -48,7 +48,7 @@ class ProcessorTest extends Basic
 			$this->assertInstanceOf(Processor::class, $result);
 		}
 
-		$this->setExpectedException('Hubzero\\Error\\Exception\\InvalidArgumentException');
+		$this->expectException(\Hubzero\Error\Exception\InvalidArgumentException::class);
 
 		$result = Processor::instance('py');
 	}

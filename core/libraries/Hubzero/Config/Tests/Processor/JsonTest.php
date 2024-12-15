@@ -49,7 +49,7 @@ class JsonTest extends Basic
 	 *
 	 * @return  void
 	 */
-	protected function setUp()
+	protected function setUp(): void
 	{
 		$data = new stdClass();
 
@@ -127,7 +127,7 @@ class JsonTest extends Basic
 
 		$this->assertEquals($this->arr, $result);
 
-		$this->setExpectedException('Hubzero\Config\Exception\ParseException');
+		$this->expectException(\Hubzero\Config\Exception\ParseException::class);
 
 		$result = $this->processor->parse(dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Files' . DIRECTORY_SEPARATOR . 'test.xml');
 	}
