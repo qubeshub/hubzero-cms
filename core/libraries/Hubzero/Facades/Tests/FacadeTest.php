@@ -20,12 +20,14 @@ use Hubzero\Facades\Tests\Mock\BadFacade;
  */
 class FacadeTest extends Basic
 {
-	public function setUp()
+	public $app;
+	
+	public function setUp(): void
 	{
 		$this->app = Facade::getApplication();
 	}
 
-	public function tearDown()
+	public function tearDown(): void
 	{
 		Facade::setApplication($this->app);
 	}
@@ -82,7 +84,7 @@ class FacadeTest extends Basic
 
 		BadFacade::setApplication($app);
 
-		$this->setExpectedException('RuntimeException');
+		$this->expectException(\RuntimeException::class);
 
 		BadFacade::bar();
 	}
