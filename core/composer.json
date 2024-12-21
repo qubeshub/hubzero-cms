@@ -40,7 +40,7 @@
         "google/apiclient": "2.14.*",
         "guzzlehttp/guzzle": "6.5.*",
         "authy/php": "3.0.*",
-        "mandrill/mandrill": "1.0.*",
+        "symfony/mailchimp-mailer": "v5.4.*",
         "phpdocumentor/reflection-docblock": "3.3.*",
         "bshaffer/oauth2-server-php": "1.11.*",
         "pear/net_dns2": "1.5.*",
