@@ -242,6 +242,8 @@
 					value="sendmail">COM_CONFIG_FIELD_VALUE_SENDMAIL</option>
 				<option
 					value="smtp">COM_CONFIG_FIELD_VALUE_SMTP</option>
+				<option
+					value="mandrill">COM_CONFIG_FIELD_VALUE_MANDRILL</option>
 			</field>
 
 			<field
@@ -334,6 +336,15 @@
 				description="COM_CONFIG_FIELD_MAIL_SMTP_HOST_DESC"
 				filter="string"
 				size="30" />
+
+			<field
+				name="maildsn"
+				type="text"
+				default=""
+				label="COM_CONFIG_FIELD_MAIL_DSN_LABEL"
+				description="COM_CONFIG_FIELD_MAIL_DSN_DESC"
+				filter="string"
+				size="80" />
 		</fieldset>
 	</fields>
 	<fields name="meta">
