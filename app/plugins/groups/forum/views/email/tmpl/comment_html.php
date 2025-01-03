@@ -60,10 +60,10 @@ $preheader = (!$this->post->get('anonymous') ? $this->post->creator->get('name')
 				<td align="left" valign="middle" style="width: 24px !important;">
 					<img src="https://qubeshub.org/app/site/media/images/emails/comment-solid.png" width="24" height="24" style="border:none;" alt="Comment icon"/>
 				</td>
-				<td align="right" valign="bottom" nowrap="nowrap" class="component left" style="padding: 5px 10px 5px 10px !important;">
+				<td align="left" valign="bottom" nowrap="nowrap" class="component left" style="padding: 5px 10px 5px 10px !important;">
 					Forum Post
 				</td>
-				<td width="90%" align="right" valign="bottom" nowrap="nowrap" class="sitename group">
+				<td width="90%" align="right" valign="bottom" class="sitename group">
 					<?php echo $this->group->get('description'); ?>
 				</td>
 			</tr>
