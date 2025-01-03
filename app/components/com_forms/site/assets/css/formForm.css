@@ -4,6 +4,49 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
  
+div .content-panel.com_forms section.main.section {
+	padding-top: 10px;
+}
+
+.save-notify {
+	position: fixed;
+	height: 30px;
+	width: 80px;
+    top: 13px;
+    left: calc(50% - 40px);
+    padding: 5px 10px 5px 10px;
+	font-size: 0.8em;
+    z-index: 1000;
+}
+
+.saving {
+	background:	rgba(89, 127, 47, 0.2) url("/app/templates/bmc/images/anim/spinner.gif") no-repeat 5px center; /* circling-ball-black.gif */
+	background-size: 20px;
+	display: initial;
+}
+
+.saved {
+	background:	rgba(89, 127, 47, 0.2);
+}
+
+.saved:before {
+	font-family: "Fontcons";
+	content: "\2714"
+}
+
+.save-notify span {
+	position: absolute;
+	left: 30px;
+}
+
+.save-notify.saving span:after {
+	content: "Saving";
+}
+
+.save-notify.saved span:after {
+	content: "Saved";
+}
+
 .button-container {
 	display: flex;
 	justify-content: flex-end;

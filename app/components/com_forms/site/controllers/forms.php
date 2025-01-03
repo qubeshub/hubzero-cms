@@ -110,7 +110,7 @@ class Forms extends SiteController
 	}
 
 	/**
-	 * Renders new form page
+	 * Renders new form page [DEPRECATED]
 	 *
 	 * @param    object   $form   Form to be created
 	 * @return   void
@@ -129,7 +129,7 @@ class Forms extends SiteController
 	}
 
 	/**
-	 * Attempts to create form record using submitted data
+	 * Attempts to create form record using submitted data [DEPRECATED]
 	 *
 	 * @return   void
 	 */
@@ -158,6 +158,19 @@ class Forms extends SiteController
 	}
 
 	/**
+	 * AJAX request to get form json
+	 */
+	public function getjsonTask()
+	{
+		$formId = $this->params->get('id');
+		$form = Form::oneOrFail($formId);
+		$formJson = $form->getJson();
+
+		echo $formJson;
+		exit();
+	}
+
+	/**
 	 * Renders form edit page
 	 *
 	 * @return   void
@@ -167,7 +180,13 @@ class Forms extends SiteController
 		$this->bouncer->redirectUnlessAuthorized('core.create');
 
 		$formId = $this->params->get('id');
-		$form = $form ? $form : Form::oneOrFail($formId);
+		$form = $form ? $form : Form::oneOrNew($formId);
+		
+		// Route to updated page with new form id if new
+		if ($formId == 0)
+		{
+			App::redirect($this->routes->formsEditUrl($form->get('id')));
+		}
 
 		$updateTaskUrl = $this->routes->formsUpdateUrl($formId);
 
@@ -178,13 +197,13 @@ class Forms extends SiteController
 	}
 
 	/**
-	 * Handles updating of given form using provided data
+	 * AJAX: Handles updating of given form using provided data
 	 *
 	 * @return   void
 	 */
 	public function updateTask()
 	{
-		$this->bouncer->redirectUnlessAuthorized('core.create');
+		// $this->bouncer->redirectUnlessAuthorized('core.create'); 
 
 		$formId = $this->params->get('id');
 		$formData = $this->params->getArray('form');
@@ -196,14 +215,56 @@ class Forms extends SiteController
 
 		if ($form->save())
 		{
-			$forwardingUrl = $this->routes->formsEditUrl($formId);
-			$successMessage = Lang::txt('COM_FORMS_FORM_SAVE_SUCCESS');
-			$this->crudHelper->successfulUpdate($forwardingUrl, $successMessage);
+			$response = Array(
+				'status' => "Saved form settings."
+			);
+			echo json_encode($response);
+			exit();
+			// $forwardingUrl = $this->routes->formsEditUrl($formId);
+			// $successMessage = Lang::txt('COM_FORMS_FORM_SAVE_SUCCESS');
+			// $this->crudHelper->successfulUpdate($forwardingUrl, $successMessage);
 		}
 		else
 		{
-			$this->crudHelper->failedUpdate($form);
+			// $this->crudHelper->failedUpdate($form);
 		}
+	}
+
+	/**
+	 * AJAX: Update json for form
+	 */
+	public function updatejsonTask()
+	{
+		$formId = $this->params->get('id');
+		$form = Form::oneOrFail($formId);
+		
+		$formJson = $this->params->get('json');
+		if (!$form->setJson($formJson)) {
+			$response = Array(
+				'status' => "Failed to save form json."
+			);
+			echo json_encode($response);
+			exit();
+		}
+
+		// Grab title and description
+		$json = json_decode($formJson, false);
+		$form->set('name', $json->title)
+			->set('description', $json->description);
+		
+		if (!$form->save()) {
+			$response = Array(
+				'status' => "Failed to save form title and description."
+			);
+			echo json_encode($response);
+			exit();
+		}
+
+		$response = Array(
+			'status' => "Saved form json.",
+		);
+		echo json_encode($response);
+		exit();
 	}
 
 	/**

@@ -33,6 +33,7 @@ $searchFormAction = $this->searchFormAction;
 	<div class="row link-container">
 		<?php
 			$this->view('_form_create_link')
+				->set('classes', 'icon-add btn')
 				->display();
 		?>
 	</div>
@@ -43,6 +44,7 @@ $searchFormAction = $this->searchFormAction;
 				->set('textKey', 'COM_FORMS_LINKS_MY_RESPONSES')
 				->set('urlFunction', 'usersResponsesUrl')
 				->set('urlFunctionArgs', [])
+				->set('classes', 'icon-list btn')
 				->display();
 		?>
 	</div>
