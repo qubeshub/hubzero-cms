@@ -17,6 +17,16 @@
 }
 
 /*
+ * Header styles
+ */
+
+.landing-header {
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+}
+
+/*
  * Search form styles
  */
 .search-form input[type=text], input[type=submit] {
@@ -71,4 +81,11 @@
 
 .form-list .form-item * {
 	color: inherit;
+}
+
+/*
+ * Fix occasional bug
+ */
+.svc-toolbox--compact .svc-toolbox__item::after{
+	content: " " !important;
 }

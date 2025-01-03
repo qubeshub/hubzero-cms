@@ -22,7 +22,7 @@ $routes = new Routes();
 
 $steps = [
 	'Form Info' => $routes->formsEditUrl($formId),
-	'Pages' => $routes->formsPagesUrl($formId),
+	// 'Pages' => $routes->formsPagesUrl($formId),
 	'Steps' => $routes->formsPrereqsUrl($formId),
 	'Responses' => $routes->formsResponseList($formId)
 ];

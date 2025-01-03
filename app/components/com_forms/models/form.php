@@ -9,6 +9,7 @@ namespace Components\Forms\Models;
 
 $componentPath = Component::path('com_forms');
 
+require_once "$componentPath/models/formJson.php";
 require_once "$componentPath/models/formPage.php";
 require_once "$componentPath/models/formPrerequisite.php";
 require_once "$componentPath/models/formResponse.php";
@@ -23,6 +24,7 @@ class Form extends Relational
 {
 	use possessable;
 
+	static protected $_jsonClass = 'Components\Forms\Models\FormJson';
 	static protected $_pageClass = 'Components\Forms\Models\FormPage';
 	static protected $_prerequisiteClass = 'Components\Forms\Models\FormPrerequisite';
 	static protected $_responseClass = 'Components\Forms\Models\FormResponse';
@@ -44,9 +46,54 @@ class Form extends Relational
 	 */
 	public $rules = [
 		'name' => 'notempty',
-		'opening_time' => 'notempty',
-		'closing_time' => 'notempty'
+		'opening_time' => 'notempty'
 	];
+
+	/**
+	 * Retrieves one row by primary key, returning an initialized row if not found
+	 *
+	 * @param   mixed  $id  The primary key field value to use to retrieve one row
+	 * @return  \Hubzero\Database\Relational|static
+	 * @since   2.0.0
+	 **/
+    public static function oneOrNew($id) {
+        $form = parent::oneOrNew($id);
+        
+        if ($form->isNew()) {
+			// Set default values
+			$form->set('opening_time', Date::toSql());
+			$form->set('disabled', 1);
+			$form->set('archived', 0);
+			$form->set('responses_locked', 1);
+			$form->set('created', Date::toSql());
+			$form->set('created_by', User::get('id'));
+	
+
+            // Save to generate new id
+            if (!$form->save()) {
+                Notify::error($form->getError());
+                return false;
+            }
+			$form->name = 'Untitled Form ' . $form->get('id');
+		
+			// Save again to update name
+			if (!$form->save()) {
+				Notify::error($form->getError());
+				return false;
+			}
+
+			// Create JSON form
+			$json = FormJson::blank()
+				->set('form_id', $form->get('id'))
+				->set('json', json_encode(array('title' => $form->name, 'pages' => array(array('name' => 'Page 1')))));
+			if (!$json->save()) {
+				Notify::error($json->getError());
+				return false;
+			}
+        }
+
+        return $form;
+    }
 
 	/**
 	 * Determines if users responses to prereqs were accepted
@@ -140,6 +187,31 @@ class Form extends Relational
 	protected static function _getResponseClass()
 	{
 		return get_class(FormResponse::blank());
+	}
+
+	public function getJson()
+	{
+		$json = FormJson::blank()
+			->whereEquals('form_id', $this->get('id'))
+			->row()
+			->get('json');
+
+		return $json;
+	}
+
+	public function setJson($json_string)
+	{
+		$json = FormJson::all()
+			->whereEquals('form_id', $this->get('id'))
+			->row()
+			->set('json', $json_string);
+
+		if (!$json->save()) {
+			Notify::error($json->getError());
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	/**

@@ -34,9 +34,7 @@ class FormsRouter extends ComponentRouter
 	 */
 	public function formsNewUrl()
 	{
-		$segments = ['forms', 'new'];
-
-		$url = $this->_generateComponentUrl($segments);
+		$url = $this->formsEditUrl(0);
 
 		return $url;
 	}
@@ -79,6 +77,21 @@ class FormsRouter extends ComponentRouter
 	public function formsUpdateUrl($formId)
 	{
 		$segments = ['forms', $formId, 'update'];
+
+		$url = $this->_generateComponentUrl($segments);
+
+		return $url;
+	}
+
+	/**
+	 * Generates forms edit URL
+	 *
+	 * @param    int      $formId   ID of form to edit
+	 * @return   string
+	 */
+	public function formsUpdateJsonUrl($formId)
+	{
+		$segments = ['forms', $formId, 'updateJson'];
 
 		$url = $this->_generateComponentUrl($segments);
 

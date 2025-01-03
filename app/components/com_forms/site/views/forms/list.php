@@ -22,6 +22,11 @@ $this->view('_forms_breadcrumbs', 'shared')
 ?>
 
 <section class="main section">
+	<?php
+		$this->view('_landing_header')
+			->display();
+	?>
+
 	<div class="grid">
 
 		<div class="col span2">

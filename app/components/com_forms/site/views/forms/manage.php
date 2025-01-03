@@ -27,6 +27,10 @@ $this->view('_forms_breadcrumbs', 'shared')
 ?>
 
 <section class="main section">
+	<div class="save-notify">
+		<span></span>
+	</div>
+
 	<div class="grid">
 
 		<div class="row">
@@ -46,7 +50,6 @@ $this->view('_forms_breadcrumbs', 'shared')
 					$this->view('_form_form')
 						->set('action', $action)
 						->set('form', $form)
-						->set('submitValue', $submitValue)
 						->display();
 				?>
 			</div>
