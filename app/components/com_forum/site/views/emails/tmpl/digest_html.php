@@ -111,7 +111,7 @@ $preheader .= ') | ';
 										</td>
 									</tr>
 									<tr>
-										<td style="text-align: left; padding: 0 0.5em 0 0.75em; font-weight: bold; white-space: nowrap;" align="right"><?php echo $group->get('description'); ?></th>
+										<td style="text-align: left; padding: 0 0.5em 0.5em 0.75em; font-weight: bold;" align="right"><?php echo $group->get('description'); ?></th>
 									</tr>
 									<tr>
 										<td style="text-align: left; padding: 0 0.5em 0 0.75em; white-space: nowrap;" align="right">You have <?php echo $posts->count(); ?> new post<?php if ($posts->count() > 1) { echo 's'; } ?></th>
