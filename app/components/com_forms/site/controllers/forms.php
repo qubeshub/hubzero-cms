@@ -29,6 +29,7 @@ use Components\Forms\Helpers\RelationalSearch as Search;
 use Components\Forms\Models\Form;
 use Components\Forms\Models\FormResponse;
 use Hubzero\Component\SiteController;
+use Hubzero\Filesystem\Util;
 use \Date;
 use \User;
 
@@ -264,6 +265,74 @@ class Forms extends SiteController
 			'status' => "Saved form json.",
 		);
 		echo json_encode($response);
+		exit();
+	}
+
+	/**
+	 * Ensure no invalid characters
+	 *
+	 * @param   array  $data
+	 * @return  string
+	 */
+	private function _cleanFilename($filename)
+	{
+		$filename = preg_replace("/[^A-Za-z0-9.]/i", '-', $filename);
+
+		$ext = strrchr($filename, '.');
+		$prefix = substr($filename, 0, -strlen($ext));
+
+		if (strlen($prefix) > 240)
+		{
+			$prefix = substr($prefix, 0, 240);
+			$filename = $prefix . $ext;
+		}
+
+		return $filename;
+	}
+
+	/**
+	 * AJAX: Upload files
+	 */
+	public function uploadfilesTask()
+	{
+		$formId = $this->params->get('id');
+		$form = Form::oneOrFail($formId);
+		$uploadDir = PATH_APP . DS . 'site' . DS . 'forms' . DS . $formId;
+		$uploads = $_FILES;
+		
+		// Create directory if it doesn't exist
+		if (!is_dir($uploadDir))
+		{
+			if (!\Filesystem::makeDirectory($uploadDir))
+			{
+				$response = Array(
+					'status' => "Failed to create upload directory."
+				);
+				echo json_encode($response);
+				exit();
+			}
+		}
+
+		// Loop over files
+		$urls = [];
+		foreach ($uploads as $file)
+		{
+			$filename = $this->_cleanFilename($file['name']);
+			$filepath = $uploadDir . DS . $filename;
+
+			if (!\Filesystem::upload($file['tmp_name'], $filepath))
+			{
+				$response = Array(
+					'status' => "Failed to move uploaded file."
+				);
+				echo json_encode($response);
+				exit();
+			}
+
+			$urls[$file['name']] = Request::root() . 'app' . DS . 'site' . DS . 'forms' . DS . $formId . DS . $filename;
+		}
+
+		echo json_encode($urls);
 		exit();
 	}
 

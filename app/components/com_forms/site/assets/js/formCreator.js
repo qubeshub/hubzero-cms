@@ -43,13 +43,12 @@ function notifySaved() {
 }
 
 const FormCreator = new SurveyCreator.SurveyCreator(creatorOptions);
-// FormCreator.onSurveyPropertyValueChanged.add(notifySaving);
 FormCreator.onModified.add(notifySaving);
 
 FormCreator.saveSurveyFunc = (saveNo, callback) => { 
     window.localStorage.setItem("survey-json", FormCreator.text);
     callback(saveNo, true);
-    console.log("Saving " + saveNo + "!");
+    // console.log("Saving " + saveNo + "!");
     const id = $("input[name=id]").val();
     const url = '/forms/forms/' + id + '/updatejson';
     saveSurveyJson(
@@ -61,26 +60,35 @@ FormCreator.saveSurveyFunc = (saveNo, callback) => {
     notifySaved();
 };
 
-// creator.onUploadFile.add((_, options) => {
-//     const formData = new FormData();
-//     options.files.forEach(file => {
-//         formData.append(file.name, file);
-//     });
-//     fetch("https://example.com/uploadFiles", {
-//         method: "post",
-//         body: formData
-//     }).then(response => response.json())
-//         .then(result => {
-//             options.callback(
-//                 "success",
-//                 // A link to the uploaded file
-//                 "https://example.com/files?name=" + result[options.files[0].name]
-//             );
-//         })
-//         .catch(error => {
-//             options.callback('error');
-//         });
-// });
+FormCreator.onUploadFile.add((_, options) => {
+    const formData = new FormData();
+    options.files.forEach(file => {
+        if (file.size>100000) {
+            alert("Image too large. Please upload images less than 100kb.");
+            options.callback('error', [ 'Image too large.' ]);
+        }
+        formData.append(file.name, file);
+    });
+    // console.log("Uploading files...");
+    // for (const [key, value] of formData.entries()) {
+    //     console.log(key, value);
+    //   }
+    const id = $("input[name=id]").val();
+    const url = '/forms/forms/' + id + '/uploadfiles';
+    fetch(url, {
+        method: "post",
+        body: formData
+    }).then(response => response.json())
+        .then((data) => {
+            options.callback(
+                "success",
+                data[options.files[0].name]
+            );
+        })
+        .catch(error => {
+            options.callback('error');
+        });
+});
 
 document.addEventListener("DOMContentLoaded", function() {
     $('#hubForm').on('submit', function(event) {
@@ -157,7 +165,7 @@ function saveSurveyJson(url, json, saveNo, callback) {
         return response.json(); // Parse the JSON from the response
     })
     .then(data => {
-        console.log('Received JSON data:', data); // Access your JSON data here
+        // console.log('Received JSON data:', data); // Access your JSON data here
     })
     .catch(error => {
         console.error("Fetch error!", error);
