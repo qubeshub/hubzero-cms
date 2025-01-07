@@ -309,8 +309,8 @@ $tblColor = '#ffffff';
 																		</a>
 																	</td>
 																	<td width="30px" align="center" valign="top">
-																		<a href="https://twitter.com/bioquested" title="Twitter/X" style="color:#0000FF;text-decoration:underline;">
-																			<img src="https://qubeshub.org/app/site/media/images/emails/twitter_email_icon.png" alt="Twitter/X" width="24" height="24" style="border:none;" />
+																		<a href="https://bsky.app/profile/bioquest.bsky.social" title="Bluesky" style="color:#0000FF;text-decoration:underline;">
+																			<img src="https://qubeshub.org/app/site/media/images/emails/bluesky_email_icon.png" alt="Bluesky" width="24" height="24" style="border:none;" />
 																		</a>
 																	</td>
 																	<td width="30px" align="center" valign="top">
