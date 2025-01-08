@@ -815,7 +815,7 @@ $legacy = array(
 							$formfield = $form->getField($field->get('name'));
 							if ($formfield)
 							{
-								$formfield->setValue($value);
+								$formfield->setValue( $profile->get('profile_value') );
 
 								if ($this->profile->get('access') > 2)
 								{
