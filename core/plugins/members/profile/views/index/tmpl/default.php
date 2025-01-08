@@ -465,7 +465,7 @@ $legacy = array(
 						foreach ($legacy as $k => $v)
 						{
 							$selected = ($k == $this->params->get('access_email', 2))
-									  ? ' selected="selected"'
+									  ? ' selected=1'
 									  : '';
 							$select .= ' <option value="' . $k . '"' . $selected . '>' . $v . '</option>' . "\n";
 						}
@@ -825,7 +825,7 @@ $legacy = array(
 								}
 								else
 								{
-									$access = '<label>' . Lang::txt('PLG_MEMBERS_PROFILE_PRIVACY')  . '</label>' . Components\Members\Helpers\Html::selectAccess('access[' . $field->get('name') . ']', $profile->get('access', $field->get('access')), 'input-select');
+									$access = '<label>' . Lang::txt('PLG_MEMBERS_PROFILE_PRIVACY')  . '</label>' . Components\Members\Helpers\Html::selectAccess('access[' . $field->get('name') . ']', $value=='' ? $field->get('access') : $profile->get('access', $field->get('access')), 'input-select');
 								}
 
 								$this->view('default', 'edit')
@@ -902,7 +902,7 @@ $legacy = array(
 				foreach ($legacy as $k => $v)
 				{
 					$selected = ($k == $this->params->get('access_optin'))
-							  ? ' selected="selected"'
+							  ? ' selected=1'
 							  : '';
 					$select .= ' <option value="' . $k . '"' . $selected . '>' . $v . '</option>' . "\n";
 				}
@@ -929,7 +929,7 @@ $legacy = array(
 							$optin_html .= '<select name="sendEmail" id="sendEmail" class="input-select">';
 							foreach ($options as $key => $value)
 							{
-								$sel = ($key == $this->profile->get('sendEmail')) ? 'selected="selected"' : '';
+								$sel = ($key == $this->profile->get('sendEmail')) ? 'selected=1' : '';
 								$optin_html .= '<option ' . $sel . ' value="' . $key . '">' . $value . '</option>';
 							}
 							$optin_html .= '</select>';
