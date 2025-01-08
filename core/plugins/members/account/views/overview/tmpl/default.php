@@ -105,7 +105,11 @@ $this->css()
 			<form action="index.php" method="post" data-section-registration="password" data-section-profile="password">
 				<?php if (is_array($this->passinfo)) { ?>
 					<p class="<?php echo $this->passinfo['message_style']; ?>">
-						<?php echo Lang::txt('PLG_MEMBERS_ACCOUNT_PASSWORD_EXPIRATION_EXPLANATION', $this->passinfo['diff'], $this->passinfo['max']); ?>
+						<?php if ($this->passinfo['diff'] < 0): ?>
+							<?php echo Lang::txt('PLG_MEMBERS_ACCOUNT_PASSWORD_EXPIRED_EXPLANATION', -$this->passinfo['diff'], $this->passinfo['max']); ?>
+						<?php else: ?>
+							<?php echo Lang::txt('PLG_MEMBERS_ACCOUNT_PASSWORD_EXPIRATION_EXPLANATION', $this->passinfo['diff'], $this->passinfo['max']); ?>
+						<?php endif ?>
 					</p>
 				<?php } // close if is array passinfo ?>
 				<p class="error" id="section-edit-errors"></p>
