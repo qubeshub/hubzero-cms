@@ -19,6 +19,7 @@ require_once "$componentPath/helpers/relationalCrudHelper.php";
 require_once "$componentPath/helpers/virtualCrudHelper.php";
 require_once "$componentPath/models/form.php";
 require_once "$componentPath/models/formResponse.php";
+require_once "$componentPath/models/formResponseJson.php";
 require_once "$componentPath/models/responseFeedItem.php";
 
 use Components\Forms\Helpers\ComFormsPageBouncer as PageBouncer;
@@ -31,6 +32,7 @@ use Components\Forms\Helpers\FormResponseActivityHelper;
 use Components\Forms\Helpers\VirtualCrudHelper as VCrudHelper;
 use Components\Forms\Models\Form;
 use Components\Forms\Models\FormResponse;
+use Components\Forms\Models\FormResponseJson;
 use Components\Forms\Models\ResponseFeedItem;
 use Hubzero\Component\SiteController;
 use Date;
@@ -44,7 +46,7 @@ class FormResponses extends SiteController
 	 * @var  array
 	 */
 	protected $_taskMap = [
-		'__default' => 'display'
+		'__default' => 'list'
 	];
 
 	/**
@@ -64,7 +66,7 @@ class FormResponses extends SiteController
 	 */
 	public function execute()
 	{
-    $this->_auth = new AuthHelper();
+    	$this->_auth = new AuthHelper();
 		$this->_crudHelper = new VCrudHelper([
 			'errorSummary' => Lang::txt('COM_FORMS_NOTICES_FAILED_START')
 		]);
@@ -83,31 +85,57 @@ class FormResponses extends SiteController
 	}
 
 	/**
-	 * Creates response for given form & user
-	 * redirects to first page of given form
+	 * Fill out form, and create response for given form & user if new
 	 *
 	 * @return   void
 	 */
-	public function startTask()
+	public function fillTask()
 	{
 		$formId = $this->_params->getInt('form_id');
+		$form = Form::oneOrFail($formId);
+		$this->_pageBouncer->redirectIfFormDisabled($form);
+		$this->_pageBouncer->redirectIfPrereqsNotAccepted($form);
 
-		$response = $this->_generateResponse();
+		// In the future, allow multiple forms per user if form allows
+		$response = FormResponse::all()
+			->whereEquals('form_id', $formId)
+			->whereEquals('user_id', User::get('id'));
 
-		if ($response->save())
-		{
-			$this->_responseActivity->logStart($response->get('id'));
-			$formsFirstPage = $this->_routes->formsPageResponseUrl([
-				'form_id' => $formId, 'ordinal' => 1
+		if ($response->count() == 0) {
+			$response = FormResponse::blank();
+			$response->set([
+				'form_id' => $formId,
+				'user_id' => User::get('id'),
+				'created' => Date::toSql()
 			]);
-			$responseStartedMessage = Lang::txt('COM_FORMS_NOTICES_SUCCESSFUL_START');
-			$this->_crudHelper->successfulCreate($formsFirstPage, $responseStartedMessage);
+
+			// Save to generate new id
+            if (!$response->save()) {
+				$formOverviewPage = $this->_routes->formsDisplayUrl($formId);
+				$this->_crudHelper->failedCreate($response, $formOverviewPage);
+				return false;
+	        }
+
+			// Create JSON form
+			$json = FormResponseJson::blank()
+				->set('response_id', $response->get('id'));
+			if (!$json->save()) {
+				Notify::error($json->getError());
+				return false;
+			}
+
+			$this->_responseActivity->logStart($response->get('id'));
+		} else {
+			$response = $response->row();
+			$json = FormResponseJson::all()
+				->whereEquals('response_id', $response->get('id'));
 		}
-		else
-		{
-			$formOverviewPage = $this->_routes->formsDisplayUrl($formId);
-			$this->_crudHelper->failedCreate($response, $formOverviewPage);
-		}
+
+		$this->view
+			->set('form', $form)
+			->set('response', $response)
+			->set('json', $json)
+			->display();
 	}
 
 	/**
@@ -255,4 +283,40 @@ class FormResponses extends SiteController
 			->display();
 	}
 
+	/**
+	 * AJAX request to get form json
+	 */
+	public function getjsonTask()
+	{
+		$responseId = $this->_params->getInt('response_id');
+		$response = FormResponse::oneOrFail($responseId);
+		$responseJson = $response->getJson();
+
+		echo $responseJson;
+		exit();
+	}
+
+	/**
+	 * AJAX: Update json for form
+	 */
+	public function updatejsonTask()
+	{
+		$responseId = $this->_params->getInt('response_id');
+		$response = FormResponse::oneOrFail($responseId);
+		
+		$responseJson = $this->_params->get('json');
+		if (!$response->setJson($responseJson)) {
+			$response = Array(
+				'status' => "Failed to save form json."
+			);
+			echo json_encode($response);
+			exit();
+		}
+		
+		$response = Array(
+			'status' => "Saved form json."
+		);
+		echo json_encode($response);
+		exit();
+	}
 }

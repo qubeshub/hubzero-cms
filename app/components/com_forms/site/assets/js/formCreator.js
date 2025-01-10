@@ -8,14 +8,27 @@ var HUB = HUB || {}
 
 HUB.FORMS = HUB.FORMS || {}
 
+Survey.setLicenseKey(
+    "MzA5MjA0MTQtMmFjNi00NmYxLWFlMGEtOTQ2ODlhNDVkOWMxOzE9MjAyNS0xMi0yMiwyPTIwMjUtMTItMjIsND0yMDI1LTEyLTIy"
+);
+
 const autoSaveDelay = 5000; // Set to 5000 (5000 ms -> 5 seconds) for production
 
 const creatorOptions = {
     showLogicTab: true,
-    // showSaveButton: true, // Use this to show save button if NOT auto-saving
     isAutoSave: true,
     autoSaveDelay: autoSaveDelay
 };
+
+// We want file uploads to server only and not base64 in json
+// https://surveyjs.answerdesk.io/ticket/details/t4012/hide-property-in-file-question
+// https://surveyjs.io/survey-creator/examples/remove-properties-from-property-grid/documentation
+var storeDataAsText = Survey.Serializer.getProperty("file", "storeDataAsText");
+storeDataAsText.defaultValue = false;
+storeDataAsText.visible = false;
+
+// Title is required
+Survey.Serializer.getProperty("survey", "title").isRequired = true;
 
 function debounce(func, delay) {
     let timeoutId;
@@ -106,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function() {
             dataType: "json",
             success: function(response) {
                 // Handle the successful response from the server
-                console.log("Form submitted successfully:", response.status);
+                // console.log("Form submitted successfully:", response.status);
                 notifySaved();
             },
             error: function(xhr, status, error) {
@@ -122,7 +135,7 @@ document.addEventListener("DOMContentLoaded", function() {
       'input[name="form[opening_time]"],'+
       'input[name="form[closing_time]"]').on("change",
             debounce(function() { 
-                console.log("Changed!"); 
+                // console.log("Changed!"); 
                 $('#hubForm').submit();
             }, autoSaveDelay)
     );
@@ -166,6 +179,11 @@ function saveSurveyJson(url, json, saveNo, callback) {
     })
     .then(data => {
         // console.log('Received JSON data:', data); // Access your JSON data here
+        // Update breadcrumbs if title changed
+        const id = $("input[name=id]").val();
+        if ($('.breadcrumbs.pathway > a[href="/forms/forms/' + id + '/display"]').text() !== data.title) {
+            $('.breadcrumbs.pathway > a[href="/forms/forms/' + id + '/display"]').text(data.title);
+        }
     })
     .catch(error => {
         console.error("Fetch error!", error);

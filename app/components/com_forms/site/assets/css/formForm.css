@@ -88,3 +88,7 @@ input[type=datetime-local] {
 	font-size: .95em;
 	line-height: 1.61803399em;
 }
+
+#surveyjsForm {
+	border: 1px solid #e5e5e5;
+}
