@@ -36,7 +36,7 @@
         "predis/predis": "1.1.*",
         "symfony/yaml": "3.4.*",
         "symfony/http-foundation": "3.4.*",
-        "simshaun/recurr": "0.3.2",
+        "simshaun/recurr": "4.0.*",
         "pelago/emogrifier": "~3.1.0",
         "google/apiclient": "2.1.*",
         "guzzlehttp/guzzle": "~6.5.6",
