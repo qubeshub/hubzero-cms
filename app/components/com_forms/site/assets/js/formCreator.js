@@ -27,6 +27,11 @@ var storeDataAsText = Survey.Serializer.getProperty("file", "storeDataAsText");
 storeDataAsText.defaultValue = false;
 storeDataAsText.visible = false;
 
+// Wait for upload to finish before completing survey
+var waitForUpload = Survey.Serializer.getProperty("file", "waitForUpload");
+waitForUpload.defaultValue = true;
+waitForUpload.visible = false;
+
 // Title is required
 Survey.Serializer.getProperty("survey", "title").isRequired = true;
 
@@ -89,7 +94,7 @@ FormCreator.onUploadFile.add((_, options) => {
     const id = $("input[name=id]").val();
     const url = '/forms/forms/' + id + '/uploadfiles';
     fetch(url, {
-        method: "post",
+        method: "POST",
         body: formData
     }).then(response => response.json())
         .then((data) => {

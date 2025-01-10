@@ -12,6 +12,12 @@ Survey.setLicenseKey(
     "MzA5MjA0MTQtMmFjNi00NmYxLWFlMGEtOTQ2ODlhNDVkOWMxOzE9MjAyNS0xMi0yMiwyPTIwMjUtMTItMjIsND0yMDI1LTEyLTIy"
 );
 
+// See formCreator.js for a description of the following statements
+// This needs to be duplicated here as in formCreator so the form library knows what the default is
+//   (note that default values, in this case false, are not shown in the json for the file questions)
+Survey.Serializer.getProperty("file", "storeDataAsText").defaultValue = false;
+Survey.Serializer.getProperty("file", "waitForUpload").defaultValue = true;
+
 const autoSaveDelay = 500;
 
 function debounce(func, delay) {
@@ -118,6 +124,91 @@ function saveSurveyData() {
     // .then(data => console.log('Received JSON data:', data))
     .catch(error => console.error(error));
 }
+
+FormLibrary.onUploadFiles.add((_, options) => {
+    const formData = new FormData();
+    options.files.forEach((file) => {
+        if (file.size>100000000) {
+            alert("File too large. Please upload images less than 100Mb.");
+            options.callback('error', [ 'File too large.' ]);
+        }
+        formData.append(file.name, file);
+    });
+    // console.log("Uploading files...");
+    // for (const [key, value] of formData.entries()) {
+    //     console.log(key, value);
+    //   }
+    const form_id = $("input[name=form_id]").val();
+    const response_id = $("input[name=response_id]").val();
+    const url = '/forms/responses/uploadfiles?form_id=' + form_id + '&response_id=' + response_id;
+    fetch(url, {
+        method: "POST",
+        body: formData
+    })
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+            options.callback(
+                options.files.map((file) => {
+                    return {
+                        file: { name: data[file.name].name, type: file.type },
+                        content: data[file.name].url
+                    };
+                })
+            );
+        })
+        .catch((error) => {
+            console.error("Error: ", error);
+            options.callback([], [ 'An error occurred during file upload.' ]);
+        });
+});
+
+async function deleteFile(fileURL, options) {
+    try {
+        const form_id = $("input[name=form_id]").val();
+        const response_id = $("input[name=response_id]").val();
+        const filename = fileURL.split("/").slice(-1)[0];
+        const url = '/forms/responses/deletefile?form_id=' + form_id + '&response_id=' + response_id + '&filename=' + filename;
+        const response = await fetch(url, {
+            method: "DELETE"
+        });
+        if (response.status === 200) {
+            console.log(`File ${filename} was deleted successfully`);
+            return true;
+        } else {
+            console.error(`Failed to delete file: ${filename}`);
+            return false;
+        }
+    } catch (error) {
+        console.error("Error while deleting file: ", error);
+        return false;
+    }
+}
+
+FormLibrary.onClearFiles.add(async (_, options) => {
+    if (!options.value || options.value.length === 0) {
+        return options.callback("success");
+    }
+    if (!options.fileName && !!options.value) {
+        for (const item of options.value) {
+            if (!(await deleteFile(item.content, options))) {
+                options.callback("error");
+            }
+        }
+    } else {
+        const fileToRemove = options.value.find(
+            (item) => item.name === options.fileName
+        );
+        if (fileToRemove) {
+            if (!(await deleteFile(fileToRemove.content, options))) {
+                options.callback("error");
+            }
+        } else {
+            console.error(`File with name ${options.fileName} is not found`);
+        }
+    }
+    options.callback("success");
+});
 
 document.addEventListener("DOMContentLoaded", function() {
     loadSurvey();

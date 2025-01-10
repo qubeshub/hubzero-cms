@@ -319,4 +319,120 @@ class FormResponses extends SiteController
 		echo json_encode($response);
 		exit();
 	}
+
+	/**
+	 * Ensure no invalid characters
+	 *
+	 * @param   array  $data
+	 * @return  string
+	 */
+	private function _cleanFilename($filename, $uploadDir)
+	{
+		// Make sure filename is safe for the filesystem
+		// Taken from core/libraries/Hubzero/Item/Comment/File.php::automaticFilename
+		$filename = preg_replace("/[^A-Za-z0-9.]/i", '-', $filename);
+
+		$ext = strrchr($filename, '.');
+		$prefix = substr($filename, 0, -strlen($ext));
+
+		if (strlen($prefix) > 240)
+		{
+			$prefix = substr($prefix, 0, 240);
+			$filename = $prefix . $ext;
+		}
+
+		// Make sure filename is unique - if not, rename it
+		// Taken from core/libraries/Hubzero/Item/Comment/File.php::uniqueFilename
+		if (file_exists($uploadDir . DS . $filename))
+		{
+			$ext = strrchr($filename, '.');
+			$prefix = substr($filename, 0, -strlen($ext));
+
+			$i = 1;
+
+			while (is_file($uploadDir . DS . $filename))
+			{
+				$filename = $prefix . ++$i . $ext;
+			}
+		}
+
+		return $filename;
+	}
+
+	/**
+	 * AJAX: Upload files
+	 */
+	public function uploadfilesTask()
+	{
+		$formId = $this->_params->getInt('form_id');
+		$responseId = $this->_params->getInt('response_id');
+
+		$form = Form::oneOrFail($formId);
+		$uploadDir = PATH_APP . DS . 'site' . DS . 'forms' . DS . $formId . DS . $responseId;
+		$uploads = $_FILES;
+		
+		// Create directory if it doesn't exist
+		if (!is_dir($uploadDir))
+		{
+			if (!\Filesystem::makeDirectory($uploadDir))
+			{
+				$response = Array(
+					'status' => "Failed to create upload directory."
+				);
+				echo json_encode($response);
+				exit();
+			}
+		}
+
+		// Loop over files
+		$uploaded = [];
+		foreach ($uploads as $file)
+		{
+			$filename = $this->_cleanFilename($file['name'], $uploadDir);
+			$filepath = $uploadDir . DS . $filename;
+
+			if (!\Filesystem::upload($file['tmp_name'], $filepath))
+			{
+				$response = Array(
+					'status' => "Failed to move uploaded file."
+				);
+				echo json_encode($response);
+				exit();
+			}
+
+			$uploaded[$file['name']] = Array(
+				'url' => Request::root() . 'app' . DS . 'site' . DS . 'forms' . DS . $formId . DS . $responseId . DS . $filename,
+				'name' => $filename
+			);
+		}
+
+		echo json_encode($uploaded);
+		exit();
+	}
+
+	/*
+	 * AJAX: Delete files
+	 */
+	public function deletefileTask() {
+		$formId = $this->_params->getInt('form_id');
+		$responseId = $this->_params->getInt('response_id');
+		$filename = $this->_params->getString('filename');
+
+		$uploadDir = PATH_APP . DS . 'site' . DS . 'forms' . DS . $formId . DS . $responseId;
+		$filepath = $uploadDir . DS . $filename;
+
+		if (!\Filesystem::delete($filepath))
+		{
+			$response = Array(
+				'status' => "Failed to delete file."
+			);
+			echo json_encode($response);
+			exit();
+		}
+
+		echo json_encode(Array(
+			'status' => "Deleted file."
+		));
+		exit();
+	}
 }
