@@ -20,9 +20,9 @@ $form = $this->form;
 	?>
 </form>
 
-<form>
+<form id="surveyjsForm">
 	<?php
-		$this->view('_surveyjs')
+		$this->view('_surveyjs_creator')
 			->display();
 	?>
 	<input type="hidden" name="id" value="<?php echo $form->get('id'); ?>">

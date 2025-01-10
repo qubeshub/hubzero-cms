@@ -250,8 +250,12 @@ class Forms extends SiteController
 
 		// Grab title and description
 		$json = json_decode($formJson, false);
-		$form->set('name', $json->title)
-			->set('description', $json->description);
+		$form->set('name', $json->title); // Title should be required
+
+		// Description is optional
+		if (isset($json->description)) {
+			$form->set('description', $json->description);
+		}
 		
 		if (!$form->save()) {
 			$response = Array(
@@ -263,6 +267,7 @@ class Forms extends SiteController
 
 		$response = Array(
 			'status' => "Saved form json.",
+			'title' => $json->title // Sending this back to update breadcrumbs
 		);
 		echo json_encode($response);
 		exit();

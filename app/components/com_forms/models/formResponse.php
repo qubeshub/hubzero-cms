@@ -10,6 +10,7 @@ namespace Components\Forms\Models;
 $componentPath = Component::path('com_forms');
 $tagComponentPath = Component::path('com_tags');
 
+require_once "$componentPath/models/formResponseJson.php";
 require_once "$componentPath/helpers/relationalQueryHelper.php";
 require_once "$componentPath/models/fieldResponse.php";
 require_once "$componentPath/traits/possessable.php";
@@ -23,6 +24,7 @@ class FormResponse extends Relational
 {
 	use possessable;
 
+	static protected $_jsonClass = 'Components\Forms\Models\FormResponseJson';
 	static protected $_fieldResponseClass = 'Components\Forms\Models\FieldResponse';
 	static protected $_formClass = 'Components\Forms\Models\Form';
 	static protected $_tagClass = 'Components\Tags\Models\Tag';
@@ -221,6 +223,31 @@ class FormResponse extends Relational
 			->whereIn('field_id', $fieldsIds);
 
 		return $specificResponses;
+	}
+
+	public function getJson()
+	{
+		$json = FormResponseJson::blank()
+			->whereEquals('response_id', $this->get('id'))
+			->row()
+			->get('json');
+
+		return $json;
+	}
+
+	public function setJson($json_string)
+	{
+		$json = FormResponseJson::all()
+			->whereEquals('response_id', $this->get('id'))
+			->row()
+			->set('json', $json_string);
+
+		if (!$json->save()) {
+			Notify::error($json->getError());
+			return false;
+		} else {
+			return true;
+		}
 	}
 
 	/**

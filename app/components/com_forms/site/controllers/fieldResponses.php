@@ -79,33 +79,6 @@ class FieldResponses extends SiteController
 	}
 
 	/**
-	 * Renders page fill page
-	 *
-	 * @return   void
-	 */
-	public function fillTask()
-	{
-		$this->_setFormAndPage();
-		$this->_pageBouncer->redirectIfFormDisabled($this->_form);
-		$this->_pageBouncer->redirectIfPrereqsNotAccepted($this->_form);
-
-		$fieldsResponsesCreateUrl = $this->_routes->fieldsResponsesCreateUrl();
-		$pageElements = $this->_page->getFields()
-			->order('order', 'asc')
-			->rows();
-		$userId = User::get('id');
-		$decoratedPageElements = $this->_decorator->decorateForRendering($pageElements, $userId);
-
-		$this->view
-			->set('form', $this->_form)
-			->set('page', $this->_page)
-			->set('pageElements', $decoratedPageElements)
-			->set('responsesCreateUrl', $fieldsResponsesCreateUrl)
-			->set('userId', $userId)
-			->display();
-	}
-
-	/**
 	 * Attempts to create field response records
 	 *
 	 * @return   void
