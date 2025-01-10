@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c6843941a6b9de16de351d263bf7f60b",
+    "content-hash": "85735d445dbae6df4856791074ed6415",
     "packages": [
         {
             "name": "apereo/phpcas",
@@ -242,24 +242,35 @@
         },
         {
             "name": "bshaffer/oauth2-server-php",
-            "version": "v1.4",
+            "version": "v1.11.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bshaffer/oauth2-server-php.git",
-                "reference": "a7f02c9b7b4a18e54a71f93436aa4a6091f399a7"
+                "reference": "5a0c8000d4763b276919e2106f54eddda6bc50fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bshaffer/oauth2-server-php/zipball/a7f02c9b7b4a18e54a71f93436aa4a6091f399a7",
-                "reference": "a7f02c9b7b4a18e54a71f93436aa4a6091f399a7",
+                "url": "https://api.github.com/repos/bshaffer/oauth2-server-php/zipball/5a0c8000d4763b276919e2106f54eddda6bc50fa",
+                "reference": "5a0c8000d4763b276919e2106f54eddda6bc50fa",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3.9"
             },
+            "require-dev": {
+                "aws/aws-sdk-php": "~2.8",
+                "firebase/php-jwt": "~2.2",
+                "mongodb/mongodb": "^1.1",
+                "phpunit/phpunit": "^4.0",
+                "predis/predis": "dev-master",
+                "thobbs/phpcassa": "dev-master"
+            },
             "suggest": {
-                "predis/predis": "Required to use the Redis storage engine",
-                "thobbs/phpcassa": "Required to use the Cassandra storage engine"
+                "aws/aws-sdk-php": "~2.8 is required to use DynamoDB storage",
+                "firebase/php-jwt": "~2.2 is required to use JWT features",
+                "mongodb/mongodb": "^1.1 is required to use MongoDB storage",
+                "predis/predis": "Required to use Redis storage",
+                "thobbs/phpcassa": "Required to use Cassandra storage"
             },
             "type": "library",
             "autoload": {
@@ -275,7 +286,7 @@
                 {
                     "name": "Brent Shaffer",
                     "email": "bshafs@gmail.com",
-                    "homepage": "http://github.com/bshaffer"
+                    "homepage": "http://brentertainment.com"
                 }
             ],
             "description": "OAuth2 Server for PHP",
@@ -289,7 +300,7 @@
                 "issues": "https://github.com/bshaffer/oauth2-server-php/issues",
                 "source": "https://github.com/bshaffer/oauth2-server-php/tree/master"
             },
-            "time": "2014-06-12T17:32:10+00:00"
+            "time": "2018-12-04T00:29:32+00:00"
         },
         {
             "name": "cilogon/oauth2-cilogon",
