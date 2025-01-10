@@ -30,7 +30,7 @@
         "ezyang/htmlpurifier": "4.18.*",
         "tecnickcom/tcpdf": "6.7.*",
         "leafo/lessphp": "0.5.*",
-        "swiftmailer/swiftmailer": "~v5.4.12",
+        "swiftmailer/swiftmailer": "5.4.*",
         "monolog/monolog": "1.17.0",
         "willdurand/geocoder": "2.8.*",
         "predis/predis": "0.8.6",
