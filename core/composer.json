@@ -4,7 +4,7 @@
     "type": "project",
     "keywords": [ "cms" , "hubzero" ],
     "homepage": "http://hubzero.org",
-    "license": "LGPL-2.1",
+    "license": "GPL-2.0-or-later",
     "authors": [
         {
             "name": "Hubzero",
