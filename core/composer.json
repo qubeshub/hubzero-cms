@@ -69,7 +69,7 @@
 	"php-parallel-lint/php-parallel-lint": "1.4.*",
 	"phpunit/dbunit": "2.0.*",
 	"phpunit/phpunit": "5.7.*",
-	"satooshi/php-coveralls": "1.0.*",
+	"php-coveralls/php-coveralls": "2.6.*",
 	"squizlabs/php_codesniffer": "2.*"
     },
     "autoload": {
