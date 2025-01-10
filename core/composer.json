@@ -60,6 +60,7 @@
 	"simplesamlphp/simplesamlphp": "1.18.*",
 	"league/oauth2-facebook": "2.0.*",
 	"litesaml/lightsaml": "1.4.*",
+        "http-interop/http-factory-guzzle": "*",
 	"theiconic/name-parser": "0.1.*"
     },
     "require-dev": {
