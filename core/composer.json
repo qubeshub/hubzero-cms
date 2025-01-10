@@ -40,7 +40,7 @@
         "pelago/emogrifier": "3.1.*",
         "google/apiclient": "2.14.*",
         "guzzlehttp/guzzle": "6.5.*",
-        "authy/php": "2.*",
+        "authy/php": "3.0.*",
         "mandrill/mandrill": "1.0.*",
         "phpdocumentor/reflection-docblock": "2.0.4",
         "bshaffer/oauth2-server-php": "v1.4",
