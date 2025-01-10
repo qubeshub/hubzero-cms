@@ -41,7 +41,7 @@
         "guzzlehttp/guzzle": "6.5.*",
         "authy/php": "3.0.*",
         "symfony/mailchimp-mailer": "v5.4.*",
-        "phpdocumentor/reflection-docblock": "3.3.*",
+        "phpdocumentor/reflection-docblock": "5.2.*",
         "bshaffer/oauth2-server-php": "1.11.*",
         "pear/net_dns2": "1.5.*",
         "hubzero/orcid-php": "0.3.*",
