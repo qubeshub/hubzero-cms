@@ -47,6 +47,7 @@
         "pear/net_dns2": "1.5.*",
         "hubzero/orcid-php": "0.3.*",
         "league/flysystem": "1.0.*",
+	"php-http/guzzle6-adapter": "1.1.*",
         "potherca/flysystem-github": "dev-develop",
         "nao-pon/flysystem-google-drive": "~1.1.13",
         "php-amqplib/php-amqplib": "2.5.*",
