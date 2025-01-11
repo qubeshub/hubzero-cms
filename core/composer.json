@@ -74,7 +74,8 @@
     },
     "autoload": {
         "psr-0": { "Hubzero": "libraries/" },
-        "psr-4": { "Bootstrap\\": "bootstrap/"}
+        "psr-4": { "Bootstrap\\": "bootstrap/"},
+        "files": [ "bootstrap/app.php" ]
     },
     "config": {
         "preferred-install": "dist",
