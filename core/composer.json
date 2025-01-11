@@ -74,8 +74,7 @@
     },
     "autoload": {
         "psr-0": { "Hubzero": "libraries/" },
-        "psr-4": { "Bootstrap\\": "bootstrap/"},
-        "classmap": [ "libraries/joomla" ]
+        "psr-4": { "Bootstrap\\": "bootstrap/"}
     },
     "config": {
         "preferred-install": "dist",
