@@ -1,3 +1,12 @@
 #!/usr/bin/php
-<?php require __DIR__ . "/../../index.php";
+<?php
 
+/**
+ * @package    hubzero-cms
+ * @copyright  Copyright (c) 2005-2024 The Regents of the University of California.
+ * @license    http://opensource.org/licenses/MIT MIT
+ */
+
+require_once dirname(__DIR__) . '/vendor/autoload.php';
+
+(new Hubzero\Base\Application())->run();
