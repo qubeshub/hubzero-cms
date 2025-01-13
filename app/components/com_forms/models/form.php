@@ -96,6 +96,45 @@ class Form extends Relational
     }
 
 	/**
+	 * Delete the record and all associated data
+	 *
+	 * @return  boolean  False if error, True on success
+	 */
+	public function destroy()
+	{
+		// Remove JSON
+		$json = FormJson::all()->whereEquals('form_id', $this->get('id'))->row();
+		if (!$json->destroy())
+		{
+			$this->addError('Form JSON could not be deleted');
+			return false;
+		}
+
+		// Remove files first (more efficient than deleting response directories later one-by-one)
+		$path = PATH_APP . DS . 'site' . DS . 'forms' . DS . $this->get('id');
+		if (is_dir($path)) {
+			if (!Filesystem::deleteDirectory($path))
+			{
+				$this->addError('Could not delete form directory.');
+				return false;
+			}
+		}
+
+		// Remove responses
+		foreach ($this->getResponses()->rows() as $response)
+		{
+			if (!$response->destroy())
+			{
+				$this->addError('Response could not be deleted');
+				return false;
+			}
+		}
+
+		// Attempt to delete the record
+		return parent::destroy();
+	}
+
+	/**
 	 * Determines if users responses to prereqs were accepted
 	 *
 	 * @param    int    $userId   User's ID

@@ -11,6 +11,7 @@ defined('_HZEXEC_') or die();
 $this->css('surveyjs/defaultV2.min.css')
     ->js('surveyjs/survey.core.min.js')
     ->js('surveyjs/survey-js-ui.min.js')
+    ->js('formSetup.js')
     ->js('formLibrary.js');
 ?>
 

@@ -141,6 +141,15 @@ class FormsRouter extends ComponentRouter
 		return $url;
 	}
 
+	public function formsDeleteUrl($formId)
+	{
+		$segments = ['forms', $formId, 'delete'];
+
+		$url = $this->_generateComponentUrl($segments);
+
+		return $url;
+	}
+
 	/**
 	 * Generates form's pages list url
 	 *

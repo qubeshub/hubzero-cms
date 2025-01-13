@@ -14,6 +14,7 @@ $this->css('surveyjs/defaultV2.min.css')
     ->js('surveyjs/survey-js-ui.min.js')
     ->js('surveyjs/survey-creator-core.min.js')
     ->js('surveyjs/survey-creator-js.min.js')
+    ->js('formSetup.js')
     ->js('formCreator.js');
 ?>
 

@@ -39,69 +39,75 @@ $this->view('_forms_breadcrumbs', 'shared')
 
 <section class="main section">
 	<div class="grid">
-
-		<div class="col span12 nav omega">
-			<?php
-				$this->view('_form_edit_nav', 'shared')
-					->set('current', 'Responses')
-					->set('formId', $formId)
-					->display();
-			?>
+		
+		<div class="row">
+			<div class="col span12 nav omega">
+				<?php
+					$this->view('_form_edit_nav', 'shared')
+						->set('current', 'Responses')
+						->set('formId', $formId)
+						->display();
+				?>
+			</div>
 		</div>
 
-		<div class="col span12 omega list-actions">
-			<?php if ($responsesCount > 0): ?>
-				<span id="email-respondents-button" class="list-action">
-					<?php
-						$this->view('_email_respondents_form')
-							->set('action', $responsesEmailUrl)
-							->set('formId', $formId)
-							->display();
-					?>
-				</span>
+		<div class="row">
+			<div class="col span12 omega list-actions">
+				<?php if ($responsesCount > 0): ?>
+					<span id="email-respondents-button" class="list-action">
+						<?php
+							$this->view('_email_respondents_form')
+								->set('action', $responsesEmailUrl)
+								->set('formId', $formId)
+								->display();
+						?>
+					</span>
 
-				<span id="tag-responses-button" class="list-action">
-					<?php
-						$this->view('_tag_responses_form')
-							->set('action', $responsesTagsUrl)
-							->set('formId', $formId)
-							->display();
-					?>
-				</span>
-			<?php endif; ?>
+					<span id="tag-responses-button" class="list-action">
+						<?php
+							$this->view('_tag_responses_form')
+								->set('action', $responsesTagsUrl)
+								->set('formId', $formId)
+								->display();
+						?>
+					</span>
+				<?php endif; ?>
+			</div>
 		</div>
 
-		<div class="col span12 omega">
-			<?php
-				$this->view('_response_list_area')
-					->set('formId', $formId)
-					->set('responses', $responses)
-					->set('sortingAction', $responseListUrl)
-					->set('sortingCriteria', $sortingCriteria)
-					->display();
+		<div class="row">
+			<div class="col span12 omega">
+				<?php
+					$this->view('_response_list_area')
+						->set('formId', $formId)
+						->set('responses', $responses)
+						->set('sortingAction', $responseListUrl)
+						->set('sortingCriteria', $sortingCriteria)
+						->display();
 
-				$this->view('_pagination', 'shared')
-					->set('minDisplayLimit', 4)
-					->set('pagination', $responses->pagination)
-					->set('paginationUrl', $responseListUrl)
-					->set('recordsCount', $responsesCount)
-					->display();
-			?>
+					$this->view('_pagination', 'shared')
+						->set('minDisplayLimit', 4)
+						->set('pagination', $responses->pagination)
+						->set('paginationUrl', $responseListUrl)
+						->set('recordsCount', $responsesCount)
+						->display();
+				?>
 
-			<?php if ($responsesCount > 0): ?>
-				<span>
-					<?php
-						$this->view('_protected_link', 'shared')
-							->set('authMethod', 'canCurrentUserEditForm')
-							->set('authArgs', [$form])
-							->set('textKey', 'COM_FORMS_FIELDS_RESPONSES_EXPORT')
-							->set('urlFunction', 'formResponsesExportUrl')
-							->set('urlFunctionArgs', [$formId])
-							->display();
-					?>
-				</span>
-			<?php endif; ?>
+				<?php if ($responsesCount > 0): ?>
+					<span>
+						<?php
+							$this->view('_protected_link', 'shared')
+								->set('authMethod', 'canCurrentUserEditForm')
+								->set('authArgs', [$form])
+								->set('textKey', 'COM_FORMS_FIELDS_RESPONSES_EXPORT')
+								->set('urlFunction', 'formResponsesExportUrl')
+								->set('urlFunctionArgs', [$formId])
+								->display();
+						?>
+					</span>
+				<?php endif; ?>
+			</div>
+
 		</div>
-
 	</div>
 </section>

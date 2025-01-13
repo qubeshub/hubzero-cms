@@ -81,6 +81,37 @@ class CrudHelper
 	}
 
 	/**
+	 * Handles successful deletion of record
+	 *
+	 * @param    string   $url       URL to redirect user to
+	 * @param    string   $message   Create sucess message
+	 * @return   void
+	 */
+	public function successfulDelete($url, $message = '')
+	{
+		$this->_notifyUserOfSuccess($message);
+
+		$this->_router->redirect($url);
+	}
+
+	/**
+	 * Handles failed deletion of record
+	 *
+	 * @param    object   $record   Record that failed to be deleted
+	 * @return   void
+	 */
+	public function failedDelete($url, $record)
+	{
+		$errors = $record->getErrors();
+
+		$errorMessage = $this->_generateErrorMessage($errors);
+
+		$this->_notify->error($errorMessage);
+
+		$this->_router->redirect($url);
+	}
+
+	/**
 	 * Notifies user of successful record creation
 	 *
 	 * @param    string   $message   Create sucess message

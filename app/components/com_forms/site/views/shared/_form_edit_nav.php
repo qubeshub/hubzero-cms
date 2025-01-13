@@ -28,6 +28,7 @@ $steps = [
 ];
 
 $this->view('_ul_nav', 'shared')
+	->set('formId', $formId)
 	->set('current', $current)
 	->set('steps', $steps)
 	->display();

@@ -36,14 +36,17 @@ $this->view('_forms_breadcrumbs', 'shared')
 ?>
 
 <section class="main section">
-
-	<div class="row">
-		<?php
-			$this->view('_form_edit_nav', 'shared')
-				->set('current', 'Steps')
-				->set('formId', $formId)
-				->display();
-		?>
+	<div class="grid">
+		<div class="row">
+			<div class="col span12 omega">
+			<?php
+				$this->view('_form_edit_nav', 'shared')
+					->set('current', 'Steps')
+					->set('formId', $formId)
+					->display();
+			?>
+			</div>
+		</div>
 	</div>
 
 	<form action="<?php echo $formAction; ?>">
