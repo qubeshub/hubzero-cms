@@ -8,9 +8,24 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
+$componentPath = Component::path('com_forms');
+
+require_once "$componentPath/helpers/formsRouter.php";
+
+use Components\Forms\Helpers\FormsRouter as Routes;
+
+$routes = new Routes();
+
+$formId = $this->formId;
 $current = $this->current;
 $steps = $this->steps;
 ?>
+
+<div class="nav-button-container">
+	<a class="btn icon-arrow-left" href="<?php echo Route::url($routes->formsDisplayUrl($formId)); ?>">
+		<?php echo Lang::txt('COM_FORMS_LINKS_OVERVIEW'); ?>
+	</a>
+</div>
 
 <ul class="ul-nav">
 	<?php foreach ($steps as $text => $url): ?>

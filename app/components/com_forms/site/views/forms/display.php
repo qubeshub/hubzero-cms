@@ -51,6 +51,14 @@ $this->view('_forms_breadcrumbs', 'shared')
 							->display();
 					?>
 				</div>
+
+				<div class="delete-link-container">
+					<?php
+						$this->view('_form_delete_link')
+							->set('form', $form)
+							->display();
+					?>
+				</div>
 			</div>
 
 		</div>

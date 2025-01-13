@@ -8,42 +8,7 @@ var HUB = HUB || {}
 
 HUB.FORMS = HUB.FORMS || {}
 
-Survey.setLicenseKey(
-    "MzA5MjA0MTQtMmFjNi00NmYxLWFlMGEtOTQ2ODlhNDVkOWMxOzE9MjAyNS0xMi0yMiwyPTIwMjUtMTItMjIsND0yMDI1LTEyLTIy"
-);
-
-// See formCreator.js for a description of the following statements
-// This needs to be duplicated here as in formCreator so the form library knows what the default is
-//   (note that default values, in this case false, are not shown in the json for the file questions)
-Survey.Serializer.getProperty("file", "storeDataAsText").defaultValue = false;
-Survey.Serializer.getProperty("file", "waitForUpload").defaultValue = true;
-
 const autoSaveDelay = 500;
-
-function debounce(func, delay) {
-    let timeoutId;
-
-    return function(...args) {
-        notifySaving();
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => {
-        func.apply(this, args);
-        }, delay);
-    };
-}
-
-function notifySaving() {
-    $('.save-notify').addClass('saving');
-}
-
-function notifySaved() {
-    $('.save-notify').removeClass('saving')
-    .addClass('saved')
-    .delay(2000)
-    .fadeOut(2000, function() {
-        $(this).removeClass('saved').show();
-    });
-}
 
 const FormLibrary = new Survey.Model();
 FormLibrary.onValueChanged.add(debounce(saveSurveyData, autoSaveDelay));

@@ -45,6 +45,25 @@ class FormsAuth extends ComponentAuth
 	}
 
 	/**
+	 * Determines if current user can delete given form
+	 *
+	 * @param    object   $form     Form instance
+	 * @return   bool
+	 */
+	public function canCurrentUserDeleteForm($form)
+	{
+		$currentUsersId = User::get('id');
+
+		$userIsAdmin = $this->_currentIsAdmin();
+		$userCanDelete = $this->currentIsAuthorized('core.delete');
+		$userOwnsForm = $form->isOwnedBy($userId);
+
+		$canEdit = $userIsAdmin || ($userCanDelete && $userOwnsForm);
+
+		return $canEdit;
+	}
+
+	/**
 	 * Determines if form can be edited by user w/ given ID
 	 *
 	 * @param    object   $form     Form instance

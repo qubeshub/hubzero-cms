@@ -17,12 +17,13 @@ use Components\Forms\Helpers\FormsRouter;
 $routes = new FormsRouter();
 
 $classes = isset($this->classes) ? $this->classes : '';
+$confirm = isset($this->confirm) ? $this->confirm : false;
 $content = $this->content;
 $urlFunction = $this->urlFunction;
 $urlFunctionArgs = $this->urlFunctionArgs;
 $url = $routes->$urlFunction(...$urlFunctionArgs);
 ?>
 
-<a href="<?php echo $url; ?>" class="protected-link <?php echo $classes; ?>">
+<a href="<?php echo $url; ?>" class="protected-link <?php echo $classes; ?>" <?php if ($confirm): ?>onclick="return confirm('<?php echo $confirm; ?>');"<?php endif; ?>>
 	<?php echo $content; ?>
 </a>

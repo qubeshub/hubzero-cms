@@ -198,6 +198,29 @@ class Forms extends SiteController
 	}
 
 	/**
+	 * Delete a form
+	 */
+	public function deleteTask()
+	{
+		$this->bouncer->redirectUnlessAuthorized('core.delete');
+
+		$formId = $this->params->getInt('id');
+		$form = Form::oneOrFail($formId);
+
+		if ($form->destroy())
+		{
+			$forwardingUrl = $this->routes->formListUrl();
+			$successMessage = Lang::txt('COM_FORMS_FORM_DELETE_SUCCESS');
+			$this->crudHelper->successfulDelete($forwardingUrl, $successMessage);
+		}
+		else
+		{
+			$forwardingUrl = $this->routes->formsDisplayUrl($formId);
+			$this->crudHelper->failedDelete($forwardingUrl, $form);
+		}
+	}
+
+	/**
 	 * AJAX: Handles updating of given form using provided data
 	 *
 	 * @return   void

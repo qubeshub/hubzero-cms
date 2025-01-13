@@ -92,3 +92,36 @@ input[type=datetime-local] {
 #surveyjsForm {
 	border: 1px solid #e5e5e5;
 }
+
+#surveyjsForm input[type=text] {
+	background: inherit;
+	background-color: inherit;
+	border: inherit;
+}
+
+#surveyjsForm input[type=text].spg-input {
+	--thm-default-font-size: var(--sjs-font-size, calc(2* var(--sjs-base-unit, var(--base-unit, 8px))));
+    --thm-default-line-height: calc(1.5* var(--thm-default-font-size));
+    font-family: var(--ctr-font-family, var(--sjs-font-family, var(--font-family)));
+    font-size: var(--ctr-font-default-size, var(--thm-default-font-size, 16px));
+    font-style: normal;
+    font-weight: 400;
+    line-height: var(--ctr-font-default-line-height, var(--thm-default-line-height, 24px));
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    display: block;
+    background-color: var(--ctr-editor-background-color, var(--sjs-general-backcolor, var(--background, #fff)));
+    box-sizing: border-box;
+    width: 100%;
+    border: none;
+    border-radius: var(--ctr-editor-corner-radius);
+    box-shadow: inset 0 0 0 var(--ctr-editor-border-width, 1px) var(--ctr-editor-border-color, var(--sjs-border-inside, var(--border-inside, rgba(0, 0, 0, 0.16))));
+    transition: box-shadow var(--sjs-creator-transition-duration, 150ms);
+    padding-top: calc(var(--ctr-editor-padding-top, 4px) + var(--ctr-editor-content-margin-top, 8px));
+    padding-right: calc(var(--ctr-editor-padding-right, 4px) + var(--ctr-editor-content-margin-right, 12px));
+    padding-bottom: calc(var(--ctr-editor-padding-bottom, 4px) + var(--ctr-editor-content-margin-bottom, 8px));
+    padding-left: calc(var(--ctr-editor-padding-left, 4px) + var(--ctr-editor-content-margin-left, 12px));
+    outline: none;
+    color: var(--ctr-editor-content-text-color, var(--sjs-general-forecolor, var(--foreground, #161616)));
+}

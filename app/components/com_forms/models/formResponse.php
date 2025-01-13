@@ -80,6 +80,35 @@ class FormResponse extends Relational
 	}
 
 	/**
+	 * Delete the record and all associated data
+	 *
+	 * @return  boolean  False if error, True on success
+	 */
+	public function destroy()
+	{
+		// Remove JSON
+		$json = FormResponseJson::all()->whereEquals('response_id', $this->get('id'))->row();
+		if (!$json->destroy())
+		{
+			$this->addError('Could not delete response JSON.');
+			return false;
+		}
+
+		// Remove files
+		$path = PATH_APP . DS . 'site' . DS . 'forms' . DS . $this->getFormId() . DS . $this->get('id');
+		if (is_dir($path)) {
+			if (!Filesystem::deleteDirectory($path))
+			{
+				$this->addError('Could not delete response directory.');
+				return false;
+			}
+		}
+
+		// Attempt to delete the record
+		return parent::destroy();
+	}
+
+	/**
 	 * Searches for record using given criteria
 	 *
 	 * @param    array   $criteria   Criteria to match record to

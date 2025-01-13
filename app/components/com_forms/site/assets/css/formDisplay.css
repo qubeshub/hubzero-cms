@@ -47,7 +47,8 @@ ol {
 	font-weight: 500;
 }
 
-.edit-link-container {
+.edit-link-container,
+.delete-link-container {
 	font-size: 1.5em;
 	margin: 2em 0 0 0;
 }

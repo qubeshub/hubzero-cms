@@ -4,6 +4,10 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
  
+div .content-panel.com_forms section.main.section {
+	padding-top: 10px;
+}
+
 /*
  * Edit steps nav
  */
@@ -46,3 +50,7 @@
 	margin-left: 0;
 }
 
+.nav-button-container {
+	float: right;
+	padding: 1em 0 1em 0;
+}
