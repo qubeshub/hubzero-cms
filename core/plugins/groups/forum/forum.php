@@ -11,8 +11,6 @@ use Components\Forum\Models\Category;
 use Components\Forum\Models\Post;
 use Components\Forum\Models\Attachment;
 
-use DOMDocument;
-
 // No direct access
 defined('_HZEXEC_') or die();
 
@@ -1435,7 +1433,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 		}
 
 		// Extracting emails from the new post submitted
-		$domComment = new DOMDocument();
+		$domComment = new \DOMDocument();
 		$domComment->loadHTML($fields['comment']);
 		$mentionEmailList = array();
 		foreach ($domComment->getElementsByTagName('a') as $item) {
