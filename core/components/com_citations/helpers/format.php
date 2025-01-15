@@ -808,7 +808,7 @@ class Format
 		$tags = $cite->get('filteredTags');
 		$html = '';
 		$isAdmin = (\User::authorise('core.manage', 'com_citations') ? true : false);
-		if (count($tags) > 0)
+		if (is_array($tags) && count($tags) > 0)
 		{
 			if ($includeHtml)
 			{
