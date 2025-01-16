@@ -852,10 +852,10 @@ class Citation extends Relational implements \Hubzero\Search\Searchable
 						case 'title':
 							break;
 						case 'doi':
-							$coins_data[] = $this->_coins_keys[$k] . $this->$k;
+							$coins_data[] = $coins_keys[$k] . $this->$k;
 							break;
 						case 'url':
-							$coins_data[] = $this->_coins_keys[$k] . '=' . htmlentities($this->$k);
+							$coins_data[] = $coins_keys[$k] . '=' . htmlentities($this->$k);
 							break;
 						case 'journaltitle':
 							$jt = html_entity_decode($this->$k);
@@ -863,10 +863,10 @@ class Citation extends Relational implements \Hubzero\Search\Searchable
 							{
 								$jt = (!preg_match('!\S!u', $jt)) ? mbstring($jt) : $jt;
 							}
-							$coins_data[] = $this->_coins_keys[$k] . '=' . $jt;
+							$coins_data[] = $coins_keys[$k] . '=' . $jt;
 							break;
 						default:
-							$coins_data[] = isset($this->$k) ? $this->_coins_keys[$k] . '=' . $this->$k : '';
+							$coins_data[] = isset($this->$k) ? $coins_keys[$k] . '=' . $this->$k : '';
 					}
 				}
 
