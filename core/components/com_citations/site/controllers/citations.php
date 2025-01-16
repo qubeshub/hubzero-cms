@@ -233,13 +233,12 @@ class Citations extends SiteController
 		}
 
 		// Clean up filters a little
-		array_walk($this->view->filters, function(&$val, &$key)
+		array_walk($this->view->filters, function(&$val, $key)
 		{
 			if (!is_array($val))
 			{
 				$val = trim($val);
 				$val = str_replace('"', '', $val);
-				$key = $val;
 			}
 		});
 		$citations = Citation::getFilteredRecords($this->view->filters);
