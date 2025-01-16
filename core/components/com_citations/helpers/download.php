@@ -158,7 +158,7 @@ class Download
 	{
 		$format = ($format) ? $format : $this->_format;
 
-		$this->_formatter[$format] = $formatter;
+		$this->_formatters[$format] = $formatter;
 	}
 
 	/**
@@ -171,7 +171,7 @@ class Download
 	{
 		$format = ($format) ? $format : $this->_format;
 
-		return (isset($this->_formatter[$format])) ? $this->_formatter[$format] : null;
+		return (isset($this->_formatters[$format])) ? $this->_formatter[$format] : null;
 	}
 
 	/**
