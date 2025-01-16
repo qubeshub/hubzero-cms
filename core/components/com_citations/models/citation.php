@@ -1007,12 +1007,12 @@ class Citation extends Relational implements \Hubzero\Search\Searchable
 					}
 
 					//prepare url
-					if (strstr($url, "\r\n"))
+					if ($url && strstr($url, "\r\n"))
 					{
 						$url = array_filter(array_values(explode("\r\n", $url)));
 						$url = $url[0];
 					}
-					elseif (strstr($url, ' '))
+					elseif ($url && strstr($url, ' '))
 					{
 						$url = array_filter(array_values(explode(" ", $url)));
 						$url = $url[0];
