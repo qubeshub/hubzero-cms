@@ -479,6 +479,12 @@ class Application extends Container
 	 */
 	public function run()
 	{
+		// Boot the application
+		//
+		// This allows service providers to finish performing any
+		// needed setup.
+		$this->boot();
+
 		// Start handling errors before doing anything else
 		if ($this->has('error'))
 		{
@@ -490,12 +496,6 @@ class Application extends Container
 				}
 			});
 		}
-
-		// Boot the application
-		//
-		// This allows service providers to finish performing any
-		// needed setup.
-		$this->boot();
 
 		// Initialise
 		if (!$this->runningInConsole() && $this->has('dispatcher'))
