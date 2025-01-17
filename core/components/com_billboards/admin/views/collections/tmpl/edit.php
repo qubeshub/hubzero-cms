@@ -28,7 +28,7 @@ $this->js();
 
 		<div class="input-wrap">
 			<label for="field-name"><?php echo Lang::txt('COM_BILLBOARDS_FIELD_COLLECTION_NAME'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span></label><br />
-			<input type="text" name="name" id="field-name" class="required" value="<?php echo $this->escape(stripslashes($this->row->name)); ?>" size="50" />
+			<input type="text" name="name" id="field-name" class="required" value="<?php echo $this->escape(stripslashes($this->row->name == null ? '' : $this->row->name)); ?>" size="50" />
 		</div>
 	</fieldset>
 	<input type="hidden" name="id" value="<?php echo $this->row->id; ?>" />

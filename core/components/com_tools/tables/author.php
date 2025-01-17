@@ -307,7 +307,7 @@ class Author extends Table
 					}
 				}
 
-				$query = "INSERT INTO $this->_tbl (toolname, revision, uid, ordering, version_id, name, organization) VALUES ('" . $toolname . "','" . $revision . "','" . $authid . "','" . $i . "', '" . $version . "', '" . addslashes($name) . "', '" . addslashes($organization) . "')";
+				$query = "INSERT INTO $this->_tbl (toolname, revision, uid, ordering, version_id, name, organization) VALUES ('" . $toolname . "','" . $revision . "','" . $authid . "','" . $i . "', '" . $version . "', '" . addslashes($name == null ? '' : $name) . "', '" . addslashes($organization == null ? '' : $organization) . "')";
 				$this->_db->setQuery($query);
 				if (!$this->_db->query())
 				{

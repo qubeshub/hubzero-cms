@@ -1710,7 +1710,10 @@ class Sessions extends SiteController
 		{
 			// Uh-oh. Something went wrong...
 			$retval = false;
-			$this->setError($results[0]);
+			if (isset($results[0]))
+			{
+				$this->setError($results[0]);
+			}
 		}
 
 		if (is_array($results))
@@ -1827,7 +1830,7 @@ class Sessions extends SiteController
 	 */
 	private function _getToolExportControl($exportcontrol)
 	{
-		$exportcontrol = strtolower($exportcontrol);
+		$exportcontrol = strtolower($exportcontrol == null ? '' : $exportcontrol);
 
 		$ip = Request::ip();
 

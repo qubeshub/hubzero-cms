@@ -759,7 +759,7 @@ class Format
 		$html = '';
 		$cite->separateTagsAndBadges();
 		$badges = array();
-		$badges = $cite->get('badges');
+		$badges = $cite->get('badges',array());
 
 		if (count($badges) > 0)
 		{

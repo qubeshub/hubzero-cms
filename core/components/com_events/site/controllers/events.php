@@ -743,12 +743,12 @@ class Events extends SiteController
 			for ($i=0, $n=count($fields); $i < $n; $i++)
 			{
 				// Explore the text and pull out all matches
-				array_push($fields[$i], self::parseTag($row->content, $fields[$i][0]));
+				array_push($fields[$i], self::parseTag($row->content == null ? '' : $row->content, $fields[$i][0]));
 
 				// Clean the original text of any matches
-				$row->content = str_replace('<ef:' . $fields[$i][0] . '>' . end($fields[$i]) . '</ef:' . $fields[$i][0] . '>', '', $row->content);
+				$row->content = str_replace('<ef:' . $fields[$i][0] . '>' . end($fields[$i]) . '</ef:' . $fields[$i][0] . '>', '', $row->content == null ? '' : $row->content);
 			}
-			$row->content = trim($row->content);
+			$row->content = trim($row->content == null ? '' : $row->content);
 		}
 
 		$bits = explode('-', $row->publish_up);
@@ -821,7 +821,7 @@ class Events extends SiteController
 		if ($alias)
 		{
 			Pathway::append(
-				stripslashes($page->title),
+				stripslashes($page->title == null ? '' : $page->title),
 				'index.php?option=' . $this->_option . '&task=details&id=' . $row->id . '&page=' . $page->alias
 			);
 		}
@@ -1449,8 +1449,8 @@ class Events extends SiteController
 			$end_time = Date::of($row->publish_down, $time_zone)->format('H:i', true);
 
 
-			$registerby_date = Date::of($row->registerby, $time_zone)->format('Y-m-d', true);
-			$registerby_time = Date::of($row->registerby, $time_zone)->format('H:i', true);
+			$registerby_date = Date::of($row->registerby == null ? '' : $row->registerby, $time_zone)->format('Y-m-d', true);
+			$registerby_time = Date::of($row->registerby == null ? '' : $row->registerby, $time_zone)->format('H:i', true);
 
 			$arr = array(
 				\Html::select('option', 0, strtolower(Lang::txt('EVENTS_NO')), 'value', 'text'),
@@ -1461,6 +1461,7 @@ class Events extends SiteController
 		}
 		else
 		{
+			// No ID - we're creating a new event
 			if ($row->publish_up && $row->publish_up != '0000-00-00 00:00:00')
 			{
 				$event_up = new EventsDate($row->publish_up);
@@ -1473,13 +1474,12 @@ class Events extends SiteController
 
 				$time_zone = $row->time_zone;
 
-				$event_registerby = new EventsDate($row->registerby);
+				$event_registerby = new EventsDate($row->registerby == null ? '' : $row->registerby);
 				$registerby_date = sprintf("%4d-%02d-%02d", $event_registerby->year, $event_registerby->month, $event_registerby->day);
 				$registerby_time = $event_registerby->hour . ':' . $event_registerby->minute;
 			}
 			else
 			{
-				// No ID - we're creating a new event
 				$year  = $this->year;
 				$month = $this->month;
 				$day   = $this->day;
@@ -1519,12 +1519,12 @@ class Events extends SiteController
 			for ($i=0, $n=count($fields); $i < $n; $i++)
 			{
 				// Explore the text and pull out all matches
-				array_push($fields[$i], self::parseTag($row->content, $fields[$i][0]));
+				array_push($fields[$i], self::parseTag($row->content == null ? '' : $row->content, $fields[$i][0]));
 
 				// Clean the original text of any matches
-				$row->content = str_replace('<ef:' . $fields[$i][0] . '>' . end($fields[$i]) . '</ef:' . $fields[$i][0] . '>', '', $row->content);
+				$row->content = str_replace('<ef:' . $fields[$i][0] . '>' . end($fields[$i]) . '</ef:' . $fields[$i][0] . '>', '', $row->content == null ? '' : $row->content);
 			}
-			$row->content = trim($row->content);
+			$row->content = trim($row->content == null ? '' : $row->content);
 		}
 
 		list($start_hrs, $start_mins) = explode(':', $start_time);
@@ -1846,7 +1846,7 @@ class Events extends SiteController
 		//$row->title = htmlentities($row->title);
 
 		$row->content = $_POST['econtent'];
-		$row->content = \Hubzero\Utility\Sanitize::clean($row->content);
+		$row->content = \Hubzero\Utility\Sanitize::clean($row->content == null ? '' : $row->content);
 
 		// Get the custom fields defined in the events configuration
 		if (isset($_POST['fields']))

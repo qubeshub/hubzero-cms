@@ -244,28 +244,28 @@ if ($this->model->groupOwner())
 				<?php if ($this->config->get('grantinfo', 0)) { ?>
 					<div class="input-wrap">
 						<label for="param-grant_title"><?php echo Lang::txt('COM_PROJECTS_TERMS_GRANT_TITLE'); ?>:</label>
-						<input name="params[grant_title]" id="param-grant_title" maxlength="250" type="text" value="<?php echo $this->escape(html_entity_decode($this->params->get( 'grant_title'))); ?>" class="long" />
+						<input name="params[grant_title]" id="param-grant_title" maxlength="250" type="text" value="<?php echo $this->escape(html_entity_decode($this->params->get( 'grant_title',''))); ?>" class="long" />
 					</div>
 					<div class="input-wrap">
 						<label for="param-grant_PI"><?php echo Lang::txt('COM_PROJECTS_TERMS_GRANT_PI'); ?>:</label>
-						<input name="params[grant_PI]" id="param-grant_PI" maxlength="250" type="text" value="<?php echo $this->escape(html_entity_decode($this->params->get( 'grant_PI'))); ?>" class="long" />
+						<input name="params[grant_PI]" id="param-grant_PI" maxlength="250" type="text" value="<?php echo $this->escape(html_entity_decode($this->params->get( 'grant_PI',''))); ?>" class="long" />
 					</div>
 					<div class="input-wrap">
 						<label for="param-award_number"><?php echo Lang::txt('COM_PROJECTS_SETUP_TERMS_AWARD_NUMBER'); ?>:</label>
-						<input name="params[award_number]" id="param-award_number" maxlength="250" type="text" value="<?php echo $this->escape(html_entity_decode($this->params->get('award_number'))); ?>" class="long" />
+						<input name="params[award_number]" id="param-award_number" maxlength="250" type="text" value="<?php echo $this->escape(html_entity_decode($this->params->get('award_number',''))); ?>" class="long" />
 					</div>
 					<div class="input-wrap">
 						<label for="param-grant_agency"><?php echo Lang::txt('COM_PROJECTS_TERMS_GRANT_AGENCY'); ?>:</label>
-						<input name="params[grant_agency]" id="param-grant_agency" maxlength="250" type="text" value="<?php echo $this->escape(html_entity_decode($this->params->get( 'grant_agency'))); ?>" class="long" />
+						<input name="params[grant_agency]" id="param-grant_agency" maxlength="250" type="text" value="<?php echo $this->escape(html_entity_decode($this->params->get( 'grant_agency',''))); ?>" class="long" />
 					</div>
 					<div class="input-wrap">
 						<label for="param-grant_budget"><?php echo Lang::txt('COM_PROJECTS_TERMS_GRANT_BUDGET'); ?>:</label>
-						<input name="params[grant_budget]" id="param-grant_budget" maxlength="250" type="text" value="<?php echo $this->escape(html_entity_decode($this->params->get( 'grant_budget'))); ?>" class="long" />
+						<input name="params[grant_budget]" id="param-grant_budget" maxlength="250" type="text" value="<?php echo $this->escape(html_entity_decode($this->params->get( 'grant_budget',''))); ?>" class="long" />
 					</div>
 					<div class="input-wrap">
 						<label><?php echo Lang::txt('COM_PROJECTS_TERMS_GRANT_APPROVAL_CODE'); ?>:</label>
 						<?php
-						$approval = $this->escape(html_entity_decode($this->params->get( 'grant_approval')));
+						$approval = $this->escape(html_entity_decode($this->params->get( 'grant_approval','')));
 						echo $approval ? $approval : Lang::txt('COM_PROJECTS_NA');
 						?>
 					</div>

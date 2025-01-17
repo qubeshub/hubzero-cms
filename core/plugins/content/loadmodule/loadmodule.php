@@ -58,7 +58,7 @@ class plgContentLoadmodule extends \Hubzero\Plugin\Plugin
 
 		// Find all instances of plugin and put in $matches for loadposition
 		// $matches[0] is full pattern match, $matches[1] is the position
-		preg_match_all($regex, $article->text, $matches, PREG_SET_ORDER);
+		preg_match_all($regex, $article->text == null ? "" : $article->text, $matches, PREG_SET_ORDER);
 
 		// No matches, skip this
 		if ($matches)
@@ -87,7 +87,7 @@ class plgContentLoadmodule extends \Hubzero\Plugin\Plugin
 		$stylemod = $style;
 
 		// Find all instances of plugin and put in $matchesmod for loadmodule
-		preg_match_all($regexmod, $article->text, $matchesmod, PREG_SET_ORDER);
+		preg_match_all($regexmod, $article->text == null ? '' : $article->text, $matchesmod, PREG_SET_ORDER);
 
 		// If no matches, skip this
 		if ($matchesmod)

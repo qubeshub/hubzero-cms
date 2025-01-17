@@ -152,7 +152,7 @@ class plgHubzeroComments extends \Hubzero\Plugin\Plugin
 				return;
 			}
 
-			$d = $this->obj->get('created', $this->obj->get('publish_up'));
+			$d = $this->obj->get('created', $this->obj->get('publish_up',''));
 
 			$year  = intval(substr($d, 0, 4));
 			$month = intval(substr($d, 5, 2));
@@ -181,7 +181,7 @@ class plgHubzeroComments extends \Hubzero\Plugin\Plugin
 				break;
 			}
 
-			$pdt = strftime('Y', $dt) . '-' . strftime('m', $dt) . '-' . strftime('d', $dt) . ' 00:00:00';
+			$pdt = date('Y', $dt) . '-' . date('m', $dt) . '-' . date('d', $dt) . ' 00:00:00';
 			$today = Date::toSql();
 
 			// Can users create comments?

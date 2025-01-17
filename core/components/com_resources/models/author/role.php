@@ -76,7 +76,7 @@ class Role extends Relational
 	 */
 	public function automaticAlias($data)
 	{
-		$alias = (isset($data['alias']) && $data['alias'] ? $data['alias'] : $data['title']);
+		$alias = (isset($data['alias']) && $data['alias'] ? $data['alias'] : (isset($data['title']) ? $data['title'] : ''));
 		$alias = strip_tags($alias);
 		$alias = trim($alias);
 		if (strlen($alias) > 100)

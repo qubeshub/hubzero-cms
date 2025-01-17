@@ -480,9 +480,9 @@ class Doi extends Obj
 		$this->set('language', 'en');
 		$this->set('pubYear', date('Y'));
 		$this->set('publisher', htmlspecialchars($this->_configs->publisher));
-		$this->set('publisherIdentifier', htmlspecialchars($this->_configs->publisherIdentifier));
-		$this->set('publisherIdentifierScheme', htmlspecialchars($this->_configs->publisherIdentifierScheme));
-		$this->set('publisherIdentifierSchemeURI', htmlspecialchars($this->_configs->publisherIdentifierSchemeURI));
+		$this->set('publisherIdentifier', htmlspecialchars($this->_configs->publisherIdentifier == null ? '' : $this->_configs->publisherIdentifier));
+		$this->set('publisherIdentifierScheme', htmlspecialchars($this->_configs->publisherIdentifierScheme == null ? '' : $this->_configs->publisherIdentifierScheme));
+		$this->set('publisherIdentifierSchemeURI', htmlspecialchars($this->_configs->publisherIdentifierSchemeURI == null ? '' : $this->_configs->publisherIdentifierSchemeURI));
 		$this->set('resourceType', 'Dataset');
 		$this->set('resourceTypeTitle', 'Dataset');
 		$this->set('datePublished', date('Y-m-d'));

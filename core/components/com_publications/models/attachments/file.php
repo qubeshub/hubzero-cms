@@ -184,7 +184,7 @@ class File extends Base
 				{
 					$where .= DS . $configs->bundleDirectory;
 				}
-				if ($configs->directory && strtolower($configs->bundleDirectory) != strtolower($configs->directory))
+				if ($configs->directory && strtolower($configs->bundleDirectory == null ? '' : $configs->bundleDirectory) != strtolower($configs->directory == null ? '' : $configs->directory))
 				{
 					$where .= $configs->directory != $pub->secret ? DS . $configs->directory : '';
 				}

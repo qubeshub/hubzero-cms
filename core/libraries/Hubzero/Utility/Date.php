@@ -97,7 +97,7 @@ class Date extends DateTime
 		$datetime = is_numeric($datetime) ? date('c', $datetime) : $datetime;
 
 		// Call the DateTime constructor.
-		parent::__construct($datetime, $timezone);
+		parent::__construct($datetime == null ? '' : $datetime, $timezone);
 
 		// reset the timezone for 3rd party libraries/extension that does not use Date
 		date_default_timezone_set(self::$stz->getName());

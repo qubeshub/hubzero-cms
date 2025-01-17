@@ -45,7 +45,7 @@ class Metadata extends Base
 
 		// Parse data in metadata field
 		$data = array();
-		preg_match_all("#<nb:(.*?)>(.*?)</nb:(.*?)>#s", $pub->metadata, $matches, PREG_SET_ORDER);
+		preg_match_all("#<nb:(.*?)>(.*?)</nb:(.*?)>#s", $pub->metadata == null ? '' : $pub->metadata , $matches, PREG_SET_ORDER);
 		if (count($matches) > 0)
 		{
 			foreach ($matches as $match)

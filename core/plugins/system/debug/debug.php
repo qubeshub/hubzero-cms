@@ -967,7 +967,7 @@ class plgSystemDebug extends \Hubzero\Plugin\Plugin
 			$referrer = (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
 
 			// Encrypt for some reasonable level of obscurity
-			$key = md5(App::get('config')->get('secret'));
+			$key = md5(App::get('config')->get('secret',''));
 
 			// Compute needed iv size and random iv
 			$ivSize = openssl_cipher_iv_length('AES-256-CBC');

@@ -880,7 +880,7 @@ class Items extends AdminController
 						$v = null;
 					}
 
-					$v = trim($v)
+					$v = trim($v == null ? '' : $v)
 						? Date::of($v, Config::get('offset'))->toSql()
 						: null;
 				}

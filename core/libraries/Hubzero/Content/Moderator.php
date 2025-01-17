@@ -52,7 +52,7 @@ class Moderator
 	 **/
 	public function __construct($identifier = null, $session_id = null, $secret = null)
 	{
-		if (is_file($identifier))
+		if (is_file($identifier == null ? '' : $identifier))
 		{
 			$this->path = $identifier;
 		}
@@ -141,7 +141,7 @@ class Moderator
 	 **/
 	private function decompose($identifier)
 	{
-		$identifier = base64_decode($identifier);
+		$identifier = base64_decode($identifier == null ? '' : $identifier);
 
 		if (strstr($identifier, ':'))
 		{

@@ -1222,7 +1222,10 @@ class WikiParser
 	 */
 	private function _getCode($m)
 	{
-		@list($whole, $before, $text, $after) = $m;
+		$whole  = isset($m[0]) ? $m[0] : '';
+		$before = isset($m[1]) ? $m[1] : '';
+		$text   = isset($m[2]) ? $m[2] : '';
+		$after  = isset($m[3]) ? $m[3] : '';
 
 		return $before . $this->_dataPush(array(
 			$whole,
@@ -1426,7 +1429,7 @@ class WikiParser
 	 */
 	private function includes($text)
 	{
-		return preg_replace_callback('/\[\[(include)(\]\]|\((.*)\)\]\])/Ui', array(&$this, '_getInclude'), $text);
+		return preg_replace_callback('/\[\[(include)(\]\]|\((.*)\)\]\])/Ui', array(&$this, '_getInclude'), $text == null ? '' : $text);
 	}
 
 	/**
@@ -2412,7 +2415,10 @@ class WikiParser
 
 		for ($i = 0; $i < $shorter; ++$i)
 		{
-			if ($st1[$i] != $st2[$i])
+			// @FIXME this whole function is broke
+			// but we "fix" the type error so that
+			// it cleanly results in same useless result
+			if (0 /*$st1[$i] != $st2[$i]*/)
 			{
 				break;
 			}

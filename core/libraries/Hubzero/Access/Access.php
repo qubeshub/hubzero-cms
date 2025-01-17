@@ -114,7 +114,7 @@ class Access
 		// Sanitize inputs.
 		$groupId = (int) $groupId;
 		$action = strtolower(preg_replace('#[\s\-]+#', '.', trim($action)));
-		$asset  = strtolower(preg_replace('#[\s\-]+#', '.', trim($asset)));
+		$asset  = strtolower(preg_replace('#[\s\-]+#', '.', trim($asset == null ? '' : $asset)));
 
 		// Get group path for group
 		$groupPath = self::getGroupPath($groupId);

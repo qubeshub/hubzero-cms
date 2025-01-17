@@ -72,7 +72,7 @@ class plgContentFormatwiki extends \Hubzero\Plugin\Plugin
 		$content = $article->get($key);
 
 		// Is there a format already applied?
-		if (preg_match('/^<!-- \{FORMAT:(.*)\} -->/i', $content, $matches))
+		if (preg_match('/^<!-- \{FORMAT:(.*)\} -->/i', $content == null ? '' : $content, $matches))
 		{
 			// Is the format wiki?
 			$format = strtolower(trim($matches[1]));
@@ -103,7 +103,7 @@ class plgContentFormatwiki extends \Hubzero\Plugin\Plugin
 			}
 		}
 
-		$content = preg_replace('/^(<!-- \{FORMAT:WIKI\} -->)/i', '', $content);
+		$content = preg_replace('/^(<!-- \{FORMAT:WIKI\} -->)/i', '', $content == null ? '' : $content);
 
 		if (trim($content) && $this->_isWiki($content))
 		{
@@ -140,7 +140,7 @@ class plgContentFormatwiki extends \Hubzero\Plugin\Plugin
 	 */
 	private function _isWiki($content)
 	{
-		$content = trim($content);
+		$content = trim($content == null ? '' : $content);
 
 		// First, remove <pre> tags
 		//   This is in case the content is HTML but contains a block of

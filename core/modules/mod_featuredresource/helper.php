@@ -144,7 +144,7 @@ class Helper extends Module
 	 */
 	private function getImage($path)
 	{
-		$d = @dir(PATH_APP . $path);
+		$d = (is_dir($path)) ? dir($path) : '';
 
 		$images = array();
 
@@ -153,7 +153,7 @@ class Helper extends Module
 			while (false !== ($entry = $d->read()))
 			{
 				$img_file = $entry;
-				if (is_file(PATH_APP . $path . DS . $img_file)
+				if (is_file($path . DS . $img_file)
 				 && substr($entry, 0, 1) != '.'
 				 && strtolower($entry) !== 'index.html')
 				{

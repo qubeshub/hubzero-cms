@@ -1535,7 +1535,7 @@ class Register extends SiteController
 			}
 
 			//check to see if we have a return param
-			$pReturn = base64_decode(urldecode($xprofile->getParam('return')));
+			$pReturn = base64_decode(urldecode($xprofile->getParam('return','')));
 			if ($pReturn)
 			{
 				$return = $pReturn;

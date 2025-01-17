@@ -247,7 +247,7 @@ class Helper extends Module
 			$message = str_replace('<notice:end>', $time_end, $message);
 			$message = str_replace('<notice:countdowntostart>', $time_cd_tostart, $message);
 			$message = str_replace('<notice:countdowntoreturn>', $time_cd_toreturn, $message);
-			$message = str_replace('<notice:timezone>', $timezone, $message);
+			$message = str_replace('<notice:timezone>', $timezone==null ? '' : $timezone, $message==null ? '' : $message);
 
 			// auto link?
 			if ($this->params->get('autolink', 1))

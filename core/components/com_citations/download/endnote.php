@@ -89,7 +89,7 @@ class Endnote extends Downloadable
 		}
 		if (!in_array('authors', $exclude))
 		{
-			$author = html_entity_decode($row->author);
+			$author = html_entity_decode($row->author == null ? '' : $row->author);
 			$author = $this->toUtf8($author);
 
 			$author_array = explode(';', stripslashes($author));

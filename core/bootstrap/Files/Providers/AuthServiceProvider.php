@@ -27,7 +27,7 @@ class AuthServiceProvider extends Middleware
 		$response = $this->next($request);
 
 		// Get the referer to parse for the applicable app
-		$referer = $request->header('referer');
+		$referer = $request->header('referer','');
 		$app     = Request::create($referer)->segment(1, 'site');
 		$app     = (in_array($app, ['site', 'administrator'])) ? $app : 'site';
 

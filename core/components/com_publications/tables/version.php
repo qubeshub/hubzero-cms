@@ -401,7 +401,7 @@ class Version extends Table
 	 * @param	integer	$verNum	version number
 	 * @return  object
 	 */
-	public function getPrevPublication($pid = null, $version_number)
+	public function getPrevPublication($pid, $version_number)
 	{
 		if ($pid === null || $version_number == 1)
 		{
@@ -419,7 +419,7 @@ class Version extends Table
 	 * @param	integer	$verNum	version number
 	 * @return  object
 	 */
-	public function getNextPublication($pid = null, $version_number)
+	public function getNextPublication($pid, $version_number)
 	{
 		if ($pid === null)
 		{

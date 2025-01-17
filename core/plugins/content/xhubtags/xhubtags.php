@@ -30,7 +30,7 @@ class plgContentXhubtags extends \Hubzero\Plugin\Plugin
 		}
 
 		// Fix asset paths
-		$article->text = str_replace('src="/media/system/', 'src="/core/assets/', $article->text);
+		$article->text = str_replace('src="/media/system/', 'src="/core/assets/', $article->text == null ? '' : $article->text);
 		$article->text = str_replace('src="/site', 'src="' . substr(PATH_APP, strlen(PATH_ROOT)) . '/site', $article->text);
 		$article->text = str_replace("src='/site", "src='" . substr(PATH_APP, strlen(PATH_ROOT)) . "/site", $article->text);
 

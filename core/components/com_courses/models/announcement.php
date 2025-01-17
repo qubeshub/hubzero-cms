@@ -144,7 +144,7 @@ class Announcement extends Base
 			case 'raw':
 			default:
 				$content = $this->get('content');
-				$content = preg_replace('/^(<!-- \{FORMAT:.*\} -->)/i', '', $content);
+				$content = preg_replace('/^(<!-- \{FORMAT:.*\} -->)/i', '', $content == null ? '' : $content);
 				$content = html_entity_decode($content);
 			break;
 		}

@@ -69,7 +69,7 @@ class Grid
 		// Load the behavior.
 		self::behavior();
 
-		$direction = strtolower($direction);
+		$direction = strtolower($direction == null ? '' : $direction);
 		$index = intval($direction == 'desc');
 
 		if ($order != $selected)

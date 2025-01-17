@@ -71,7 +71,7 @@ $base = str_replace('/administrator', '', rtrim(Request::base(true), '/'));
 				</div>
 				<div class="input-wrap">
 					<label for="field-params"><?php echo Lang::txt('COM_TOOLS_USER_PREFS_PREFERENCES'); ?>:</label>
-					<textarea name="fields[params]" id="field-params" cols="35" rows="5"><?php echo $this->escape(stripslashes($this->row->params)); ?></textarea>
+					<textarea name="fields[params]" id="field-params" cols="35" rows="5"><?php echo $this->escape(stripslashes($this->row->params == null ? '' : $this->row->params)); ?></textarea>
 				</div>
 			</fieldset>
 		</div>

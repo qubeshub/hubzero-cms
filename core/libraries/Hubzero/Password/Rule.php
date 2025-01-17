@@ -599,7 +599,7 @@ class Rule extends Relational
 	{
 		$nword = '';
 
-		$len = strlen($word);
+		$len = strlen($word == null ? '' : $word);
 
 		for ($i = 0; $i < $len; $i++)
 		{
@@ -639,7 +639,7 @@ class Rule extends Relational
 			return false;
 		}
 
-		$names = explode(" ", $name);
+		$names = explode(" ", $name == null ? '' : $name);
 
 		$count = count($names);
 		$words = array();

@@ -648,7 +648,7 @@ class plgUsageTools extends \Hubzero\Plugin\Plugin
 	public function getDateWithData($period)
 	{
 		$period = intval($period);
-		$dthis  = Request::getString('dthis');
+		$dthis  = Request::getString('dthis','');
 		if (!preg_match('/[0-9]{4}\-[0-9]{2}/', $dthis))
 		{
 			$dthis = '';

@@ -21,7 +21,7 @@ class Flysystem extends \League\Flysystem\Filesystem
 	 **/
 	public function listContents($directory = '', $recursive = false)
 	{
-		$contents = parent::listContents($directory, $recursive);
+		$contents = ($directory == '') ? array() : parent::listContents($directory, $recursive);
 
 		return $this->encapsulate($contents);
 	}

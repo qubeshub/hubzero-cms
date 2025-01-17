@@ -149,7 +149,7 @@ class Handler
 				{
 					$extensions = $class::getExtensions();
 
-					if (in_array(strtolower($fileType), $extensions))
+					if (in_array(strtolower($fileType == null ? '' : $fileType), $extensions))
 					{
 						$this->addHandler($class);
 					}

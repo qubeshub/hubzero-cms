@@ -237,6 +237,11 @@ class Events extends AdminController
 		{
 			$this->view->row->state = 0;
 			$this->view->row->time_zone = -5;
+			$this->view->row->content = '';
+			$this->view->row->title = '';
+			$this->view->row->adresse_info = '';
+			$this->view->row->contact_info = '';
+			$this->view->row->extra_info = '';
 			$start_publish = Date::format('Y-m-d');
 			$stop_publish = Date::format('Y-m-d');
 			$start_time = "08:00";

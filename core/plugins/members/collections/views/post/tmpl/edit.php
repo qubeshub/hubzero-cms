@@ -129,7 +129,7 @@ $this->css()
 					<div class="form-group">
 						<label for="field-title">
 							<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_FIELD_TITLE'); ?>
-							<input type="text" name="fields[title]" id="field-title" class="form-control" value="<?php echo $this->escape(stripslashes($item->get('title'))); ?>" />
+							<input type="text" name="fields[title]" id="field-title" class="form-control" value="<?php echo $this->escape(stripslashes($item->get('title',''))); ?>" />
 						</label>
 					</div>
 					<input type="hidden" name="fields[type]" value="file" />

@@ -1595,7 +1595,7 @@ class Citation extends Relational implements \Hubzero\Search\Searchable
 		$citation->id = $this->searchId();
 		$citation->description = $this->abstract;
 		$citation->doi = $this->doi;
-		$tags = explode(',', $this->keywords);
+		$tags = explode(',', $this->keywords == null ? '' : $this->keywords);
 		foreach ($tags as $key => &$tag)
 		{
 			$tag = \Hubzero\Utility\Sanitize::stripAll($tag);
@@ -1606,7 +1606,8 @@ class Citation extends Relational implements \Hubzero\Search\Searchable
 		}
 		$citation->tags = $tags;
 
-		$citation->author = explode(';', $this->getAuthorString(false));
+		$authorString = $this->getAuthorString(false);
+		$citation->author = explode(';', $authorString == null ? '' : $authorString);
 		if ($this->scope == 'member')
 		{
 			$url = '/members/' . $this->uid . '/citations';

@@ -703,11 +703,12 @@ class Item extends Nested
 		// Initialise form with component view params if available.
 		if ($type == 'component')
 		{
-			$link = htmlspecialchars_decode($link);
+			$link = htmlspecialchars_decode($link == null ? '' : $link);
 
 			// Parse the link arguments.
 			$args = array();
-			parse_str(parse_url(htmlspecialchars_decode($link), PHP_URL_QUERY), $args);
+			$url = parse_url(htmlspecialchars_decode($link), PHP_URL_QUERY);
+			parse_str($url == null ? '' : $url, $args);
 
 			// Confirm that the option is defined.
 			$option = '';

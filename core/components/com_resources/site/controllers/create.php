@@ -1776,7 +1776,7 @@ class Create extends SiteController
 	private function _txtClean($text)
 	{
 		// Handle special characters copied from MS Word
-		$text = str_replace('“', '"', $text);
+		$text = str_replace('“', '"', $text == null ? '' : $text);
 		$text = str_replace('”', '"', $text);
 		$text = str_replace("’", "'", $text);
 		$text = str_replace("‘", "'", $text);

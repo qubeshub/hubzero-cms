@@ -755,7 +755,7 @@ class Tickets extends SiteController
 				->set('status', 0)
 				->set('ip', Request::ip())
 				->set('uas', Request::getString('HTTP_USER_AGENT', '', 'server'))
-				->set('referrer', base64_encode(Request::getString('HTTP_REFERER', null, 'server')))
+				->set('referrer', base64_encode(Request::getString('HTTP_REFERER', '', 'server')))
 				->set('cookies', (Request::getString('sessioncookie', '', 'cookie') ? 1 : 0))
 				->set('instances', 1)
 				->set('section', 1)

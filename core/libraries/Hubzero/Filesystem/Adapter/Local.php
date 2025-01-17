@@ -433,7 +433,10 @@ class Local implements AdapterInterface
 	{
 		if ($force)
 		{
-			return @mkdir($path, $mode, $recursive);
+			if (!is_dir($path))
+			{
+				return mkdir($path, $mode, $recursive);
+			}
 		}
 
 		return mkdir($path, $mode, $recursive);

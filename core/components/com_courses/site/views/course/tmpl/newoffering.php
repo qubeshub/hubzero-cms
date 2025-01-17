@@ -46,7 +46,7 @@ if (!$this->no_html) {
 
 			<label for="field-title">
 				<?php echo Lang::txt('COM_COURSES_FIELD_TITLE'); ?> <span class="required"><?php echo Lang::txt('JREQUIRED'); ?></span>
-				<input type="text" name="offering[title]" id="field-title" size="35" value="<?php echo $this->escape(stripslashes($this->offering->get('title'))); ?>" />
+				<input type="text" name="offering[title]" id="field-title" size="35" value="<?php echo $this->escape(stripslashes($this->offering->get('title',''))); ?>" />
 			</label>
 		</fieldset>
 		<div class="clear"></div>

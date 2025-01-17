@@ -74,8 +74,8 @@ class Nogit extends Models\Adapter
 	public function filelist($params = [])
 	{
 		// Parse incoming params and establish defaults
-		$filter        = isset($params['filter']) ? $params['filter'] : null;
-		$dirPath       = isset($params['subdir']) ? $params['subdir'] : null;
+		$filter        = isset($params['filter']) ? $params['filter'] : '';
+		$dirPath       = isset($params['subdir']) ? $params['subdir'] : '';
 		$sortdir       = isset($params['sortdir']) && $params['sortdir'] == 'DESC' ? SORT_DESC : SORT_ASC;
 		$sortby        = isset($params['sortby']) ? $params['sortby'] : 'name';
 		$files         = isset($params['files']) && is_array($params['files']) ? $params['files'] : [];

@@ -780,7 +780,7 @@ abstract class Cart
 			$transactionInfo = new \stdClass();
 			$transactionInfo->qty = $allSkuInfo[$sId]->tiQty;
 			$transactionInfo->tiPrice = $allSkuInfo[$sId]->tiPrice;
-			$transactionInfo->tiMeta = json_decode($allSkuInfo[$sId]->tiMeta);
+			$transactionInfo->tiMeta = json_decode($allSkuInfo[$sId]->tiMeta == null ? '' : $allSkuInfo[$sId]->tiMeta);
 			$skuInfo[$sId]['transactionInfo'] = $transactionInfo;
 			unset($transactionInfo);
 		}

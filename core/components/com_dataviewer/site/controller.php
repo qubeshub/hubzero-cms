@@ -12,7 +12,7 @@ function controller()
 	global $dv_conf;
 	$db_id = array();
 
-	$db_id['id'] = Request::getString('db');
+	$db_id['id'] = Request::getString('db','');
 	$db_info = explode(':', $db_id['id']);
 	$db_id['name'] = $db_info[0];
 	$db_id['mode'] = isset($db_info[1]) ? $db_info[1] : 'db';

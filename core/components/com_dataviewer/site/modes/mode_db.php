@@ -12,7 +12,13 @@ function get_conf($db_id)
 {
 	global $dv_conf, $com_name;
 	$db_dv_conf = array();
-	$db_name = $db_id['name'];
+
+	$db_name = isset($db_id['name']) ? $db_id['name'] : '';
+
+	if (empty($db_name))
+	{
+		return array();
+	}
 
 	// Base directory
 	$dv_conf['db_base_dir'] = Component::params('com_databases')->get('base_dir');

@@ -209,7 +209,7 @@ foreach ($this->cats as $cat)
 						$row->href = str_replace('&', '&amp;', $row->href);
 
 						// Does this category have a unique output display?
-						$func = 'plgWhatsnew' . ucfirst($row->section) . 'Out';
+						$func = 'plgWhatsnew' . ucfirst($row->section == null ? '' : $row->section) . 'Out';
 						// Check if a method exist (using JPlugin style)
 						$obj = 'plgWhatsnew' . ucfirst($this->cats[$k]['category']);
 

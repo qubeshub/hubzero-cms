@@ -421,7 +421,7 @@ class Toolbar extends Facade
 	 */
 	public static function preferences($component, $height = '550', $width = '875', $alt = 'JToolbar_Options', $path = '', $onClose = '')
 	{
-		$component = urlencode($component);
+		$component = urlencode($component == null ? '' : $component);
 		$path = urlencode($path);
 		$top  = 0;
 		$left = 0;

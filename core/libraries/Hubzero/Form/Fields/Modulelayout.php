@@ -64,7 +64,7 @@ class Modulelayout extends Field
 			$template_style_id = $this->form->getValue('template_style_id');
 		}
 
-		$template_style_id = preg_replace('#\W#', '', $template_style_id);
+		$template_style_id = preg_replace('#\W#', '', $template_style_id == null ? '' : $template_style_id);
 
 		// If an extension and view are present build the options.
 		if ($module && $client)

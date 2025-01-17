@@ -905,7 +905,7 @@ class Course extends Base
 			case 'raw':
 			default:
 				$content = $this->get('description');
-				$content = preg_replace('/^(<!-- \{FORMAT:.*\} -->)/i', '', $content);
+				$content = preg_replace('/^(<!-- \{FORMAT:.*\} -->)/i', '', $content == null ? '' : $content);
 				//$content = html_entity_decode($content);
 				//$content = str_replace("\xC2\xA0", ' ', $content);
 				$content = str_replace(array('&lt;', '&gt;', '&amp;'), array('<', '>', '&'), $content);

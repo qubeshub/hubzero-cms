@@ -27,17 +27,17 @@ $sponsors = $this->sponsors;
 
 //determine the separator
 $urlSeparator = PHP_EOL;
-if (strstr($citation->url, " ") !== false)
+if (strstr($citation->url == null ? '' : $citation->url, " ") !== false)
 {
 	$urlSeparator = " ";
 }
-else if (strstr($citation->url, "\t") !== false)
+else if (strstr($citation->url == null ? '' : $citation->url, "\t") !== false)
 {
 	$urlSeparator = "\t";
 }
 
 //get citation url
-$urls = array_map("trim", explode($urlSeparator, html_entity_decode($citation->url)));
+$urls = array_map("trim", explode($urlSeparator, html_entity_decode($citation->url == null ? '' : $citation->url)));
 $url = (filter_var($urls[0], FILTER_VALIDATE_URL)) ? $urls[0] : '';
 
 //get citation eprint

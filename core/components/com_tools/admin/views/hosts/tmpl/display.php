@@ -108,7 +108,7 @@ if ($this->rows)
 					<?php echo $this->escape($row->uses); ?>
 				</td>
 				<td class="priority-4">
-					<?php echo $this->escape(stripslashes($row->zone)); ?>
+					<?php echo $this->escape(stripslashes($row->zone == null ? '' : $row->zone)); ?>
 				</td>
 				<td class="priority-3">
 					<?php

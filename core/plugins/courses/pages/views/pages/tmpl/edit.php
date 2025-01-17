@@ -38,14 +38,14 @@ $base = $this->offering->link() . '&active=pages';
 					<div class="col span-half">
 						<label for="field-title">
 							<?php echo Lang::txt('PLG_COURSES_PAGES_FIELD_TITLE'); ?> <span class="required"><?php echo Lang::txt('PLG_COURSES_PAGES_REQUIRED'); ?></span>
-							<input type="text" name="fields[title]" id="field-title" value="<?php echo $this->escape(stripslashes($this->model->get('title'))); ?>" />
+							<input type="text" name="fields[title]" id="field-title" value="<?php echo $this->escape(stripslashes($this->model->get('title',''))); ?>" />
 							<span class="hint"><?php echo Lang::txt('PLG_COURSES_PAGES_FIELD_TITLE_HINT'); ?></span>
 						</label>
 					</div>
 					<div class="col span-half omega">
 						<label for="field-url">
 							<?php echo Lang::txt('PLG_COURSES_PAGES_FIELD_ALIAS'); ?> <span class="optional"><?php echo Lang::txt('PLG_COURSES_PAGES_OPTINAL'); ?></span>
-							<input type="text" name="fields[url]" id="field-url" value="<?php echo $this->escape(stripslashes($this->model->get('url'))); ?>" />
+							<input type="text" name="fields[url]" id="field-url" value="<?php echo $this->escape(stripslashes($this->model->get('url',''))); ?>" />
 							<span class="hint"><?php echo Lang::txt('PLG_COURSES_PAGES_FIELD_ALIAS_HINT'); ?></span>
 						</label>
 					</div>

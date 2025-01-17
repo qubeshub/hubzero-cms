@@ -28,17 +28,17 @@ Toolbar::help('hosttype');
 
 				<div class="input-wrap">
 					<label for="field-name"><?php echo Lang::txt('COM_TOOLS_FIELD_NAME'); ?>:</label><br />
-					<input type="text" name="fields[name]" id="field-name" size="30" maxlength="255" value="<?php echo $this->escape(stripslashes($this->row->name)); ?>" />
+					<input type="text" name="fields[name]" id="field-name" size="30" maxlength="255" value="<?php echo $this->escape(stripslashes($this->row->name == null ? '' : $this->row->name)); ?>" />
 				</div>
 
 				<div class="input-wrap">
 					<label for="field-value"><?php echo Lang::txt('COM_TOOLS_FIELD_VALUE'); ?>:</label><br />
-					<input type="text" name="fields[value]" id="field-value" size="30" maxlength="255" value="<?php echo $this->escape(stripslashes($this->row->value)); ?>" />
+					<input type="text" name="fields[value]" id="field-value" size="30" maxlength="255" value="<?php echo $this->escape(stripslashes($this->row->value == null ? '' : $this->row->value)); ?>" />
 				</div>
 
 				<div class="input-wrap">
 					<label for="field-description"><?php echo Lang::txt('COM_TOOLS_FIELD_DESCRIPTION'); ?>:</label><br />
-					<input type="text" name="fields[description]" id="field-description" size="30" maxlength="255" value="<?php echo $this->escape(stripslashes($this->row->description)); ?>" />
+					<input type="text" name="fields[description]" id="field-description" size="30" maxlength="255" value="<?php echo $this->escape(stripslashes($this->row->description == null ? '' : $this->row->description)); ?>" />
 				</div>
 			</fieldset>
 		</div>

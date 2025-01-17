@@ -38,7 +38,7 @@ $rt = $this->model->category();
 
 // Parse data
 $data = array();
-preg_match_all("#<nb:(.*?)>(.*?)</nb:(.*?)>#s", $this->model->get('metadata'), $matches, PREG_SET_ORDER);
+preg_match_all("#<nb:(.*?)>(.*?)</nb:(.*?)>#s", $this->model->get('metadata',''), $matches, PREG_SET_ORDER);
 if (count($matches) > 0)
 {
 	foreach ($matches as $match)
@@ -125,7 +125,7 @@ $panels = array(
 				<legend><span><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_NOTES'); ?></span></legend>
 				<div class="input-wrap">
 					<label><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_NOTES'); ?>:</label>
-					<?php echo $this->editor('release_notes', $this->escape(stripslashes($this->model->get('release_notes'))), '20', '10', 'notes', array('class' => 'minimal no-footer')); ?>
+					<?php echo $this->editor('release_notes', $this->escape(stripslashes($this->model->get('release_notes',''))), '20', '10', 'notes', array('class' => 'minimal no-footer')); ?>
 				</div>
 			</fieldset>
 			<fieldset class="adminform">
@@ -170,7 +170,7 @@ $panels = array(
 				</div>
 				<div class="input-wrap">
 					<label for="license_text"><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_LICENSE_TEXT'); ?>:</label>
-					<textarea name="license_text" id="license_text" cols="40" rows="5" class="pubinput"><?php echo preg_replace("/\r\n/", "\r", trim($this->model->get('license_text'))); ?></textarea>
+					<textarea name="license_text" id="license_text" cols="40" rows="5" class="pubinput"><?php echo preg_replace("/\r\n/", "\r", trim($this->model->get('license_text',''))); ?></textarea>
 				</div>
 			</fieldset>
 			<fieldset class="adminform">
@@ -329,7 +329,7 @@ $panels = array(
 					<label for="publish_down"><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_UNPUBLISH_DATE'); ?>:</label><br />
 					<?php
 						$down = 'Never';
-						if (strtolower($this->model->version->published_down) != Lang::txt('COM_PUBLICATIONS_NEVER'))
+						if (strtolower($this->model->version->published_down == null ? '' : $this->model->version->published_down) != Lang::txt('COM_PUBLICATIONS_NEVER'))
 						{
 							$down = $this->model->version->published_down && $this->model->version->published_down != '0000-00-00 00:00:00'
 								? Date::of($this->model->version->published_down)->toLocal('Y-m-d H:i:s')

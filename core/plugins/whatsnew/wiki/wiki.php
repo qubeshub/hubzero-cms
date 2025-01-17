@@ -92,7 +92,7 @@ class plgWhatsnewWiki extends \Hubzero\Plugin\Plugin
 				$row = new stdClass;
 				$row->title = $page->title;
 				$row->href  = Route::url($page->link());
-				$row->text  = strip_tags($page->version->get('pagehtml'));
+				$row->text  = strip_tags($page->version->get('pagehtml',''));
 				$row->category = $page->get('scope');
 				$row->section = $this->_name;
 

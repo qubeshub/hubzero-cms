@@ -129,6 +129,7 @@ class Threads extends SiteController
 			'start'    => Request::getInt('limitstart', 0),
 			'section'  => Request::getCmd('section', ''),
 			'category' => Request::getCmd('category', ''),
+			'parent'   => Request::getInt('parent', ''),
 			'thread'   => Request::getInt('thread', 0),
 			'state'    => Post::STATE_PUBLISHED,
 			'access'   => User::getAuthorisedViewLevels()
@@ -166,7 +167,7 @@ class Threads extends SiteController
 		// Check logged in status
 		if (!in_array($thread->get('access'), User::getAuthorisedViewLevels()))
 		{
-			$return = base64_encode(Route::url('index.php?option=' . $this->_option . '&controller=' . $this->_controller . '&section=' . $this->view->filters['section'] . '&category=' . $this->view->filters['category'] . '&thread=' . $this->view->filters['parent'], false, true));
+			$return = base64_encode(Route::url('index.php?option=' . $this->_option . '&controller=' . $this->_controller . '&section=' . $filters['section'] . '&category=' . $filters['category'] . '&thread=' . $filters['parent'], false, true));
 			App::redirect(
 				Route::url('index.php?option=com_users&view=login&return=' . $return)
 			);

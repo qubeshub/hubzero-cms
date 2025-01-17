@@ -44,14 +44,14 @@ $this->css('course.css')
 			<div class="form-group">
 				<label for="field-title">
 					<?php echo Lang::txt('COM_COURSES_FIELD_TITLE'); ?> <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span>
-					<input type="text" name="course[title]" id="field-title" size="35" class="form-control" value="<?php echo $this->escape(stripslashes($this->course->get('title'))); ?>" />
+					<input type="text" name="course[title]" id="field-title" size="35" class="form-control" value="<?php echo $this->escape(stripslashes($this->course->get('title',''))); ?>" />
 				</label>
 			</div>
 
 			<div class="form-group">
 				<label for="field-blurb">
 					<?php echo Lang::txt('COM_COURSES_FIELD_BLURB'); ?>
-					<textarea name="course[blurb]" id="field-blurb" class="form-control" cols="50" rows="3"><?php echo $this->escape(stripslashes($this->course->get('blurb'))); ?></textarea>
+					<textarea name="course[blurb]" id="field-blurb" class="form-control" cols="50" rows="3"><?php echo $this->escape(stripslashes($this->course->get('blurb',''))); ?></textarea>
 					<span class="hint">
 						<?php echo Lang::txt('COM_COURSES_FIELD_BLURB_HINT'); ?>
 					</span>

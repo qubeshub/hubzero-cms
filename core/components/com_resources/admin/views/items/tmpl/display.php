@@ -275,7 +275,7 @@ $this->css();
 					<?php } ?>
 				</td>
 				<td class="priority-5">
-					<?php echo $this->escape(stripslashes($license)); ?>
+					<?php echo $this->escape(stripslashes($license == null ? '' : $license)); ?>
 				</td>
 				<td class="priority-2">
 					<?php echo $this->escape(stripslashes($row->type->type)); ?>

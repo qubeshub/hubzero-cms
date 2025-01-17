@@ -394,7 +394,7 @@ class Results extends SiteController
 				$description = preg_replace("'<script[^>]*>.*?</script>'si", '', stripslashes($row->text));
 				$description = \Hubzero\Utility\Str::truncate($description, 300);
 				$author = '';
-				@$date = ($row->publish_up ? date('r', strtotime($row->publish_up)) : '');
+				$date = (isset($row->publish_up) ? date('r', strtotime($row->publish_up)) : '');
 
 				// Load individual item creator class
 				$item = new \Hubzero\Document\Type\Feed\Item();

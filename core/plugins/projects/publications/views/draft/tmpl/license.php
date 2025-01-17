@@ -19,7 +19,7 @@ $selectUrl = Route::url( $this->pub->link('editversionid') . '&active=publicatio
 $elName = "licensePick";
 
 // Get version params and extract agreement
-$versionParams = array_filter(explode(PHP_EOL, $this->pub->version->params));
+$versionParams = array_filter(explode(PHP_EOL, $this->pub->version->params == null ? '' : $this->pub->version->params));
 $versionParams = array_reduce($versionParams, function($carry, $item){
 	$keyValueSplit = explode('=', $item);
 	$key = trim(array_shift($keyValueSplit));

@@ -23,7 +23,7 @@ class AccessHelper extends Obj
 	 */
 	public static function allowPublicAccess($subdir)
 	{
-		$isPublicDirectory = preg_match('/^\/?public.*/', $subdir); //!= 'public' && $subdir != '/public')
+		$isPublicDirectory = preg_match('/^\/?public.*/', $subdir == null ? '' : $subdir); //!= 'public' && $subdir != '/public')
 		$allowPublicAccess = !User::isGuest() && $isPublicDirectory;
 
 		return $allowPublicAccess;
