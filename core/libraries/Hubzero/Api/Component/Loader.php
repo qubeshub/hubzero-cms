@@ -44,7 +44,7 @@ class Loader extends Base
 		$found      = false;
 
 		$version    = $this->app['request']->getVar('version');
-		$controller = $this->app['request']->getCmd('controller', $this->app['request']->segment(2, 'api'));
+		$controller = $this->app['request']->getCmd('controller', $this->app['request']->segment(3, 'api'));
 		$controllerClass = '\\Hubzero\\Component\\ApiController';
 
 		// Make sure the component is enabled
