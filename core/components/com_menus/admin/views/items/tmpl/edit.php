@@ -111,12 +111,10 @@ $this->js();
 					</div>
 				<?php endif; ?>
 
-				<?php if ($this->item->type !='url'): ?>
-					<div class="input-wrap">
-						<?php echo $this->form->getLabel('alias'); ?>
-						<?php echo $this->form->getInput('alias'); ?>
-					</div>
-				<?php endif; ?>
+				<div class="input-wrap">
+					<?php echo $this->form->getLabel('alias'); ?>
+					<?php echo $this->form->getInput('alias'); ?>
+				</div>
 
 				<div class="input-wrap">
 					<?php echo $this->form->getLabel('note'); ?>
