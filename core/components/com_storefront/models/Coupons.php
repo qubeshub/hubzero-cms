@@ -17,7 +17,7 @@ defined('_HZEXEC_') or die();
 class Coupons
 {
 	// Database instance
-	var $db = null;
+	var $_db = null;
 
 	/**
 	 * Contructor

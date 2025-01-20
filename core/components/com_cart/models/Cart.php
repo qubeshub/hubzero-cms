@@ -28,7 +28,7 @@ abstract class Cart
 	 *
 	 * @var  object
 	 */
-	var $db = null;
+	var $_db = null;
 
 	/**
 	 * Cart ID
@@ -43,6 +43,13 @@ abstract class Cart
 	 * @var  bool
 	 */
 	var $debug = false;
+
+	/**
+ 	 * Warehouse Model
+	 *
+	 * @var warehouse
+	 */
+	var $warehouse = null;
 
 	/**
 	 * Salt
