@@ -51,7 +51,7 @@
         "php-amqplib/php-amqplib": "2.12.*",
         "league/flysystem-aws-s3-v3": "1.0.*",
         "simplepie/simplepie": "1.7.*",
-        "solarium/solarium" : "6.1.*",
+        "solarium/solarium" : "6.2.*",
         "cilogon/oauth2-cilogon": "1.1.*",
         "srmklive/flysystem-dropbox-v2": "1.0.*",
         "stevenmaguire/oauth2-dropbox": "3.1.*",
