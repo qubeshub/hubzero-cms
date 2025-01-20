@@ -24,6 +24,12 @@ class SolrIndexAdapter implements IndexInterface
 
 	var $query = null;
 
+	var $bufferAdd = null;
+
+	var $commitWithin = null;
+
+	var $overwrite = null;
+
 	/**
 	 * __construct - Constructor for adapter, sets config and established connection
 	 *
@@ -34,29 +40,31 @@ class SolrIndexAdapter implements IndexInterface
 	public function __construct($config)
 	{
 		// Some setup information
-		$core = $config->get('solr_core');
-		$port = $config->get('solr_port');
-		$host = $config->get('solr_host');
-		$path = $config->get('solr_path');
+		$core = $config->get('solr_core','hubzero-solr-core');
+		$port = $config->get('solr_port', '2090');
+		$host = $config->get('solr_host','localhost');
+		$path = $config->get('solr_path','/');
+		$context = $config->get('solr_context','solr');
 
 		$this->logPath = $config->get('solr_log_path');
 
 		// Build the Solr config object
 		$solrConfig = array( 'endpoint' =>
-			array( $core  =>
-				array('host' => $host,
-							'port' => $port,
-							'path' => $path,
-							'core' => $core,
-							)
-						)
-					);
+			array( $core =>
+				array(	'host' => $host,
+					'port' => $port,
+					'path' => $path,
+					'context' => $context,
+					'core' => $core
+				)
+			)
+		);
 
 		// Create the client
 		$adapter = new Solarium\Core\Client\Adapter\Curl();
-		$eventDispatcher = new Symfony\Component\EventDispatcher\EventDispatcher();
+		$eventDispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
 
-		$this->connection = new Solarium\Client($adapter, $eventDispatcher, $options);
+		$this->connection = new Solarium\Client($adapter, $eventDispatcher, $solrConfig);
 
 		// Create the Solr Query object
 		$this->query = $this->connection->createSelect();
@@ -298,7 +306,8 @@ class SolrIndexAdapter implements IndexInterface
 		}
 		catch (\Solarium\Exception\HttpException $e)
 		{
-			$body = json_decode($e->getBody());
+			$jbody = $e->getBody();
+			$body = json_decode($jbody == null ? '' : $jbody);
 			$message = isset($body->error->msg) ? $body->error->msg : $e->getStatusMessage();
 			return $message;
 		}

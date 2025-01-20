@@ -30,6 +30,16 @@ class SolrQueryAdapter implements QueryInterface
 
 	var $adapter = null;
 
+	var $resultset = null;
+
+	var $numFound = null;
+
+	var $results = null;
+
+	var $resultsFacetSet = null;
+
+	var $debug = false;
+
 	/**
 	 * __construct
 	 *
@@ -40,29 +50,31 @@ class SolrQueryAdapter implements QueryInterface
 	public function __construct($config)
 	{
 		// Some setup information
-		$core = $config->get('solr_core');
-		$port = $config->get('solr_port');
-		$host = $config->get('solr_host');
-		$path = $config->get('solr_path');
+		$core = $config->get('solr_core','hubzero-solr-core');
+		$port = $config->get('solr_port','2090');
+		$host = $config->get('solr_host','localhost');
+		$path = $config->get('solr_path','/');
+		$context = $config->get('solr_context','solr');
 
 		$this->logPath = $config->get('solr_log_path');
 
 		// Build the Solr config object
 		$solrConfig = array( 'endpoint' =>
-			array( $core  =>
-				array('host' => $host,
-							'port' => $port,
-							'path' => $path,
-							'core' => $core,
-							)
-						)
-					);
+			array( $core =>
+				array(	'host' => $host,
+					'port' => $port,
+					'path' => $path,
+					'context' => $context,
+					'core' => $core
+				)
+			)
+		);
 
 		// Create the client
 		$adapter = new Solarium\Core\Client\Adapter\Curl();
-		$eventDispatcher = new Symfony\Component\EventDispatcher\EventDispatcher();
+		$eventDispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
 
-		$this->connection = new Solarium\Client($adapter, $eventDispatcher, $options);
+		$this->connection = new Solarium\Client($adapter, $eventDispatcher, $solrConfig);
 
 		// Add plugin to accept bigger requests
 		$this->connection->getPlugin('postbigrequest');
