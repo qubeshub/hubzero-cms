@@ -218,7 +218,7 @@ class Results extends SiteController
 		$periodlist[] = Html::select('option', 'quarter', Lang::txt('COM_WHATSNEW_OPT_QUARTER'));
 		$periodlist[] = Html::select('option', 'year', Lang::txt('COM_WHATSNEW_OPT_YEAR'));
 
-		$thisyear = strftime("%Y", time());
+		$thisyear = date("Y", time());
 		for ($y = $thisyear; $y >= 2002; $y--)
 		{
 			if (time() >= strtotime('10/1/' . $y))
@@ -437,7 +437,7 @@ class Results extends SiteController
 				return Lang::txt('COM_WHATSNEW_OPT_YEAR');
 				break;
 			default:
-				$thisyear = strftime("%Y", time());
+				$thisyear = date("Y", time());
 				for ($y = $thisyear; $y >= 2002; $y--)
 				{
 					if (time() >= strtotime('10/1/' . $y))
