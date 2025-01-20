@@ -20,6 +20,16 @@ use GuzzleHttp\Client;
  */
 class SolrQueryAdapter implements QueryInterface
 {
+	var $logPath = null;
+
+	var $connection = null;
+
+	var $config = null;
+
+	var $query = null;
+
+	var $adapter = null;
+
 	/**
 	 * __construct
 	 *

@@ -18,6 +18,12 @@ use Solarium;
  */
 class SolrIndexAdapter implements IndexInterface
 {
+	var $logPath = null;
+
+	var $connection = null;
+
+	var $query = null;
+
 	/**
 	 * __construct - Constructor for adapter, sets config and established connection
 	 *
