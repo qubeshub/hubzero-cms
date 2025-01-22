@@ -262,11 +262,19 @@ class Generator
 		}
 
 		$classReflector = new ReflectionClass($className);
+		$factory  = \phpDocumentor\Reflection\DocBlockFactory::createInstance();
 
 		foreach ($classReflector->getMethods() as $method)
 		{
 			// Create docblock object & make sure we have something
-			$phpdoc = new DocBlock($method);
+			$docblock = $method->getDocComment();
+
+			if ($docblock == false)
+			{
+				continue;
+			}
+
+			$phpdoc = $factory->create($docblock);
 
 			// Skip methods we don't want processed
 			if (substr($method->getName(), -4) != 'Task' || in_array($method->getName(), array('registerTask', 'unregisterTask', 'indexTask')))
@@ -282,7 +290,7 @@ class Generator
 
 			// Skip if we dont have a short desc
 			// but put in error
-			if (!$phpdoc->getShortDescription())
+			if (!$phpdoc->getSummary())
 			{
 				$this->output['errors'][] = sprintf('Missing docblock for method "%s" in "%s"', $method->getName(), $file);
 				continue;
@@ -298,8 +306,8 @@ class Generator
 			$endpoint = array(
 				//'name'        => substr($method->getName(), 0, -4),
 				//'description' => preg_replace('/\s+/', ' ', $phpdoc->getShortDescription()), // $phpdoc->getLongDescription()->getContents()
-				'name'        => $phpdoc->getShortDescription(),
-				'description' => $phpdoc->getLongDescription()->getContents(),
+				'name'        => $phpdoc->getSummary(),
+				'description' => $phpdoc->getDescription()->render(),
 				'method'      => '',
 				'uri'         => '',
 				'parameters'  => array(),
@@ -315,7 +323,7 @@ class Generator
 			foreach ($phpdoc->getTags() as $tag)
 			{
 				$name    = strtolower(str_replace('api', '', $tag->getName()));
-				$content = $tag->getContent();
+				$content = (string) $tag;
 
 				// Handle parameters separately
 				// json decode param input
