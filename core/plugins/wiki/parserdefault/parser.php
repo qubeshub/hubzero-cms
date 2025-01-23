@@ -1021,7 +1021,7 @@ class WikiParser
 		}
 
 		$output = implode("\n", $output);
-		$output = preg_replace_callback('/<(pre) (.+?)>(.*)<\/(\1) \2>/si', array(&$this, '_dataPush'), $output);
+		$output = preg_replace_callback('/<(pre) (\w+?)>(.*)<\/(\1) \2>/si', array(&$this, '_dataPush'), $output);
 
 		return $output;
 	}
@@ -1079,7 +1079,7 @@ class WikiParser
 
 		foreach ($this->_tokens as $tag => $vals)
 		{
-			$text = preg_replace_callback('/<(' . $tag . ') (.+?)>(.*)<\/(\1) \2>/si', array(&$this, '_dataPull'), $text);
+			$text = preg_replace_callback('/<(' . $tag . ') (\w+?)>(.*)<\/(\1) \2>/si', array(&$this, '_dataPull'), $text);
 			$this->_tokens[$tag] = array();
 		}
 
