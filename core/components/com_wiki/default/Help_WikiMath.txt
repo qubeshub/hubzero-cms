@@ -42,13 +42,19 @@ The following are a few examples of formulas:
 }}}
 <math>\sqrt{1-e^2}</math>
 
-{{{<math>\overbrace{ 1+2+\cdots+100 }^{5050}</math>}}}
+{{{
+<math>\overbrace{ 1+2+\cdots+100 }^{5050}</math>
+}}}
 <math>\overbrace{ 1+2+\cdots+100 }^{5050}</math>
 
-{{{<math>ax^2 + bx + c = 0</math>}}}
+{{{
+<math>ax^2 + bx + c = 0</math>
+}}}
 <math>ax^2 + bx + c = 0</math>
 
-{{{<math>\int_{-N}^{N} e^x\, dx</math>}}}
+{{{
+<math>\int_{-N}^{N} e^x\, dx</math>
+}}}
 <math>\int_{-N}^{N} e^x\, dx</math>
 
 == Functions, symbols, special characters ==
