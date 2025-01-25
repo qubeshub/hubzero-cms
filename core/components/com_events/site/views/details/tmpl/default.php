@@ -41,7 +41,7 @@ $this->css()
 			if ($this->auth && $this->row->created_by == User::get('id'))
 			{
 				$html .= '&nbsp;&nbsp;';
-				$html .= '<a class="edit" href="'. Route::url('index.php?option='.$this->option.'&task=edit&id='.$this->row->id) .'" title="'.Lang::txt('JACTION_EDITT').'">'.strtolower(Lang::txt('JACTION_EDIT')).'</a>'."\n";
+				$html .= '<a class="edit" href="'. Route::url('index.php?option='.$this->option.'&task=edit&id='.$this->row->id) .'" title="'.Lang::txt('JACTION_EDIT').'">'.strtolower(Lang::txt('JACTION_EDIT')).'</a>'."\n";
 				$html .= '&nbsp;&nbsp;'."\n";
 				$html .= '<a class="delete" href="'. Route::url('index.php?option='.$this->option.'&task=delete&id='.$this->row->id) .'" title="'.Lang::txt('JACTION_DELETE').'">'.strtolower(Lang::txt('JACTION_DELETE')).'</a>'."\n";
 			}
