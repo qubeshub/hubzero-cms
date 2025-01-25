@@ -7,14 +7,7 @@
 
 namespace Plugins\Geocode;
 
-use Geocoder\Provider\AbstractProvider;
-use Geocoder\Provider\ProviderInterface;
-use Geocoder\HttpAdapter\HttpAdapterInterface;
-use Geocoder\Exception\NoResultException;
-use Geocoder\Exception\InvalidCredentialsException;
-use Geocoder\Exception\UnsupportedException;
-
-class LocalProvider extends AbstractProvider implements ProviderInterface
+class LocalProvider extends \Geocoder\Http\Provider\AbstractHttpProvider implements \Geocoder\Provider\Provider
 {
 	public static $countries = array(
 		array('code' => 'AF', 'name' => 'Afghanistan', 'continent' => 'Asia'),
@@ -273,7 +266,7 @@ class LocalProvider extends AbstractProvider implements ProviderInterface
 	 * @param HttpAdapterInterface $adapter An HTTP adapter.
 	 * @param string               $type    Data to lookup
 	 */
-	public function __construct(HttpAdapterInterface $adapter, $type='countries')
+	public function __construct(\Psr\Http\Client\ClientInterface $adapter, $type='countries')
 	{
 		parent::__construct($adapter, null);
 
@@ -285,9 +278,9 @@ class LocalProvider extends AbstractProvider implements ProviderInterface
 	 */
 	public function getGeocodedData($address)
 	{
-		if (!in_array($this->type, array('countries', 'country')))
+		if (!in_array($this->type, array('countries', 'country', 'continent')))
 		{
-			throw new UnsupportedException(\Lang::txt('The LocalProvider does not support "%s".', $this->type));
+			throw new \Geocoder\Exception\UnsupportedException(\Lang::txt('The LocalProvider does not support "%s".', $this->type));
 		}
 
 		$retriever = '_get' . ucfirst($this->type);
@@ -311,11 +304,16 @@ class LocalProvider extends AbstractProvider implements ProviderInterface
 			{
 				if ($country['code'] == $code)
 				{
-					return $country;
+					$builder = new \Geocoder\Model\AddressBuilder($this->getName());
+					$builder->setCountry($country['name']);
+					$builder->setCountryCode($country['code']);
+					$builder->setLocality($country['continent']);
+					return new \Geocoder\Model\AddressCollection([$builder->build()]);
 				}
 			}
 		}
-		return $code;
+
+		return new \Geocoder\Model\AddressCollection([]);
 	}
 
 	/**
@@ -337,21 +335,36 @@ class LocalProvider extends AbstractProvider implements ProviderInterface
 		// No continent? Return the whole list
 		if (!$address || $address == 'all')
 		{
-			return self::$countries;
+			$countries = self::$countries;
 		}
-
-		// Subset of countries by continent
-		$countries = array();
-
-		foreach (self::$countries as $row)
+		else
 		{
-			if (strtolower($row['continent']) == $address)
+			// Subset of countries by continent
+			$countries = array();
+
+			foreach (self::$countries as $row)
 			{
-				array_push($countries, $row);
+				if (strtolower($row['continent']) == $address)
+				{
+					array_push($countries, $row);
+				}
 			}
 		}
 
-		return $countries;
+		$builder = new \Geocoder\Model\AddressBuilder($this->getName());
+
+		$addresses = array();
+
+		foreach ($countries as $country)
+		{
+			$builder->setCountry($country['name']);
+			$builder->setCountryCode($country['code']);
+			$builder->setLocality($country['continent']);
+
+			$addresses[] = $builder->build();
+		}
+
+		return new \Geocoder\Model\AddressCollection($addresses);
 	}
 
 	/**
@@ -378,12 +391,14 @@ class LocalProvider extends AbstractProvider implements ProviderInterface
 			{
 				if ($country[$key] == $address)
 				{
-					return $country['continent'];
+					$builder = new \Geocoder\Model\AddressBuilder($this->getName());
+					$builder->setLocality($country['continent']);
+					return new \Geocoder\Model\AddressCollection([$builder->build()]);
 				}
 			}
 		}
 
-		return $address;
+		return new \Geocoder\Model\AddressCollection([]);
 	}
 
 	/**
@@ -391,14 +406,35 @@ class LocalProvider extends AbstractProvider implements ProviderInterface
 	 */
 	public function getReversedData(array $coordinates)
 	{
-		throw new UnsupportedException('The LocalProvider is not able to do reverse geocoding.');
+		throw new \Geocoder\Exception\UnsupportedException('The LocalProvider is not able to do reverse geocoding.');
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function geocodeQuery(\Geocoder\Query\GeocodeQuery $query): \Geocoder\Collection
+	{
+		$address = $query->getText();
+
+		return $this->getGeocodedData($address);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function reverseQuery(\Geocoder\Query\ReverseQuery $query): \Geocoder\Collection
+	{
+		$address = $query->getText();
+
+		return $this->getReverseData($address);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getName()
+	public function getName(): string
 	{
 		return 'local';
 	}
+
 }
