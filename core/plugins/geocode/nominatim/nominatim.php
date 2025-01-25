@@ -37,7 +37,7 @@ class plgGeocodeNominatim extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		return new \Geocoder\Provider\NominatimProvider(
+		return new \Geocoder\Provider\Nominatim\Nominatim(
 			$adapter,
 			$this->params->get('rootUrl')
 		);

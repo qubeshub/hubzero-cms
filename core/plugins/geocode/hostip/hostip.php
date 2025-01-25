@@ -35,7 +35,7 @@ class plgGeocodeHostip extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		return new \Geocoder\Provider\HostIpProvider(
+		return new \Geocoder\Provider\HostIp\HostIp(
 			$adapter
 		);
 	}

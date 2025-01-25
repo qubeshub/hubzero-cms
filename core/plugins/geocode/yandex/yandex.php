@@ -40,7 +40,7 @@ class plgGeocodeYandex extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		return new \Geocoder\Provider\YandexProvider(
+		return new \Geocoder\Provider\Yandex\Yandex(
 			$adapter
 		);
 	}

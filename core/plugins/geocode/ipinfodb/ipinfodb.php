@@ -36,7 +36,7 @@ class plgGeocodeIpinfodb extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		return new \Geocoder\Provider\IpInfoDbProvider(
+		return new \Geocoder\Provider\IpInfoDb\IpInfoDb(
 			$adapter,
 			$this->params->get('apiKey')
 		);

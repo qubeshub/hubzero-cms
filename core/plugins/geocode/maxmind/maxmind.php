@@ -38,7 +38,7 @@ class plgGeocodeMaxmind extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		return new \Geocoder\Provider\MaxMindProvider(
+		return new \Geocoder\Provider\MaxMind\MaxMind(
 			$adapter,
 			$this->params->get('apiKey')
 		);
