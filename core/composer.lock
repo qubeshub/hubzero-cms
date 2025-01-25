@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f022c3abbdffe56dc20d6e37c62bba04",
+    "content-hash": "0caffd931edfdee37ec60d89340cc71c",
     "packages": [
         {
             "name": "apereo/phpcas",
@@ -1554,6 +1554,65 @@
                 "source": "https://github.com/geocoder-php/php-common-http/tree/4.6.0"
             },
             "time": "2023-12-28T10:51:54+00:00"
+        },
+        {
+            "name": "geocoder-php/ipstack-provider",
+            "version": "0.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/geocoder-php/ipstack-provider.git",
+                "reference": "7c18ad5835d693c4393cd7b1fb36227ca79d5f21"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/geocoder-php/ipstack-provider/zipball/7c18ad5835d693c4393cd7b1fb36227ca79d5f21",
+                "reference": "7c18ad5835d693c4393cd7b1fb36227ca79d5f21",
+                "shasum": ""
+            },
+            "require": {
+                "geocoder-php/common-http": "^4.0",
+                "php": "^7.4 || ^8.0",
+                "willdurand/geocoder": "^4.0"
+            },
+            "provide": {
+                "geocoder-php/provider-implementation": "1.0"
+            },
+            "require-dev": {
+                "geocoder-php/provider-integration-tests": "^1.0",
+                "php-http/curl-client": "^2.2",
+                "php-http/message": "^1.0",
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Geocoder\\Provider\\Ipstack\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "William Durand",
+                    "email": "william.durand1@gmail.com"
+                }
+            ],
+            "description": "Geocoder Ipstack adapter",
+            "homepage": "http://geocoder-php.org/Geocoder/",
+            "support": {
+                "source": "https://github.com/geocoder-php/ipstack-provider/tree/0.4.0"
+            },
+            "time": "2022-07-30T12:09:30+00:00"
         },
         {
             "name": "gettext/gettext",
