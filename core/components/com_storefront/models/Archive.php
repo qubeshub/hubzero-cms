@@ -187,6 +187,10 @@ class Archive extends \Hubzero\Base\Obj
 		{
 			$sku->setPrice($fields['sPrice']);
 		}
+		if (isset($fields['sWeight']))
+		{
+			$sku->setWeight($fields['sWeight']);
+		}
 		if (isset($fields['sAllowMultiple']))
 		{
 			$sku->setAllowMultiple($fields['sAllowMultiple']);

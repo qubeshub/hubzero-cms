@@ -78,7 +78,7 @@ class Product extends \Hubzero\Component\SiteController
 
 		// POST add to cart request
 		$addToCartRequest = Request::getBool('addToCart', false, 'post');
-		$options = Request::getArray('og', false, 'post');
+		$options = Request::getArray('og', array(), 'post');
 		$qty = Request::getInt('qty', 1, 'post');
 
 		if ($addToCartRequest)
