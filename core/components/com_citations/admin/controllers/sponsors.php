@@ -43,6 +43,11 @@ class Sponsors extends AdminController
 	{
 		$sponsors = Sponsor::all();
 
+		if (!is_array($sponsors))
+		{
+			 $sponsors = array($sponsors);
+		}
+
 		// Output the HTML
 		$this->view
 			->set('sponsors', $sponsors)
