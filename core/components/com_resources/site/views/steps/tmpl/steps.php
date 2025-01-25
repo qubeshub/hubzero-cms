@@ -13,6 +13,12 @@ $authors     = 0;
 $tags        = 0;
 $state       = 'draft';
 
+if ($this->progress == null) 
+{
+	$this->progress = array();
+	$this->progress['submitted'] = 0;
+}
+
 if ($this->resource->get('id'))
 {
 	switch ($this->resource->get('published'))
@@ -102,7 +108,7 @@ $this->group_cn = (isset($this->group_cn) ? $this->group_cn : Request::getString
 		$html .= "\t".'<li';
 		if ($this->step == $i) {
 			$html .= ' class="active"';
-		} elseif ($this->progress[$this->steps[$i]] == 1) {
+		} elseif (isset($this->progress[$this->steps[$i]]) && $this->progress[$this->steps[$i]] == 1) {
 			$html .= ' class="completed"';
 		}
 		$html .= '>';
@@ -110,7 +116,7 @@ $this->group_cn = (isset($this->group_cn) ? $this->group_cn : Request::getString
 		{
 			$html .= '<strong>' . Lang::txt('COM_CONTRIBUTE_STEP_'.strtoupper($this->steps[$i])) . '</strong>';
 		}
-		elseif ($this->progress[$this->steps[$i]] == 1 || $this->step > $i)
+		elseif ((isset($this->progress[$this->steps[$i]]) && $this->progress[$this->steps[$i]] == 1) || $this->step > $i)
 		{
 			$html .= '<a href="'. Route::url('index.php?option='.$this->option.'&task=draft&step='.$i.'&id='.$this->id.'&group='.$this->group_cn) .'">'.Lang::txt('COM_CONTRIBUTE_STEP_'.strtoupper($this->steps[$i])).'</a>';
 		}
