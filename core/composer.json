@@ -31,6 +31,7 @@
         "marcusschwarz/lesserphp": "0.5.*",
         "monolog/monolog": "1.27.*",
         "symfony/mailer": "v5.2.*",
+        "php-http/curl-client":"2.3.*",
         "willdurand/geocoder": "4.6.*",
         "geocoder-php/common-http": "4.6.*",
         "geocoder-php/chain-provider": "4.5.*",
