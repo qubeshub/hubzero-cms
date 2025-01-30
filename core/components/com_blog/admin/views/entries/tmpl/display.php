@@ -228,7 +228,7 @@ Html::behavior('tooltip');
 				</td>
 				<td class="priority-5">
 					<time datetime="<?php echo $row->get('created'); ?>">
-						<?php echo $row->published('date'); ?>
+						<?php echo $row->created('date'); ?>
 					</time>
 				</td>
 				<td class="priority-2">
