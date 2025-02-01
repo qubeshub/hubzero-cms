@@ -137,7 +137,14 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 			$replacement = $this->_addAttributesToEmail($replacement, $regs[1][0], $regs[4][0]);
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+			$newtext = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		/*
@@ -159,7 +166,14 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 			$replacement = $this->_addAttributesToEmail($replacement, $regs[1][0], $regs[4][0]);
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+			$newtext = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		/*
@@ -174,12 +188,18 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 
 			// Check to see if mail text is different from mail addy
 			$replacement = $this->cloak($mail, $mode, $mailText);
-
 			// Ensure that attributes is not stripped out by email cloaking
 			$replacement = $this->_addAttributesToEmail($replacement, $regs[1][0], $regs[3][0]);
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+			$newtext = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		/*
@@ -199,7 +219,14 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 			$replacement = html_entity_decode($this->_addAttributesToEmail($replacement, $regs[1][0], $regs[3][0]));
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+			$newtext = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		/*
@@ -218,7 +245,14 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 			$replacement = html_entity_decode($this->_addAttributesToEmail($replacement, $regs[1][0], $regs[3][0]));
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+			$newtext = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		/*
@@ -237,7 +271,14 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 			$replacement = $this->_addAttributesToEmail($replacement, $regs[1][0], $regs[3][0]);
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+			$newtext = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		/*
@@ -256,7 +297,14 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 			$replacement = html_entity_decode($this->_addAttributesToEmail($replacement, $regs[1][0], $regs[3][0]));
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+			$newtext = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		/*
@@ -275,7 +323,14 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 			$replacement = html_entity_decode($this->_addAttributesToEmail($replacement, $regs[1][0], $regs[3][0]));
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+			$newtext = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		/*
@@ -294,7 +349,14 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 			$replacement = html_entity_decode($this->_addAttributesToEmail($replacement, $regs[1][0], $regs[3][0]));
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+			$newtext = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		/*
@@ -317,7 +379,14 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 			$replacement = $this->_addAttributesToEmail($replacement, $regs[1][0], $regs[4][0]);
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+			$newtext = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		/*
@@ -339,7 +408,14 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 			$replacement = $this->_addAttributesToEmail($replacement, $regs[1][0], $regs[4][0]);
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+			$newtext = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		/*
@@ -360,7 +436,14 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 			$replacement = html_entity_decode($this->_addAttributesToEmail($replacement, $regs[1][0], $regs[3][0]));
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+			$newtext = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		/*
@@ -380,7 +463,14 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 			$replacement = html_entity_decode($this->_addAttributesToEmail($replacement, $regs[1][0], $regs[3][0]));
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+			$newtext = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		/*
@@ -403,7 +493,14 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 			$replacement = html_entity_decode($this->_addAttributesToEmail($replacement, $regs[1][0], $regs[4][0]));
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+			$newtext = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		/*
@@ -427,7 +524,14 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 			$replacement = html_entity_decode($this->_addAttributesToEmail($replacement, $regs[1][0], $regs[4][0]));
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+			$newtext = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		/*
@@ -451,7 +555,14 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 			$replacement = html_entity_decode($this->_addAttributesToEmail($replacement, $regs[1][0], $regs[4][0]));
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+			$newtext = substr_replace($text, $replacement, $regs[0][1], strlen($regs[0][0]));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		// Search for plain text email@amail.com
@@ -462,7 +573,14 @@ class plgContentEmailcloak extends \Hubzero\Plugin\Plugin
 			$replacement = $this->cloak($mail, $mode);
 
 			// Replace the found address with the js cloaked email
-			$text = substr_replace($text, $replacement, $regs[1][1], strlen($mail));
+			$newtext = substr_replace($text, $replacement, $regs[1][1], strlen($mail));
+
+			if ($text == $newtext)
+			{
+				break;
+			}
+
+			$text = $newtext;
 		}
 
 		return true;
