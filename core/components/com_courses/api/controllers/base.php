@@ -19,6 +19,12 @@ require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'course.php';
  */
 class base extends ApiController
 {
+
+	protected $course_id = null;
+	protected $offering_alias  = null;
+	protected $section_id = null;
+	protected $course;
+
 	/**
 	 * Checks to ensure appropriate authorization
 	 *
