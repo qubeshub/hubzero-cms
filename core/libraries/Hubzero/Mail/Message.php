@@ -174,15 +174,14 @@ class Message extends \Symfony\Component\Mime\Email
 
 		$mailer = new \Symfony\Component\Mailer\Mailer($transport);
 
-		$result = $mailer->send($this, $this->_failures);
-
-		if ($result)
+		try
 		{
-			\Log::info(sprintf('Mail sent to %s', json_encode($this->getTo())));
+			$mailer->send($this, $this->_failures);
+			$result = true;
 		}
-		else
+		catch (Exception $e)
 		{
-			\Log::error(sprintf('Failed to mail %s', json_encode($this->getTo())));
+			$result = false;
 		}
 
 		return $result;
@@ -313,9 +312,16 @@ class Message extends \Symfony\Component\Mime\Email
 			$addresses = array($addresses => $name);
 		}
 
-		foreach($addresses as $address => $name)
+		foreach($addresses as $key => $value)
 		{
-			$address = new \Symfony\Component\Mime\Address($address, $name);
+			if (is_numeric($key))
+			{
+				$address = new \Symfony\Component\Mime\Address($value);
+			}
+			else
+			{
+				$address = new \Symfony\Component\Mime\Address($key, $value);
+			}
 
 			if (isset($first_set))
 			{
@@ -378,9 +384,16 @@ class Message extends \Symfony\Component\Mime\Email
 			$addresses = array($addresses => $name);
 		}
 
-		foreach($addresses as $address => $name)
+		foreach($addresses as $key => $value)
 		{
-			$address = new \Symfony\Component\Mime\Address($address, $name);
+			if (is_numeric($key))
+			{
+				$address = new \Symfony\Component\Mime\Address($value);
+			}
+			else
+			{
+				$address = new \Symfony\Component\Mime\Address($key, $value);
+			}
 
 			if (isset($first_set))
 			{
@@ -442,9 +455,16 @@ class Message extends \Symfony\Component\Mime\Email
 			$addresses = array($addresses => $name);
 		}
 
-		foreach($addresses as $address => $name)
+		foreach($addresses as $key => $value)
 		{
-			$address = new \Symfony\Component\Mime\Address($address, $name);
+			if (is_numeric($key))
+			{
+				$address = new \Symfony\Component\Mime\Address($value);
+			}
+			else
+			{
+				$address = new \Symfony\Component\Mime\Address($key, $value);
+			}
 
 			if (isset($first_set))
 			{
@@ -501,9 +521,16 @@ class Message extends \Symfony\Component\Mime\Email
 			$addresses = array($addresses => $name);
 		}
 
-		foreach($addresses as $address => $name)
+		foreach($addresses as $key => $value)
 		{
-			$address = new \Symfony\Component\Mime\Address($address, $name);
+			if (is_numeric($key))
+			{
+				$address = new \Symfony\Component\Mime\Address($value);
+			}
+			else
+			{
+				$address = new \Symfony\Component\Mime\Address($key, $value);
+			}
 
 			if (isset($first_set))
 			{
