@@ -125,7 +125,7 @@ class Credentials extends SiteController
 		// Send mail
 		if (!$message->send())
 		{
-			Log::error('Members username reminder email failed: ' . Lang::txt('Failed to mail %s', $email));
+			Log::error('Members username reminder email failed[1]: ' . Lang::txt('Failed to mail %s', $email));
 
 			App::redirect(
 				Route::url('index.php?option=' . $this->_option . '&task=remind', false),
@@ -300,7 +300,7 @@ class Credentials extends SiteController
 		// Send mail
 		if (!$message->send())
 		{
-			Log::error('Members password reset email failed: ' . Lang::txt('Failed to mail %s', $user->get('email')));
+			Log::error('Members password reset email failed[2]: ' . Lang::txt('Failed to mail %s', $user->get('email')));
 
 			App::redirect(
 				Route::url('index.php?option=' . $this->_option . '&task=remind', false),
