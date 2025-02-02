@@ -583,7 +583,7 @@ class Google extends Obj
 	 * @param   array   $connections    Array of local-remote connections
 	 * @return  mixed   int (new change ID) or false
 	 */
-	public static function collectChanges($apiService, $folderID = 0, &$remotes, &$deletes, $path = '', $startChangeId = null, $connections = array())
+	public static function collectChanges($apiService, $folderID, &$remotes, &$deletes, $path = '', $startChangeId = null, $connections = array())
 	{
 		// Check for what we need
 		if (!$apiService || !$folderID)

@@ -1734,7 +1734,7 @@ class Connect extends Obj
 	 * @param   string   $path
 	 * @return  bool
 	 */
-	public function getFolderStructure($service = 'google', $uid = 0, &$remoteFolders, $path = '')
+	public function getFolderStructure($service, $uid, &$remoteFolders, $path = '')
 	{
 		// Get api
 		$apiService = $this->getAPI($service, $uid);
