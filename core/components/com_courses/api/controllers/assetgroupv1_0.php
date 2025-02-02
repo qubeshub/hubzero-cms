@@ -146,7 +146,7 @@ class Assetgroupv1_0 extends base
 			      ->where('type', '=', $db->quote('plugin'))
 			      ->where('state', '>=', 0)
 			      ->where('folder', '=', $db->quote('courses'))
-			      ->order('ordering');
+			      ->order('ordering', 'asc');
 
 			if ($plugins = $db->setQuery($query)->loadObjectList())
 			{
