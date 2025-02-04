@@ -125,3 +125,7 @@ input[type=datetime-local] {
     outline: none;
     color: var(--ctr-editor-content-text-color, var(--sjs-general-forecolor, var(--foreground, #161616)));
 }
+
+.spg-container input[type=datetime-local] {
+	background-color: var(--ctr-editor-background-color, var(--sjs-general-backcolor, var(--background, #fff)));
+}

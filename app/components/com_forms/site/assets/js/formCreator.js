@@ -24,7 +24,7 @@ FormCreator.saveSurveyFunc = (saveNo, callback) => {
     callback(saveNo, true);
     // console.log("Saving " + saveNo + "!");
     const id = $("input[name=id]").val();
-    const url = '/forms/forms/' + id + '/updatejson';
+    const url = '/forms/forms/' + id + '/update';
     saveSurveyJson(
         url,
         FormCreator.JSON,
@@ -64,64 +64,6 @@ FormCreator.onUploadFile.add((_, options) => {
         });
 });
 
-document.addEventListener("DOMContentLoaded", function() {
-    $('#hubForm').on('submit', function(event) {
-        event.preventDefault();
-
-        var formData = new FormData(this);
-        // console.log(...formData);
-
-        $.ajax({
-            type: "POST",
-            url: $(this).attr('action'),
-            data: formData,
-            processData: false,
-            contentType: false,
-            dataType: "json",
-            success: function(response) {
-                // Handle the successful response from the server
-                // console.log("Form submitted successfully:", response.status);
-                notifySaved();
-            },
-            error: function(xhr, status, error) {
-                // Handle any errors that occur during the AJAX request
-                console.error("Error submitting form:", error);
-            }
-        });
-    });
-
-    $('input[name="form[responses_locked]"],'+
-      'input[name="form[disabled]"],'+
-      'input[name="form[archived]"],'+
-      'input[name="form[opening_time]"],'+
-      'input[name="form[closing_time]"]').on("change",
-            debounce(function() { 
-                // console.log("Changed!"); 
-                $('#hubForm').submit();
-            }, autoSaveDelay)
-    );
-    
-    const id = $("input[name=id]").val();
-    const url = '/forms/forms/' + id + '/getjson';
-    fetch(url, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'text/plain;charset=UTF-8'
-        }
-    })
-    .then(response => {
-        return response.text();
-    })
-    .then(formText => { 
-        // console.log(JSON.parse(text));
-        FormCreator.text = formText;
-        FormCreator.render(document.getElementById("formCreator"));
-    })
-    .catch(error => {
-        console.log('Error fetching form JSON');
-    });
-});
-
 function saveSurveyJson(url, json, saveNo, callback) {
     const formData = new FormData();
     formData.append('json', JSON.stringify(json));
@@ -151,5 +93,27 @@ function saveSurveyJson(url, json, saveNo, callback) {
         // callback(saveNo, false);
     });
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    const id = $("input[name=id]").val();
+    const url = '/forms/forms/' + id + '/getjson';
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'text/plain;charset=UTF-8'
+        }
+    })
+    .then(response => {
+        return response.text();
+    })
+    .then(formText => { 
+        // console.log(JSON.parse(text));
+        FormCreator.text = formText;
+        FormCreator.render(document.getElementById("formCreator"));
+    })
+    .catch(error => {
+        console.log('Error fetching form JSON');
+    });
+});
 
 HUB.FORMS.FormCreator = FormCreator

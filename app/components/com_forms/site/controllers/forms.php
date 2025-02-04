@@ -189,10 +189,7 @@ class Forms extends SiteController
 			App::redirect($this->routes->formsEditUrl($form->get('id')));
 		}
 
-		$updateTaskUrl = $this->routes->formsUpdateUrl($formId);
-
 		$this->view
-			->set('formAction', $updateTaskUrl)
 			->set('form', $form)
 			->display();
 	}
@@ -221,47 +218,15 @@ class Forms extends SiteController
 	}
 
 	/**
-	 * AJAX: Handles updating of given form using provided data
-	 *
-	 * @return   void
+	 * AJAX: Update json for form
 	 */
 	public function updateTask()
 	{
-		// $this->bouncer->redirectUnlessAuthorized('core.create'); 
-
-		$formId = $this->params->get('id');
-		$formData = $this->params->getArray('form');
-		$formData['modified'] = Date::toSql();
-		$formData['modified_by'] = User::get('id');
-
-		$form = Form::oneOrFail($formId);
-		$form->set($formData);
-
-		if ($form->save())
-		{
-			$response = Array(
-				'status' => "Saved form settings."
-			);
-			echo json_encode($response);
-			exit();
-			// $forwardingUrl = $this->routes->formsEditUrl($formId);
-			// $successMessage = Lang::txt('COM_FORMS_FORM_SAVE_SUCCESS');
-			// $this->crudHelper->successfulUpdate($forwardingUrl, $successMessage);
-		}
-		else
-		{
-			// $this->crudHelper->failedUpdate($form);
-		}
-	}
-
-	/**
-	 * AJAX: Update json for form
-	 */
-	public function updatejsonTask()
-	{
 		$formId = $this->params->get('id');
 		$form = Form::oneOrFail($formId);
-		
+		$form->set('modified', Date::toSql());
+		$form->set('modified_by', User::get('id'));
+
 		$formJson = $this->params->get('json');
 		if (!$form->setJson($formJson)) {
 			$response = Array(
@@ -271,25 +236,26 @@ class Forms extends SiteController
 			exit();
 		}
 
-		// Grab title and description
+		// Grab form settings from json
 		$json = json_decode($formJson, false);
-		$form->set('name', $json->title); // Title should be required
 
-		// Description is optional
-		if (isset($json->description)) {
-			$form->set('description', $json->description);
-		}
+		$form->set('name', $json->title);
+		$form->set('description', (isset($json->description) ? $json->description : ''));
+		$form->set('discoverable', (isset($json->discoverable) ? 1 : 0)); // If specified, will be 1 (default is 0 (hidden))
+		$form->set('opening_time', (isset($json->openingTime) ? $json->openingTime : '0000-00-00 00:00:00'));
+		$form->set('closing_time', (isset($json->closingTime) ? $json->closingTime : '0000-00-00 00:00:00'));
+		$form->set('responses_locked', (isset($json->editable) ? 1 : 0)); // If specified, will be 0 (default is 1); note that database stores opposite
 		
 		if (!$form->save()) {
 			$response = Array(
-				'status' => "Failed to save form title and description."
+				'status' => "Failed to save form data."
 			);
 			echo json_encode($response);
 			exit();
 		}
 
 		$response = Array(
-			'status' => "Saved form json.",
+			'status' => "Saved form data.",
 			'title' => $json->title // Sending this back to update breadcrumbs
 		);
 		echo json_encode($response);

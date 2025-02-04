@@ -11,7 +11,6 @@ defined('_HZEXEC_') or die();
 $this->css('formForm');
 
 $form = $this->form;
-$action = $this->formAction;
 $formId = $form->get('id');
 $formName = $form->get('name');
 $submitValue = Lang::txt('COM_FORMS_FIELDS_VALUES_UPDATE_FORM');
@@ -48,7 +47,6 @@ $this->view('_forms_breadcrumbs', 'shared')
 			<div class="col span12 omega">
 				<?php
 					$this->view('_form_form')
-						->set('action', $action)
 						->set('form', $form)
 						->display();
 				?>
