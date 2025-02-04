@@ -8,17 +8,8 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
-$action = $this->action;
 $form = $this->form;
 ?>
-
-<form id="hubForm" class="full" method="post" action="<?php echo $action; ?>">
-	<?php
-		$this->view('_dates_option_fields')
-			->set('form', $form)
-			->display();
-	?>
-</form>
 
 <form id="surveyjsForm">
 	<?php
