@@ -61,7 +61,7 @@ $cls = array(
 					</noscript>
 				</div>
 
-				<?php if ($this->debug) { ?>
+				<?php if ($this->debug && $code != 404) { ?>
 					<div class="backtrace-wrap">
 						<?php echo $this->renderBacktrace(); ?>
 					</div>

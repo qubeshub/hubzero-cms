@@ -31,6 +31,15 @@ class ErrorServiceProvider extends ServiceProvider
 			// Log to php's `error_log()`
 			$loghandler = new \Monolog\Handler\ErrorLogHandler();
 
+			$formatter = new \Monolog\Formatter\LineFormatter(
+				"%channel%.%level_name%: %message% %context% %extra%", // Format of message in log, default [%datetime%] %channel%.%level_name%: %message% %context% %extra%\n
+				null, // Datetime format
+				true, // allowInlineLineBreaks option, default false
+				true  // discard empty Square brackets in the end, default false
+			);
+
+			$loghandler->setFormatter($formatter);
+
 			// Alternatively, if you need to a specified file
 			//$loghandler = new \Monolog\Handler\StreamHandler($app['config']->get('log_path') . '/error.php', 'error', true);
 
@@ -53,10 +62,9 @@ class ErrorServiceProvider extends ServiceProvider
 	public function startHandling()
 	{
 		// Set the error_reporting
-		switch ($this->app['config']->get('error_reporting'))
+		switch ($this->app['config']->get('error_reporting',0))
 		{
 			case 'default':
-			case '-1':
 				break;
 
 			case 'none':
@@ -65,23 +73,20 @@ class ErrorServiceProvider extends ServiceProvider
 				break;
 
 			case 'simple':
-				error_reporting(E_ERROR | E_WARNING | E_PARSE);
-				ini_set('display_errors', 1);
+				$this->app['config']->set('error_reporting', 'relaxed');
+
+			case 'relaxed':
+				error_reporting(E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
 				break;
 
 			case 'maximum':
-				error_reporting(E_ALL);
-				ini_set('display_errors', 1);
-				break;
-
 			case 'development':
-				error_reporting(-1);
-				ini_set('display_errors', 1);
+			case '-1':
+				error_reporting(E_ALL);
 				break;
 
 			default:
-				error_reporting($this->app['config']->get('error_reporting'));
-				ini_set('display_errors', 1);
+				error_reporting($this->app['config']->get('error_reporting',0));
 				break;
 		}
 
