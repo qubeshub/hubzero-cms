@@ -139,7 +139,7 @@ class Create extends SiteController
 		{
 			$this->_title .= ': ' . Lang::txt('COM_CONTRIBUTE' . '_' . strtoupper($this->_task));
 		}
-		if ($this->step)
+		if ($this->step && isset($this->steps[$this->step]))
 		{
 			$this->_title .= ': ' . Lang::txt('COM_CONTRIBUTE_STEP_NUMBER', $this->step) . ': ' . Lang::txt('COM_CONTRIBUTE_STEP_' . strtoupper($this->steps[$this->step]));
 		}
