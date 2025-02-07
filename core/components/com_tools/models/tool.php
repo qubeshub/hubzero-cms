@@ -503,10 +503,10 @@ class Tool
 			$query = '';
 		}
 
-		$db->setQuery($query);
-
 		if (!empty($query))
 		{
+			$db->setQuery($query);
+
 			$result = $db->query();
 
 			if ($result === false)
@@ -1608,7 +1608,7 @@ class Tool
 			}
 		}
 
-		if (count($err) > 0)
+		if (is_array($err) && count($err) > 0)
 		{
 			return false;
 		}

@@ -684,7 +684,6 @@ class Version
 	{
 		$db = \App::get('db');
 
-		Log::debug('_sql_update() start');
 		$query = "UPDATE #__tool_version SET ";
 
 		$classvars = get_class_vars(__CLASS__);
@@ -693,6 +692,7 @@ class Version
 
 		foreach ($classvars as $property => $value)
 		{
+
 			if (($property[0] == '_') || in_array($property, $this->_list_keys))
 			{
 				continue;
@@ -731,10 +731,10 @@ class Version
 			$query = '';
 		}
 
-		$db->setQuery($query);
-
 		if (!empty($query))
 		{
+			$db->setQuery($query);
+
 			$result = $db->query();
 
 			if ($result === false)
