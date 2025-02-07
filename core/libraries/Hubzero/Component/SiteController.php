@@ -290,6 +290,11 @@ class SiteController extends Obj implements ControllerInterface
 			throw new InvalidTaskException(Lang::txt('The requested task "%s" was not found.', $this->_task), 404);
 		}
 
+		if (!method_exists($this,$doTask . "Task"))
+		{
+			throw new InvalidTaskException(Lang::txt('The requested task "%sTask" was not found.', $doTask), 404);
+		}
+
 		$name = $this->_controller;
 		$layout = preg_replace('/[^A-Z0-9_]/i', '', $doTask);
 		if (!$this->_controller)
