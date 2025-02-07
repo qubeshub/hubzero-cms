@@ -229,15 +229,15 @@ class Articles extends SiteController
 		if ($menu)
 		{
 			$params->def('page_heading', $params->get('page_title', $menu->title));
+			$id = (int) $menu->query['id'];
 		}
 		else
 		{
 			$params->def('page_heading', Lang::txt('JGLOBAL_ARTICLES'));
+			$id = 0;
 		}
 
 		$title = $params->get('page_title', $item->title);
-
-		$id = (int) @$menu->query['id'];
 
 		// if the menu item does not concern this article
 		if ($menu && ($menu->query['option'] != 'com_content' || $menu->query['view'] != 'article' || $id != $item->id))
@@ -1328,13 +1328,14 @@ class Articles extends SiteController
 		if ($menu)
 		{
 			$params->def('page_heading', $params->get('page_title', $menu->title));
+			$id = (int) $menu->query['id'];
 		}
 		else
 		{
 			$params->def('page_heading', Lang::txt('JGLOBAL_ARTICLES'));
+			$id = 0;
 		}
 
-		$id = (int) @$menu->query['id'];
 
 		if ($menu && ($menu->query['option'] != 'com_content' || $menu->query['view'] == 'article' || $id != $category->id))
 		{
