@@ -60,7 +60,6 @@
         "stevenmaguire/oauth2-dropbox": "3.1.*",
 	"composer/composer": "2.2.*",
 	"phpoffice/phpspreadsheet": "1.29.*",
-	"simplesamlphp/simplesamlphp": "1.18.*",
 	"league/oauth2-facebook": "2.0.*",
 	"litesaml/lightsaml": "1.4.*",
         "http-interop/http-factory-guzzle": "*",
