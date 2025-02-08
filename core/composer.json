@@ -58,7 +58,7 @@
         "cilogon/oauth2-cilogon": "1.1.*",
         "srmklive/flysystem-dropbox-v2": "1.0.*",
         "stevenmaguire/oauth2-dropbox": "3.1.*",
-	"composer/composer": "2.2.*",
+	"composer/composer": "2.8.*",
 	"phpoffice/phpspreadsheet": "1.29.*",
 	"league/oauth2-facebook": "2.0.*",
 	"litesaml/lightsaml": "1.4.*",
