@@ -38,7 +38,7 @@
         "geocoder-php/ipstack-provider": "0.4.*",
         "predis/predis": "1.1.*",
         "symfony/yaml": "3.4.*",
-        "symfony/http-foundation": "4.4.*",
+        "symfony/http-foundation": "5.4.*",
         "simshaun/recurr": "4.0.*",
         "pelago/emogrifier": "7.0.*",
         "google/apiclient": "2.14.*",
@@ -61,7 +61,7 @@
 	"composer/composer": "2.8.*",
 	"phpoffice/phpspreadsheet": "1.29.*",
 	"league/oauth2-facebook": "2.0.*",
-	"litesaml/lightsaml": "1.4.*",
+	"litesaml/lightsaml": "2.3.*",
         "http-interop/http-factory-guzzle": "*",
 	"theiconic/name-parser": "0.1.*"
     },
