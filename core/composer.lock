@@ -4538,20 +4538,20 @@
         },
         {
             "name": "potherca/flysystem-github",
-            "version": "v0.3.2",
+            "version": "v0.3.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hubzero/flysystem-github.git",
-                "reference": "82246d36b4e60377d35c364640231bd1304ba494"
+                "reference": "cb6e6186f4ee318bc0e629373c5afc043ecebb92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hubzero/flysystem-github/zipball/82246d36b4e60377d35c364640231bd1304ba494",
-                "reference": "82246d36b4e60377d35c364640231bd1304ba494",
+                "url": "https://api.github.com/repos/hubzero/flysystem-github/zipball/cb6e6186f4ee318bc0e629373c5afc043ecebb92",
+                "reference": "cb6e6186f4ee318bc0e629373c5afc043ecebb92",
                 "shasum": ""
             },
             "require": {
-                "knplabs/github-api": "2.11.* || 3.0.*",
+                "knplabs/github-api": "2.11.* || 3.*",
                 "league/flysystem": "^1.0",
                 "php": ">=5.4"
             },
@@ -4605,10 +4605,10 @@
                 "potherca"
             ],
             "support": {
-                "source": "https://github.com/hubzero/flysystem-github/tree/v0.3.2",
+                "source": "https://github.com/hubzero/flysystem-github/tree/v0.3.3",
                 "issues": "https://github.com/hubzero/flysystem-github/issues"
             },
-            "time": "2025-01-10T06:06:33+00:00"
+            "time": "2025-02-08T04:26:22+00:00"
         },
         {
             "name": "predis/predis",
