@@ -151,9 +151,11 @@ class Profiles extends SiteController
 		}
 
 		$filters = array();
-		$filters['limit']  = 20;
-		$filters['start']  = 0;
+		$filters['limit']  = Request::getInt('limit', 20);
+		$filters['start']  = Request::getInt('start', 0);
 		$filters['search'] = strtolower(trim(Request::getString('value', '')));
+		// Get array of ids
+		$filters['id'] = Request::getArray('id', array());
 		$originalQuery = $filters['search'];
 
 		// match against orcid id
@@ -189,8 +191,14 @@ class Profiles extends SiteController
 			}
 			$query = "SELECT u.id, u.name, u.username, u.access, $match as rel
 					FROM `#__users` AS u
-					WHERE $match AND u.block=0 AND u.activation>0 AND u.email NOT LIKE '%@invalid' $restrict
-					ORDER BY rel DESC, u.name ASC
+					WHERE $match AND u.block=0 AND u.activation>0 AND u.email NOT LIKE '%@invalid' $restrict";
+			
+			if ($filters['id'])
+			{
+				$query .= " AND u.id IN (" . implode(',', $filters['id']) . ")";
+			}
+
+			$query .= "ORDER BY rel DESC, u.name ASC
 					LIMIT " . $filters['start'] . "," . $filters['limit'];
 		}
 

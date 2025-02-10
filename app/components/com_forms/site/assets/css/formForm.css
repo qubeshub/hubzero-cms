@@ -93,10 +93,27 @@ input[type=datetime-local] {
 	border: 1px solid #e5e5e5;
 }
 
-#surveyjsForm input[type=text] {
+#surveyjsForm input[type=text], 
+div.sv-popup input[type=text] {
 	background: inherit;
 	background-color: inherit;
 	border: inherit;
+}
+
+.sd-root-modern {
+	min-width: 640px;
+}
+
+div[data-name="permissions"] textarea {
+	display: none !important;
+}
+
+div[data-key="permissionSummary0"] .spg-question__content {
+	margin-top: -20px;
+	font-size: 13px;
+    --thm-default-line-height: calc(1.5* var(--thm-default-font-size));
+	color: var(--ctr-label-text-color, var(--sjs-general-forecolor-light, var(--foreground-light, #909090)));
+	cursor: unset;
 }
 
 #surveyjsForm input[type=text].spg-input {
