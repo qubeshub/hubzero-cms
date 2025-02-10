@@ -94,6 +94,133 @@ function saveSurveyJson(url, json, saveNo, callback) {
     });
 }
 
+// Step 3: Define a survey JSON schema for the modal dialog
+const popupJson = {
+    "elements": [
+      {
+        "type": "matrixdynamic",
+        "name": "access",
+        "titleLocation": "hidden",
+        "columns": [
+          {
+            "name": "user",
+            "title": "User",
+            "cellType": "dropdown",
+            "isUnique": true,
+            "choicesLazyLoadEnabled": true,
+            "itemComponent": "new-user-item", // Not used right now
+            "placeholder": "Search for user"
+          },
+          {
+            "name": "permission",
+            "title": "Permission",
+            "cellType": "dropdown",
+            "defaultValue": "edit",
+            "choices": [
+                { "value": "edit", "text": "Edit" },
+                { "value": "view", "text": "View" }
+            ]
+          }
+        ],
+        "rowCount": 0,
+        "addRowText": "Add collaborator"
+      }
+    ],
+    "showQuestionNumbers": false,
+    "showNavigationButtons": false
+};
+
+const popupSurvey = new Survey.SurveyModel(popupJson);
+
+// https://surveyjs.io/form-library/examples/dropdown-menu-load-data-from-restful-service/vanillajs#
+// https://surveyjs.io/form-library/examples/lazy-loading-dropdown/vanillajs#content-code
+popupSurvey.onChoicesLazyLoad.add((_, options) => {
+    if (options.question.getType() === "dropdown" && options.question.name === "user") {
+        const url = `https://example.com/index.php?option=com_members&no_html=1&task=autocomplete&admin=true&start=${options.skip}&limit=${options.take}&value=${options.filter}`;
+        sendRequest(url, (data) => { 
+            const choices = data.map((item) => {
+                return { value: item.id, text: item.name + ' (' + item.id + ')' };
+            });
+            options.setItems(choices, choices.length); 
+        });
+    }
+});
+
+// https://surveyjs.io/form-library/examples/lazy-loading-dropdown/vanillajs#content-code
+popupSurvey.onGetChoiceDisplayValue.add((_, options) => {
+    if (options.question.getType() === "dropdown" && options.question.name === "user") {
+        const idStr = "id=" + options.values[0];
+        const url = `https://example.com/index.php?option=com_members&no_html=1&task=autocomplete&admin=true&${idStr}`;
+        sendRequest(url, (data) => { 
+            const choice = [data[0].name + ' (' + data[0].id + ')'];
+            options.setItems(choice);
+        });
+    }
+});
+    
+// Step 4: Add a button that opens the dialog to the editor title
+FormCreator.onPropertyEditorUpdateTitleActions.add((_, options) => {
+    if (options.property.name === "permissions") {
+        options.titleActions.push({
+            id: "setPermissions",
+            title: "Edit",
+            // Step 5: Open the dialog on a button click
+            action: () => {
+                popupSurvey.setValue("access", (options.obj.permissions ? JSON.parse(options.obj.permissions) : {}));
+                Survey.settings.showDialog({
+                    componentName: "survey",
+                    data: { model: popupSurvey },
+                    onApply: () => {
+                        const validAccessRules = popupSurvey.validate();
+                        if (validAccessRules) {
+                            // Get values from the pop-up survey using its `data` property
+                            // and update the current question (`options.obj`)
+                            options.obj.setPropertyValue("permissions", JSON.stringify(popupSurvey.data["access"]));
+                            return true;
+                        }
+                            return false;
+                    },
+                    onCancel: () => {
+                        console.log("Cancel");
+                    },
+                    cssClass: "sv-property-editor fixme",
+                    title: "Edit Collaborators",
+                    displayMode: "popup"
+                })
+            }
+        });
+    }
+});
+
+// Custom item view for lazy loaded items - not working
+// https://surveyjs.io/form-library/examples/dropdown-box-with-custom-items/vanillajs#content-code
+// Send ticket in SurveyJS to ask if can store additional fields in choices (e.g. picture) so don't have to make additional api calls to server
+
+// window.React = { createElement: SurveyUI.createElement, Component: SurveyUI.Component };
+
+// class ItemTemplateComponent extends SurveyUI.Component {
+//     render() {
+//         const item = this.props.item;
+//         return (
+//             React.createElement("div", {
+//                 className: "my-list-item",
+//                 style: {
+//                   display: "flex"
+//                 }
+//               }, React.createElement("span", {
+//                 className: "list-item_text"
+//               }, item.id))
+//         );
+//     }
+// }
+
+// SurveyUI.ReactElementFactory.Instance.registerElement(
+//   "new-user-item",
+//   (props) => {
+//     return React.createElement(ItemTemplateComponent, props);
+//   }
+// );
+
 document.addEventListener("DOMContentLoaded", function() {
     const id = $("input[name=id]").val();
     const url = '/forms/forms/' + id + '/getjson';
