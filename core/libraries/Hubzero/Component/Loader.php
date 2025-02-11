@@ -484,7 +484,7 @@ class Loader
 		}
 
 		// Do we have a database connection?
-		if ($this->app->has('db'))
+		try
 		{
 			$db = $this->app->get('db');
 
@@ -516,6 +516,9 @@ class Loader
 			{
 				throw new Exception($this->app['language']->translate('JLIB_APPLICATION_ERROR_COMPONENT_NOT_LOADING', $option, $error), 500);
 			}
+		}
+		catch (\Hubzero\Database\Exception\ConnectionFailedException $e)
+		{
 		}
 
 		// Create a default object
