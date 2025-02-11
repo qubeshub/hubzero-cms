@@ -484,7 +484,7 @@ class Loader
 		}
 
 		// Do we have a database connection?
-		if ($this->app->has('db') && $this->app['db']->connected())
+		if ($this->app->has('db'))
 		{
 			$db = $this->app->get('db');
 
