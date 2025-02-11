@@ -3,10 +3,310 @@
 
 /**
  * @package    hubzero-cms
- * @copyright  Copyright (c) 2005-2024 The Regents of the University of California.
+ * @copyright  Copyright (c) 2005-2025 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-require_once dirname(__DIR__) . '/vendor/autoload.php';
+if (@include(dirname(__DIR__) . '/vendor/autoload.php'))
+{
+    (new Hubzero\Base\Application())->run();
+}
+else // Start Minimal Muse
+{
+    define('HVERSION', '2.4.1');
+    define('HDATE', '2025-02-09 11:51:22');
 
-(new Hubzero\Base\Application())->run();
+    $ansi = true;
+    $help = false;
+    $quiet = false;
+    $verbose = 0;
+    $silent = false;
+    $version = false;
+
+    function aecho($text, $error = false)
+    {
+        global $ansi, $silent, $quiet;
+
+        if (!$silent && (!$quiet || $error))
+        {
+            if (!$ansi)
+            {
+                $text = preg_replace("/\e\[\d\dm/","",$text);
+                $text = preg_replace("/\e\[\d\d;\d\dm/","",$text);
+            }
+
+            echo($text);
+        }
+    }
+
+    function options()
+    {
+        aecho("\e[33mOptions:\e[39m\n");
+        aecho("\e[32m  -h, --help\e[39m                      Display help for the given command. When no command is given display help for the \e[32mlist\e[39m command\n");
+        aecho("\e[32m      --silent\e[39m                    Do not output any message\n");
+        aecho("\e[32m  -q, --quiet\e[39m                     Only errors are displayed. All other output is suprressed\n");
+        aecho("\e[32m      --ansi|--no-ansi\e[39m            Force (or disable --no-ansi) ANSI output\n");
+        aecho("\e[32m  -v|vv|vvv, --verbose\e[39m            Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug\n");
+    }
+
+    for($arg = 1; $arg < $argc; $arg++)
+    {
+        if ($argv[$arg] == '--')
+        {
+            array_splice($argv,$arg,1);
+            $argc--;
+            break;
+        }
+        else if ($argv[$arg] == '--ansi')
+        {
+            $ansi = true;
+            $arg--;
+        }
+        else if ($argv[$arg] == '--no-ansi')
+        {
+            $ansi = false;
+            array_splice($argv,$arg,1);
+            $argc--;
+            $arg--;
+        }
+        if ($argv[$arg] == '--help' || $argv[$arg] == '-h')
+        {
+            $help = true;
+            array_splice($argv,$arg,1);
+            $argc--;
+            $arg--;
+        }
+        else if (preg_match("/^\-v+$/", $argv[$arg]))
+        {
+            $v = array_splice($argv,$arg,1);
+            $verbose = min(3, $verbose + strlen($v[0]) - 1);
+            $argc--;
+            $arg--;
+        }
+        else if ($argv[$arg] == '--verbose')
+        {
+            $verbose = ($verbose < 3) ? $verbose + 1 : $verbose;
+            array_splice($argv,$arg,1);
+            $argc--;
+            $arg--;
+        }
+        else if ($argv[$arg] == '--silent')
+        {
+            $silent = true;
+            array_splice($argv,$arg,1);
+            $argc--;
+            $arg--;
+        }
+        else if ($argv[$arg] == '--quiet')
+        {
+            $quiet = true;
+            array_splice($argv,$arg,1);
+            $argc--;
+            $arg--;
+        }
+        else if ($argv[$arg] == '--version' || $argv[$arg] == '-V')
+        {
+            $version = true;
+            array_splice($argv,$arg,1);
+            $argc--;
+            $arg--;
+        }
+        else if ($argv[$arg][0] == '-') // throw out options we don't know
+        {
+            array_splice($argv,$arg,1);
+            $argc--;
+            $arg--;
+        }
+    }
+
+    if ($argc == 1 || $argv[1][0] == '-') // use list if no command given
+    {
+        $argc++;
+        array_splice($argv, 1, 0, array('list'));
+    }
+
+    if ($help)
+    {
+        $argc++;
+        array_splice($argv, 1, 0, array('help'));
+    }
+
+    if ($version)
+    {
+        aecho("\e[32mMuse: HUBzero Command Line Interface\e[39m version \e[33m" . HVERSION . " (minimal)\e[39m " . HDATE . "\n");
+    }
+    else if ($argv[1] == 'help')
+    {
+        if ($argc == 2 || $argv[2] == 'help')
+        {
+            aecho("\e[33mDescription:\e[39m\n");
+            aecho("  Display help for a comand\n");
+            aecho("\n");
+            aecho("\e[33mUsage:\e[39m\n");
+            aecho("  help [options] [--] [<command_name>]\n");
+            aecho("\n");
+            aecho("\e[33mArguments:\e[39m\n");
+            aecho("  \e[32mcommand_name\e[39m                    The command name \e[33m[default: \"help\"]\e[39m\n");
+            aecho("\n");
+            options();
+            aecho("\n");
+            aecho("\e[33mHelp:\e[39m\n");
+            aecho("  The \e[32mhelp\e[39m command displays help for a given command:\n");
+            aecho("\n");
+            aecho("    \e[32m{$argv[0]} help list\e[39m\n");
+            aecho("\n");
+
+            aecho("  To display the list of available commands, please use the \e[32mlist\e[39m command.\n");   
+        }
+        else if ($argc > 1 && $argv[2] == 'list')
+        {
+            aecho("\e[33mDescription:\e[39m\n");
+            aecho("  List commands\n");
+            aecho("\n");
+            aecho("\e[33mUsage:\e[39m\n");
+            aecho("  list [options] [--] [<namespace>]\n");
+            aecho("\n");
+            aecho("\e[33mArguments:\e[39m\n");
+            aecho("  \e[32mnamespace\e[39m                      The namespace name\n");
+            aecho("\n");
+
+            options();
+            aecho("\n");
+
+            aecho("\e[33mHelp:\e[39m\n");
+            aecho("  The \e[32mlist\e[39m command lists all commands:\n");
+            aecho("\n");
+            aecho("    \e[32mmuse list\e[39m\n");
+            aecho("\n");
+            aecho("  You can also display the commands for a specific namespace:\n");
+            aecho("\n");
+            aecho("    \e[32mmuse list test\e[39m\n");
+            aecho("\n");
+        }
+        else if ($argc > 1 && $argv[2] == 'vendor:install')
+        {
+            echo "\n";
+            echo "Overview:\n";
+            echo "  Core Management\n";
+            echo "\n";
+            echo "Namespaces:\n";
+            echo "  vendor  Tasks for managing composer packages in the vendor directory\n";
+            echo "\n";
+        }
+        else
+        {
+            aecho("\n",true);
+            aecho("\e[37;41mERROR:\e[39;49m Command \"{$argv[2]}\" is not defined.\n",true);
+            aecho("\n",true);
+
+            aecho("\e[32mhelp [options] [--] [<command_name>]\e[39m\n");
+            aecho("\n",true);    
+        }
+
+    }
+    else if ($argv[1] == 'list')
+    { 
+        aecho("    __  ___\n");
+        aecho("   /  |/  /_  __________ \n");
+        aecho("  / /|_/ / / / / ___/ _ \\\n");
+        aecho(" / /  / / /_/ (__  )  __/\n");
+        aecho("/_/  /_/\__,_/____/\___/\n");
+        aecho("\n");
+
+        aecho("\e[32mMuse: HUBzero Command Line Interface\e[39m version \e[33m" . HVERSION . " (minimal)\e[39m " . HDATE . "\n");
+        aecho("\n");
+
+        aecho("\e[33mUsage:\e[39m\n");
+        aecho("  command [options] [arguments]\n");
+        aecho("\n");
+
+        options();
+
+        if ($argc <= 2)
+        {
+            aecho("\n");
+            aecho("\e[33mAvailable Commands:\e[39m\n");
+            aecho("  \e[32mhelp\e[39m                            Display help for a command\n");
+            aecho("  \e[32mlist\e[39m                            List commands\n");
+            aecho(" \e[33mvendor\e[39m\n");
+            aecho("  \e[32mvendor:install\e[39m                  Install the project dependencies from the composer.lock file if present, or falls back on the composer.json\n");
+        }
+        else if ($argc == 3)
+        {
+            if ($argv[2] == 'vendor')
+            {
+                aecho("\n");
+                aecho("\e[33mAvailable commands for the \"vendor\" namespace:\e[39m\n");
+                aecho("   \e[32mvendor:install\e[39m  Install the project dependencies from the composer.lock file if present, or falls back on the composer.json\n");
+            }
+            else
+            {
+                aecho("\n",true);
+                aecho("\e[37;41mERROR:\e[39;49m There are no commands defined in the \"\e[33m{$argv[2]}\e[39m\" namespace.\n", true);
+                aecho("\n",true);
+                aecho("\e[32mlist\e[39m [<\e[33mnamespace\e[39m>]\n",true);
+                aecho("\n",true);
+            }
+        }
+        else
+        {
+            aecho("\n",true);
+            aecho("\e[37;41mERROR:\e[39;49m Too many arguments to \"\e[32mlist\e[39m\" command, expected argument \"\e[33mnamespace\e[39m\".\n", true);
+            aecho("\n",true);
+            aecho("\e[32mlist\e[39m [<\e[33mnamespace\e[39m>]\n",true);
+            aecho("\n",true);
+        }
+    }
+    else if ($argv[1] == "vendor:install")
+    {
+        if ($ansi)
+        {
+            $options = " --ansi";
+        }
+        else
+        {
+            $options = " --no-ansi";
+        }
+
+        if ($quiet)
+        {
+            $options .= " --quiet";
+        }
+
+        if ($verbose)
+        {
+            $options .= "-v";
+
+            if ($verbose > 1)
+            {
+                $options = ($verbose == 2) ? 'v' : 'vv';
+            }
+        }
+
+        aecho("\n");
+
+        if (file_exists(__DIR__ . "/composer"))
+        {
+            exec(__DIR__ . "/composer install $options -d " . dirname(__DIR__), $output);
+
+            foreach($output as $line)
+            {
+                aecho("$line\n");
+            }
+        }
+        else
+        {
+            aecho("\n",true);
+            aecho("\e[37;41mERROR:\e[39;49m " . __DIR__ . "/composer: No such file.\n",true);
+            aecho("\n",true);  
+        }
+
+        aecho("\n");
+    }
+    else
+    {
+        aecho("\n",true);
+        aecho("\e[37;41mERROR:\e[39;49m Command \"{$argv[1]}\" is not defined.\n",true);
+        aecho("\n",true);
+    }
+}
