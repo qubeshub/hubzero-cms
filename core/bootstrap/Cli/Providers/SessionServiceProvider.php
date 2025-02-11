@@ -61,58 +61,64 @@ class SessionServiceProvider extends ServiceProvider
 		{
 			if ($this->app['config']->get('session_handler') == 'database' && $this->app->has('db'))
 			{
-				$db = $this->app['db'];
-
-				$query = $db->getQuery()
-					->select('session_id')
-					->from('#__session')
-					->whereEquals('session_id', $this->app['session']->getId())
-					->limit(1)
-					->start(0);
-
-				$db->setQuery($query->toString());
-				$exists = $db->loadResult();
-
-				// If the session record doesn't exist initialise it.
-				if (!$exists)
+				try
 				{
-					$ip = $this->app['request']->ip();
+					$db = $this->app['db'];
 
-					if ($this->app['session']->isNew())
+					$query = $db->getQuery()
+						->select('session_id')
+						->from('#__session')
+						->whereEquals('session_id', $this->app['session']->getId())
+						->limit(1)
+						->start(0);
+
+					$db->setQuery($query->toString());
+					$exists = $db->loadResult();
+
+					// If the session record doesn't exist initialise it.
+					if (!$exists)
 					{
-						$query = $db->getQuery()
-							->insert('#__session')
-							->values(array(
-								'session_id' => $this->app['session']->getId(),
-								'client_id'  => (int) $this->app['client']->id,
-								'time'       => (int) time(),
-								'ip'         => $ip
-							));
+						$ip = $this->app['request']->ip();
 
-						$db->setQuery($query->toString());
-					}
-					else
-					{
-						$query = $db->getQuery()
-							->insert('#__session')
-							->values(array(
-								'session_id' => $this->app['session']->getId(),
-								'client_id'  => (int) $this->app['client']->id,
-								'guest'      => (int) $this->app['user']->get('guest'),
-								'time'       => (int) $this->app['session']->get('session.timer.start'),
-								'userid'     => (int) $this->app['user']->get('id'),
-								'username'   => $this->app['user']->get('username'),
-								'ip'         => $ip
-							));
+						if ($this->app['session']->isNew())
+						{
+							$query = $db->getQuery()
+								->insert('#__session')
+								->values(array(
+									'session_id' => $this->app['session']->getId(),
+									'client_id'  => (int) $this->app['client']->id,
+									'time'       => (int) time(),
+									'ip'         => $ip
+								));
 
-						$db->setQuery($query->toString());
-					}
+							$db->setQuery($query->toString());
+						}
+						else
+						{
+							$query = $db->getQuery()
+								->insert('#__session')
+								->values(array(
+									'session_id' => $this->app['session']->getId(),
+									'client_id'  => (int) $this->app['client']->id,
+									'guest'      => (int) $this->app['user']->get('guest'),
+									'time'       => (int) $this->app['session']->get('session.timer.start'),
+									'userid'     => (int) $this->app['user']->get('id'),
+									'username'   => $this->app['user']->get('username'),
+									'ip'         => $ip
+								));
 
-					// If the insert failed, exit the application.
-					if (!$db->execute())
-					{
-						exit($db->getErrorMsg());
+							$db->setQuery($query->toString());
+						}
+
+						// If the insert failed, exit the application.
+						if (!$db->execute())
+						{
+							exit($db->getErrorMsg());
+						}
 					}
+				}
+				catch (\Hubzero\Database\Exception\ConnectionFailedException $e)
+				{
 				}
 			}
 
@@ -120,7 +126,13 @@ class SessionServiceProvider extends ServiceProvider
 			if ($this->app['session']->isNew())
 			{
 				$this->app['session']->set('registry', new Registry('session'));
-				$this->app['session']->set('user', new User);
+				try
+				{
+					$this->app['session']->set('user', new User);
+				}
+				catch (\Hubzero\Database\Exception\ConnectionFailedException $e)
+				{
+				}
 			}
 		}
 	}

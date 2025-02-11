@@ -52,6 +52,10 @@ class UserServiceProvider extends ServiceProvider
 			{
 				$params = new \Hubzero\Config\Registry;
 			}
+			catch (\Hubzero\Database\Exception\ConnectionFailedException $e)
+			{
+				$params = new \Hubzero\Config\Registry;
+			}
 
 			$config = [
 				'path'          => PATH_APP . DS . 'site' . DS . 'members',

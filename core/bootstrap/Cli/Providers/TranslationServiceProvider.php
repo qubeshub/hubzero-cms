@@ -58,7 +58,14 @@ class TranslationServiceProvider extends ServiceProvider
 		// Detect user specified language
 		if (!$language && $this->app->has('user'))
 		{
-			$lang = \User::getParam('api_language');
+			try
+			{
+				$lang = \User::getParam('api_language');
+			}
+			catch (\Hubzero\Database\Exception\ConnectionFailedException $e)
+			{
+				$lang = null;
+			}
 
 			if ($lang && $translator->exists($lang))
 			{
@@ -74,6 +81,10 @@ class TranslationServiceProvider extends ServiceProvider
 				$params = $this->app['component']->params('com_languages');
 			}
 			catch (\Hubzero\Database\Exception\QueryFailedException $e)
+			{
+				$params = new \Hubzero\Config\Registry;
+			}
+			catch (\Hubzero\Database\Exception\ConnectionFailedException $e)
 			{
 				$params = new \Hubzero\Config\Registry;
 			}
