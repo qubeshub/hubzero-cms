@@ -927,11 +927,8 @@ class Citations extends SiteController
 	 */
 	private function _serveup($inline, $p, $f, $mime)
 	{
-		// Clean all output buffers (needs PHP > 4.2.0)
-		while (@ob_end_clean())
-		{
-			continue;
-		}
+		while(ob_get_level())
+			ob_end_clean();
 
 		$fsize = filesize($p . DS. $f);
 		$mod_date = date('r', filemtime($p . DS . $f));

@@ -1206,7 +1206,7 @@ class Resources extends SiteController
 		$manifest = $this->getVideoManifestForResource($resource);
 
 		// Do we have a manifest already?
-		return (count($manifest) < 1) ? false : true;
+		return (!is_array($manifest) || count($manifest) < 1) ? false : true;
 	}
 
 	/**
@@ -2652,7 +2652,7 @@ class Resources extends SiteController
 				$bibtex = new \Structures_BibTex();
 				$addarray = array();
 				$addarray['type']  = 'misc';
-				$addarray['cite']  = $this->_config['sitename'] . $row->id;
+				$addarray['cite']  = $this->config['sitename'] . $row->id;
 				$addarray['title'] = stripslashes($row->title);
 
 				//$auths = explode(';', $row->author);
@@ -2720,11 +2720,8 @@ class Resources extends SiteController
 					? $_SERVER["HTTP_USER_AGENT"]
 					: $HTTP_USER_AGENT;
 
-		// Clean all output buffers (needs PHP > 4.2.0)
-		while (@ob_end_clean())
-		{
-			continue;
-		}
+		while(ob_get_level())
+			ob_end_clean();
 
 		$fsize = filesize($p . $f);
 		$mod_date = date('r', filemtime($p.$f));
