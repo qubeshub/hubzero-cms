@@ -119,11 +119,11 @@ class Request extends BaseRequest
 		switch ($hash)
 		{
 			case 'server':
-				return $this->server($key, $default);
+				return $this->server($key, $default, $type);
 			break;
 
 			case 'cookie':
-				return $this->cookie($key, $default);
+				return $this->cookie($key, $default, $type);
 			break;
 
 			case 'files':
@@ -164,15 +164,15 @@ class Request extends BaseRequest
 			break;
 
 			case 'post':
-				return $this->request($key, $default);
+				return $this->request($key, $default, $type);
 			break;
 
 			case 'get':
-				return $this->query($key, $default);
+				return $this->query($key, $default, $type);
 			break;
 
 			default:
-				return $this->input($key, $default);
+				return $this->input($key, $default, $type);
 			break;
 		}
 	}
@@ -283,7 +283,7 @@ class Request extends BaseRequest
 	 */
 	public function getArray($key = null, $default = array(), $hash = 'input')
 	{
-		return (array) $this->getVar($key, $default, $hash);
+		return (array) $this->getVar($key, $default, $hash, 'array');
 	}
 
 	/**
@@ -537,9 +537,9 @@ class Request extends BaseRequest
 	 * @param   mixed   $default
 	 * @return  string
 	 */
-	public function request($key = null, $default = null)
+	public function request($key = null, $default = null, $type = null)
 	{
-		return $this->retrieveItem('request', $key, $default);
+		return $this->retrieveItem('request', $key, $default, $type);
 	}
 
 	/**
@@ -549,9 +549,9 @@ class Request extends BaseRequest
 	 * @param   mixed   $default
 	 * @return  string
 	 */
-	public function query($key = null, $default = null)
+	public function query($key = null, $default = null, $type = null)
 	{
-		return $this->retrieveItem('query', $key, $default);
+		return $this->retrieveItem('query', $key, $default, $type);
 	}
 
 	/**
@@ -561,9 +561,9 @@ class Request extends BaseRequest
 	 * @param   mixed   $default
 	 * @return  string
 	 */
-	public function cookie($key = null, $default = null)
+	public function cookie($key = null, $default = null, $type = null)
 	{
-		return $this->retrieveItem('cookies', $key, $default);
+		return $this->retrieveItem('cookies', $key, $default, $type);
 	}
 
 	/**
@@ -597,9 +597,9 @@ class Request extends BaseRequest
 	 * @param   mixed   $default
 	 * @return  string
 	 */
-	public function header($key = null, $default = null)
+	public function header($key = null, $default = null, $type = null)
 	{
-		return $this->retrieveItem('headers', $key, $default);
+		return $this->retrieveItem('headers', $key, $default, $type);
 	}
 
 	/**
@@ -609,9 +609,9 @@ class Request extends BaseRequest
 	 * @param   mixed   $default
 	 * @return  string
 	 */
-	public function server($key = null, $default = null)
+	public function server($key = null, $default = null, $type = null)
 	{
-		return $this->retrieveItem('server', $key, $default);
+		return $this->retrieveItem('server', $key, $default, $type);
 	}
 
 	/**
@@ -622,14 +622,28 @@ class Request extends BaseRequest
 	 * @param   mixed   $default
 	 * @return  string
 	 */
-	protected function retrieveItem($source, $key, $default)
+	protected function retrieveItem($source, $key, $default, $type = null)
 	{
 		if (is_null($key))
 		{
 			return $this->$source->all();
 		}
 
-		return $this->$source->get($key, $default, true);
+		if ($type == 'array')
+		{
+			try
+			{
+				return $this->$source->all($key, $default, true);
+			}
+			catch (\Symfony\Component\HttpFoundation\Exception\BadRequestException $e)
+			{
+				return $default;
+			}
+		}
+		else
+		{
+			return $this->$source->get($key, $default, true);
+		}
 	}
 
 	/**
