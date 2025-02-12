@@ -462,7 +462,7 @@ class Events extends SiteController
 		$month  = intval($this->month);
 		$day    = intval($this->day);
 
-		$startday = _CAL_CONF_STARDAY;
+		$startday = intval(_CAL_CONF_STARDAY);
 		$numday = ((date("w", mktime(0, 0, 0, $month, $day, $year)) - $startday) % 7);
 		if ($numday == -1)
 		{
