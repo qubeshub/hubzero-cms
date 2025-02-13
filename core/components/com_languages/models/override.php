@@ -315,7 +315,7 @@ class Override extends Obj
 		{
 			$contents = file_get_contents($filename);
 			$contents = str_replace('_QQ_', '"\""', $contents);
-			$strings  = @parse_ini_string($contents);
+			$strings  = parse_ini_string($contents, false, INI_PARSER_RAW);
 
 			if ($strings === false)
 			{
@@ -324,7 +324,7 @@ class Override extends Obj
 		}
 		else
 		{
-			$strings = @parse_ini_file($filename);
+			$strings = parse_ini_file($filename, false, INI_PARSER_RAW);
 
 			if ($strings === false)
 			{

@@ -45,7 +45,7 @@ class Ini extends Base
 	 */
 	public function parse($path)
 	{
-		$data = @parse_ini_file($path, true);
+		$data = parse_ini_file($path, true, INI_SCANNER_RAW);
 
 		if (!$data)
 		{
@@ -77,7 +77,7 @@ class Ini extends Base
 			return false;
 		}
 
-		$obj = @parse_ini_string($data);
+		$obj = parse_ini_string($data, false, INI_SCANNER_RAW);
 
 		if (!$obj)
 		{

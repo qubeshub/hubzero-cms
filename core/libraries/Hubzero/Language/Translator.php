@@ -741,7 +741,7 @@ class Translator extends Obj
 
 		$contents = file_get_contents($filename);
 		$contents = str_replace('_QQ_', '"\""', $contents);
-		$strings = @parse_ini_string($contents);
+		$strings = parse_ini_string($contents, false, INI_SCANNER_RAW);
 
 		if (!is_array($strings))
 		{
