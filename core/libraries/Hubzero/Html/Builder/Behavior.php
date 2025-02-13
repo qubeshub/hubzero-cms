@@ -285,6 +285,125 @@ class Behavior
 	}
 
 	/**
+	 * Add htmx javascript support
+	 *
+	 * @return  void
+	 */
+	public static function htmx($version = null, $debug = null)
+	{
+		$version = (string) $version;
+
+		if (isset(self::$loaded[__METHOD__]))
+		{
+			return;
+		}
+
+		// If no debugging value is set, use the configuration setting
+		if ($debug === null)
+		{
+			$debug = App::get('config')->get('debug');
+		}
+
+		if (in_array($version, array('','2','2.0','2.0.*','2.0.x','2.0.4')))
+		{
+			if ($debug)
+			{
+				Asset::script('assets/htmx/2.0.4/htmx.js', true, true, false, true, true, true, false);
+			}
+			else
+			{
+				Asset::script('assets/htmx/2.0.4/htmx.min.js', true, true, false, true, true, true, false);
+			}
+		}
+		else
+		{
+			throw new \UnexpectedValueException("Unrecognized version [$version] of htmx requested");
+		}
+
+		self::$loaded[__METHOD__] = true;
+	}
+
+	/**
+	 * Add Alpine.js javascript support
+	 *
+	 * @return  void
+	 */
+	public static function alpinejs($version = null, $debug = null)
+	{
+		$version = (string) $version;
+
+		if (isset(self::$loaded[__METHOD__]))
+		{
+			return;
+		}
+
+		// If no debugging value is set, use the configuration setting
+		if ($debug === null)
+		{
+			$debug = App::get('config')->get('debug');
+		}
+
+		if (in_array($version, array('','3','3.0','3.14.*','3.14.x','3.14.8')))
+		{
+			if ($debug)
+			{
+				Asset::script('assets/alpine/3.14.8/cdn.js', true, true, false, true, true, true, false);
+			}
+			else
+			{
+				Asset::script('assets/alpine/3.14.8/cdn.min.js', true, true, false, true, true, true, false);
+			}
+		}
+		else
+		{
+			throw new \UnexpectedValueException("Unrecognized version [$version] of Alpine.js requested");
+		}
+
+		self::$loaded[__METHOD__] = true;
+	}
+
+	/**
+	 * Add Bootstrap javascript/css support
+	 *
+	 * @return  void
+	 */
+	public static function bootstrap($version = null, $debug = null)
+	{
+		$version = (string) $version;
+
+		if (isset(self::$loaded[__METHOD__]))
+		{
+			return;
+		}
+
+		// If no debugging value is set, use the configuration setting
+		if ($debug === null)
+		{
+			$debug = App::get('config')->get('debug');
+		}
+
+		if (in_array($version, array('','5','5.3','5.3.*','5.3.x','5.3.3')))
+		{
+			if ($debug)
+			{
+				Asset::script('assets/bootstrap/5.3.3/bootstrap.js', true, true, false, true, true, true, false);
+				Asset::stylesheet('assets/bootstrap/5.3.3/bootstrap.css', array(), true);
+			}
+			else
+			{
+				Asset::stylesheet('assets/bootstrap/5.3.3/bootstrap.min.css', array(), true);
+				Asset::script('assets/bootstrap/5.3.3/bootstrap.min.js', true, true, false, true, true, true, false);
+			}
+		}
+		else
+		{
+			throw new \UnexpectedValueException("Unrecognized version [$version] of Bootstrap requested");
+		}
+
+		self::$loaded[__METHOD__] = true;
+	}
+
+	/**
 	 * Add unobtrusive javascript support for charts
 	 *
 	 * @return  void

@@ -100,7 +100,7 @@ class Assets
 	 * @param   string  $script  Script name (optional, uses module name if left blank)
 	 * @return  void
 	 */
-	public static function addScript($script)
+	public static function addScript($script, $defer = false, $async = false)
 	{
 		if (!$script)
 		{
@@ -116,7 +116,7 @@ class Assets
 
 		if ($document = self::app('document'))
 		{
-			$document->addScript(rtrim(Request::base(true), '/') . $script . '?v=' . filemtime($root . $script));
+			$document->addScript(rtrim(Request::base(true), '/') . $script . '?v=' . filemtime($root . $script), "text/javascript", $defer, $async);
 		}
 	}
 
