@@ -7,6 +7,7 @@
 
 namespace Hubzero\Component;
 
+use Hubzero\Component\Router\DefaultRouter;
 use Hubzero\Component\Router\Legacy;
 use Hubzero\Container\Container;
 use Hubzero\Config\Registry;
@@ -210,6 +211,7 @@ class Loader
 			{
 				$found = true;
 				$path  = $namespace;
+				$type  = 'bootstrap';
 
 				// Infer the appropriate language path and load from there
 				$file  = with(new \ReflectionClass($namespace))->getFileName();
@@ -222,6 +224,7 @@ class Loader
 			else if (is_file($path))
 			{
 				$found = true;
+				$type  = 'path';
 
 				// Load local language files
 				$lang->load($option, PATH_COMPONENT, null, false, true);
@@ -230,6 +233,16 @@ class Loader
 			{
 				$found = true;
 				$path = $react_path;
+				$ype = 'react';
+
+				// Load local language files
+				$lang->load($option, PATH_COMPONENT, null, false, true);
+			}
+			else if (is_dir(PATH_COMPONENT))
+			{
+				$found = true;
+				$path = $option;
+				$type = 'default';
 
 				// Load local language files
 				$lang->load($option, PATH_COMPONENT, null, false, true);
@@ -249,7 +262,7 @@ class Loader
 		$contents = null;
 
 		// Execute the component.
-		$contents = $this->execute($path);
+		$contents = $this->execute($path, $type);
 
 		// Revert the scope
 		$this->app->forget('scope');
@@ -264,19 +277,23 @@ class Loader
 	 * @param   string  $path  The component path.
 	 * @return  string  The component output
 	 */
-	protected function execute($path)
+	protected function execute($path, $type = 'path')
 	{
 		ob_start();
 
-		if (is_file($path))
+		if ($type == 'path')
 		{
 			$this->executePath($path);
 		}
-		else if (is_dir($path))
+		else if ($type == 'react')
 		{
 			$this->executeReactApp($path);
 		}
-		else
+		else if ($type == 'default')
+		{
+			$this->executeDefault($path);
+		}
+		else if ($type == 'bootstrap')
 		{
 			$this->executeBootstrap($path);
 		}
@@ -296,6 +313,55 @@ class Loader
 	protected function executePath($path)
 	{
 		require_once $path;
+	}
+
+	/**
+	 * Start component without explicit entrypoint file
+	 *
+	 * @param   string  $namespace  The namespace of the component to start
+	 * @return  void
+	 */
+	private function executeDefault($option = '')
+	{
+		$option = (string) $option;
+
+		if (substr($option, 0, 4) == 'com_')
+		{
+			$component = substr($option, 4);
+		}
+		else
+		{
+			$component = $option;
+		}
+
+		if ( preg_match("/^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$/", $component) !== 1 )
+		{
+			throw new \InvalidArgumentException(sprintf('Invalid component name [%s] requested', htmlspecialchars($component, ENT_HTML5)), 404);
+		}
+
+		$controller = \Request::getCmd('controller', $component);
+
+		if ( preg_match("/^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$/", $controller) !== 1 )
+		{
+			throw new \InvalidArgumentException(sprintf('Invalid controller name [%s] requested', htmlspecialchars($controller, ENT_HTML5)), 404);
+		}
+
+		$path = PATH_COMPONENT;
+
+		$config = array('base_path' => PATH_COMPONENT);
+		$namespace = 'Components\\' . ucfirst($component) . '\Site\Controllers';
+		$class = ucfirst($controller);
+
+		if (file_exists($path . "/controllers/{$controller}.php"))
+		{
+			require_once($path . "/controllers/{$controller}.php");
+		}
+		else
+		{
+			eval("namespace {$namespace}; class {$class} extends \\Hubzero\\Component\\DefaultSiteController\n{\n}\n");
+		}
+
+		(new ($namespace.'\\'.$class)($config))->execute();
 	}
 
 	/**
@@ -460,7 +526,17 @@ class Loader
 
 			if (!isset(self::$routers[$key]))
 			{
-				self::$routers[$key] = new Legacy($compname);
+				$path = $this->path($option);
+				$name = substr($option, 4);
+
+				if (!is_file("{$path}/{$name}.php") && !is_file("{$path}/controllers/{$name}.php"))
+				{
+					self::$routers[$key] = new DefaultRouter($compname);
+				}
+				else
+				{
+					self::$routers[$key] = new Legacy($compname);
+				}
 			}
 		}
 
