@@ -94,8 +94,33 @@ function saveSurveyJson(url, json, saveNo, callback) {
     });
 }
 
-// Step 3: Define a survey JSON schema for the modal dialog
-const popupJson = {
+const usersFormJson = {
+    "elements": [
+      {
+        "type": "matrixdynamic",
+        "name": "access",
+        "titleLocation": "hidden",
+        "showHeader": false,
+        "columns": [
+          {
+            "name": "user",
+            "title": "User",
+            "cellType": "dropdown",
+            "isUnique": true,
+            "choicesLazyLoadEnabled": true,
+            "itemComponent": "new-user-item", // Not used right now
+            "placeholder": "Search for user"
+          }
+        ],
+        "rowCount": 0,
+        "addRowText": "Add user"
+      }
+    ],
+    "showQuestionNumbers": false,
+    "showNavigationButtons": false
+};
+
+const usersAndPermissionsFormJson = {
     "elements": [
       {
         "type": "matrixdynamic",
@@ -115,28 +140,114 @@ const popupJson = {
             "name": "permission",
             "title": "Permission",
             "cellType": "dropdown",
-            "defaultValue": "edit",
+            "defaultValue": "fill",
             "choices": [
-                { "value": "edit", "text": "Edit" },
-                { "value": "view", "text": "View" }
+                { "value": "fill", "text": "Fill" },
+                { "value": "readonly", "text": "Read-only" }
             ]
           }
         ],
         "rowCount": 0,
-        "addRowText": "Add collaborator"
+        "addRowText": "Add user"
       }
     ],
     "showQuestionNumbers": false,
     "showNavigationButtons": false
 };
 
-const popupSurvey = new Survey.SurveyModel(popupJson);
+const groupsAndRolesFormJson = {
+    "elements": [
+      {
+        "type": "matrixdynamic",
+        "name": "access",
+        "titleLocation": "hidden",
+        "columns": [
+          {
+            "name": "group",
+            "title": "Group",
+            "cellType": "dropdown",
+            "choicesLazyLoadEnabled": true,
+            "itemComponent": "new-group-item", // Not used right now
+            "placeholder": "Search for group"
+          },
+          {
+            "name": "role",
+            "title": "Role",
+            "cellType": "dropdown",
+            "defaultValue": "members",
+            "choices": [
+                { "value": "members", "text": "Members" },
+                { "value": "managers", "text": "Managers" }
+            ]
+          }
+        ],
+        "rowCount": 0,
+        "addRowText": "Add group/role"
+      }
+    ],
+    "showQuestionNumbers": false,
+    "showNavigationButtons": false
+};
+
+const groupsAndRolesAndPermissionsFormJson = {
+    "elements": [
+      {
+        "type": "matrixdynamic",
+        "name": "access",
+        "titleLocation": "hidden",
+        "columns": [
+          {
+            "name": "group",
+            "title": "Group",
+            "cellType": "dropdown",
+            "choicesLazyLoadEnabled": true,
+            "itemComponent": "new-group-item", // Not used right now
+            "placeholder": "Search for group"
+          },
+          {
+            "name": "role",
+            "title": "Role",
+            "cellType": "dropdown",
+            "defaultValue": "members",
+            "choices": [
+                { "value": "members", "text": "Members" },
+                { "value": "managers", "text": "Managers" }
+            ]
+          },
+          {
+            "name": "permission",
+            "title": "Permission",
+            "cellType": "dropdown",
+            "defaultValue": "fill",
+            "choices": [
+                { "value": "fill", "text": "Fill" },
+                { "value": "readonly", "text": "Read-only" }
+            ]
+          }
+        ],
+        "rowCount": 0,
+        "addRowText": "Add group/role"
+      }
+    ],
+    "showQuestionNumbers": false,
+    "showNavigationButtons": false
+};
+
+const editorsForm = new Survey.SurveyModel(usersFormJson);
+const groupEditorsForm = new Survey.SurveyModel(groupsAndRolesFormJson);
+const userVisibilityForm = new Survey.SurveyModel(usersFormJson);
+const groupVisibilityForm = new Survey.SurveyModel(groupsAndRolesFormJson);
+const userAccessibilityForm = new Survey.SurveyModel(usersAndPermissionsFormJson);
+const groupAccessibilityForm = new Survey.SurveyModel(groupsAndRolesAndPermissionsFormJson);
 
 // https://surveyjs.io/form-library/examples/dropdown-menu-load-data-from-restful-service/vanillajs#
 // https://surveyjs.io/form-library/examples/lazy-loading-dropdown/vanillajs#content-code
-popupSurvey.onChoicesLazyLoad.add((_, options) => {
-    if (options.question.getType() === "dropdown" && options.question.name === "user") {
-        const url = `https://example.com/index.php?option=com_members&no_html=1&task=autocomplete&admin=true&start=${options.skip}&limit=${options.take}&value=${options.filter}`;
+lazyLoadUsersOrGroupsFunc = (_, options) => {
+    if (options.question.getType() === "dropdown" && 
+        ((options.question.name === "user") || 
+         (options.question.name === "group"))) {
+        const option = (options.question.name === "user" ? "members" : "groups");
+        const url = `https://example.com/index.php?option=com_` + option + `&no_html=1&task=autocomplete&admin=true&start=${options.skip}&limit=${options.take}&value=${options.filter}`;
         sendRequest(url, (data) => { 
             const choices = data.map((item) => {
                 return { value: item.id, text: item.name + ' (' + item.id + ')' };
@@ -144,53 +255,74 @@ popupSurvey.onChoicesLazyLoad.add((_, options) => {
             options.setItems(choices, choices.length); 
         });
     }
-});
+};
+editorsForm.onChoicesLazyLoad.add(lazyLoadUsersOrGroupsFunc);
+groupEditorsForm.onChoicesLazyLoad.add(lazyLoadUsersOrGroupsFunc);
+userVisibilityForm.onChoicesLazyLoad.add(lazyLoadUsersOrGroupsFunc);
+groupVisibilityForm.onChoicesLazyLoad.add(lazyLoadUsersOrGroupsFunc);
+userAccessibilityForm.onChoicesLazyLoad.add(lazyLoadUsersOrGroupsFunc);
+groupAccessibilityForm.onChoicesLazyLoad.add(lazyLoadUsersOrGroupsFunc);
 
 // https://surveyjs.io/form-library/examples/lazy-loading-dropdown/vanillajs#content-code
-popupSurvey.onGetChoiceDisplayValue.add((_, options) => {
-    if (options.question.getType() === "dropdown" && options.question.name === "user") {
+getUsersOrGroupsFunc = (_, options) => {
+    if (options.question.getType() === "dropdown" && 
+        ((options.question.name === "user") ||
+         (options.question.name === "group"))) {
         const idStr = "id=" + options.values[0];
-        const url = `https://example.com/index.php?option=com_members&no_html=1&task=autocomplete&admin=true&${idStr}`;
+        const option = (options.question.name === "user" ? "members" : "groups");
+        const url = `https://example.com/index.php?option=com_` + option + `&no_html=1&task=autocomplete&admin=true&${idStr}`;
         sendRequest(url, (data) => { 
             const choice = [data[0].name + ' (' + data[0].id + ')'];
             options.setItems(choice);
         });
     }
-});
-    
-// Step 4: Add a button that opens the dialog to the editor title
-FormCreator.onPropertyEditorUpdateTitleActions.add((_, options) => {
-    if (options.property.name === "permissions") {
-        options.titleActions.push({
-            id: "setPermissions",
-            title: "Edit",
-            // Step 5: Open the dialog on a button click
-            action: () => {
-                popupSurvey.setValue("access", (options.obj.permissions ? JSON.parse(options.obj.permissions) : {}));
-                Survey.settings.showDialog({
-                    componentName: "survey",
-                    data: { model: popupSurvey },
-                    onApply: () => {
-                        const validAccessRules = popupSurvey.validate();
-                        if (validAccessRules) {
-                            // Get values from the pop-up survey using its `data` property
-                            // and update the current question (`options.obj`)
-                            options.obj.setPropertyValue("permissions", JSON.stringify(popupSurvey.data["access"]));
-                            return true;
-                        }
-                            return false;
-                    },
-                    onCancel: () => {
-                        console.log("Cancel");
-                    },
-                    cssClass: "sv-property-editor fixme",
-                    title: "Edit Collaborators",
-                    displayMode: "popup"
-                })
-            }
-        });
-    }
-});
+};
+editorsForm.onGetChoiceDisplayValue.add(getUsersOrGroupsFunc);
+groupEditorsForm.onGetChoiceDisplayValue.add(getUsersOrGroupsFunc);
+userVisibilityForm.onGetChoiceDisplayValue.add(getUsersOrGroupsFunc);
+groupVisibilityForm.onGetChoiceDisplayValue.add(getUsersOrGroupsFunc);
+userAccessibilityForm.onGetChoiceDisplayValue.add(getUsersOrGroupsFunc);
+groupAccessibilityForm.onGetChoiceDisplayValue.add(getUsersOrGroupsFunc);
+
+function createTitleButton(property_name, form, title) {
+    return (_, options) => {
+        if (options.property.name === property_name) {
+            options.titleActions.push({
+                id: "set" + options.property.name.charAt(0).toUpperCase() + options.property.name.slice(1), 
+                title: "Edit",
+                action: () => {
+                    form.setValue("access", (options.obj[options.property.name] ? JSON.parse(options.obj[options.property.name]) : {}));
+                    Survey.settings.showDialog({
+                        componentName: "survey",
+                        data: { model: form },
+                        onApply: () => {
+                            const validAccessRules = form.validate();
+                            if (validAccessRules) {
+                                // Get values from the pop-up survey using its `data` property
+                                // and update the current question (`options.obj`)
+                                options.obj.setPropertyValue(options.property.name, JSON.stringify(form.data["access"]));
+                                return true;
+                            }
+                                return false;
+                        },
+                        onCancel: () => {
+                            console.log("Cancel");
+                        },
+                        cssClass: "sv-property-editor fixme",
+                        title: title,
+                        displayMode: "popup"
+                    })
+                }
+            });
+        }
+    };
+}
+FormCreator.onPropertyEditorUpdateTitleActions.add(createTitleButton("editors", editorsForm, "User Editors"));
+FormCreator.onPropertyEditorUpdateTitleActions.add(createTitleButton("groupEditors", groupEditorsForm, "Group Editors"));
+FormCreator.onPropertyEditorUpdateTitleActions.add(createTitleButton("userVisibility", userVisibilityForm, "User Visibility"));
+FormCreator.onPropertyEditorUpdateTitleActions.add(createTitleButton("groupVisibility", groupVisibilityForm, "Group Visibility"));
+FormCreator.onPropertyEditorUpdateTitleActions.add(createTitleButton("userAccessibility", userAccessibilityForm, "User Accessibility"));
+FormCreator.onPropertyEditorUpdateTitleActions.add(createTitleButton("groupAccessibility", groupAccessibilityForm, "Group Accessibility"));
 
 // Custom item view for lazy loaded items - not working
 // https://surveyjs.io/form-library/examples/dropdown-box-with-custom-items/vanillajs#content-code

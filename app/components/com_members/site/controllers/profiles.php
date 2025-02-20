@@ -197,10 +197,12 @@ class Profiles extends SiteController
 			if ($filters['id'])
 			{
 				$query .= " AND u.id IN (" . implode(',', $filters['id']) . ")";
+				$query .= " ORDER BY FIELD(u.id, " . implode(',', $filters['id']) . ")";
+			} else {
+				$query .= " ORDER BY rel DESC, u.name ASC";
 			}
 
-			$query .= "ORDER BY rel DESC, u.name ASC
-					LIMIT " . $filters['start'] . "," . $filters['limit'];
+			$query .= " LIMIT " . $filters['start'] . "," . $filters['limit'];
 		}
 
 		$this->database->setQuery($query);

@@ -1247,16 +1247,27 @@ class Groups extends Base
 	public function autocompleteTask()
 	{
 		$filters = array(
-			'limit'  => 20,
-			'start'  => 0,
-			'search' => trim(Request::getString('value', ''))
+			'limit'  => Request::getInt('limit', 20),
+			'start'  => Request::getInt('start', 0),
+			'search' => trim(Request::getString('value', '')),
+			'cn'	 => Request::getArray('id', array())
 		);
 
 		$query = "SELECT t.gidNumber, t.cn, t.description
 					FROM `#__xgroups` AS t
-					WHERE (t.type=1 OR t.type=3) AND (LOWER(t.cn) LIKE " . $this->database->quote('%' . $filters['search'] . '%') . " OR LOWER(t.description) LIKE " . $this->database->quote('%' . $filters['search'] . '%') . ")
-					ORDER BY t.description ASC";
+					WHERE (t.type=1 OR t.type=3) AND (LOWER(t.cn) LIKE " . $this->database->quote('%' . $filters['search'] . '%') . " OR LOWER(t.description) LIKE " . $this->database->quote('%' . $filters['search'] . '%') . ")";
+		
+		if ($filters['cn'])
+		{
+			$filters['cn'] = array_map(function($cn) { return $this->database->quote($cn); }, $filters['cn']);
+			$query .= " AND t.cn IN (" . implode(',', $filters['cn']) . ")";
+			$query .= " ORDER BY field(t.cn, " . implode(',', $filters['cn']) . ") ";
+		} else {
+			$query .= " ORDER BY t.description ASC";
+		}
 
+		$query .= " LIMIT " . $filters['start'] . "," . $filters['limit'];
+		
 		$this->database->setQuery($query);
 		$rows = $this->database->loadObjectList();
 
