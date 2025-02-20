@@ -104,11 +104,30 @@ div.sv-popup input[type=text] {
 	min-width: 640px;
 }
 
-div[data-name="permissions"] textarea {
+/* BUG: https://github.com/surveyjs/survey-library/issues/8382 */
+/* Without this css, dynamic matrix dropdown column grows with long captions */
+.sd-table__cell > .sd-table__question-wrapper .sd-dropdown__value .sv-string-viewer,
+.sd-table__cell > .sd-table__question-wrapper .sd-dropdown__value .sd-dropdown__hint-suffix {
+       position: absolute;
+       left: 0;
+       width: 100%;
+}
+
+div[data-name="editors"] textarea,
+div[data-name="userVisibility"] textarea,
+div[data-name="groupVisibility"] textarea,
+div[data-name="userAccessibility"] textarea,
+div[data-name="groupAccessibility"] textarea,
+div[data-name="groupEditors"] textarea {
 	display: none !important;
 }
 
-div[data-key="permissionSummary0"] .spg-question__content {
+div[data-key="editorSummary0"] .spg-question__content,
+div[data-key="userVisibilitySummary0"] .spg-question__content,
+div[data-key="groupVisibilitySummary0"] .spg-question__content,
+div[data-key="userAccessibilitySummary0"] .spg-question__content,
+div[data-key="groupAccessibilitySummary0"] .spg-question__content,
+div[data-key="groupEditorsSummary0"] .spg-question__content {
 	margin-top: -20px;
 	font-size: 13px;
     --thm-default-line-height: calc(1.5* var(--thm-default-font-size));

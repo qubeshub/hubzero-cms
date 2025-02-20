@@ -43,7 +43,7 @@ Survey.Serializer.addProperty("survey", {
     showValueInLink: false
 });
 
-// Add collaboration property category
+// Add editors property category
 Survey.Serializer.addProperty("survey", {
     name: "collaboration",
     type: "collaboration",
@@ -100,29 +100,171 @@ SurveyCreatorCore.PropertyGridEditorCollection.register({
 });
 
 Survey.Serializer.addProperty("survey", {
-    name: "discoverability",
-    displayName: "Discoverability",
-    type: "buttongroup",
+    name: "visibility",
+    displayName: "General visibility",
+    type: "dropdown",
     category: "accessRules",
     default: "hidden",
     choices: [
-        { value: "hidden", text: "Hidden" },
-        { value: "visible", text: "Visible" }
+        { value: "anyone", text: "Anyone" },
+        { value: "member", text: "QUBES Members" },
+        { value: "hidden", text: "Hidden" }
     ],
     visibleIndex: 0
 });
 
+SurveyCreatorCore.PropertyGridEditorCollection.register({
+    fit: (prop) => {
+        return prop.type === "userOrGroupVisibility";
+    },
+    getJSON: () => {
+        return { 
+            type: "comment", 
+            visibleIf: "{visibility} == 'hidden'"
+        };
+    }
+});
+Survey.Serializer.addProperty("survey", {
+    name: "userVisibility",
+    displayName: "User visibility",
+    type: "userOrGroupVisibility",
+    category: "accessRules",
+    visibleIndex: 1
+});
+
+SurveyCreatorCore.PropertyGridEditorCollection.register({
+    fit: (prop) => {
+        return prop.type === "userVisibility-summary";
+    },
+    getJSON: () => {
+        return { 
+            type: "expression", 
+            expression: "lazyLoadUsersForSummaryFunc({userVisibility})",
+            defaultValue: "No users",
+            visibleIf: "{visibility} == 'hidden'"
+        };
+    }
+});
+Survey.Serializer.addProperty("survey", {
+    name: "userVisibilitySummary",
+    displayName: "",
+    type: "userVisibility-summary",
+    category: "accessRules",
+    visibleIndex: 2
+});
+
+Survey.Serializer.addProperty("survey", {
+    name: "groupVisibility",
+    displayName: "Group visibility",
+    type: "userOrGroupVisibility",
+    category: "accessRules",
+    visibleIndex: 3
+});
+
+SurveyCreatorCore.PropertyGridEditorCollection.register({
+    fit: (prop) => {
+        return prop.type === "groupVisibility-summary";
+    },
+    getJSON: () => {
+        return { 
+            type: "expression", 
+            expression: "lazyLoadGroupsForSummaryFunc({groupVisibility})",
+            defaultValue: "No groups",
+            visibleIf: "{visibility} == 'hidden'"
+        };
+    }
+});
+Survey.Serializer.addProperty("survey", {
+    name: "groupVisibilitySummary",
+    displayName: "",
+    type: "groupVisibility-summary",
+    category: "accessRules",
+    visibleIndex: 4
+});
+
 Survey.Serializer.addProperty("survey", {
     name: "accessibility",
-    displayName: "Accessibility",
-    type: "buttongroup",
+    displayName: "General accessibility",
+    type: "dropdown",
     category: "accessRules",
     default: "anyone",
     choices: [
         { value: "anyone", text: "Anyone" },
-        { value: "member", text: "QUBES Members" }
+        { value: "member", text: "QUBES Members" },
+        { value: "readonly", text: "Read-only" },
+        { value: "restricted", text: "Restricted" }
     ],
-    visibleIndex: 1
+    default: "anyone",
+    visibleIndex: 5
+});
+
+SurveyCreatorCore.PropertyGridEditorCollection.register({
+    fit: (prop) => {
+        return prop.type === "userOrGroupAccessibility";
+    },
+    getJSON: () => {
+        return { 
+            type: "comment", 
+            visibleIf: "{accessibility} == 'readonly' || {accessibility} == 'restricted'"
+        };
+    }
+});
+Survey.Serializer.addProperty("survey", {
+    name: "userAccessibility",
+    displayName: "User accessibility",
+    type: "userOrGroupAccessibility",
+    category: "accessRules",
+    visibleIndex: 6
+});
+
+SurveyCreatorCore.PropertyGridEditorCollection.register({
+    fit: (prop) => {
+        return prop.type === "userAccessibility-summary";
+    },
+    getJSON: () => {
+        return { 
+            type: "expression", 
+            expression: "lazyLoadUsersForSummaryFunc({userAccessibility})",
+            defaultValue: "No users",
+            visibleIf: "{accessibility} == 'readonly' || {accessibility} == 'restricted'"
+        };
+    }
+});
+Survey.Serializer.addProperty("survey", {
+    name: "userAccessibilitySummary",
+    displayName: "",
+    type: "userAccessibility-summary",
+    category: "accessRules",
+    visibleIndex: 7
+});
+
+Survey.Serializer.addProperty("survey", {
+    name: "groupAccessibility",
+    displayName: "Group accessibility",
+    type: "userOrGroupAccessibility",
+    category: "accessRules",
+    visibleIndex: 8
+});
+
+SurveyCreatorCore.PropertyGridEditorCollection.register({
+    fit: (prop) => {
+        return prop.type === "groupAccessibility-summary";
+    },
+    getJSON: () => {
+        return { 
+            type: "expression", 
+            expression: "lazyLoadGroupsForSummaryFunc({groupAccessibility})",
+            defaultValue: "No groups",
+            visibleIf: "{accessibility} == 'readonly' || {accessibility} == 'restricted'"
+        };
+    }
+});
+Survey.Serializer.addProperty("survey", {
+    name: "groupAccessibilitySummary",
+    displayName: "",
+    type: "groupAccessibility-summary",
+    category: "accessRules",
+    visibleIndex: 9
 });
 
 Survey.Serializer.addProperty("survey", {
@@ -131,7 +273,7 @@ Survey.Serializer.addProperty("survey", {
     type: "opening-time",
     category: "accessRules",
     default: "",
-    visibleIndex: 2
+    visibleIndex: 10
 });
 
 Survey.Serializer.addProperty("survey", {
@@ -140,7 +282,7 @@ Survey.Serializer.addProperty("survey", {
     type: "closing-time",
     category: "accessRules",
     default: "",
-    visibleIndex: 3
+    visibleIndex: 11
 });
 
 Survey.Serializer.addProperty("survey", {
@@ -149,7 +291,7 @@ Survey.Serializer.addProperty("survey", {
     type: "boolean",
     category: "accessRules",
     default: "true",
-    visibleIndex: 4
+    visibleIndex: 12
 });
 
 Survey.Serializer.addProperty("survey", {
@@ -158,7 +300,7 @@ Survey.Serializer.addProperty("survey", {
     type: "boolean",
     category: "accessRules",
     default: "false",
-    visibleIndex: 5
+    visibleIndex: 13
 });
 
 Survey.Serializer.addProperty("survey", {
@@ -167,63 +309,98 @@ Survey.Serializer.addProperty("survey", {
     type: "response-number",
     category: "accessRules",
     default: "1",
-    visibleIndex: 6
+    visibleIndex: 14
 });
 
+/*
+ * COLLABORATION PROPERTIES
+ */
 Survey.Serializer.addProperty("survey", {
-    name: "generalPermissions",
+    name: "generalEditPermissions",
     displayName: "General edit permissions",
-    type: "buttongroup",
+    type: "dropdown",
     category: "collaboration",
     "choices": [
-        { "value": "restricted", "text": "Restricted" },
-        { "value": "anyone", "text": "Anyone" },
-        { "value": "member", "text": "QUBES Member" }
+        { value: "anyone", text: "Anyone" },
+        { value: "member", text: "QUBES Members" },
+        { value: "restricted", text: "Restricted" }
     ],
-    default: "restricted"
+    default: "restricted",
+    visibleIndex: 0
 });
 
 SurveyCreatorCore.PropertyGridEditorCollection.register({
     fit: (prop) => {
-        return prop.type === "permissions";
+        return prop.type === "editors";
     },
     getJSON: () => {
         return { 
             type: "comment", 
-            visibleIf: "{generalPermissions} == 'restricted'"
+            visibleIf: "{generalEditPermissions} == 'restricted'"
         };
     }
 });
 Survey.Serializer.addProperty("survey", {
-    name: "permissions",
-    displayName: "Collaborators",
-    type: "permissions",
-    category: "collaboration"
+    name: "editors",
+    displayName: "User editors",
+    type: "editors",
+    category: "collaboration",
+    visibleIndex: 1
 });
 
 SurveyCreatorCore.PropertyGridEditorCollection.register({
     fit: (prop) => {
-        return prop.type === "permission-summary";
+        return prop.type === "editor-summary";
     },
     getJSON: () => {
         return { 
             type: "expression", 
-            expression: "myOfficialFunc({permissions})",
-            defaultValue: "No collaborators",
-            visibleIf: "{generalPermissions} == 'restricted'"
+            expression: "lazyLoadUsersForSummaryFunc({editors})",
+            defaultValue: "No users",
+            visibleIf: "{generalEditPermissions} == 'restricted'"
         };
     }
 });
 Survey.Serializer.addProperty("survey", {
-    name: "permissionSummary",
+    name: "editorSummary",
     displayName: "",
-    type: "permission-summary",
-    category: "collaboration"
+    type: "editor-summary",
+    category: "collaboration",
+    visibleIndex: 2
+});
+
+Survey.Serializer.addProperty("survey", {
+    name: "groupEditors",
+    displayName: "Group editors",
+    type: "editors",
+    category: "collaboration",
+    visibleIndex: 3
+});
+
+SurveyCreatorCore.PropertyGridEditorCollection.register({
+    fit: (prop) => {
+        return prop.type === "groupEditors-summary";
+    },
+    getJSON: () => {
+        return { 
+            type: "expression", 
+            expression: "lazyLoadGroupsForSummaryFunc({groupEditors})",
+            defaultValue: "No groups",
+            visibleIf: "{generalEditPermissions} == 'restricted'"
+        };
+    }
+});
+Survey.Serializer.addProperty("survey", {
+    name: "groupEditorsSummary",
+    displayName: "",
+    type: "groupEditors-summary",
+    category: "collaboration",
+    visibleIndex: 4
 });
 
 // https://surveyjs.io/form-library/examples/use-custom-functions-in-expressions/documentation
 // https://surveyjs.io/form-library/examples/asynchronous-functions-in-expression-questions/vanillajs#content-code
-function myFunc(params, returnResultCallback) {
+function lazyLoadUsersForSummary(params, returnResultCallback) {
     if (!params[0]) {
         returnResultCallback();
         return;
@@ -233,32 +410,57 @@ function myFunc(params, returnResultCallback) {
     fetch(`https://example.com/index.php?option=com_members&no_html=1&task=autocomplete&admin=true&${idsStr}`)
         .then(response => response.json())
         .then(data => {
-            const collabs = data.slice(0, 2).map((item) => item.name).join(', ') + ' and ' + Math.max(data.length-2, 0) + ' other(s)';
-            returnResultCallback(collabs);
+            const users = data.slice(0, 2).map((item) => item.name).join(', ') + ' and ' + Math.max(data.length-2, 0) + ' other(s)';
+            returnResultCallback(users);
         })
         .catch(error => {
             console.error("Error:", error);
         });
 }
-function myOfficialFunc(params) {
-    return myFunc(params, this.returnResult);
+function lazyLoadUsersForSummaryFunc(params) {
+    return lazyLoadUsersForSummary(params, this.returnResult);
 }
-Survey.FunctionFactory.Instance.register("myOfficialFunc", myOfficialFunc, true);
+Survey.FunctionFactory.Instance.register("lazyLoadUsersForSummaryFunc", lazyLoadUsersForSummaryFunc, true);
+
+function lazyLoadGroupsForSummary(params, returnResultCallback) {
+    if (!params[0]) {
+        returnResultCallback();
+        return;
+    }
+
+    const ids = JSON.parse(params[0]);
+    console.log(ids);
+    const idsStr = ids.map((item) => "id[]=" + item.group).join("&");
+    fetch(`https://example.com/index.php?option=com_groups&no_html=1&task=autocomplete&admin=true&${idsStr}&order=`)
+        .then(response => response.json())
+        .then(data => {
+            // Do an additional fetch to get role names
+            const groups = data.slice(0, 2).map((item, idx) => capitalize(ids[idx].role) + ' of ' + item.name + (ids[idx].hasOwnProperty('permission') ? ' (' + ids[idx].permission + ')' : '')).join(', ') + ' and ' + Math.max(data.length-2, 0) + ' other(s)';
+            returnResultCallback(groups);
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+}
+function lazyLoadGroupsForSummaryFunc(params) {
+    return lazyLoadGroupsForSummary(params, this.returnResult);
+}
+Survey.FunctionFactory.Instance.register("lazyLoadGroupsForSummaryFunc", lazyLoadGroupsForSummaryFunc, true);
 
 // Help text and custom property labels
 const translations = SurveyCreator.editorLocalization.getLocale("en");
 
 // Custom property labels
-translations.pe.tabs.accessRules = "Respondent Access Rules";
+translations.pe.tabs.accessRules = "Access Rules";
 translations.pe.tabs.collaboration = "Collaboration";
 
 // Help/info text
 translations.pehelp.survey = {
-    discoverability: 'Set to "Visible" for the form to show in search & browse results. "Hidden" forms will still be accessible via a direct link to the form, conditioned on the Accessibility setting below.',
+    visibility: 'Set to "Visible" for the form to show in search & browse results. "Hidden" forms will still be accessible via a direct link to the form, conditioned on the Accessibility setting below.',
     accessibility: 'Set to "Anyone" to make the form accessible to anyone on the internet. Set to "QUBES Members" to restrict access to logged in QUBES members only.',
     openingTime: 'Specify a date and time for the form to become available for responses.',
     closingTime: 'Specify a date and time for the form to become unavailable for responses.',
-    permissions: 'Add QUBES members as form editors (edit permission) or reviewers (view permission).'
+    editors: 'Add QUBES members as form editors.'
 };
 
 function debounce(func, delay) {
@@ -296,4 +498,8 @@ function sendRequest(url, onloadSuccessCallback) {
         }
     };
     xhr.send();
+}
+
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1)
 }
