@@ -107,6 +107,7 @@ const usersFormJson = {
             "title": "User",
             "cellType": "dropdown",
             "isUnique": true,
+            "isRequired": true,
             "choicesLazyLoadEnabled": true,
             "itemComponent": "new-user-item", // Not used right now
             "placeholder": "Search for user"
@@ -132,6 +133,7 @@ const usersAndPermissionsFormJson = {
             "title": "User",
             "cellType": "dropdown",
             "isUnique": true,
+            "isRequired": true,
             "choicesLazyLoadEnabled": true,
             "itemComponent": "new-user-item", // Not used right now
             "placeholder": "Search for user"
@@ -141,6 +143,7 @@ const usersAndPermissionsFormJson = {
             "title": "Permission",
             "cellType": "dropdown",
             "defaultValue": "fill",
+            "searchEnabled": false,
             "choices": [
                 { "value": "fill", "text": "Fill" },
                 { "value": "readonly", "text": "Read-only" }
@@ -165,6 +168,7 @@ const groupsAndRolesFormJson = {
           {
             "name": "group",
             "title": "Group",
+            "isRequired": true,
             "cellType": "dropdown",
             "choicesLazyLoadEnabled": true,
             "itemComponent": "new-group-item", // Not used right now
@@ -175,10 +179,13 @@ const groupsAndRolesFormJson = {
             "title": "Role",
             "cellType": "dropdown",
             "defaultValue": "members",
-            "choices": [
-                { "value": "members", "text": "Members" },
-                { "value": "managers", "text": "Managers" }
-            ]
+            "searchEnabled": false,
+            "isRequired": true,
+            "choicesByUrl": {
+                "url": "https://example.com/index.php?option=com_groups&no_html=1&task=autocomplete&id[]={row.group}&roles=1",
+                "valueName": "id",
+                "titleName": "name"
+            }
           }
         ],
         "rowCount": 0,
@@ -200,6 +207,7 @@ const groupsAndRolesAndPermissionsFormJson = {
             "name": "group",
             "title": "Group",
             "cellType": "dropdown",
+            "isRequired": true,
             "choicesLazyLoadEnabled": true,
             "itemComponent": "new-group-item", // Not used right now
             "placeholder": "Search for group"
@@ -209,16 +217,20 @@ const groupsAndRolesAndPermissionsFormJson = {
             "title": "Role",
             "cellType": "dropdown",
             "defaultValue": "members",
-            "choices": [
-                { "value": "members", "text": "Members" },
-                { "value": "managers", "text": "Managers" }
-            ]
+            "isRequired": true,
+            "searchEnabled": false,
+            "choicesByUrl": {
+                "url": "https://example.com/index.php?option=com_groups&no_html=1&task=autocomplete&id[]={row.group}&roles=1",
+                "valueName": "id",
+                "titleName": "name"
+            }
           },
           {
             "name": "permission",
             "title": "Permission",
             "cellType": "dropdown",
             "defaultValue": "fill",
+            "searchEnabled": false,
             "choices": [
                 { "value": "fill", "text": "Fill" },
                 { "value": "readonly", "text": "Read-only" }
@@ -247,12 +259,12 @@ lazyLoadUsersOrGroupsFunc = (_, options) => {
         ((options.question.name === "user") || 
          (options.question.name === "group"))) {
         const option = (options.question.name === "user" ? "members" : "groups");
-        const url = `https://example.com/index.php?option=com_` + option + `&no_html=1&task=autocomplete&admin=true&start=${options.skip}&limit=${options.take}&value=${options.filter}`;
-        sendRequest(url, (data) => { 
-            const choices = data.map((item) => {
+        const url = `https://example.com/index.php?option=com_` + option + `&no_html=1&task=autocomplete&admin=true&start=${options.skip}&limit=${options.take}&value=${options.filter}&total=1`;
+        sendRequest(url, (data) => {
+            const choices = data["items"].map((item) => {
                 return { value: item.id, text: item.name + ' (' + item.id + ')' };
             });
-            options.setItems(choices, choices.length); 
+            options.setItems(choices, data["total"]);
         });
     }
 };

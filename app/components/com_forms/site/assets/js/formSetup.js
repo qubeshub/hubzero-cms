@@ -406,11 +406,14 @@ function lazyLoadUsersForSummary(params, returnResultCallback) {
         return;
     }
 
-    const idsStr = JSON.parse(params[0]).map((item) => "id[]=" + item.user).join("&");
+    const ids = JSON.parse(params[0]);
+    const num_users = ids.length;
+    let users = ids.slice(0, 2); // Only showing first two
+    const idsStr = users.map((item) => "id[]=" + item.user).join("&");
     fetch(`https://example.com/index.php?option=com_members&no_html=1&task=autocomplete&admin=true&${idsStr}`)
         .then(response => response.json())
         .then(data => {
-            const users = data.slice(0, 2).map((item) => item.name).join(', ') + ' and ' + Math.max(data.length-2, 0) + ' other(s)';
+            users = data.map((item, idx) => item.name + (users[idx].hasOwnProperty('permission') ? ' (' + users[idx].permission + ')' : '')).join(', ') + ' and ' + Math.max(num_users-2, 0) + ' other(s)';
             returnResultCallback(users);
         })
         .catch(error => {
@@ -429,13 +432,14 @@ function lazyLoadGroupsForSummary(params, returnResultCallback) {
     }
 
     const ids = JSON.parse(params[0]);
-    console.log(ids);
-    const idsStr = ids.map((item) => "id[]=" + item.group).join("&");
-    fetch(`https://example.com/index.php?option=com_groups&no_html=1&task=autocomplete&admin=true&${idsStr}&order=`)
+    const num_roles = ids.length;
+    let roles = ids.slice(0, 2); // Only showing first two
+    const idsStr = roles.map((item) => "id[]=" + item.group).join("&");
+    const ridsStr = roles.filter((item) => !isNaN(item.role) && item.role.trim() !== "").map((item) => "rid[]=" + item.role).join("&");
+    fetch(`https://example.com/index.php?option=com_groups&no_html=1&task=autocomplete&admin=true&${idsStr}&${ridsStr}&roles=2`)
         .then(response => response.json())
         .then(data => {
-            // Do an additional fetch to get role names
-            const groups = data.slice(0, 2).map((item, idx) => capitalize(ids[idx].role) + ' of ' + item.name + (ids[idx].hasOwnProperty('permission') ? ' (' + ids[idx].permission + ')' : '')).join(', ') + ' and ' + Math.max(data.length-2, 0) + ' other(s)';
+            const groups = roles.map(item => capitalize(data.roles[item.role]) + ' of ' + data.groups[item.group] + (item.hasOwnProperty('permission') ? ' (' + item.permission + ')' : '')).join(', ') + ' and ' + Math.max(num_roles-2, 0) + ' other(s)';
             returnResultCallback(groups);
         })
         .catch(error => {
