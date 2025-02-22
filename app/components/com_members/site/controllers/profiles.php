@@ -158,14 +158,15 @@ class Profiles extends SiteController
 		$filters['id'] = Request::getArray('id', array());
 		$originalQuery = $filters['search'];
 
+		$total = Request::getInt('total', 0); // Include total in output?
+
 		// match against orcid id
 		if (preg_match('/\d{4}-\d{4}-\d{4}-\d{4}/', $filters['search']))
 		{
-			$query = "SELECT u.id, u.name, u.username, u.access
-					FROM `#__users` AS u
-					WHERE u.block = 0 AND orcid= " . $this->database->quote($filters['search']) . " AND u.activation>0 $restrict
-					ORDER BY u.name ASC
-					LIMIT " . $filters['start'] . "," . $filters['limit'];
+			$query_select = "SELECT u.id, u.name, u.username, u.access ";
+			$query = "FROM `#__users` AS u
+					  WHERE u.block = 0 AND orcid= " . $this->database->quote($filters['search']) . " AND u.activation>0 $restrict ";
+			$query_orderby = "ORDER BY u.name ASC";
 		}
 		else
 		{
@@ -189,22 +190,20 @@ class Profiles extends SiteController
 					OR LOWER(u.givenName) LIKE " . $this->database->quote('%' . strtolower($filters['search']) . '%') . "
 					OR LOWER(u.surname) LIKE " . $this->database->quote('%' . strtolower($filters['search']) . '%') . ")";
 			}
-			$query = "SELECT u.id, u.name, u.username, u.access, $match as rel
-					FROM `#__users` AS u
-					WHERE $match AND u.block=0 AND u.activation>0 AND u.email NOT LIKE '%@invalid' $restrict";
+			$query_select = "SELECT u.id, u.name, u.username, u.access, $match as rel ";
+			$query = "FROM `#__users` AS u
+					  WHERE $match AND u.block=0 AND u.activation>0 AND u.email NOT LIKE '%@invalid' $restrict ";
 			
 			if ($filters['id'])
 			{
 				$query .= " AND u.id IN (" . implode(',', $filters['id']) . ")";
-				$query .= " ORDER BY FIELD(u.id, " . implode(',', $filters['id']) . ")";
+				$query_orderby = " ORDER BY FIELD(u.id, " . implode(',', $filters['id']) . ")";
 			} else {
-				$query .= " ORDER BY rel DESC, u.name ASC";
+				$query_orderby = " ORDER BY rel DESC, u.name ASC";
 			}
-
-			$query .= " LIMIT " . $filters['start'] . "," . $filters['limit'];
 		}
 
-		$this->database->setQuery($query);
+		$this->database->setQuery($query_select . $query . $query_orderby . " LIMIT " . $filters['start'] . "," . $filters['limit']);
 		$rows = $this->database->loadObjectList();
 
 		// Output search results in JSON format
@@ -243,6 +242,12 @@ class Profiles extends SiteController
 		//add back original query
 		// [!] Removing. Seems to confuse people.
 		//array_unshift($json, $obj);
+
+		if ($total) { 
+			$this->database->setQuery("SELECT COUNT(*) " . $query);
+			$count = $this->database->loadResult();
+			$json = array('items' => $json, 'total' => $count); 
+		}
 
 		echo json_encode($json);
 	}

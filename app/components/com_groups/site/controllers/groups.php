@@ -1251,23 +1251,79 @@ class Groups extends Base
 			'search' => trim(Request::getString('value', '')),
 			'cn'	 => Request::getArray('id', array())
 		);
+		$total = Request::getInt('total', 0); // Include total in output?
 
-		$query = "SELECT t.gidNumber, t.cn, t.description
-					FROM `#__xgroups` AS t
-					WHERE (t.type=1 OR t.type=3) AND (LOWER(t.cn) LIKE " . $this->database->quote('%' . $filters['search'] . '%') . " OR LOWER(t.description) LIKE " . $this->database->quote('%' . $filters['search'] . '%') . ")";
+		// Right now, this is only used in forms component
+		$roles = Request::getInt('roles', 0);
+		if ($roles == 1) {
+			$rows = array();
+			if ($filters['cn']) {
+				$gidNumber = Group::getInstance($filters['cn'][0])->get('gidNumber');
+				$query_select = "SELECT r.id, r.name ";
+				$query = "FROM `#__xgroups_roles` AS r
+						  WHERE r.gidNumber = " . $gidNumber . " ";
+				$query_orderby = "ORDER BY r.name ASC";
+
+				// Then get results
+				$this->database->setQuery($query_select . $query . $query_orderby);
+				$rows = $this->database->loadObjectList();
+			}
+
+			// Prepopulate with members and managers
+			$json = array(
+				array('id' => 'members', 'name' => 'Members'),
+				array('id' => 'managers', 'name' => 'Managers')
+			);
+			foreach($rows as $role) {
+				$item = array(
+					'id'   => $role->id,
+					'name' => $role->name
+				);
+				$json[] = $item;
+			}
+			if ($total) { 
+				$this->database->setQuery("SELECT COUNT(*) " . $query);
+				$count = $this->database->loadResult();
+				$json = array('items' => $json, 'total' => $count+2); 
+			}
+			echo json_encode($json);
+			return;
+		} else if ($roles == 2) {
+			// Used in group/role summary
+			$json = array("groups" => array(), "roles" => array("members" => "Members", "managers" => "Managers"));
+
+			$rids = Request::getArray('rid', array());
+			if ($rids) {
+				$query = "SELECT r.id, r.name FROM `#__xgroups_roles` AS r WHERE r.id IN (" . implode(',', $rids) . ")";
+				$this->database->setQuery($query);
+				$rows = $this->database->loadObjectList();
+				foreach ($rows as $row) { $json["roles"][$row->id] = $row->name; }
+			}
+
+			$cns = array_map(function($cn) { return $this->database->quote($cn); }, $filters['cn']);
+			$query = "SELECT t.gidNumber, t.cn, t.description FROM `#__xgroups` AS t WHERE (t.type=1 OR t.type=3) AND t.cn IN (" . implode(',', $cns) . ") ";
+			$this->database->setQuery($query);
+			$rows = $this->database->loadObjectList();
+			foreach ($rows as $row) { $json["groups"][$row->cn] = $row->description; }
+			
+			echo json_encode($json);
+			return;
+		}
+
+		$query_select = "SELECT t.gidNumber, t.cn, t.description ";
+		$query = "FROM `#__xgroups` AS t
+				  WHERE (t.type=1 OR t.type=3) AND (LOWER(t.cn) LIKE " . $this->database->quote('%' . $filters['search'] . '%') . " OR LOWER(t.description) LIKE " . $this->database->quote('%' . $filters['search'] . '%') . ") ";
 		
 		if ($filters['cn'])
 		{
 			$filters['cn'] = array_map(function($cn) { return $this->database->quote($cn); }, $filters['cn']);
-			$query .= " AND t.cn IN (" . implode(',', $filters['cn']) . ")";
-			$query .= " ORDER BY field(t.cn, " . implode(',', $filters['cn']) . ") ";
+			$query .= "AND t.cn IN (" . implode(',', $filters['cn']) . ") ";
+			$query_orderby = "ORDER BY field(t.cn, " . implode(',', $filters['cn']) . ") ";
 		} else {
-			$query .= " ORDER BY t.description ASC";
+			$query_orderby = "ORDER BY t.description ASC ";
 		}
 
-		$query .= " LIMIT " . $filters['start'] . "," . $filters['limit'];
-		
-		$this->database->setQuery($query);
+		$this->database->setQuery($query_select . $query . $query_orderby . " LIMIT " . $filters['start'] . "," . $filters['limit']);
 		$rows = $this->database->loadObjectList();
 
 		// Output search results in JSON format
@@ -1287,6 +1343,11 @@ class Groups extends Base
 			}
 		}
 
+		if ($total) { 
+			$this->database->setQuery("SELECT COUNT(*) " . $query);
+			$count = $this->database->loadResult();
+			$json = array('items' => $json, 'total' => $count); 
+		}
 		echo json_encode($json);
 	}
 
