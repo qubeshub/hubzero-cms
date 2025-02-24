@@ -154,7 +154,7 @@ let expandNavigationLinksOnHover = false;
 			let subList;
 
 			if(menuButton && menuButton.attr('aria-controls')) {
-				id = menuButton.attr('aria-controls').replace('ariaControlID', '');
+				id = menuButton.attr('aria-controls').replace('aria-control-target-', '');
 				subList = $(this).find('> ul');
 			}
 
