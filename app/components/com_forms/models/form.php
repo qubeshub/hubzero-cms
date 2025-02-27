@@ -14,9 +14,11 @@ require_once "$componentPath/models/formPage.php";
 require_once "$componentPath/models/formPrerequisite.php";
 require_once "$componentPath/models/formResponse.php";
 require_once "$componentPath/models/pageField.php";
+require_once "$componentPath/models/permissions.php";
 
 use Components\Forms\Models\FormResponse;
 use Components\Forms\Models\PageField;
+use Components\Forms\Models\Permissions;
 use Components\Forms\Traits\possessable;
 use Hubzero\Database\Relational;
 
@@ -28,6 +30,7 @@ class Form extends Relational
 	static protected $_pageClass = 'Components\Forms\Models\FormPage';
 	static protected $_prerequisiteClass = 'Components\Forms\Models\FormPrerequisite';
 	static protected $_responseClass = 'Components\Forms\Models\FormResponse';
+	static protected $_permissionsClass = 'Components\Forms\Models\Permissions';
 
 	protected $table = '#__forms_forms';
 	protected $_ownerForeignKey = 'created_by';
@@ -126,6 +129,16 @@ class Form extends Relational
 			if (!$response->destroy())
 			{
 				$this->addError('Response could not be deleted');
+				return false;
+			}
+		}
+
+		// Remove permissions
+		foreach ($this->getPermissions()->rows() as $permission) 
+		{
+			if (!$permission->destroy())
+			{
+				$this->addError('Form permissions could not be deleted');
 				return false;
 			}
 		}
@@ -534,6 +547,20 @@ class Form extends Relational
 		$responses = $this->oneToMany($responseModelClass, $foreignKey);
 
 		return $responses;
+	}
+
+	/**
+	 * Get associated permissions
+	 *
+	 * @return   object
+	 */
+	public function getPermissions()
+	{
+		$permissions = Permissions::all()
+			->whereEquals('object', 'form')
+			->whereEquals('object_id', $this->get('id'));
+
+		return $permissions;
 	}
 
 	/**

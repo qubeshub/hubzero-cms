@@ -18,6 +18,7 @@ require_once "$componentPath/helpers/relationalCrudHelper.php";
 require_once "$componentPath/helpers/relationalSearch.php";
 require_once "$componentPath/models/form.php";
 require_once "$componentPath/models/formResponse.php";
+require_once "$componentPath/models/permissions.php";
 
 use Components\Forms\Helpers\FormsRouter as RoutesHelper;
 use Components\Forms\Helpers\MockProxy;
@@ -28,6 +29,7 @@ use Components\Forms\Helpers\RelationalCrudHelper as CrudHelper;
 use Components\Forms\Helpers\RelationalSearch as Search;
 use Components\Forms\Models\Form;
 use Components\Forms\Models\FormResponse;
+use Components\Forms\Models\Permissions;
 use Hubzero\Component\SiteController;
 use Hubzero\Filesystem\Util;
 use \Date;
@@ -237,14 +239,20 @@ class Forms extends SiteController
 		}
 
 		// Grab form settings from json
-		$json = json_decode($formJson, false);
+		$json = json_decode($formJson, true);
 
-		$form->set('name', $json->title);
-		$form->set('description', (isset($json->description) ? $json->description : ''));
-		$form->set('discoverable', (isset($json->discoverable) ? 1 : 0)); // If specified, will be 1 (default is 0 (hidden))
-		$form->set('opening_time', (isset($json->openingTime) ? $json->openingTime : '0000-00-00 00:00:00'));
-		$form->set('closing_time', (isset($json->closingTime) ? $json->closingTime : '0000-00-00 00:00:00'));
-		$form->set('responses_locked', (isset($json->editable) ? 1 : 0)); // If specified, will be 0 (default is 1); note that database stores opposite
+		// Main form metadata
+		$form->set('name', $json['title']);
+		$form->set('description', (array_key_exists('description', $json) ? $json['description'] : ''));
+
+		// Access rules
+		$form->set('opening_time', (array_key_exists('openingTime', $json) ? $json['openingTime'] : '0000-00-00 00:00:00'));
+		$form->set('closing_time', (array_key_exists('closingTime', $json) ? $json['closingTime'] : '0000-00-00 00:00:00'));
+		$form->set('responses_locked', (array_key_exists('editable', $json) ? 1 : 0)); // If specified, will be 0 (default is 1); note that database stores opposite
+		$form->set('max_responses', (array_key_exists('limitResponses', $json) ? (array_key_exists('limitResponseNumber', $json) ? $json['limitResponseNumber'] : 1) : 0));
+
+		// General permissions
+		Permissions::setPermissions($form, $json);
 		
 		if (!$form->save()) {
 			$response = Array(
@@ -254,9 +262,18 @@ class Forms extends SiteController
 			exit();
 		}
 
+		// Usergroup permissions
+		if (!Permissions::setUsergroupPermissions($form, $json)) {
+			$response = Array(
+				'status' => "Failed to save form permissions."
+			);
+			echo json_encode($response);
+			exit();
+		}
+
 		$response = Array(
 			'status' => "Saved form data.",
-			'title' => $json->title // Sending this back to update breadcrumbs
+			'title' => $json['title'] // Sending this back to update breadcrumbs
 		);
 		echo json_encode($response);
 		exit();

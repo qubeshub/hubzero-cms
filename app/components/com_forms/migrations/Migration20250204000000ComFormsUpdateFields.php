@@ -28,9 +28,27 @@ class Migration20250204000000ComFormsUpdateFields extends Base
 				$this->db->query();
 			}
 
-			// Add discoverability field
-			if (!$this->db->tableHasField('#__forms_forms', 'discoverable')) {
-				$this->db->setQuery("ALTER TABLE `#__forms_forms` ADD COLUMN `discoverable` tinyint(1) NULL DEFAULT 0;");
+			// Add visible field
+			if (!$this->db->tableHasField('#__forms_forms', 'visible')) {
+				$this->db->setQuery("ALTER TABLE `#__forms_forms` ADD COLUMN `visible` tinyint(1) UNSIGNED NOT NULL DEFAULT 0;");
+				$this->db->query();
+			}
+
+			// Add access field
+			if (!$this->db->tableHasField('#__forms_forms', 'access')) {
+				$this->db->setQuery("ALTER TABLE `#__forms_forms` ADD COLUMN `access` tinyint(1) UNSIGNED NOT NULL DEFAULT 1;");
+				$this->db->query();
+			}
+
+			// Add editable field
+			if (!$this->db->tableHasField('#__forms_forms', 'editable')) {
+				$this->db->setQuery("ALTER TABLE `#__forms_forms` ADD COLUMN `editable` tinyint(1) UNSIGNED NOT NULL DEFAULT 0;");
+				$this->db->query();
+			}
+
+			// Add max_responses field
+			if (!$this->db->tableHasField('#__forms_forms', 'max_responses')) {
+				$this->db->setQuery("ALTER TABLE `#__forms_forms` ADD COLUMN `max_responses` tinyint(1) UNSIGNED NOT NULL DEFAULT 0;"); // 0 means infinity
 				$this->db->query();
 			}
 		}
@@ -51,9 +69,27 @@ class Migration20250204000000ComFormsUpdateFields extends Base
 				$this->db->query();
 			}
 
-			// Remove discoverability field
-			if ($this->db->tableHasField('#__forms_forms', 'discoverable')) {
-				$this->db->setQuery("ALTER TABLE `#__forms_forms` DROP COLUMN `discoverable`;");
+			// Remove visible field
+			if ($this->db->tableHasField('#__forms_forms', 'visible')) {
+				$this->db->setQuery("ALTER TABLE `#__forms_forms` DROP COLUMN `visible`;");
+				$this->db->query();
+			}
+
+			// Remove access field
+			if ($this->db->tableHasField('#__forms_forms', 'access')) {
+				$this->db->setQuery("ALTER TABLE `#__forms_forms` DROP COLUMN `access`;");
+				$this->db->query();
+			}
+
+			// Remove editable field
+			if ($this->db->tableHasField('#__forms_forms', 'editable')) {
+				$this->db->setQuery("ALTER TABLE `#__forms_forms` DROP COLUMN `editable`;");
+				$this->db->query();
+			}
+
+			// Remove max_responses field
+			if ($this->db->tableHasField('#__forms_forms', 'max_responses')) {
+				$this->db->setQuery("ALTER TABLE `#__forms_forms` DROP COLUMN `max_responses`;");
 				$this->db->query();
 			}
 		}

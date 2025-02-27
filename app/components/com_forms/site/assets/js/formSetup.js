@@ -55,7 +55,7 @@ let accessRules = {
         default: "hidden",
         choices: [
             { value: "anyone", text: "Anyone" },
-            { value: "member", text: "QUBES Members" },
+            { value: "qubes", text: "QUBES Members" },
             { value: "hidden", text: "Hidden" }
         ],
         visibleIndex: 0
@@ -91,7 +91,7 @@ let accessRules = {
         default: "anyone",
         choices: [
             { value: "anyone", text: "Anyone" },
-            { value: "member", text: "QUBES Members" },
+            { value: "qubes", text: "QUBES Members" },
             { value: "readonly", text: "Read-only" },
             { value: "restricted", text: "Restricted" }
         ],
@@ -263,7 +263,7 @@ SurveyCreatorCore.PropertyGridEditorCollection.register({
         return prop.type === "response-number";
     },
     getJSON: () => {
-        return { type: "spinedit", min: "1", visibleIf: "{limitResponses}=true", 
+        return { type: "spinedit", min: "1", max: "127", visibleIf: "{limitResponses}=true", 
                  validators: [{
                     "type": "regex",
                     "text": "Please enter an integer greater than 0",
@@ -283,13 +283,13 @@ let collaboration = {
         category: "collaboration",
         showValueInLink: false
     },
-    "generalEditPermissions": {
+    "editing": {
         displayName: "Edit permissions",
         type: "dropdown",
         category: "collaboration",
         "choices": [
             { value: "anyone", text: "Anyone" },
-            { value: "member", text: "QUBES Members" },
+            { value: "qubes", text: "QUBES Members" },
             { value: "restricted", text: "Restricted" }
         ],
         default: "restricted",
@@ -334,7 +334,7 @@ SurveyCreatorCore.PropertyGridEditorCollection.register({
     getJSON: () => {
         return { 
             type: "comment", 
-            visibleIf: "{generalEditPermissions} == 'restricted'"
+            visibleIf: "{editing} == 'restricted'"
         };
     }
 });
@@ -347,7 +347,7 @@ SurveyCreatorCore.PropertyGridEditorCollection.register({
             type: "expression", 
             expression: "lazyLoadUsersForSummaryFunc({editors})",
             defaultValue: "No users",
-            visibleIf: "{generalEditPermissions} == 'restricted'"
+            visibleIf: "{editing} == 'restricted'"
         };
     }
 });
@@ -360,7 +360,7 @@ SurveyCreatorCore.PropertyGridEditorCollection.register({
             type: "expression", 
             expression: "lazyLoadGroupsForSummaryFunc({groupEditors})",
             defaultValue: "No groups",
-            visibleIf: "{generalEditPermissions} == 'restricted'"
+            visibleIf: "{editing} == 'restricted'"
         };
     }
 });
