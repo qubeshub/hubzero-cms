@@ -7,6 +7,7 @@
 
 return array(
 	// Base Services
+	'Bootstrap\Site\Providers\RateLimitServiceProvider',
 	'Bootstrap\Site\Providers\EventServiceProvider',
 	'Bootstrap\Site\Providers\TranslationServiceProvider',
 	'Bootstrap\Site\Providers\DatabaseServiceProvider',
