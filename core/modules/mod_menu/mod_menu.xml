@@ -54,6 +54,14 @@
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
 				</field>
+				<field name="disclosureMenu" type="radio" default="0" label="MOD_MENU_FIELD_DISCLOSURE_LABEL" description="MOD_MENU_FIELD_DISCLOSURE_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+				<field name="toplevelLinks" type="radio" default="0" label="MOD_MENU_FIELD_TOPLEVELLINKS_LABEL" description="MOD_MENU_FIELD_TOPLEVELLINKS_DESC">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
 			</fieldset>
 			<fieldset name="advanced">
 				<field name="tag_id" type="text" label="MOD_MENU_FIELD_TAG_ID_LABEL" description="MOD_MENU_FIELD_TAG_ID_DESC" />
