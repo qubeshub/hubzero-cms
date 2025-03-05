@@ -361,11 +361,16 @@ class WikiParser
 
 		// Put back removed blocks <pre>, <code>, <a>, <math>
 		$text = $this->unstrip($text);
-
 		// Strip out blank space
 		$text = str_replace("<p><br />\n</p>", '', $text);
 		$text = preg_replace('|<p>\s*?</p>|', '', $text);
-		$text = preg_replace('/<p>\p{Z}*<\/p>/u', '', $text);
+		$result = preg_replace('/<p>\p{Z}*<\/p>/u', '', $text);
+
+		if ($result != null) // Possible to get: Malformed UTF-8 characters, possibly incorrectly encoded
+		{
+			$text = $result;
+		}
+
 		$text = preg_replace('!<p>\s*(</?(?:table|tr|td|th|div|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)!', "$1", $text);
 		$text = preg_replace('!(</?(?:table|tr|td|th|div|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)\s*</p>!', "$1", $text);
 
