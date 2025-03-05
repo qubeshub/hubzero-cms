@@ -53,6 +53,10 @@ class Application extends Container
 	 */
 	protected $serviceProviders = array();
 
+	protected $startms = 0;
+
+	protected $endms = 0;
+
 	/**
 	 * Create a new application instance.
 	 *
@@ -62,6 +66,8 @@ class Application extends Container
 	 */
 	public function __construct($client = '', Request $request = null, Response $response = null)
 	{
+		$this->startms = microtime(true);
+
 		// Work around for issues with SCRIPT_NAME and PHP_SELF set incorrectly by php-fpm
 		// GH-12996 https://github.com/php/php-src/issues/12996 fixed in 8.2.16
 		// GH-10869 https://github.com/php/php-src/issues/10869 fixed in 8.1.18
@@ -521,4 +527,51 @@ class Application extends Container
 				$response->send();
 			});
 	}
+
+	public function __destruct()
+	{
+		ignore_user_abort(true);
+
+		session_write_close();
+
+		while(ob_get_level())
+			ob_end_flush();
+
+		flush();
+
+		fastcgi_finish_request();
+
+		$this->endms = microtime(true);
+
+		if ( function_exists("apcu_enabled") && apcu_enabled())
+		{
+			$time = (int) $this->startms;
+			$ms = $this->endms - $this->startms;
+
+			// The following is subject to race conditions, restarts, maybe garbage collection
+			// and other vagaries of the APCu cache.  This data is intended as an
+			// estimate so being exact really should not matter.
+
+			$new_sec_count = (float) apcu_inc($time, 1, $success, 61);
+			$old_sec_avg = (float) apcu_fetch('avg'.$time, $success);
+			$new_sec_avg = ((($new_sec_count - 1) * $old_sec_avg) + $ms)/$new_sec_count;
+			$sec_avg = (float) apcu_store('avg'.$time, $new_sec_avg, 61);
+
+			$new_min_count = (float) apcu_inc(intdiv($time,60), 1, $success, 3601);
+			$old_min_avg = (float) apcu_fetch('avg'.intdiv($time,60), $success);
+			$new_min_avg = ((($new_min_count - 1) * $old_min_avg) + $ms)/$new_min_count;
+			$min_avg = (float) apcu_store('avg'.intdiv($time,60), $new_min_avg, 3601);
+
+			$new_hour_count = (float) apcu_inc(intdiv($time,3600), 1, $success, 86401);
+			$old_hour_avg = (float) apcu_fetch('avg'.intdiv($time,3600), $success);
+			$new_hour_avg = ((($new_hour_count - 1) * $old_hour_avg) + $ms)/$new_hour_count;
+			$hour_avg = (float) apcu_store('avg'.intdiv($time,3600), $new_hour_avg, 86401);
+
+			$new_day_count = (float) apcu_inc(intdiv($time,86400), 1, $success, 2678401);
+			$old_day_avg = (float)  apcu_fetch('avg'.intdiv($time,86400), $success);
+			$new_day_avg = ((($new_day_count - 1) * $old_day_avg) + $ms)/$new_day_count;
+			$day_avg = (float) apcu_store('avg'.intdiv($time,86400), $new_day_avg, 2678401);
+		}
+	}
+
 }
