@@ -27,7 +27,10 @@ else
 	$linktype = $item->title;
 }
 
+if ($disclosureMenu)
+{
 echo '<div class="inner">';
+}
 
 switch ($item->browserNav) :
 	default:
@@ -49,4 +52,8 @@ if ($parentLink && $disclosureMenu)
 	?><button type="button" aria-expanded="false" aria-controls="<?php echo $ariaControlTarget; ?>" aria-label="More pages for: <?php echo $linktype; ?>"> </button><?php
 }
 
+if ($disclosureMenu)
+{
 echo '</div>';
+}
+

@@ -29,7 +29,10 @@ else
 $flink = $item->flink;
 $flink = \Hubzero\Utility\Str::ampReplace(htmlspecialchars($flink));
 
-echo '<div class="inner">';
+if ($disclosureMenu)
+{
+	echo '<div class="inner">';
+}
 
 switch ($item->browserNav) :
 	default:
@@ -67,4 +70,8 @@ if ($parentLink && $disclosureMenu && !$toplevelLinks)
 	?><button type="button" aria-expanded="false" aria-controls="<?php echo $ariaControlTarget; ?>" aria-label="More pages for: <?php echo $linktype; ?>"> </button><?php
 }
 
+if ($disclosureMenu)
+{
 echo '</div>';
+}
+
