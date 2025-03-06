@@ -28,7 +28,7 @@
         "apereo/phpcas": "1.6.*",
         "ezyang/htmlpurifier": "4.18.*",
         "tecnickcom/tcpdf": "6.8.*",
-        "marcusschwarz/lesserphp": "0.5.*",
+        "splitbrain/lesserphp": "0.10.*",
         "monolog/monolog": "1.27.*",
         "symfony/mailer": "v5.2.*",
         "php-http/curl-client":"2.3.*",
