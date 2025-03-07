@@ -67,6 +67,7 @@ $this->view('_forms_breadcrumbs', 'shared')
 					->set('selectable', false)
 					->set('sortingAction', $sortingAction)
 					->set('sortingCriteria', $sortingCriteria)
+					->set('columns', ['id', 'user_id', 'completion_percentage', 'created', 'modified', 'submitted', 'accepted', 'reviewed_by'])
 					->display();
 			?>
 		</div>

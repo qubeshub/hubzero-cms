@@ -492,9 +492,8 @@ class Form extends Relational
 	{
 		$isClosed = $this->isClosed();
 		$isOpen = $this->isOpen();
-		$isDisabled = $this->get('disabled');
 
-		return !$isDisabled && $isOpen && !$isClosed;
+		return $isOpen && !$isClosed;
 	}
 
 	/**
@@ -561,6 +560,11 @@ class Form extends Relational
 			->whereEquals('object_id', $this->get('id'));
 
 		return $permissions;
+	}
+
+	public function isEditableBy($userId)
+	{
+		return $this->_checkPermissionFor($userId, 'edit', 'editable');
 	}
 
 	/**

@@ -20,6 +20,10 @@ $response = $this->response;
 	</div>
 
 	<div class="row">
+		<p><?php echo $form->get('description'); ?></p>
+	</div>
+
+	<div class="row">
 		<?php
 			$this->view('_forms_dates')
 				->set('form', $form)

@@ -28,7 +28,7 @@ class Migration20190117165449ComFormsCreateFormResponsesTable extends Base
 			`submitted` timestamp NULL DEFAULT NULL,
 			`accepted` timestamp NULL DEFAULT NULL,
 			`reviewed_by` int(11) unsigned NULL DEFAULT NULL,
-			UNIQUE KEY `form_user` (`form_id`, `user_id`),
+			KEY `form_user` (`form_id`, `user_id`),
 			PRIMARY KEY (`id`)
 		) ENGINE=MYISAM DEFAULT CHARSET=utf8;";
 

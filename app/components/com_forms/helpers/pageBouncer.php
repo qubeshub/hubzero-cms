@@ -44,28 +44,11 @@ class PageBouncer
 	{
 		$url = $url ? $url : '/forms';
 
-		$this->redirectUnlessAuthorized('core.create', $url);
+		// $this->redirectUnlessAuthorized('core.edit', $url);
 
 		$canEdit = $this->_permitter->canCurrentUserEditForm($form);
 
 		if (!$canEdit)
-		{
-			$this->_router->redirect($url);
-		}
-	}
-
-	/**
-	 * Redirects user if the form is disabled
-	 *
-	 * @param    object   $form   Form record
-	 * @param    string   $url    URL to redirect to
-	 * @return   void
-	 */
-	public function redirectIfFormDisabled($form, $url = null)
-	{
-		$url = $url ? $url : '/forms';
-
-		if ($form->get('disabled'))
 		{
 			$this->_router->redirect($url);
 		}
@@ -99,7 +82,27 @@ class PageBouncer
 	{
 		$url = $url ? $url : '/forms';
 
-		if (!$form->isOpen() || $form->get('disabled'))
+		if (!$form->isOpen())
+		{
+			$this->_router->redirect($url);
+		}
+	}
+
+	/**
+	 * Redirects user if they cannot fill given response
+	 *
+	 * @param    object   $form   Form record
+	 * @param    string   $url    URL to redirect to
+	 * @return   void
+	 */
+	public function redirectUnlessCanFillResponse($response, $url = null)
+	{
+		$url = $url ? $url : '/forms';
+
+		// $this->redirectIfFormNotOpen($response->getForm(), $url);
+		$canFill = $this->_permitter->canCurrentUserFillResponse($response);
+
+		if (!$canFill)
 		{
 			$this->_router->redirect($url);
 		}

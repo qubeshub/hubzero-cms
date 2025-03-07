@@ -54,4 +54,23 @@ class ComFormsPageBouncer extends PageBouncer
 		}
 	}
 
+	/**
+	 * Redirects user if they cannot fill given form
+	 *
+	 * @param    object   $form   Form record
+	 * @param    string   $url    URL to redirect to
+	 * @return   void
+	 */
+	public function redirectUnlessCanFillForm($form, $url = null)
+	{
+		$url = $url ? $url : '/forms';
+
+		$this->redirectIfFormNotOpen($form, $url);
+		$canFill = $this->_permitter->canCurrentUserFillForm($form);
+
+		if (!$canFill)
+		{
+			$this->_router->redirect($url);
+		}
+	}
 }

@@ -261,6 +261,22 @@ class FormsRouter extends ComponentRouter
 	}
 
 	/**
+	 * Generates form response fill (continue) URL
+	 *
+	 * @param    int      $formId   ID of form user is starting on
+	 * @return   string
+	 */
+	public function formResponseFillUrl($responseId)
+	{
+		$segments = ['responses', 'fill'];
+		$parameters = ['response_id' => $responseId];
+
+		$url = $this->_generateComponentUrl($segments, $parameters);
+
+		return $url;
+	}
+
+	/**
 	 * Generates URL to page response page
 	 *
 	 * @param    int      $params   Query params

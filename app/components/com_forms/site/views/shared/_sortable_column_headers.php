@@ -11,7 +11,7 @@ defined('_HZEXEC_') or die();
 $columns = $this->columns;
 $sortingCriteria = $this->sortingCriteria;
 
-foreach ($columns as $title => $field):
+foreach ($columns as $field => $title):
 	$this->view('_sortable_column_header')
 		->set('field', $field)
 		->set('title', $title)

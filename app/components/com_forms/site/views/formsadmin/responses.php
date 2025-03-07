@@ -79,7 +79,6 @@ $this->view('_forms_breadcrumbs', 'shared')
 			<div class="col span12 omega">
 				<?php
 					$this->view('_response_list_area')
-						->set('formId', $formId)
 						->set('responses', $responses)
 						->set('sortingAction', $responseListUrl)
 						->set('sortingCriteria', $sortingCriteria)
