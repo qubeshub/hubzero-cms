@@ -25,8 +25,8 @@ $userIsAdmin = $this->userIsAdmin;
 
 $steps = [
 	'Feed' => $routes->responseFeedUrl($responseId),
-	'Steps' => $routes->usersFormPrereqsUrl($formId, $userId),
-	'Pages' => $routes->usersFormPagesUrl($formId, $userId)
+	// 'Steps' => $routes->usersFormPrereqsUrl($formId, $userId),
+	'Response' => $routes->formResponseFillUrl($responseId)
 ];
 
 if ($userIsAdmin)

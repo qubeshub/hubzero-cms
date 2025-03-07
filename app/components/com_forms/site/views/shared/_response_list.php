@@ -12,16 +12,17 @@ $this->css('formsAdminResponsesList');
 
 $checkboxesName = 'responses_ids[]';
 $columns = [
-	'ID' => 'id',
-	'User' => 'user_id',
-	'Completion Percentage' => 'completion_percentage',
-	'Started' => 'created',
-	'Last Activity' => 'modified',
-	'Submitted' => 'submitted',
-	'Accepted' => 'accepted',
-	'Reviewed By' => 'reviewed_by'
+	'id' => 'ID',
+	'form' => 'Form',
+	'user_id' => 'User',
+	'completion_percentage' => 'Completion',
+	'created' => 'Started',
+	'modified' => 'Last Activity',
+	'submitted' => 'Submitted',
+	'accepted' => 'Accepted',
+	'reviewed_by' => 'Reviewed By'
 ];
-$formId = $this->formId;
+$columns = isset($this->columns) ? array_intersect_key($columns, array_flip($this->columns)) : $columns;
 $responses = $this->responses;
 $responsesSelectable = isset($this->selectable) ? $this->selectable : true;
 $sortingAction = $this->sortingAction;
@@ -52,6 +53,7 @@ $sortingCriteria = $this->sortingCriteria;
 			foreach ($responses as $response):
 				$this->view('_response_item')
 					->set('checkboxName', $checkboxesName)
+					->set('columns', $columns)
 					->set('response', $response)
 					->set('selectable', $responsesSelectable)
 					->display();
@@ -61,7 +63,6 @@ $sortingCriteria = $this->sortingCriteria;
 </table>
 
 <form id="sort-form" action="<?php echo $sortingAction; ?>">
-	<input type="hidden" name="form_id" value="<?php echo $formId; ?>">
 	<input type="hidden" name="sort_direction">
 	<input type="hidden" name="sort_field">
 </form>

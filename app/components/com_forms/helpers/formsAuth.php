@@ -10,8 +10,10 @@ namespace Components\Forms\Helpers;
 $componentPath = Component::path('com_forms');
 
 require_once "$componentPath/helpers/componentAuth.php";
+require_once "$componentPath/models/formResponse.php";
 
 use Components\Forms\Helpers\ComponentAuth;
+use Components\Forms\Models\FormResponse;
 
 class FormsAuth extends ComponentAuth
 {
@@ -37,11 +39,27 @@ class FormsAuth extends ComponentAuth
 	 */
 	public function canCurrentUserEditForm($form)
 	{
-		$currentUsersId = User::get('id');
-
-		$canEdit = $this->_canUserEditForm($form, $currentUsersId);
+		$canEdit = $form->isEditableBy(User::get('id'));
 
 		return $canEdit;
+	}
+
+	/**
+	 * Determines if current user can fill given form
+	 *
+	 * @param    object   $form     Form instance
+	 * @return   bool
+	 */
+	public function canCurrentUserFillForm($form)
+	{
+		$existing = FormResponse::all()
+			->whereEquals('form_id', $form->get('id'))
+			->whereEquals('user_id', User::get('id'));
+		
+		$canFill = $form->isFillableBy(User::get('id'));
+		$canFill = $canFill && (!$form->get('max_responses') || ($existing->count() < $form->get('max_responses')));
+
+		return $canFill;
 	}
 
 	/**
@@ -54,29 +72,11 @@ class FormsAuth extends ComponentAuth
 	{
 		$currentUsersId = User::get('id');
 
-		$userIsAdmin = $this->_currentIsAdmin();
+		$userIsAdmin = $this->currentIsAuthorized('core.admin');
 		$userCanDelete = $this->currentIsAuthorized('core.delete');
 		$userOwnsForm = $form->isOwnedBy($userId);
 
 		$canEdit = $userIsAdmin || ($userCanDelete && $userOwnsForm);
-
-		return $canEdit;
-	}
-
-	/**
-	 * Determines if form can be edited by user w/ given ID
-	 *
-	 * @param    object   $form     Form instance
-	 * @param    int      $userId   Given user's ID
-	 * @return   bool
-	 */
-	protected function _canUserEditForm($form, $userId)
-	{
-		$userIsAdmin = $this->_currentIsAdmin();
-		$userCanCreate = $this->currentIsAuthorized('core.create');
-		$userOwnsForm = $form->isOwnedBy($userId);
-
-		$canEdit = $userIsAdmin || ($userCanCreate && $userOwnsForm);
 
 		return $canEdit;
 	}
@@ -90,7 +90,7 @@ class FormsAuth extends ComponentAuth
 	public function canCurrentUserViewResponse($response)
 	{
 		$currentUsersId = User::get('id');
-		$userIsAdmin = $this->_currentIsAdmin();
+		$userIsAdmin = $this->currentIsAuthorized('core.admin');
 
 		$canView = $response->isOwnedBy($currentUsersId) || $userIsAdmin;
 
@@ -98,13 +98,25 @@ class FormsAuth extends ComponentAuth
 	}
 
 	/**
-	 * Indicates if current user is a component admin
+	 * Determines if current user can fill/edit given response
+	 * 
+	 * Allowed if:
+	 * 	- User is admin (or) user is form editor/owner
+	 * 	- User is response owner (or) in response fill usergroup AND:
+	 * 		- Response is open
+	 * 		- Response is not submitted (or) submitted and editing is allowed after submission
 	 *
+	 * @param    object   $response   Form response instance
 	 * @return   bool
 	 */
-	protected function _currentIsAdmin()
+	public function canCurrentUserFillResponse($response)
 	{
-		return $this->currentIsAuthorized('core.admin');
+		$currentUsersId = User::get('id');
+		$userIsAdmin = $this->currentIsAuthorized('core.admin');
+
+		$canView = $response->isOwnedBy($currentUsersId) || $userIsAdmin;
+
+		return $canView;
 	}
 
 }

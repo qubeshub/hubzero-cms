@@ -8,12 +8,20 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
-$this->css('formResponsesList');
+$this->css('formResponsesList') // This one can probably go, or at least pull feed into formsAdminResponses
+	 ->css('formsAdminResponses');
+
+$this->js('notify')
+	 ->js('formsAdminResponsesListActions')
+	 ->js('formsAdminResponsesListCheckbox')
+	 ->js('formsAdminResponsesListSorting')
+	 ->js('formsAdminResponsesList');
 
 $feedItems = $this->feedItems;
 $responses = $this->responses;
 $responsesCount = $responses->count();
 $responsesListUrl = $this->listUrl;
+$sortingCriteria = $this->sortingCriteria;
 
 $breadcrumbs = [
 	'Forms' => ['formListUrl'],
@@ -30,12 +38,14 @@ $this->view('_forms_breadcrumbs', 'shared')
 
 		<div class="col span7">
 			<?php
-				$this->view('_response_list')
+				$this->view('_response_list_area')
 					->set('responses', $responses)
+					->set('sortingAction', $responsesListUrl)
+					->set('sortingCriteria', $sortingCriteria)
 					->display();
 
 				$this->view('_pagination', 'shared')
-					->set('minDisplayLimit', 1)
+					->set('minDisplayLimit', 4)
 					->set('pagination', $responses->pagination)
 					->set('paginationUrl', $responsesListUrl)
 					->set('recordsCount', $responsesCount)

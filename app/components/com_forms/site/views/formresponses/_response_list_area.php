@@ -17,7 +17,7 @@ if (count($responses) > 0):
 		->set('responses', $responses)
 		->set('sortingAction', $sortingAction)
 		->set('sortingCriteria', $sortingCriteria)
-		->set('columns', ['id', 'user_id', 'completion_percentage', 'created', 'modified', 'submitted', 'accepted', 'reviewed_by'])
+        ->set('columns', ['id', 'form', 'completion_percentage', 'created', 'modified', 'submitted', 'accepted'])
 		->display();
 else:
 	$this->view('_response_list_none_notice')

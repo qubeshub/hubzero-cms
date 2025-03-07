@@ -180,10 +180,9 @@ class Forms extends SiteController
 	 */
 	public function manageTask($form = false)
 	{
-		$this->bouncer->redirectUnlessAuthorized('core.create');
-
 		$formId = $this->params->get('id');
 		$form = $form ? $form : Form::oneOrNew($formId);
+		$this->bouncer->redirectUnlessCanEditForm($form);
 		
 		// Route to updated page with new form id if new
 		if ($formId == 0)

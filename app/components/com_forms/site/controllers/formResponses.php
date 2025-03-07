@@ -21,6 +21,7 @@ require_once "$componentPath/models/form.php";
 require_once "$componentPath/models/formResponse.php";
 require_once "$componentPath/models/formResponseJson.php";
 require_once "$componentPath/models/responseFeedItem.php";
+require_once "$componentPath/helpers/sortableResponses.php";
 
 use Components\Forms\Helpers\ComFormsPageBouncer as PageBouncer;
 use Components\Forms\Helpers\FormPageElementDecorator as ElementDecorator;
@@ -30,6 +31,7 @@ use Components\Forms\Helpers\Params;
 use Components\Forms\Helpers\RelationalCrudHelper as RCrudHelper;
 use Components\Forms\Helpers\FormResponseActivityHelper;
 use Components\Forms\Helpers\VirtualCrudHelper as VCrudHelper;
+use Components\Forms\Helpers\SortableResponses;
 use Components\Forms\Models\Form;
 use Components\Forms\Models\FormResponse;
 use Components\Forms\Models\FormResponseJson;
@@ -56,6 +58,7 @@ class FormResponses extends SiteController
 	 */
 	protected static $_paramWhitelist = [
 		'form_id',
+		'response_id',
 		'tag_string'
 	];
 
@@ -85,56 +88,67 @@ class FormResponses extends SiteController
 	}
 
 	/**
-	 * Fill out form, and create response for given form & user if new
+	 * Create response for given form
+	 *
+	 * @return   void
+	 */
+	public function startTask()
+	{
+		$formId = $this->_params->getInt('form_id');
+		$form = Form::oneOrFail($formId);
+		$this->_pageBouncer->redirectUnlessCanFillForm($form);
+		$this->_pageBouncer->redirectIfPrereqsNotAccepted($form);
+
+		$response = FormResponse::blank();
+		$response->set([
+			'form_id' => $formId,
+			'user_id' => User::get('id'),
+			'created' => Date::toSql()
+		]);
+
+		// Save to generate new id
+		if (!$response->save()) {
+			$formOverviewPage = $this->_routes->formsDisplayUrl($formId);
+			$this->_crudHelper->failedCreate($response, $formOverviewPage);
+			return false;
+		}
+
+		// Create JSON form
+		$json = FormResponseJson::blank()
+			->set('response_id', $response->get('id'));
+		if (!$json->save()) {
+			$formOverviewPage = $this->_routes->formsDisplayUrl($formId);
+			$this->_crudHelper->failedCreate($response, $formOverviewPage);
+			return false;
+		}
+
+		$this->_responseActivity->logStart($response->get('id'));
+
+		$forwardingUrl = $this->_routes->formResponseFillUrl($response->get('id'));
+		$successMessage = Lang::txt('COM_FORMS_FORM_SAVE_SUCCESS');
+		$this->_crudHelper->successfulCreate($forwardingUrl, $successMessage);
+	}
+
+	/**
+	 * Fill response
 	 *
 	 * @return   void
 	 */
 	public function fillTask()
 	{
-		$formId = $this->_params->getInt('form_id');
-		$form = Form::oneOrFail($formId);
-		$this->_pageBouncer->redirectIfFormDisabled($form);
-		$this->_pageBouncer->redirectIfPrereqsNotAccepted($form);
-
-		// In the future, allow multiple forms per user if form allows
-		$response = FormResponse::all()
-			->whereEquals('form_id', $formId)
-			->whereEquals('user_id', User::get('id'));
-
-		if ($response->count() == 0) {
-			$response = FormResponse::blank();
-			$response->set([
-				'form_id' => $formId,
-				'user_id' => User::get('id'),
-				'created' => Date::toSql()
-			]);
-
-			// Save to generate new id
-            if (!$response->save()) {
-				$formOverviewPage = $this->_routes->formsDisplayUrl($formId);
-				$this->_crudHelper->failedCreate($response, $formOverviewPage);
-				return false;
-	        }
-
-			// Create JSON form
-			$json = FormResponseJson::blank()
-				->set('response_id', $response->get('id'));
-			if (!$json->save()) {
-				Notify::error($json->getError());
-				return false;
-			}
-
-			$this->_responseActivity->logStart($response->get('id'));
-		} else {
-			$response = $response->row();
-			$json = FormResponseJson::all()
-				->whereEquals('response_id', $response->get('id'));
-		}
+		$responseId = $this->_params->getInt('response_id', 0);
+		$response = FormResponse::oneOrFail($responseId);
+		$this->_pageBouncer->redirectUnlessCanFillResponse($response);
+		$json = $response->getJson();
+		$form = $response->getForm();
+		
+		$isComponentAdmin = $this->_auth->currentCanCreate();
 
 		$this->view
 			->set('form', $form)
 			->set('response', $response)
 			->set('json', $json)
+			->set('userIsAdmin', $isComponentAdmin)
 			->display();
 	}
 
@@ -190,21 +204,14 @@ class FormResponses extends SiteController
 	}
 
 	/**
-	 * Attempts to handle the submission of a form response for review
+	 * AJAX: Attempts to handle the submission of a form response for review
 	 *
 	 * @return   void
 	 */
 	public function submitTask()
 	{
-		$currentUsersId = User::get('id');
-		$formId = $this->_params->getInt('form_id');
-		$form = Form::oneOrFail($formId);
-		$response = $form->getResponse($currentUsersId);
-		$responseId = $response->get('id');
-
-		$this->_pageBouncer->redirectIfResponseSubmitted($response);
-		$this->_pageBouncer->redirectIfFormNotOpen($form);
-		$this->_pageBouncer->redirectIfPrereqsNotAccepted($form);
+		$responseId = $this->_params->getInt('response_id');
+		$response = FormResponse::oneOrFail($responseId);
 
 		$currentTime = Date::toSql();
 		$response->set('modified', $currentTime);
@@ -215,14 +222,27 @@ class FormResponses extends SiteController
 			$this->_responseActivity->logSubmit($response->get('id'));
 			$forwardingUrl = $this->_routes->responseFeedUrl($responseId);
 			$successMessage = Lang::txt('COM_FORMS_NOTICES_FORM_RESPONSE_SUBMIT_SUCCESS');
-			$this->_rCrudHelper->successfulUpdate($forwardingUrl, $successMessage);
+			$ajax_response = Array(
+				'status' => 'success',
+				'message' => $successMessage,
+				'redirect' => $forwardingUrl
+			);
+			// $this->_rCrudHelper->successfulUpdate($forwardingUrl, $successMessage);
 		}
 		else
 		{
 			$errorSummary = Lang::txt('COM_FORMS_NOTICES_FORM_RESPONSE_SUBMIT_ERROR');
 			$forwardingUrl = $this->_routes->formResponseReviewUrl($formId);
-			$this->_rCrudHelper->failedBatchUpdate($forwardingUrl, $response, $errorSummary);
+			$ajax_response = Array(
+				'status' => 'error',
+				'message' => $errorSummary,
+				'redirect' => $forwardingUrl
+			);
+			// $this->_rCrudHelper->failedBatchUpdate($forwardingUrl, $response, $errorSummary);
 		}
+
+		echo json_encode($ajax_response);
+		exit();
 	}
 
 	/**
@@ -234,18 +254,40 @@ class FormResponses extends SiteController
 	{
 		$currentUserId = User::get('id');
 		$responses = FormResponse::all()
+			->join('#__forms_forms AS F', 'form_id', 'F.id', 'left')
+			->select('#__forms_form_responses.*, F.name AS form')
 			->whereEquals('user_id', $currentUserId)
-			->paginated('limitstart', 'limit')
-			->rows();
+			->paginated('limitstart', 'limit');
+		$responses = $this->_sortResponses($responses);
+		
 		$responsesListUrl = $this->_routes->usersResponsesUrl();
 		$feedItems = ResponseFeedItem::allForUser($currentUserId)
-			->order('id', 'desc');
+			->order('created', 'desc');
 
 		$this->view
 			->set('feedItems', $feedItems)
 			->set('responses', $responses)
 			->set('listUrl', $responsesListUrl)
 			->display();
+	}
+
+	/**
+	 * Sort responses using given field and direction
+	 *
+	 * @param    object   $responses   Form's responses
+	 * @return   void
+	 */
+	protected function _sortResponses($responses)
+	{
+		$sortDirection = $this->_params->getString('sort_direction', 'asc');
+		$sortField = $this->_params->getString('sort_field', 'id');
+		$sortingCriteria = ['field' => $sortField, 'direction' => $sortDirection];
+
+		$this->view->set('sortingCriteria', $sortingCriteria);
+		$sortableResponses = new SortableResponses(['responses' => $responses]);
+		$sortableResponses->order($sortField, $sortDirection);
+
+		return $sortableResponses;
 	}
 
 	/**

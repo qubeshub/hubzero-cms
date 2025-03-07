@@ -13,7 +13,7 @@ const autoSaveDelay = 500;
 const FormLibrary = new Survey.Model();
 FormLibrary.onValueChanged.add(debounce(saveSurveyData, autoSaveDelay));
 FormLibrary.onCurrentPageChanged.add(debounce(saveSurveyData, autoSaveDelay));
-FormLibrary.onComplete.add(debounce(saveSurveyData, autoSaveDelay));
+FormLibrary.onComplete.add(submitSurvey);
 
 function loadSurvey() {
     const id = $("input[name=form_id]").val();
@@ -62,6 +62,29 @@ function restoreSurveyData() {
     .catch(error => {
         console.log('Error fetching response JSON');
     });
+}
+
+function submitSurvey() {
+    const id = $("input[name=response_id]").val();
+    const url = '/forms/responses/submit?response_id=' + id;
+
+    const data = FormLibrary.data;
+    const formData = new FormData();
+    fetch(url, {
+        method: "POST",
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.text().then(errorText => {
+                throw new Error(`HTTP Error: ${response.status}\n${errorText}`);
+            });
+        }
+        notifySaved();
+        return response.json(); // Parse the JSON from the response
+    })
+    .then(data => console.log('Received JSON data:', data))
+    .catch(error => console.error(error));
 }
 
 function saveSurveyData() {
