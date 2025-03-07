@@ -21,6 +21,8 @@ class plgAuthenticationPUCAS extends \Hubzero\Plugin\Plugin
 	 */
 	protected $_autoloadLanguage = true;
 
+	protected $stream_handler = null;
+	protected $logger = null;
 
 	/**
 	 * Actions to perform when logging out a user session
@@ -63,12 +65,6 @@ class plgAuthenticationPUCAS extends \Hubzero\Plugin\Plugin
 	public function status()
 	{
 		$status = array();
-
-		if (Config::Get('debug'))
-		{
-			$debug_location = $this->params->get('debug_location', '/var/log/php/phpCAS.log');
-			phpCAS::setDebug($debug_location);
-		}
 
 		$this->initialize();
 
@@ -349,11 +345,19 @@ class plgAuthenticationPUCAS extends \Hubzero\Plugin\Plugin
 
 				if ($debug_location)
 				{
-					phpCAS::setDebug($debug_location);
+					if ($this->logger == null)
+					{
+						$this->logger = new \Monolog\Logger('pucas');
+						$this->stream_handler = new \Monolog\Handler\StreamHandler($debug_location, \Psr\Log\LogLevel::WARNING);
+						$this->logger->pushHandler($this->stream_handler);
+					}
+
+					phpCAS::setLogger($this->logger);
 				}
 			}
 
-			phpCAS::client(CAS_VERSION_2_0, 'sso.purdue.edu', 443, '/idp/profile/cas', false);
+			phpCAS::client(CAS_VERSION_2_0, 'sso.purdue.edu', 443, '/idp/profile/cas', Request::getSchemeAndHttpHost(), false);
+
 			phpCAS::setCasServerCACert(__DIR__ . '/assets/PuCAS_CA.crt');
 		}
 	}
