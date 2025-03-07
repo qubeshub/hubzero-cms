@@ -11,7 +11,6 @@ use Hubzero\Document\Asset\Javascript;
 use Hubzero\Document\Asset\Stylesheet;
 use Exception;
 use Request;
-use lessc;
 
 /**
  * Class for adding stylesheets from components, modules, and plugins to the document
@@ -599,16 +598,16 @@ class Assets
 			{
 				$lesspath = PATH_CORE . DS . 'assets' . DS . 'less';
 
-				if (!class_exists('lessc'))
+				if (!class_exists('\Hubzero\Document\Lessc'))
 				{
 					throw new Exception('LESS parser not found.');
 				}
 
 				// Try to compile LESS files
-				$less = new lessc;
+				$less = new \Hubzero\Document\Lessc;
 				if ($env != 'development')
 				{
-					$less->setFormatter('compressed');
+					$less->setFormatter(new \LesserPHP\FormatterCompressed());
 				}
 
 				// Are there any template overrides?
