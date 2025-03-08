@@ -126,7 +126,7 @@ class Loader extends Base
 	 * @param   string  $path  The component path.
 	 * @return  string  The component output
 	 */
-	protected function execute($path)
+	protected function execute($path, $type = 'path')
 	{
 		return '';
 	}
