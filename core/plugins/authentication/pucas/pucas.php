@@ -54,7 +54,10 @@ class plgAuthenticationPUCAS extends \Hubzero\Plugin\Plugin
 			$return = '/' . ltrim($return, '/');
 		}
 
-		phpCAS::logout(array('service'=>$service . $return, 'url'=>$service . $return));
+		if (phpCAS::checkAuthentication())
+		{
+			phpCAS::logout(array('service'=>$service . $return, 'url'=>$service . $return));
+		}
 	}
 
 	/**
