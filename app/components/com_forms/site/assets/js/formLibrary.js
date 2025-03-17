@@ -10,10 +10,13 @@ HUB.FORMS = HUB.FORMS || {}
 
 const autoSaveDelay = 500;
 
+var surveyDataRestored = false;
+
 const FormLibrary = new Survey.Model();
 FormLibrary.onValueChanged.add(debounce(saveSurveyData, autoSaveDelay));
 FormLibrary.onCurrentPageChanged.add(debounce(saveSurveyData, autoSaveDelay));
 FormLibrary.onComplete.add(submitSurvey);
+FormLibrary.completeText = "Submit";
 
 function loadSurvey() {
     const id = $("input[name=form_id]").val();
@@ -57,6 +60,7 @@ function restoreSurveyData() {
             if (data.pageNo) {
                 FormLibrary.currentPageNo = data.pageNo;
             }
+            surveyDataRestored = true;
         }
     })
     .catch(error => {
@@ -88,29 +92,33 @@ function submitSurvey() {
 }
 
 function saveSurveyData() {
-    const id = $("input[name=response_id]").val();
-    const url = '/forms/responses/updatejson?response_id=' + id;
+    if (surveyDataRestored) {
+        const id = $("input[name=response_id]").val();
+        const url = '/forms/responses/updatejson?response_id=' + id;
 
-    const data = FormLibrary.data;
-    data.pageNo = FormLibrary.currentPageNo;
+        const data = FormLibrary.data;
+        data.pageNo = FormLibrary.currentPageNo;
 
-    const formData = new FormData();
-    formData.append('json', JSON.stringify(data));
-    fetch(url, {
-        method: "POST",
-        body: formData
-    })
-    .then(response => {
-        if (!response.ok) {
-            return response.text().then(errorText => {
-                throw new Error(`HTTP Error: ${response.status}\n${errorText}`);
-            });
-        }
+        const formData = new FormData();
+        formData.append('json', JSON.stringify(data));
+        fetch(url, {
+            method: "POST",
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(errorText => {
+                    throw new Error(`HTTP Error: ${response.status}\n${errorText}`);
+                });
+            }
+            notifySaved();
+            return response.json(); // Parse the JSON from the response
+        })
+        // .then(data => console.log('Received JSON data:', data))
+        .catch(error => console.error(error));
+    } else {
         notifySaved();
-        return response.json(); // Parse the JSON from the response
-    })
-    // .then(data => console.log('Received JSON data:', data))
-    .catch(error => console.error(error));
+    }
 }
 
 FormLibrary.onUploadFiles.add((_, options) => {
@@ -199,6 +207,9 @@ FormLibrary.onClearFiles.add(async (_, options) => {
 });
 
 document.addEventListener("DOMContentLoaded", function() {
+    if ($('#submitted').val()) {
+        FormLibrary.showCompleteButton = false;
+    }
     loadSurvey();
 });
 

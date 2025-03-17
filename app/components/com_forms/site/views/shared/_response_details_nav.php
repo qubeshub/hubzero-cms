@@ -29,11 +29,6 @@ $steps = [
 	'Response' => $routes->formResponseFillUrl($responseId)
 ];
 
-if ($userIsAdmin)
-{
-	$steps['Fields'] = $routes->userFieldResponsesUrl($responseId);
-}
-
 $this->view('_ul_nav', 'shared')
 	->set('formId', $formId)
 	->set('current', $current)

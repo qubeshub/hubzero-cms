@@ -57,4 +57,6 @@ $this->view('_forms_breadcrumbs', 'shared')
 		</div>
 
 	</div>
+
+	<input type="hidden" id="submitted" value="<?php echo $this->response->get('submitted'); ?>" />
 </section>
