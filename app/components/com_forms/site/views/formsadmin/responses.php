@@ -18,6 +18,8 @@ $this->js('notify')
 
 $responsesEmailUrl = $this->responsesEmailUrl;
 $responsesTagsUrl = $this->responsesTagsUrl;
+$responsesDeleteUrl = $this->responsesDeleteUrl;
+$responsesUnsubmitUrl = $this->responsesUnsubmitUrl;
 $form = $this->form;
 $formId = $form->get('id');
 $formName = $form->get('name');
@@ -71,6 +73,28 @@ $this->view('_forms_breadcrumbs', 'shared')
 								->display();
 						?>
 					</span>
+
+					<span id="delete-responses-button" class="list-action">
+						<?php
+							$this->view('_delete_responses_form')
+								->set('action', $responsesDeleteUrl)
+								->set('returnUrl', $responseListUrl)
+								->set('formId', $formId)
+								->display();
+						?>
+					</span>
+
+					<?php if ($form->get('responses_locked')): ?>
+					<span id="unsubmit-responses-button" class="list-action">
+						<?php
+							$this->view('_unsubmit_responses_form')
+								->set('action', $responsesUnsubmitUrl)
+								->set('returnUrl', $responseListUrl)
+								->set('formId', $formId)
+								->display();
+						?>
+					</span>
+					<?php endif; ?>
 				<?php endif; ?>
 			</div>
 		</div>
@@ -82,6 +106,7 @@ $this->view('_forms_breadcrumbs', 'shared')
 						->set('responses', $responses)
 						->set('sortingAction', $responseListUrl)
 						->set('sortingCriteria', $sortingCriteria)
+						->set('formId', $formId)
 						->display();
 
 					$this->view('_pagination', 'shared')

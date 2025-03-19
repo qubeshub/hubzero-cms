@@ -246,6 +246,35 @@ class FormResponses extends SiteController
 	}
 
 	/**
+	 * Unsubmit responses
+	 */
+
+	public function unsubmitTask()
+	{
+		$formId = $this->_params->getInt('form_id');
+		$form = Form::oneOrFail($formId);
+
+		$responseIds = $this->_params->get('response_ids');	
+		$returnUrl = $this->_params->get('return_url');
+
+		$this->_pageBouncer->redirectUnlessCanEditForm($form, $returnUrl);
+
+		foreach ($responseIds as $responseId)
+		{
+			$response = FormResponse::oneOrFail($responseId);
+			$this->_responseActivity->logUnsubmit($responseId);
+			$response->set('submitted', null);
+			if (!$response->save()) {
+				$errorSummary = Lang::txt('COM_FORMS_NOTICES_FAILED_RESPONSES_UNSUBMIT');
+				$this->_rCrudHelper->failedBatchUpdate($returnUrl, $response, $errorSummary);
+			}
+		}
+
+		$successMessage = Lang::txt('COM_FORMS_RESPONSE_UNSUBMIT_SUCCESS');
+		$this->_crudHelper->successfulUpdate($returnUrl, $successMessage);
+	}
+
+	/**
 	 * Renders list of users responses
 	 *
 	 * @return   void
@@ -450,6 +479,30 @@ class FormResponses extends SiteController
 
 		echo json_encode($uploaded);
 		exit();
+	}
+
+	/**
+	 * Delete a form
+	 */
+	public function deleteTask()
+	{
+		$formId = $this->_params->getInt('form_id');
+		$responseIds = $this->_params->get('response_ids');	
+		$returnUrl = $this->_params->get('return_url');
+
+		foreach ($responseIds as $responseId)
+		{
+			$response = FormResponse::oneOrFail($responseId);
+			if ($this->_auth->canCurrentUserFillResponse($response)) {
+				$this->_responseActivity->logDelete($responseId);
+				if (!$response->destroy()) {
+					$this->_crudHelper->failedDelete($returnUrl, $response);		
+				}
+			}
+		}
+
+		$successMessage = Lang::txt('COM_FORMS_RESPONSE_DELETE_SUCCESS');
+		$this->_crudHelper->successfulDelete($returnUrl, $successMessage);
 	}
 
 	/*

@@ -51,7 +51,19 @@ class FormResponseActivityHelper
 	 */
 	public function logSubmit($responseId)
 	{
-		$this->_logActivity('submitted', $responseId);
+		$activity = ($this->_activityExists('submitted', $responseId) ? 'resubmitted' : 'submitted');
+		$this->_logActivity($activity, $responseId);
+	}
+
+	/**
+	 * Logs unsubmission of form response
+	 *
+	 * @param    int    $responseId   Given response's ID
+	 * @return   void
+	 */
+	public function logUnsubmit($responseId)
+	{
+		$this->_logActivity('unsubmitted', $responseId);
 	}
 
 	/**
@@ -66,6 +78,36 @@ class FormResponseActivityHelper
 		$activity = $isAccepted ? 'accepted' : 'reversed';
 
 		$this->_logActivity($activity, $responseId);
+	}
+
+	/**
+	 * Logs deletion of form response
+	 *
+	 * @param    int     $responseId   Given response's ID
+	 * @param    bool    $isAccepted   Acceptance status
+	 * @return   void
+	 */
+	public function logDelete($responseId)
+	{
+		$this->_logActivity('deleted', $responseId);
+	}
+
+	/**
+	 * Check if given activity exists
+	 *
+	 * @param    string   $activity     Activity description
+	 * @param    int      $responseId   Associated response's ID
+	 * @return   void
+	 */
+	protected function _activityExists($activity, $responseId)
+	{
+		$activity = $this->_activityFactory->blank()
+			->where('scope_id', '=', $responseId)
+			->where('action', '=', 'activity')
+			->where('description', '=', $activity)
+			->count();
+
+		return ($activity ? true : false);
 	}
 
 	/**

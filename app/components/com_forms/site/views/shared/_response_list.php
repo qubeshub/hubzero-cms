@@ -22,6 +22,7 @@ $columns = [
 	'accepted' => 'Accepted',
 	'reviewed_by' => 'Reviewed By'
 ];
+$formId = isset($this->formId) ? $this->formId : null;
 $columns = isset($this->columns) ? array_intersect_key($columns, array_flip($this->columns)) : $columns;
 $responses = $this->responses;
 $responsesSelectable = isset($this->selectable) ? $this->selectable : true;
@@ -65,4 +66,7 @@ $sortingCriteria = $this->sortingCriteria;
 <form id="sort-form" action="<?php echo $sortingAction; ?>">
 	<input type="hidden" name="sort_direction">
 	<input type="hidden" name="sort_field">
+	<?php if ($formId): ?>
+		<input type="hidden" name="form_id" value="<?php echo $formId; ?>">
+	<?php endif; ?>
 </form>

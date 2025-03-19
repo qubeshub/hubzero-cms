@@ -39,8 +39,12 @@ class CrudHelper
 	 * @param    string   $url   URL to redirect user to
 	 * @return   void
 	 */
-	public function successfulUpdate($url)
+	public function successfulUpdate($url, $message='')
 	{
+		if ($message) {
+			$this->_notifyUserOfSuccess($message);
+		}
+
 		$this->_router->redirect($url);
 	}
 
