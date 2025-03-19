@@ -96,10 +96,14 @@ class FormsAdmin extends SiteController
 		$responseListUrl = $this->_routes->formsResponseList($formId);
 		$responsesEmailUrl = $this->_routes->responsesEmailUrl($formId, $responseIds);
 		$responsesTagsUrl = $this->_routes->responsesTagsUrl($formId, $responseIds);
+		$responsesDeleteUrl = $this->_routes->responsesDeleteUrl($formId, $responseIds);
+		$responsesUnsubmitUrl = $this->_routes->responsesUnsubmitUrl($formId, $responseIds);
 
 		$this->view
 			->set('responsesEmailUrl', $responsesEmailUrl)
 			->set('responsesTagsUrl', $responsesTagsUrl)
+			->set('responsesDeleteUrl', $responsesDeleteUrl)
+			->set('responsesUnsubmitUrl', $responsesUnsubmitUrl)
 			->set('form', $form)
 			->set('responseListUrl', $responseListUrl)
 			->set('responses', $responses)

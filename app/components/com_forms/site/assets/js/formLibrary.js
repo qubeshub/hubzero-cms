@@ -54,13 +54,13 @@ function restoreSurveyData() {
         return response.text();
     })
     .then(responseText => {
+        surveyDataRestored = true;
         if (responseText) {
             const data = JSON.parse(responseText);
             FormLibrary.data = data;
             if (data.pageNo) {
                 FormLibrary.currentPageNo = data.pageNo;
             }
-            surveyDataRestored = true;
         }
     })
     .catch(error => {

@@ -537,6 +537,40 @@ class FormsRouter extends ComponentRouter
 	}
 
 	/**
+	 * Generates URL to response delete 
+	 *
+	 * @param    int        $formId        Form's ID
+	 * @param    array      $responseIds   Responses' IDs
+	 * @return   string
+	 */
+	public function responsesDeleteUrl($formId, $responseIds)
+	{
+		$segments = ['responses', 'delete'];
+		$params = ['response_ids' => $responseIds];
+
+		$url = $this->_generateComponentUrl($segments, $params);
+
+		return $url;
+	}
+
+	/**
+	 * Generates URL to response unsubmission 
+	 *
+	 * @param    int        $formId        Form's ID
+	 * @param    array      $responseIds   Responses' IDs
+	 * @return   string
+	 */
+	public function responsesUnsubmitUrl($formId, $responseIds)
+	{
+		$segments = ['responses', 'unsubmit'];
+		$params = ['response_ids' => $responseIds];
+
+		$url = $this->_generateComponentUrl($segments, $params);
+
+		return $url;
+	}
+
+	/**
 	 * Generates URL to send emails to respondents
 	 *
 	 * @return   string
