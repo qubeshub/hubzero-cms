@@ -61,6 +61,7 @@
 	"composer/composer": "2.8.*",
 	"phpoffice/phpspreadsheet": "1.29.*",
 	"league/oauth2-facebook": "2.0.*",
+	"league/oauth2-client": "~2.8.1",
 	"litesaml/lightsaml": "2.3.*",
         "http-interop/http-factory-guzzle": "*",
 	"theiconic/name-parser": "0.1.*"
