@@ -143,6 +143,15 @@ class plgAuthenticationCILogon extends \Hubzero\Plugin\OauthClient
 				throw new Exception('Mismatched state');
 			}
 			Session::clear('state', 'cilogon');
+
+			// oauth2-client 2.8.0 added requirement to pass scope to getAccessToken.
+			// this was reverted in 2.8.1 so keeping this comment here in case it
+			// comes up again. 
+
+			//$token = $this->cilogon()->getAccessToken('authorization_code', 
+			//array('scope' => ['openid','email','profile','org.cilogon.userinfo'], 
+			//'code' => Request::getString('code')));
+
 			$token = $this->cilogon()->getAccessToken('authorization_code', array('code' => Request::getString('code')));
 		}
 		catch (\Exception $e)
@@ -159,10 +168,10 @@ class plgAuthenticationCILogon extends \Hubzero\Plugin\OauthClient
 				$cilogonResponse = $this->cilogon()->getResourceOwner($token);
 				$responseArr = $cilogonResponse->toArray();
 				$id       = $cilogonResponse->getId();
-				$firstname = $cilogonResponse->getGivenName();
-				$lastname = $cilogonResponse->getFamilyName();
-				$fullname = $cilogonResponse->getName();
-				$email    = $cilogonResponse->getEmail();
+				$firstname =  isset($responseArr['given_name']) ? $responseArr['given_name'] : '';
+				$lastname = isset($responseArr['family_name']) ? $responseArr['family_name'] : '';
+				$fullname = isset($responseArr['name']) ? $responseArr['name'] : '';
+				$email    = isset($responseArr['email']) ? $responseArr['email'] : '';
 				$fullname = empty($fullname) ? $firstname . ' ' . $lastname : $fullname;
 			}
 			catch (\Exception $e)
@@ -213,7 +222,7 @@ class plgAuthenticationCILogon extends \Hubzero\Plugin\OauthClient
 				$response->username = '-' . $hzal->id;
 				$response->email    = $response->username . '@invalid';
 				// Also set a suggested username for their hub account
-				$sub_email    = explode('@', $email, 2);
+				$sub_email    = explode('@', $email == null ? '' : $email, 2);
 				$tmp_username = $sub_email[0];
 				App::get('session')->set('auth_link.tmp_username', $tmp_username);
 			}
