@@ -81,8 +81,6 @@ class FormsAdmin extends SiteController
 	 */
 	public function responsesTask()
 	{
-		$this->_bouncer->redirectUnlessAuthorized('core.create');
-
 		$formId = $this->_params->getInt('form_id');
 		$form = Form::oneOrFail($formId);
 

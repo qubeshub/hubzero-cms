@@ -392,10 +392,14 @@ class FormResponse extends Relational
 	 * @param    int      $userId   User record's ID
 	 * @return   object
 	 */
-	public static function allForUser($userId)
+	public static function allForUser($userId, $formId = 0)
 	{
-		return self::all()
+		$responses = self::all()
 			->whereEquals('user_id', $userId);
+		if ($formId) {
+			$responses = $responses->whereEquals('form_id', $formId);
+		}
+		return $responses;
 	}
 
 }

@@ -494,11 +494,15 @@ class FormsRouter extends ComponentRouter
 	 *
 	 * @return   string
 	 */
-	public function usersResponsesUrl()
+	public function usersResponsesUrl($formId = 0)
 	{
 		$segments = ['responses', 'list'];
+		$params = [];
+		if ($formId) {
+			$params = ['form_id' => $formId];
+		}
 
-		$url = $this->_generateComponentUrl($segments);
+		$url = $this->_generateComponentUrl($segments, $params);
 
 		return $url;
 	}

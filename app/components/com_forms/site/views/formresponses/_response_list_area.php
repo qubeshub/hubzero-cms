@@ -9,15 +9,26 @@
 defined('_HZEXEC_') or die();
 
 $responses = $this->responses->rows();
+$form = $this->form;
 $sortingAction = $this->sortingAction;
 $sortingCriteria = $this->sortingCriteria;
+$columns = ['id', 'completion_percentage', 'created', 'modified', 'submitted', 'accepted'];
+if (!$form) {
+	array_splice( $columns, 2, 0, array('form') );
+}
 
+if ($form) {
+	echo '<h2>' . Lang::txt('COM_FORMS_HEADINGS_MY_RESPONSES_FORM', $form->get('name')) . '</h2>';
+} else {
+	echo '<h2>' . Lang::txt('COM_FORMS_HEADINGS_MY_RESPONSES_ALL') . '</h2>';
+}
 if (count($responses) > 0):
 	$this->view('_response_list', 'shared')
 		->set('responses', $responses)
+		->set('formId', ($form ? $form->get('id') : 0))
 		->set('sortingAction', $sortingAction)
 		->set('sortingCriteria', $sortingCriteria)
-        ->set('columns', ['id', 'form', 'completion_percentage', 'created', 'modified', 'submitted', 'accepted'])
+        ->set('columns', $columns)
 		->display();
 else:
 	$this->view('_response_list_none_notice')

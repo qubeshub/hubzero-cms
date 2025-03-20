@@ -26,7 +26,7 @@ $respondentText = Lang::txt('COM_FORMS_HEADINGS_RESPONDENT', $userName);
 
 $breadcrumbs = [
 	 $formName => ['formsDisplayUrl', [$formId]],
-	'Admin' => ['formsEditUrl', [$formId]],
+	'Manage' => ['formsEditUrl', [$formId]],
 	'Responses' => ['formsResponseList', [$formId]],
 	$userName => ['responseFeedUrl', [$responseId]],
 	'Replies' => ['responseFeedUrl', [$responseId]]

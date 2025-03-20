@@ -21,12 +21,19 @@ $feedItems = $this->feedItems;
 $responses = $this->responses;
 $responsesCount = $responses->count();
 $responsesListUrl = $this->listUrl;
+$form = $this->form;
+$formId = ($this->form ? $this->form->get('id') : 0);
+$formName = ($this->form ? $this->form->get('name') : 'All');
 $sortingCriteria = $this->sortingCriteria;
 
 $breadcrumbs = [
 	'Forms' => ['formListUrl'],
-	'Responses' => ['usersResponsesUrl']
+	$formName => ['formsDisplayUrl', [$formId]],
+	'My Responses' => ['usersResponsesUrl']
 ];
+if (!$formId) {
+	unset($breadcrumbs['All']);
+}
 $this->view('_forms_breadcrumbs', 'shared')
 	->set('breadcrumbs', $breadcrumbs)
 	->set('page', "Responses")
@@ -40,6 +47,7 @@ $this->view('_forms_breadcrumbs', 'shared')
 			<?php
 				$this->view('_response_list_area')
 					->set('responses', $responses)
+					->set('form', $form)
 					->set('sortingAction', $responsesListUrl)
 					->set('sortingCriteria', $sortingCriteria)
 					->display();

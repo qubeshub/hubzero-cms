@@ -29,7 +29,7 @@ $sortingCriteria = $this->sortingCriteria;
 $responsesCount = $responses->count();
 $breadcrumbs = [
 	 $formName => ['formsDisplayUrl', [$formId]],
-	'Admin' => ['formsEditUrl', [$formId]],
+	'Manage' => ['formsEditUrl', [$formId]],
 	'Responses' => ['formsResponseList', [$formId]]
 ];
 

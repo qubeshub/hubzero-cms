@@ -32,7 +32,7 @@ $viewHeader = Lang::txt('COM_FORMS_HEADINGS_EMAIL_RESPONDENTS_FORM', $formName);
 
 $breadcrumbs = [
 	 $formName => ['formsDisplayUrl', [$formId]],
-	'Admin' => ['formsEditUrl', [$formId]],
+	'Manage' => ['formsEditUrl', [$formId]],
 	'Email Respondents' => ['responsesEmailUrl', [$formId, $responseIds]]
 ];
 

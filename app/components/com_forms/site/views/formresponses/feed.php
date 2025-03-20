@@ -29,7 +29,7 @@ if ($userIsAdmin)
 {
   $breadcrumbs = [
     $formName => ['formsDisplayUrl', [$formId]],
-    'Admin' => ['formsEditUrl', [$formId]],
+    'Manage' => ['formsEditUrl', [$formId]],
     'Responses' => ['formsResponseList', [$formId]],
     $userName => ['responseFeedUrl', [$responseId]]
   ];

@@ -29,7 +29,7 @@ $viewHeader = Lang::txt('COM_FORMS_HEADINGS_TAG_RESPONSES_FORM', $formName);
 
 $breadcrumbs = [
 	 $formName => ['formsDisplayUrl', [$formId]],
-	'Admin' => ['formsEditUrl', [$formId]],
+	'Manage' => ['formsEditUrl', [$formId]],
 	'Tag Responses' => ['responsesTagsUrl', [$formId, $responseIds]]
 ];
 
