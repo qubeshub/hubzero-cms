@@ -8,7 +8,7 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
-$this->css('surveyjs/defaultV2.min.css')
+$this->css('surveyjs/survey-core.min.css')
     ->js('surveyjs/survey.core.min.js')
     ->js('surveyjs/survey-js-ui.min.js')
     ->js('formSetup.js')
