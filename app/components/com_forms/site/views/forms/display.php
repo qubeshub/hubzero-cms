@@ -36,7 +36,7 @@ $this->view('_forms_breadcrumbs', 'shared')
         $this->view('_link_lang', 'shared')
 			->set('textKey', 'COM_FORMS_LINKS_MY_RESPONSES')
 			->set('urlFunction', 'usersResponsesUrl')
-			->set('urlFunctionArgs', [])
+			->set('urlFunctionArgs', [$formId])
 			->set('classes', 'icon-list btn')
 			->display();
             
@@ -68,15 +68,6 @@ $this->view('_forms_breadcrumbs', 'shared')
 				<div>
 					<?php
 						$this->view('_form_overview')
-							->set('form', $form)
-							->set('response', $response)
-							->display();
-					?>
-				</div>
-
-				<div class="form-response-link">
-					<?php
-						$this->view('_form_response_link')
 							->set('form', $form)
 							->set('response', $response)
 							->display();

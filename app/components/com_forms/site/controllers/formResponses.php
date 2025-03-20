@@ -281,21 +281,29 @@ class FormResponses extends SiteController
 	 */
 	public function listTask()
 	{
+		$formId = $this->_params->getInt('form_id');
+		$form = Form::one($formId);
+		
 		$currentUserId = User::get('id');
-		$responses = FormResponse::all()
-			->join('#__forms_forms AS F', 'form_id', 'F.id', 'left')
-			->select('#__forms_form_responses.*, F.name AS form')
-			->whereEquals('user_id', $currentUserId)
+		$responses = FormResponse::all();
+		if ($formId) {
+			$responses = $responses->whereEquals('form_id', $formId);
+		} else {
+			$responses = $responses->join('#__forms_forms AS F', 'form_id', 'F.id', 'left')
+								   ->select('#__forms_form_responses.*, F.name AS form');
+		}
+		$responses = $responses->whereEquals('user_id', $currentUserId)
 			->paginated('limitstart', 'limit');
 		$responses = $this->_sortResponses($responses);
 		
-		$responsesListUrl = $this->_routes->usersResponsesUrl();
-		$feedItems = ResponseFeedItem::allForUser($currentUserId)
-			->order('created', 'desc');
+		$responsesListUrl = $this->_routes->usersResponsesUrl($formId);
+		$feedItems = ResponseFeedItem::allForUser($currentUserId, $formId);
+		$feedItems = $feedItems->order('created', 'desc');
 
 		$this->view
 			->set('feedItems', $feedItems)
 			->set('responses', $responses)
+			->set('form', $form)
 			->set('listUrl', $responsesListUrl)
 			->display();
 	}
@@ -384,6 +392,15 @@ class FormResponses extends SiteController
 			exit();
 		}
 		
+		$response->set('modified', Date::toSql());
+		if (!$response->save()) {
+			$response = Array(
+				'status' => "Failed to save form modification date."
+			);
+			echo json_encode($response);
+			exit();
+		}
+
 		$response = Array(
 			'status' => "Saved form json."
 		);
