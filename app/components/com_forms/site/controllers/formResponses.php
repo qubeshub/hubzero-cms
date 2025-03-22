@@ -22,6 +22,7 @@ require_once "$componentPath/models/formResponse.php";
 require_once "$componentPath/models/formResponseJson.php";
 require_once "$componentPath/models/responseFeedItem.php";
 require_once "$componentPath/helpers/sortableResponses.php";
+require_once "$componentPath/models/permissions.php";
 
 use Components\Forms\Helpers\ComFormsPageBouncer as PageBouncer;
 use Components\Forms\Helpers\FormPageElementDecorator as ElementDecorator;
@@ -36,6 +37,7 @@ use Components\Forms\Models\Form;
 use Components\Forms\Models\FormResponse;
 use Components\Forms\Models\FormResponseJson;
 use Components\Forms\Models\ResponseFeedItem;
+use Components\Forms\Models\Permissions;
 use Hubzero\Component\SiteController;
 use Date;
 
@@ -401,6 +403,33 @@ class FormResponses extends SiteController
 			exit();
 		}
 
+		$response = Array(
+			'status' => "Saved form json."
+		);
+		echo json_encode($response);
+		exit();
+	}
+
+	/**
+	 * AJAX: Update json for form
+	 */
+	public function updatepermissionsTask()
+	{
+		$responseId = $this->_params->getInt('response_id');
+		$response = FormResponse::oneOrFail($responseId);
+		
+		$permissions = $this->_params->get('surveyjs-popup-json-data');
+		$json = json_decode($permissions, true);
+
+		if (!Permissions::setUsergroupPermissions($response, $json, 'response')) {
+			$response = Array(
+				'status' => "Failed to save response permissions."
+			);
+			echo json_encode($response);
+			exit();
+		}
+
+		$this->_responseActivity->logUpdatePermissions($response->get('id'), $permissions);
 		$response = Array(
 			'status' => "Saved form json."
 		);

@@ -19,6 +19,7 @@ use Components\Forms\Helpers\FormsRouter as Routes;
 $current = $this->current;
 $formId = $this->formId;
 $responseId = $this->responseId;
+$responsePermissions = $this->responsePermissions;
 $routes = new Routes();
 $userId = $this->userId;
 $userIsAdmin = $this->userIsAdmin;
@@ -29,9 +30,113 @@ $steps = [
 	'Response' => $routes->formResponseFillUrl($responseId)
 ];
 
+$formJson = '{
+  "title": "Response Access Rules",
+  "pages": [
+    {
+      "name": "page1",
+      "elements": [
+        {
+          "type": "matrixdynamic",
+          "name": "userAccessibility",
+          "title": "User Access",
+          "columns": [
+            {
+              "name": "user",
+              "title": "User",
+              "cellType": "dropdown",
+              "isRequired": true,
+              "isUnique": true,
+              "placeholder": "Search for user",
+              "choicesLazyLoadEnabled": true,
+              "itemComponent": "new-user-item"
+            },
+            {
+              "name": "permission",
+              "title": "Permission",
+              "cellType": "dropdown",
+              "defaultValue": "fill",
+              "choices": [
+                {
+                  "value": "fill",
+                  "text": "Fill"
+                },
+                {
+                  "value": "readonly",
+                  "text": "Read-only"
+                }
+              ],
+              "searchEnabled": false
+            }
+          ],
+          "rowCount": 0,
+          "addRowText": "Add user"
+        },
+        {
+          "type": "matrixdynamic",
+          "name": "groupAccessibility",
+          "title": "Group Access",
+          "columns": [
+            {
+              "name": "group",
+              "title": "Group",
+              "cellType": "dropdown",
+              "isRequired": true,
+              "placeholder": "Search for group",
+              "choicesLazyLoadEnabled": true,
+              "itemComponent": "new-group-item"
+            },
+            {
+              "name": "role",
+              "title": "Role",
+              "cellType": "dropdown",
+              "isRequired": true,
+              "defaultValue": "members",
+              "choicesByUrl": {
+                "url": "index.php?option=com_groups&no_html=1&task=autocomplete&id[]={row.group}&roles=1",
+                "valueName": "id",
+                "titleName": "name"
+              },
+              "searchEnabled": false
+            },
+            {
+              "name": "permission",
+              "title": "Permission",
+              "cellType": "dropdown",
+              "defaultValue": "fill",
+              "choices": [
+                {
+                  "value": "fill",
+                  "text": "Fill"
+                },
+                {
+                  "value": "readonly",
+                  "text": "Read-only"
+                }
+              ],
+              "searchEnabled": false
+            }
+          ],
+          "rowCount": 0,
+          "addRowText": "Add group/role"
+        }
+      ]
+    }
+  ],
+  "widthMode": "static"
+}';
+
 $this->view('_ul_nav', 'shared')
 	->set('formId', $formId)
+	->set('showAccessBtn', true)
 	->set('current', $current)
 	->set('steps', $steps)
 	->display();
 
+$this->view('_surveyjs_popup', 'shared')
+	->set('formId', $formId)
+	->set('responseId', $responseId)
+	->set('responsePermissions', $responsePermissions)
+	->set('formJson', $formJson)
+	->set('routes', $routes)
+	->display();
