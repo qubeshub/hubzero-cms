@@ -7,6 +7,10 @@
 
 namespace Components\Forms\Traits;
 
+require_once "$componentPath/models/permissions.php";
+
+use Components\Forms\Models\Permissions;
+
 trait possessable
 {
 
@@ -69,4 +73,17 @@ trait possessable
 		$db->setQuery($query);
 		return $db->loadResult();
 	}
+
+	/**
+	 * Returns response permissions
+	 *
+	 * @return   string
+	 */
+	public function getUsergroupPermissions()
+	{
+		$obj_type = (static::class == "Components\Forms\Models\Form" ? 'form' : 'response');
+
+		return Permissions::getUsergroupPermissions($this, $obj_type);
+	}
+
 }

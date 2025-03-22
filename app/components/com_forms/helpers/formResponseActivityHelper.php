@@ -56,6 +56,17 @@ class FormResponseActivityHelper
 	}
 
 	/**
+	 * Logs submission of form response
+	 *
+	 * @param    int    $responseId   Given response's ID
+	 * @return   void
+	 */
+	public function logUpdatePermissions($responseId, $permissions="null")
+	{
+		$this->_logActivity('updatepermissions', $responseId, $permissions);
+	}
+
+	/**
 	 * Logs unsubmission of form response
 	 *
 	 * @param    int    $responseId   Given response's ID
@@ -117,14 +128,15 @@ class FormResponseActivityHelper
 	 * @param    int      $responseId   Associated response's ID
 	 * @return   void
 	 */
-	protected function _logActivity($activity, $responseId)
+	protected function _logActivity($activity, $responseId, $details = "null")
 	{
 		$responseActivity = $this->_activityFactory->blank();
 
 		$responseActivity->set([
 			'action' => 'activity',
 			'description' => $activity,
-			'scope_id' => $responseId
+			'scope_id' => $responseId,
+			'details' => $details
 		]);
 
 		$responseActivity->save();

@@ -13,6 +13,7 @@ $this->css('formForm');
 $formId = $this->form->get('id');
 $formName = $this->form->get('name');
 $responseId = $this->response->get('id');
+$responsePermissions = $this->response->getUsergroupPermissions();
 $user = $this->response->getUser();
 $userId = $user->get('id');
 $userIsAdmin = $this->userIsAdmin;
@@ -40,6 +41,7 @@ $this->view('_forms_breadcrumbs', 'shared')
 						->set('current', 'Response')
 						->set('formId', $formId)
 						->set('responseId', $responseId)
+						->set('responsePermissions', $responsePermissions)
 						->set('userId', $userId)
 						->set('userIsAdmin', $userIsAdmin)
 						->display();
@@ -48,7 +50,7 @@ $this->view('_forms_breadcrumbs', 'shared')
 
 			<div class="col span12 omega">
 				<?php
-					$this->view('_surveyjs_library')
+					$this->view('_surveyjs_library', 'shared')
 						->set('form', $this->form)
 						->set('response', $this->response)
 						->display();

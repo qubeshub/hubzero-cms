@@ -197,7 +197,7 @@ const groupsAndRolesFormJson = {
             "searchEnabled": false,
             "isRequired": true,
             "choicesByUrl": {
-                "url": "https://example.com/index.php?option=com_groups&no_html=1&task=autocomplete&id[]={row.group}&roles=1",
+                "url": "index.php?option=com_groups&no_html=1&task=autocomplete&id[]={row.group}&roles=1",
                 "valueName": "id",
                 "titleName": "name"
             }
@@ -235,7 +235,7 @@ const groupsAndRolesAndPermissionsFormJson = {
             "isRequired": true,
             "searchEnabled": false,
             "choicesByUrl": {
-                "url": "https://example.com/index.php?option=com_groups&no_html=1&task=autocomplete&id[]={row.group}&roles=1",
+                "url": "index.php?option=com_groups&no_html=1&task=autocomplete&id[]={row.group}&roles=1",
                 "valueName": "id",
                 "titleName": "name"
             }
@@ -267,22 +267,7 @@ const groupVisibilityForm = new Survey.SurveyModel(groupsAndRolesFormJson);
 const userAccessibilityForm = new Survey.SurveyModel(usersAndPermissionsFormJson);
 const groupAccessibilityForm = new Survey.SurveyModel(groupsAndRolesAndPermissionsFormJson);
 
-// https://surveyjs.io/form-library/examples/dropdown-menu-load-data-from-restful-service/vanillajs#
-// https://surveyjs.io/form-library/examples/lazy-loading-dropdown/vanillajs#content-code
-lazyLoadUsersOrGroupsFunc = (_, options) => {
-    if (options.question.getType() === "dropdown" && 
-        ((options.question.name === "user") || 
-         (options.question.name === "group"))) {
-        const option = (options.question.name === "user" ? "members" : "groups");
-        const url = `https://example.com/index.php?option=com_` + option + `&no_html=1&task=autocomplete&admin=true&start=${options.skip}&limit=${options.take}&value=${options.filter}&total=1`;
-        sendRequest(url, (data) => {
-            const choices = data["items"].map((item) => {
-                return { value: item.id, text: item.name + ' (' + item.id + ')' };
-            });
-            options.setItems(choices, data["total"]);
-        });
-    }
-};
+// Lazy loading for users and groups
 editorsForm.onChoicesLazyLoad.add(lazyLoadUsersOrGroupsFunc);
 groupEditorsForm.onChoicesLazyLoad.add(lazyLoadUsersOrGroupsFunc);
 userVisibilityForm.onChoicesLazyLoad.add(lazyLoadUsersOrGroupsFunc);
@@ -290,20 +275,7 @@ groupVisibilityForm.onChoicesLazyLoad.add(lazyLoadUsersOrGroupsFunc);
 userAccessibilityForm.onChoicesLazyLoad.add(lazyLoadUsersOrGroupsFunc);
 groupAccessibilityForm.onChoicesLazyLoad.add(lazyLoadUsersOrGroupsFunc);
 
-// https://surveyjs.io/form-library/examples/lazy-loading-dropdown/vanillajs#content-code
-getUsersOrGroupsFunc = (_, options) => {
-    if (options.question.getType() === "dropdown" && 
-        ((options.question.name === "user") ||
-         (options.question.name === "group"))) {
-        const idStr = "id=" + options.values[0];
-        const option = (options.question.name === "user" ? "members" : "groups");
-        const url = `https://example.com/index.php?option=com_` + option + `&no_html=1&task=autocomplete&admin=true&${idStr}`;
-        sendRequest(url, (data) => { 
-            const choice = [data[0].name + ' (' + data[0].id + ')'];
-            options.setItems(choice);
-        });
-    }
-};
+// Display initial values for users and groups
 editorsForm.onGetChoiceDisplayValue.add(getUsersOrGroupsFunc);
 groupEditorsForm.onGetChoiceDisplayValue.add(getUsersOrGroupsFunc);
 userVisibilityForm.onGetChoiceDisplayValue.add(getUsersOrGroupsFunc);
@@ -714,7 +686,7 @@ function lazyLoadUsersForSummary(params, returnResultCallback) {
     const num_users = ids.length;
     let users = ids.slice(0, 2); // Only showing first two
     const idsStr = users.map((item) => "id[]=" + item.user).join("&");
-    fetch(`https://example.com/index.php?option=com_members&no_html=1&task=autocomplete&admin=true&${idsStr}`)
+    fetch(`index.php?option=com_members&no_html=1&task=autocomplete&admin=true&${idsStr}`)
         .then(response => response.json())
         .then(data => {
             users = data.map((item, idx) => item.name + (users[idx].hasOwnProperty('permission') ? ' (' + users[idx].permission + ')' : '')).join(', ') + ' and ' + Math.max(num_users-2, 0) + ' other(s)';
@@ -740,7 +712,7 @@ function lazyLoadGroupsForSummary(params, returnResultCallback) {
     let roles = ids.slice(0, 2); // Only showing first two
     const idsStr = roles.map((item) => "id[]=" + item.group).join("&");
     const ridsStr = roles.filter((item) => !isNaN(item.role) && item.role.trim() !== "").map((item) => "rid[]=" + item.role).join("&");
-    fetch(`https://example.com/index.php?option=com_groups&no_html=1&task=autocomplete&admin=true&${idsStr}&${ridsStr}&roles=2`)
+    fetch(`index.php?option=com_groups&no_html=1&task=autocomplete&admin=true&${idsStr}&${ridsStr}&roles=2`)
         .then(response => response.json())
         .then(data => {
             const groups = roles.map(item => capitalize(data.roles[item.role]) + ' of ' + data.groups[item.group] + (item.hasOwnProperty('permission') ? ' (' + item.permission + ')' : '')).join(', ') + ' and ' + Math.max(num_roles-2, 0) + ' other(s)';

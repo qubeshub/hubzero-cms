@@ -29,6 +29,7 @@ $steps = [
 
 $this->view('_ul_nav', 'shared')
 	->set('formId', $formId)
+	->set('showAccessBtn', false)
 	->set('current', $current)
 	->set('steps', $steps)
 	->display();

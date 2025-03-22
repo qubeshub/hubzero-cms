@@ -19,6 +19,7 @@ $formName = $form->get('name');
 $userIsAdmin = $this->userIsAdmin;
 $response = $this->response;
 $responseId = $response->get('id');
+$responsePermissions = $response->getUsergroupPermissions();
 $tagString = $this->tagString;
 $tagUpdateUrl = $this->tagUpdateUrl;
 $user = $response->getUser();
@@ -52,6 +53,10 @@ $this->view('_forms_breadcrumbs', 'shared')
 ?>
 
 <section class="main section">
+	<div class="save-notify">
+		<span></span>
+	</div>
+
 	<div class="grid">
 
 		<nav class="col span12 nav omega">
@@ -60,6 +65,7 @@ $this->view('_forms_breadcrumbs', 'shared')
 					->set('current', 'Feed')
 					->set('formId', $formId)
 					->set('responseId', $responseId)
+					->set('responsePermissions', $responsePermissions)
 					->set('userId', $userId)
 					->set('userIsAdmin', $userIsAdmin)
 					->display();

@@ -60,3 +60,35 @@ function sendRequest(url, onloadSuccessCallback) {
 function capitalize(str) {
     return str.charAt(0).toUpperCase() + str.slice(1)
 }
+
+// https://surveyjs.io/form-library/examples/dropdown-menu-load-data-from-restful-service/vanillajs#
+// https://surveyjs.io/form-library/examples/lazy-loading-dropdown/vanillajs#content-code
+lazyLoadUsersOrGroupsFunc = (_, options) => {
+    if (options.question.getType() === "dropdown" && 
+        ((options.question.name === "user") || 
+         (options.question.name === "group"))) {
+        const option = (options.question.name === "user" ? "members" : "groups");
+        const url = `https://example.com/index.php?option=com_` + option + `&no_html=1&task=autocomplete&admin=true&start=${options.skip}&limit=${options.take}&value=${options.filter}&total=1`;
+        sendRequest(url, (data) => {
+            const choices = data["items"].map((item) => {
+                return { value: item.id, text: item.name + ' (' + item.id + ')' };
+            });
+            options.setItems(choices, data["total"]);
+        });
+    }
+};
+
+// https://surveyjs.io/form-library/examples/lazy-loading-dropdown/vanillajs#content-code
+getUsersOrGroupsFunc = (_, options) => {
+    if (options.question.getType() === "dropdown" && 
+        ((options.question.name === "user") ||
+         (options.question.name === "group"))) {
+        const idStr = "id=" + options.values[0];
+        const option = (options.question.name === "user" ? "members" : "groups");
+        const url = `https://example.com/index.php?option=com_` + option + `&no_html=1&task=autocomplete&admin=true&${idStr}`;
+        sendRequest(url, (data) => { 
+            const choice = [data[0].name + ' (' + data[0].id + ')'];
+            options.setItems(choice);
+        });
+    }
+};

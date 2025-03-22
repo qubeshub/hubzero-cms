@@ -210,7 +210,59 @@ document.addEventListener("DOMContentLoaded", function() {
     if ($('#submitted').val()) {
         FormLibrary.showCompleteButton = false;
     }
-    loadSurvey();
+
+    // Load form if the element exists
+    if (document.getElementById("surveyjsForm")) {
+        loadSurvey();
+    }
+
+    $('#surveyjs-popup-submit').submit(function(event) {
+        event.preventDefault();
+        $.ajax({
+            url: $(this).attr('action'),
+            type: 'post',
+            data: $(this).serialize(),
+            success: function( data, status, jqXHR )
+            {
+                console.log(data);
+                console.log(status);
+            },
+            error: function( status, data, jqXHR )
+            {
+                console.log("Error in saving permissions!");
+            }
+        });
+    });
+
+    $('.surveyjs-popup-btn').on('click', function(event) {
+        event.preventDefault();
+        $('#surveyjs-popup').show();
+        const popupSurvey = new Survey.Model(document.getElementById("surveyjs-popup-json-form").textContent);
+        popupSurvey.onChoicesLazyLoad.add(lazyLoadUsersOrGroupsFunc);
+        popupSurvey.onGetChoiceDisplayValue.add(getUsersOrGroupsFunc);
+        const data = JSON.parse($('input[name="surveyjs-popup-json-data"]').val());
+        console.log(data);
+        popupSurvey.data = data;
+        SurveyUI.renderPopupSurvey(
+            popupSurvey,
+            document.getElementById("surveyjs-popup"),
+            {
+                isExpanded: true,
+                allowClose: true,
+                closeOnCompleteTimeout: -1,
+                onClose: () => { $('#surveyjs-popup').hide(); },
+                onComplete: () => {
+                    const data = popupSurvey.data;
+                    $('input[name="surveyjs-popup-json-data"]').val(JSON.stringify(data));    
+                    console.log(JSON.stringify(data));
+                    $('#surveyjs-popup').hide();
+                    $('#surveyjs-popup-submit').submit();
+                    notifySaved();
+                },
+                completeText: "Save"
+            }
+        );
+    });
 });
 
 HUB.FORMS.FormLibrary = FormLibrary
