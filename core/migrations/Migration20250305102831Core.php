@@ -48,7 +48,7 @@ class Migration20250305102831Core extends Base
 	{
 		if (!$this->db->tableExists('#__ratelimit'))
 		{
-			$query = "DROP TABLE #__ratelimite;";
+			$query = "DROP TABLE #__ratelimit;";
 			$this->db->setQuery($query);
 			$this->db->execute();
 		}
