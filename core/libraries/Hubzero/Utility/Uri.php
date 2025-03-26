@@ -303,7 +303,7 @@ class Uri
 	 * @param   string  $value  Value of the query variable.
 	 * @return  object  $this
 	 */
-	public function setVar($name, $value)
+	public function setUriVar($name, $value)
 	{
 		$this->vars[$name] = $value;
 
@@ -318,7 +318,7 @@ class Uri
 	 * @param   string   $name  Name of the query variable to check.
 	 * @return  boolean  True if the variable exists.
 	 */
-	public function hasVar($name)
+	public function hasUriVar($name)
 	{
 		return array_key_exists($name, $this->vars);
 	}
@@ -330,7 +330,7 @@ class Uri
 	 * @param   string  $default  Default value to return if the variable is not set.
 	 * @return  array   Query variables.
 	 */
-	public function getVar($name, $default = null)
+	public function getUriVar($name, $default = null)
 	{
 		if (array_key_exists($name, $this->vars))
 		{
@@ -346,7 +346,7 @@ class Uri
 	 * @param   string  $name  Name of variable to remove.
 	 * @return  object  $this
 	 */
-	public function delVar($name)
+	public function delUriVar($name)
 	{
 		if (array_key_exists($name, $this->vars))
 		{

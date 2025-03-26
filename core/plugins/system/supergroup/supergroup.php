@@ -209,7 +209,7 @@ class plgSystemSupergroup extends \Hubzero\Plugin\Plugin
 					// set the new uri path and query string
 					$uri->setPath($routeResult);
 					$uri->setQuery($query);
-					$uri->delVar('option');
+					$uri->delUriVar('option');
 				}
 			}
 

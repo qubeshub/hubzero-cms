@@ -112,7 +112,7 @@ $base = 'index.php?option=' . $this->option . '&controller=' . $this->controller
 						</div>
 					<?php endif; ?>
 				</h2>
-				<?php foreach ($endpoints[$activeVersion] as $endpoint): ?>
+				<?php foreach (isset($endpoints[$activeVersion]) ? $endpoints[$activeVersion] : array() as $endpoint): ?>
 					<?php
 						$key = $endpoint['_metadata']['component'] . '-' . $endpoint['_metadata']['method'];
 

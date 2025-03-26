@@ -194,7 +194,7 @@ class plgResourcesCoins extends \Hubzero\Plugin\Plugin
 		{
 			$uri = Hubzero\Utility\Uri::getInstance();
 
-			$doi = $uri->getVar('host') . ':' . Config::get('sitename');
+			$doi = $uri->getUriVar('host') . ':' . Config::get('sitename');
 		}
 
 		$title[] = 'rft_id=info%3Adoi%2F' . urlencode($doi);
