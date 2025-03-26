@@ -45,7 +45,7 @@ class Jobs extends SiteController
 	 * @param     mixed  $value    Value of the property
 	 * @return    void
 	 */
-	public function setVar($property, $value)
+	public function setProperty($property, $value)
 	{
 		$this->$property = $value;
 	}
@@ -56,7 +56,7 @@ class Jobs extends SiteController
 	 * @param      string $property Name of property
 	 * @return     mixed
 	 */
-	public function getVar($property)
+	public function getProperty($property)
 	{
 		return $this->$property;
 	}
@@ -1908,7 +1908,7 @@ class Jobs extends SiteController
 						$nuk = explode('=', $c);
 
 						// set filter variables
-						$this->setVar($nuk[0], $nuk[1]);
+						$this->setProperty($nuk[0], $nuk[1]);
 					}
 				}
 			}
@@ -1932,26 +1932,26 @@ class Jobs extends SiteController
 		// jobs filters
 		if ($jobs)
 		{
-			$filters['sortby']   = $this->getVar('sortby') && $checkstored
-								 ? $this->getVar('sortby', 'title') : trim(Request::getWord('sortby', 'title'));
-			$filters['category'] = $this->getVar('category') && $checkstored
-								 ? $this->getVar('category') : Request::getInt('category', 'all');
+			$filters['sortby']   = $this->getProperty('sortby') && $checkstored
+								 ? $this->getProperty('sortby', 'title') : trim(Request::getWord('sortby', 'title'));
+			$filters['category'] = $this->getProperty('category') && $checkstored
+								 ? $this->getProperty('category') : Request::getInt('category', 'all');
 		}
 		else
 		{
-			$filters['sortby']   = $this->getVar('sortby') && $checkstored
-								 ? $this->getVar('sortby') : trim(Request::getString('sortby', 'lastupdate'));
-			$filters['category'] = $this->getVar('category') && $checkstored
-								 ? $this->getVar('category') : Request::getInt('category', 0);
+			$filters['sortby']   = $this->getProperty('sortby') && $checkstored
+								 ? $this->getProperty('sortby') : trim(Request::getString('sortby', 'lastupdate'));
+			$filters['category'] = $this->getProperty('category') && $checkstored
+								 ? $this->getProperty('category') : Request::getInt('category', 0);
 		}
 
-		$filters['type']     = $this->getVar('type') && $checkstored ? $this->getVar('type') : Request::getInt('type', 0);
-		$filters['search']   = $this->getVar('search') && $checkstored ? $this->getVar('search') : trim(Request::getString('q', ''));
+		$filters['type']     = $this->getProperty('type') && $checkstored ? $this->getProperty('type') : Request::getInt('type', 0);
+		$filters['search']   = $this->getProperty('search') && $checkstored ? $this->getProperty('search') : trim(Request::getString('q', ''));
 		$filters['filterby'] = trim(Request::getString('filterby', 'all'));
 		$filters['sortdir']  = Request::getString('sortdir', 'ASC');
 
 		// did we get stored prefs?
-		$filters['match']    = $this->getVar('match') && $checkstored ? $this->getVar("match") : Request::getInt('match', 0);
+		$filters['match']    = $this->getProperty('match') && $checkstored ? $this->getProperty("match") : Request::getInt('match', 0);
 
 		// Paging vars
 		$filters['limit']    = Request::getInt('limit', $this->config->get('jobslimit'));
