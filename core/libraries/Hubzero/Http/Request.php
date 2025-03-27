@@ -287,6 +287,23 @@ class Request extends BaseRequest
 	}
 
 	/**
+	 * Fetches and returns a given variable as a simple array.
+	 *
+	 * @param   string  $key      Request key
+	 * @param   mixed   $default  Default value
+	 * @param   string  $hash     Where the var should come from (POST, GET, FILES, COOKIE, METHOD)
+	 * @return  array   Request variable
+	 */
+	public function getSimpleArray($key = null, $default = array(), $hash = 'input')
+	{
+		$result = (array) $this->getVar($key, $default, $hash, 'array');
+
+		$result = array_filter($result, function($v) { return !is_array($v); });
+
+		return $result;
+	}
+
+	/**
 	 * Fetches and returns a given variable as a string.
 	 *
 	 * @param   string  $key      Request key
