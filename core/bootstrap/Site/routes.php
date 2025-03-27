@@ -358,7 +358,7 @@ $router->rules('parse')->append('menu', function ($uri)
 	$query = $uri->getQuery(true);
 
 	// Handle an empty URL (special case)
-	if (empty($route) && \Request::getVar('option', '', 'post') == '')
+	if (empty($route) && \Request::getCmd('option', '', 'post') == '')
 	{
 		// If route is empty AND option is set in the query, assume it's non-sef url, and parse appropriately
 		if (isset($query['option'])) // || isset($query['Itemid']))

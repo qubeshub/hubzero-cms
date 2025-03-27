@@ -20,7 +20,7 @@ if($menu->getActive()) {
 }
 
 // Body class setting
-$bodyClass = 'page-' . Request::getVar('option', '') . ' ' . Request::getVar('option', '') . $active;
+$bodyClass = 'page-' . Request::getCmd('option', '') . ' ' . Request::getCmd('option', '') . $active;
 
 // Figure out if this page is a home page
 $isFrontPage = ($menu->getActive() == $menu->getDefault());
