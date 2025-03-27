@@ -296,14 +296,15 @@ class Publication extends Table
 					}
 				}
 				$text = implode(' ', $words);
+				$escapedtext = $this->_db->escape($text);
 
-				$query .= " AND ((MATCH(V.title) AGAINST ('$text' IN BOOLEAN MODE)) OR" 
-				. " (MATCH(V.abstract,V.description) AGAINST ('$text' IN BOOLEAN MODE))) ";
+				$query .= " AND ((MATCH(V.title) AGAINST ('$escapedtext' IN BOOLEAN MODE)) OR" 
+				. " (MATCH(V.abstract,V.description) AGAINST ('$escapedtext' IN BOOLEAN MODE))) ";
 
 				if ($componentParams->get('include_author_name_in_search'))
 				{
 					$query .= " OR (V.id in (SELECT publication_version_id"
-						.	" from jos_publication_authors as A where lower(A.name) like '%$text%'))";
+						.	" from jos_publication_authors as A where lower(A.name) like '%$escapedtext%'))";
 				}
 		}
 
