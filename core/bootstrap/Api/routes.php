@@ -34,7 +34,7 @@ $router->rules('build')->append('component', function ($uri)
 	{
 		$query = $router->preprocess($query);
 		$parts = $router->build($query);
-
+		$parts = array_filter($parts, function($v) { return !is_array($v); });
 		$tmp   = implode('/', $parts);
 	}
 
