@@ -272,7 +272,7 @@ class Manager extends Obj
 
 		foreach ($method as $m)
 		{
-			if (\App::get('request')->getVar($token, '', $m, 'alnum'))
+			if (\Request::getVar($token, '', $m, 'alnum'))
 			{
 				$result = true;
 				break;

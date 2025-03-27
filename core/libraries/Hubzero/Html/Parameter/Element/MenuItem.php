@@ -136,11 +136,11 @@ class MenuItem extends Element
 					$item = &$groupedList[$type->menutype][$i];
 
 					// If menutype is changed but item is not saved yet, use the new type in the list
-					if (App::get('request')->getString('option', '', 'get') == 'com_menus')
+					if (Request::getString('option', '', 'get') == 'com_menus')
 					{
-						$currentItemArray = App::get('request')->getVar('cid', array(0), '', 'array');
+						$currentItemArray = Request::getVar('cid', array(0), '', 'array');
 						$currentItemId    = (int) $currentItemArray[0];
-						$currentItemType  = App::get('request')->getString('type', $item->type, 'get');
+						$currentItemType  = Request::getString('type', $item->type, 'get');
 						if ($currentItemId == $item->id && $currentItemType != $item->type)
 						{
 							$item->type = $currentItemType;

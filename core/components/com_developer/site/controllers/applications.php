@@ -608,7 +608,7 @@ class Applications extends SiteController
 		$request->server['REQUEST_METHOD'] = 'POST';
 		$request->request['client_id'] = $application->get('client_id');
 		$request->request['redirect_uri'] = $application->get('redirect_uri');
-		$request->request['code'] = $code_url->getVar('code');
+		$request->request['code'] = $code_url->getUriVar('code');
 		$request->request['grant_type'] = 'authorization_code';
 
 		// Ask OAuth for an access token to be added to the application

@@ -357,7 +357,7 @@ abstract class Model extends Obj
 
 		if (\App::get('config')->get('debug'))
 		{
-			$message = '[' . \App::get('request')->getVar('REQUEST_URI', '', 'server') . '] [' . $message . ']';
+			$message = '[' . Request::getVar('REQUEST_URI', '', 'server') . '] [' . $message . ']';
 		}
 
 		$type = strtolower($type);
