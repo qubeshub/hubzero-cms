@@ -125,9 +125,9 @@ class Citations extends SiteController
 			'year_end'        => Request::getInt('year_end', gmdate("Y")),
 			'filter'          => Request::getString('filter', ''),
 			'sort'            => Request::getString('sort', 'created DESC'),
-			'reftype'         => Request::getArray('reftype', array('research' => 1, 'education' => 1, 'eduresearch' => 1, 'cyberinfrastructure' => 1)),
-			'geo'             => Request::getArray('geo', array('us' => 1, 'na' => 1,'eu' => 1, 'as' => 1)),
-			'aff'             => Request::getArray('aff', array('university' => 1, 'industry' => 1, 'government' => 1)),
+			'reftype'         => Request::getSimpleArray('reftype', array('research' => 1, 'education' => 1, 'eduresearch' => 1, 'cyberinfrastructure' => 1)),
+			'geo'             => Request::getSimpleArray('geo', array('us' => 1, 'na' => 1,'eu' => 1, 'as' => 1)),
+			'aff'             => Request::getSimpleArray('aff', array('university' => 1, 'industry' => 1, 'government' => 1)),
 			'startuploaddate' => Request::getString('startuploaddate', '0000-00-00'),
 			'enduploaddate'   => Request::getString('enduploaddate', '0000-00-00'),
 			'scope'           => 'hub'
