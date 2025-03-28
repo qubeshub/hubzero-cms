@@ -38,9 +38,8 @@ if ($userIsAdmin)
 else
 {
   $breadcrumbs = [
-    'Responses' => ['usersResponsesUrl'],
     $formName => ['formsDisplayUrl', [$formId]],
-
+    'Responses' => ['usersResponsesUrl', [$formId]]
   ];
 }
 

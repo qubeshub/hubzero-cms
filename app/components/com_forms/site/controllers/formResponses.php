@@ -144,13 +144,13 @@ class FormResponses extends SiteController
 		$json = $response->getJson();
 		$form = $response->getForm();
 		
-		$isComponentAdmin = $this->_auth->currentCanCreate();
+		$isFormAdmin = $this->_auth->canCurrentUserEditForm($form);
 
 		$this->view
 			->set('form', $form)
 			->set('response', $response)
 			->set('json', $json)
-			->set('userIsAdmin', $isComponentAdmin)
+			->set('userIsAdmin', $isFormAdmin)
 			->display();
 	}
 
@@ -350,14 +350,14 @@ class FormResponses extends SiteController
 			->order('id', 'desc')
 			->rows();
 
-		$isComponentAdmin = $this->_auth->currentCanCreate();
+		$isFormAdmin = $this->_auth->canCurrentUserEditForm($form);
 
 		$this->view
 			->set('comment', $comment)
 			->set('createCommentUrl', $createCommentAction)
 			->set('feedItems', $feedItems)
 			->set('form', $form)
-			->set('userIsAdmin', $isComponentAdmin)
+			->set('userIsAdmin', $isFormAdmin)
 			->set('response', $response)
 			->set('tagString', $tagString)
 			->set('tagUpdateUrl', $tagUpdateUrl)
