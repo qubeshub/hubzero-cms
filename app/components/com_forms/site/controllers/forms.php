@@ -200,10 +200,9 @@ class Forms extends SiteController
 	 */
 	public function deleteTask()
 	{
-		$this->bouncer->redirectUnlessAuthorized('core.delete');
-
 		$formId = $this->params->getInt('id');
 		$form = Form::oneOrFail($formId);
+		$this->bouncer->redirectUnlessCanEditForm($form);
 
 		if ($form->destroy())
 		{

@@ -9,11 +9,9 @@ namespace Components\Forms\Helpers;
 
 $componentPath = Component::path('com_forms');
 
-require_once "$componentPath/helpers/formsRouter.php";
 require_once "$componentPath/helpers/pageBouncer.php";
 
 use Components\Forms\Helpers\PageBouncer;
-use Components\Forms\Helpers\FormsRouter as RoutesHelper;
 use Components\Forms\Helpers\MockProxy;
 use Hubzero\Utility\Arr;
 
@@ -28,8 +26,6 @@ class ComFormsPageBouncer extends PageBouncer
 	 */
 	public function __construct($args = [])
 	{
-		$this->_notify = Arr::getValue($args, 'notify', new MockProxy(['class' => 'Notify']));
-		$this->_routes = new RoutesHelper();
 		$this->_userHelper = Arr::getValue($args, 'user', new MockProxy(['class' => 'User']));
 		parent::__construct($args);
 	}

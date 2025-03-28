@@ -83,6 +83,7 @@ class FormsAdmin extends SiteController
 	{
 		$formId = $this->_params->getInt('form_id');
 		$form = Form::oneOrFail($formId);
+		$this->_bouncer->redirectUnlessCanEditForm($form);
 
 		$responses = $form->getResponses()
 			->paginated('limitstart', 'limit');
@@ -201,7 +202,6 @@ class FormsAdmin extends SiteController
 	{
 		$formId = $this->_params->getInt('form_id');
 		$form = Form::oneOrFail($formId);
-
 		$this->_bouncer->redirectUnlessCanEditForm($form);
 
 		$responses = $form->getResponses()->rows();

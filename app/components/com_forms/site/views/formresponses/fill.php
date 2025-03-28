@@ -16,12 +16,25 @@ $responseId = $this->response->get('id');
 $responsePermissions = $this->response->getUsergroupPermissions();
 $user = $this->response->getUser();
 $userId = $user->get('id');
+$userName = $user->get('name');
 $userIsAdmin = $this->userIsAdmin;
 
-$breadcrumbs = [
-	 $formName => ['formsDisplayUrl', [$formId]],
-	'Fill' => ['formsEditUrl', [$formId]]
-];
+if ($userIsAdmin)
+{
+	$breadcrumbs = [
+		$formName => ['formsDisplayUrl', [$formId]],
+		'Manage' => ['formsEditUrl', [$formId]],
+		'Responses' => ['formsResponseList', [$formId]],
+		$userName => ['responseFeedUrl', [$responseId]]
+	];
+} else {
+	$breadcrumbs = [
+		$formName => ['formsDisplayUrl', [$formId]],
+		'Responses' => ['usersResponsesUrl', [$formId]]
+	];
+}
+$breadcrumbs['Fill'] = ['formsEditUrl', [$formId]];
+
 $this->view('_forms_breadcrumbs', 'shared')
 	->set('breadcrumbs', $breadcrumbs)
 	->set('page', Lang::txt('COM_FORMS_FIELDS_MANAGE', $formName))

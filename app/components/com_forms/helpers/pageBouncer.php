@@ -10,9 +10,11 @@ namespace Components\Forms\Helpers;
 $componentPath = Component::path('com_forms');
 
 require_once "$componentPath/helpers/formsAuth.php";
+require_once "$componentPath/helpers/formsRouter.php";
 require_once "$componentPath/helpers/mockProxy.php";
 
 use Components\Forms\Helpers\FormsAuth;
+use Components\Forms\Helpers\FormsRouter as RoutesHelper;
 use Components\Forms\Helpers\MockProxy;
 use Hubzero\Utility\Arr;
 
@@ -29,6 +31,8 @@ class PageBouncer
 	 */
 	public function __construct($args = [])
 	{
+		$this->_notify = Arr::getValue($args, 'notify', new MockProxy(['class' => 'Notify']));
+		$this->_routes = Arr::getValue($args, 'routes', new RoutesHelper());
 		$this->_permitter = Arr::getValue($args, 'permitter', new FormsAuth());
 		$this->_router = Arr::getValue($args, 'router', new MockProxy(['class' => 'App']));
 	}
@@ -42,14 +46,14 @@ class PageBouncer
 	 */
 	public function redirectUnlessCanEditForm($form, $url = null)
 	{
-		$url = $url ? $url : '/forms';
-
-		// $this->redirectUnlessAuthorized('core.edit', $url);
+		$url = $url ? $url : $this->_routes->formsDisplayUrl($form->get('id'));
 
 		$canEdit = $this->_permitter->canCurrentUserEditForm($form);
 
 		if (!$canEdit)
 		{
+			$message = Lang::txt('COM_FORMS_NOTICES_FORM_MANAGE_NO_PERMISSION');
+			$this->_notify->warning($message);
 			$this->_router->redirect($url);
 		}
 	}
