@@ -86,7 +86,11 @@ class plgSearchSolr extends \Hubzero\Plugin\Plugin
 					$message = $index->delete($modelIndexId);
 					$method = 'delete';
 				}
-				Event::trigger('search.sendSolrRequest', array($modelIndex, $method));
+				if ($modelIndex)
+				{
+					Event::trigger('search.sendSolrRequest', array($modelIndex, $method));
+				}
+
 				if ($message)
 				{
 					Notify::error($message);
