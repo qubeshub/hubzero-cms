@@ -37,8 +37,35 @@ $formJson = '{
       "name": "page1",
       "elements": [
         {
+          "type": "dropdown",
+          "name": "accessibility",
+          "title": "General Access",
+          "defaultValueExpression": "restricted",
+          "isRequired": true,
+          "choices": [
+            {
+              "value": "anyone",
+              "text": "Anyone"
+            },
+            {
+              "value": "qubes",
+              "text": "QUBES Members"
+            },
+            {
+              "value": "readonly",
+              "text": "Read-only"
+            },
+            {
+              "value": "restricted",
+              "text": "Restricted"
+            }
+          ],
+          "allowClear": false
+        },
+        {
           "type": "matrixdynamic",
           "name": "userAccessibility",
+          "visibleIf": "{accessibility} == \'readonly\' || {accessibility} == \'restricted\'",
           "title": "User Access",
           "columns": [
             {
@@ -75,6 +102,7 @@ $formJson = '{
         {
           "type": "matrixdynamic",
           "name": "groupAccessibility",
+          "visibleIf": "{accessibility} == \'readonly\' || {accessibility} == \'restricted\'",
           "title": "Group Access",
           "columns": [
             {
@@ -123,6 +151,7 @@ $formJson = '{
       ]
     }
   ],
+  "clearInvisibleValues": "none",
   "widthMode": "static"
 }';
 

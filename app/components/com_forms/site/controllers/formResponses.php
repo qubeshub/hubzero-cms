@@ -421,6 +421,17 @@ class FormResponses extends SiteController
 		$permissions = $this->_params->get('surveyjs-popup-json-data');
 		$json = json_decode($permissions, true);
 
+		// General permissions
+		Permissions::setPermissions($response, $json, 'response');
+
+		if (!$response->save()) {
+			$response = Array(
+				'status' => "Failed to save response data."
+			);
+			echo json_encode($response);
+			exit();
+		}
+
 		if (!Permissions::setUsergroupPermissions($response, $json, 'response')) {
 			$response = Array(
 				'status' => "Failed to save response permissions."

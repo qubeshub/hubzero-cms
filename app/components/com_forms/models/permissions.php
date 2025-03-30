@@ -59,11 +59,19 @@ class Permissions extends Relational
      * @param   mixed  $id  The primary key field value to use to retrieve one row
 	 * @return  \Hubzero\Database\Relational|static
      */
-    public static function setPermissions($form, $json)
+    public static function setPermissions($obj, $json, $obj_type='form')
     {
-		$form->set('visible', (array_key_exists('visibility', $json) ? self::$surveyjs_sql_map[$json['visibility']] : 0));
-		$form->set('access', (array_key_exists('accessibility', $json) ? self::$surveyjs_sql_map[$json['accessibility']] : 1));
-		$form->set('editable', (array_key_exists('editing', $json) ? self::$surveyjs_sql_map[$json['editing']] : 0));
+        $default = [
+            'access' => ($obj_type == 'form' ? 1 : 0), // fill default for form is anyone; response is restricted
+            'visible' => 0,
+            'editable' => 0
+        ];
+        $obj->set('access', (array_key_exists('accessibility', $json) ? self::$surveyjs_sql_map[$json['accessibility']] : $default['access']));
+
+        if ($obj_type == 'form') {
+		    $obj->set('visible', (array_key_exists('visibility', $json) ? self::$surveyjs_sql_map[$json['visibility']] : $default['visible']));
+		    $obj->set('editable', (array_key_exists('editing', $json) ? self::$surveyjs_sql_map[$json['editing']] : $default['editable']));
+        }
     }
 
     public static function setUsergroupPermissions($obj, $json, $obj_type='form')
@@ -165,6 +173,12 @@ class Permissions extends Relational
                     break;
             }
         });
+
+        // Add access, even though technically not usergroup permission - much cleaner code
+        $reverse_access_map = self::$surveyjs_sql_map;
+        unset($reverse_access_map['hidden']);
+        $reverse_access_map = array_flip($reverse_access_map);
+        $permissions->accessibility = $reverse_access_map[$obj->get('access')];
 
         return json_encode($permissions);
     }
