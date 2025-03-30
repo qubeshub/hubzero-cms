@@ -87,7 +87,7 @@ function submitSurvey() {
         notifySaved();
         return response.json(); // Parse the JSON from the response
     })
-    .then(data => console.log('Received JSON data:', data))
+    // .then(data => console.log('Received JSON data:', data))
     .catch(error => console.error(error));
 }
 
@@ -143,7 +143,7 @@ FormLibrary.onUploadFiles.add((_, options) => {
     })
         .then((response) => response.json())
         .then((data) => {
-            console.log(data);
+            // console.log(data);
             options.callback(
                 options.files.map((file) => {
                     return {
@@ -224,8 +224,8 @@ document.addEventListener("DOMContentLoaded", function() {
             data: $(this).serialize(),
             success: function( data, status, jqXHR )
             {
-                console.log(data);
-                console.log(status);
+                // console.log(data);
+                // console.log(status);
             },
             error: function( status, data, jqXHR )
             {
@@ -241,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function() {
         popupSurvey.onChoicesLazyLoad.add(lazyLoadUsersOrGroupsFunc);
         popupSurvey.onGetChoiceDisplayValue.add(getUsersOrGroupsFunc);
         const data = JSON.parse($('input[name="surveyjs-popup-json-data"]').val());
-        console.log(data);
+        // console.log(data);
         popupSurvey.data = data;
         SurveyUI.renderPopupSurvey(
             popupSurvey,
@@ -254,7 +254,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 onComplete: () => {
                     const data = popupSurvey.data;
                     $('input[name="surveyjs-popup-json-data"]').val(JSON.stringify(data));    
-                    console.log(JSON.stringify(data));
+                    // console.log(JSON.stringify(data));
                     $('#surveyjs-popup').hide();
                     $('#surveyjs-popup-submit').submit();
                     notifySaved();
