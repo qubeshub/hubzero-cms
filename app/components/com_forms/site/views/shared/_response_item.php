@@ -8,6 +8,14 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
+$componentPath = \Component::path('com_forms');
+
+require_once "$componentPath/helpers/formsAuth.php";
+
+use Components\Forms\Helpers\FormsAuth;
+
+$formsAuth = new FormsAuth();
+
 $checkboxName = $this->checkboxName;
 $response = $this->response;
 $reviewer = $response->getReviewer();
@@ -36,9 +44,9 @@ $columns = $this->columns;
 			<input type="checkbox" name="response_ids[]" value="<?php echo $responseId; ?>">
 		</td>
 	<?php	endif; ?>
-
+	<?php foreach ($columns as $field => $title): ?>
 	<?php 
-	if (isset($columns['id'])):
+	if ($field == 'id'):
 		echo "<td>";
 		$this->view('_link', 'shared')
 			->set('content', $responseId)
@@ -49,8 +57,8 @@ $columns = $this->columns;
 	endif;
 	?>
 
-<?php 
-	if (isset($columns['form'])):
+	<?php 
+	if ($field == 'form'):
 		echo "<td>";
 		$this->view('_link', 'shared')
 			->set('content', $formName)
@@ -62,7 +70,7 @@ $columns = $this->columns;
 	?>
 
 	<?php 
-	if (isset($columns['user_id'])):
+	if ($field == 'user_id'):
 		echo "<td>";
 		$this->view('_link', 'shared')
 			->set('content', $usersName)
@@ -74,7 +82,7 @@ $columns = $this->columns;
 	?>
 
 	<?php 
-	if (isset($columns['completion_percentage'])):
+	if ($field == 'completion_percentage'):
 		echo "<td>";
 		echo "$responseProgress%"; 
 		echo "</td>";
@@ -82,7 +90,7 @@ $columns = $this->columns;
 	?>
 
 	<?php 
-	if (isset($columns['created'])):
+	if ($field == 'created'):
 		echo "<td>";
 		$this->view('_date', 'shared')
 			->set('date', $responseCreated)
@@ -92,7 +100,7 @@ $columns = $this->columns;
 	?>
 
 	<?php
-	if (isset($columns['modified'])):
+	if ($field == 'modified'):
 		echo "<td>";
 		$this->view('_date', 'shared')
 			->set('date', $responseModified)
@@ -102,7 +110,7 @@ $columns = $this->columns;
 	?>
 
 	<?php
-	if (isset($columns['submitted'])):
+	if ($field == 'submitted'):
 		echo "<td>";
 		$this->view('_date', 'shared')
 			->set('date', $responseSubmitted)
@@ -112,7 +120,7 @@ $columns = $this->columns;
 	?>
 
 	<?php
-	if (isset($columns['accepted'])):
+	if ($field == 'accepted'):
 		echo "<td>";
 		$this->view('_date', 'shared')
 			->set('date', $responseAccepted)
@@ -122,7 +130,7 @@ $columns = $this->columns;
 	?>
 
 	<?php
-	if (isset($columns['reviewed_by'])):
+	if ($field == 'reviewed_by'):
 		echo "<td>";
 		$this->view('_link', 'shared')
 			->set('content', $reviewerName)
@@ -133,4 +141,27 @@ $columns = $this->columns;
 	endif;
 	?>
 
+	<?php 
+	if ($field == 'action'):
+		echo "<td>";
+		if ($formsAuth->canCurrentUserFillResponse($response)) {
+			$this->view('_link', 'shared')
+				->set('content', 'Edit')
+				->set('urlFunction', 'formResponseFillUrl')
+				->set('urlFunctionArgs', [$responseId])
+				->set('classes', 'icon-edit btn')
+				->display();
+		} else {
+			$this->view('_link', 'shared')
+				->set('content', 'View')
+				->set('urlFunction', 'formResponseViewUrl')
+				->set('urlFunctionArgs', [$responseId])
+				->set('classes', 'icon-eye-open btn')
+				->display();
+		}
+		echo "</td>";
+	endif;
+	?>
+
+	<?php endforeach; ?>
 </tr>

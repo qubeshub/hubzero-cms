@@ -25,9 +25,9 @@ $userId = $this->userId;
 $userIsAdmin = $this->userIsAdmin;
 
 $steps = [
-	'Feed' => $routes->responseFeedUrl($responseId),
+	'Response' => $routes->formResponseFillUrl($responseId),
+	'Feed' => $routes->responseFeedUrl($responseId)
 	// 'Steps' => $routes->usersFormPrereqsUrl($formId, $userId),
-	'Response' => $routes->formResponseFillUrl($responseId)
 ];
 
 $formJson = '{

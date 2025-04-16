@@ -101,9 +101,8 @@ class PageBouncer
 	 */
 	public function redirectUnlessCanFillResponse($response, $url = null)
 	{
-		$url = $url ? $url : '/forms';
+		$url = $url ? $url : $this->_routes->formsDisplayUrl($response->getFormId());
 
-		// $this->redirectIfFormNotOpen($response->getForm(), $url);
 		$canFill = $this->_permitter->canCurrentUserFillResponse($response);
 
 		if (!$canFill)
@@ -121,7 +120,7 @@ class PageBouncer
 	 */
 	public function redirectUnlessCanViewResponse($response, $url = null)
 	{
-		$url = $url ? $url : '/forms';
+		$url = $url ? $url : $this->_routes->formsDisplayUrl($response->getFormId());
 
 		$canView = $this->_permitter->canCurrentUserViewResponse($response);
 

@@ -155,6 +155,30 @@ class FormResponses extends SiteController
 	}
 
 	/**
+	 * Fill response
+	 *
+	 * @return   void
+	 */
+	public function viewTask()
+	{
+		$responseId = $this->_params->getInt('response_id', 0);
+		$response = FormResponse::oneOrFail($responseId);
+		$this->_pageBouncer->redirectUnlessCanViewResponse($response);
+		$json = $response->getJson();
+		$form = $response->getForm();
+				
+		$isFormAdmin = $this->_auth->canCurrentUserEditForm($form);
+
+		$this->view
+			->setLayout('fill')
+			->set('form', $form)
+			->set('response', $response)
+			->set('json', $json)
+			->set('userIsAdmin', $isFormAdmin)
+			->display();
+	}
+
+	/**
 	 * Creates response record using given data
 	 *
 	 * @param    array    $responseData   Response instantiation data
@@ -285,27 +309,21 @@ class FormResponses extends SiteController
 	{
 		$formId = $this->_params->getInt('form_id');
 		$form = Form::one($formId);
-		
+		$filter = $this->_params->getWord('filter', 'all');
+
 		$currentUserId = User::get('id');
-		$responses = FormResponse::all();
-		if ($formId) {
-			$responses = $responses->whereEquals('form_id', $formId);
-		} else {
-			$responses = $responses->join('#__forms_forms AS F', 'form_id', 'F.id', 'left')
-								   ->select('#__forms_form_responses.*, F.name AS form');
-		}
-		$responses = $responses->whereEquals('user_id', $currentUserId)
-			->paginated('limitstart', 'limit');
+		$responses = FormResponse::allForUser($currentUserId, $formId, $filter);
 		$responses = $this->_sortResponses($responses);
 		
 		$responsesListUrl = $this->_routes->usersResponsesUrl($formId);
-		$feedItems = ResponseFeedItem::allForUser($currentUserId, $formId);
+		$feedItems = ResponseFeedItem::allForUser($currentUserId, $formId, $filter);
 		$feedItems = $feedItems->order('created', 'desc');
 
 		$this->view
 			->set('feedItems', $feedItems)
 			->set('responses', $responses)
 			->set('form', $form)
+			->set('filter', $filter)
 			->set('listUrl', $responsesListUrl)
 			->display();
 	}
@@ -330,7 +348,7 @@ class FormResponses extends SiteController
 	}
 
 	/**
-	 * Renders response's feed
+	 * Render's responses feed
 	 *
 	 * @return   void
 	 */
@@ -339,6 +357,7 @@ class FormResponses extends SiteController
 		$createCommentAction = $this->_routes->createResponseCommentUrl();
 		$responseId = $this->_params->getInt('response_id');
 		$response = FormResponse::oneOrFail($responseId);
+		$this->_pageBouncer->redirectUnlessCanFillResponse($response);
 		$form = $response->getForm();
 		$tagUpdateUrl = $this->_routes->updateResponsesTagsUrl();
 

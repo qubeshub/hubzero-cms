@@ -19,4 +19,5 @@ $this->css('surveyjs/survey-core.min.css')
     <div id="formLibrary" style="height: 100vh;"></div>
     <input type="hidden" name="form_id" value="<?php echo $this->form->get('id'); ?>">
     <input type="hidden" name="response_id" value="<?php echo $this->response->get('id'); ?>">
+    <input type="hidden" name="response_action" value="<?php echo $this->action; ?>">
 </form>

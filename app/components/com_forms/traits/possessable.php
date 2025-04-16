@@ -14,6 +14,11 @@ use Components\Forms\Models\Permissions;
 trait possessable
 {
 
+	public function isAdmin($userId)
+	{
+		return User::authorise('core.admin') || $this->isOwnedBy($userId);
+	}
+
 	/**
 	 * Does record belong to user with given ID
 	 *
@@ -39,8 +44,7 @@ trait possessable
 
 	private function _checkPermissionFor($userId, $permission, $global)
 	{
-		$canDo = ((User::authorise('core.admin')) || // Admin
-				  ($this->isOwnedBy($userId)) || // Owner
+		$canDo = (($this->isAdmin($userId)) || // Owner or Site admin
 				  ($this->get($global) == 1) || // Anyone
 				  ($this->get($global) == 2) && !User::isGuest()); // QUBES Member
 
@@ -84,6 +88,33 @@ trait possessable
 		$obj_type = (static::class == "Components\Forms\Models\Form" ? 'form' : 'response');
 
 		return Permissions::getUsergroupPermissions($this, $obj_type);
+	}
+
+	public function whereShared()
+	{
+		$currentUserId = User::get('id');
+		$obj_type = (static::class == "Components\Forms\Models\Form" ? 'form' : 'response');
+		$obj_table = ($obj_type == 'form') ? '#__forms_forms' : '#__forms_form_responses';
+		$obj_uid = ($obj_type == 'form') ? 'created_by' : 'user_id';
+
+		return $this->join('((SELECT FP.usergroup_id AS user_id, FP.object_id FROM #__forms_permissions FP
+			WHERE FP.usergroup = "user" AND FP.object = "' . $obj_type . '") UNION
+			(SELECT GM.uidNumber AS user_id, FP.object_id FROM #__xgroups_members GM
+				INNER JOIN #__forms_permissions FP ON GM.gidNumber = FP.usergroup_id
+				WHERE FP.usergroup = "members" AND FP.object = "' . $obj_type . '") UNION
+			(SELECT GM.uidNumber AS user_id, FP.object_id FROM #__xgroups_managers GM
+				INNER JOIN #__forms_permissions FP ON GM.gidNumber = FP.usergroup_id
+				WHERE FP.usergroup = "managers" AND FP.object = "' . $obj_type . '") UNION
+			(SELECT MR.uidNumber AS user_id, FP.object_id FROM #__xgroups_member_roles MR
+				INNER JOIN #__forms_permissions FP ON MR.roleid = FP.usergroup_id
+				WHERE FP.usergroup = "role" AND FP.object = "' . $obj_type . '")) AS p', $obj_table . '.id', 'p.object_id', 'left')
+			->whereIn($obj_table . '.access', [0, 3])
+			->whereEquals('p.user_id', $currentUserId)
+			->where($obj_table . '.' . $obj_uid, '!=', $currentUserId) // Exclude own responses;
+			->orWhereEquals($obj_table . '.access', 1)
+			->where($obj_table . '.' . $obj_uid, '!=', $currentUserId)
+			->orWhereEquals($obj_table . '.access', 2)
+			->where($obj_table . '.' . $obj_uid, '!=', $currentUserId);
 	}
 
 }

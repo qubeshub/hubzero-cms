@@ -36,7 +36,7 @@ $this->view('_forms_breadcrumbs', 'shared')
 			<div class="col span12 omega">
 				<?php
 					$this->view('_form_edit_nav', 'shared')
-						->set('current', 'Form Info')
+						->set('current', 'Form')
 						->set('formId', $formId)
 						->display();
 				?>

@@ -52,12 +52,17 @@ class FormsAuth extends ComponentAuth
 	 */
 	public function canCurrentUserFillForm($form)
 	{
+		$currentUsersId = User::get('id');
+		$isAdmin = $form->isAdmin($currentUsersId); // Future you: This is outside isFillableBy as admin should be able to edit anytime
+		$isActive = $form->isActive();
+		$isFillable = $form->isFillableBy($currentUsersId);
+
 		$existing = FormResponse::all()
 			->whereEquals('form_id', $form->get('id'))
-			->whereEquals('user_id', User::get('id'));
-		
-		$canFill = $form->isFillableBy(User::get('id'));
-		$canFill = $canFill && (!$form->get('max_responses') || ($existing->count() < $form->get('max_responses')));
+			->whereEquals('user_id', $currentUsersId);
+		$isNotFull = !$form->get('max_responses') || ($existing->count() < $form->get('max_responses'));
+
+		$canFill = $isNotFull && ($isAdmin || ($isActive && $isFillable));
 
 		return $canFill;
 	}
@@ -72,13 +77,13 @@ class FormsAuth extends ComponentAuth
 	{
 		$currentUsersId = User::get('id');
 
-		$userIsAdmin = $this->currentIsAuthorized('core.admin');
-		$userCanDelete = $this->currentIsAuthorized('core.delete');
+		$form = $response->getForm();
+		$isFormAdmin = $form->isAdmin($currentUsersId);
 		$userOwnsForm = $form->isOwnedBy($userId);
 
-		$canEdit = $userIsAdmin || ($userCanDelete && $userOwnsForm);
+		$canDelete = $isFormAdmin || $userOwnsForm;
 
-		return $canEdit;
+		return $canDelete;
 	}
 
 	/**
@@ -90,9 +95,10 @@ class FormsAuth extends ComponentAuth
 	public function canCurrentUserViewResponse($response)
 	{
 		$currentUsersId = User::get('id');
-		$userIsAdmin = $this->currentIsAuthorized('core.admin');
+		$isResponseFillable = $response->isFillableBy($currentUsersId); // If can fill then can view
+		$isResponseViewable = $response->isReadonlyBy($currentUsersId);
 
-		$canView = $response->isOwnedBy($currentUsersId) || $userIsAdmin;
+		$canView = $isResponseFillable || $isResponseViewable;
 
 		return $canView;
 	}
@@ -103,7 +109,7 @@ class FormsAuth extends ComponentAuth
 	 * Allowed if:
 	 * 	- User is admin (or) user is form editor/owner
 	 * 	- User is response owner (or) in response fill usergroup AND:
-	 * 		- Response is open
+	 * 		- Response is active (in publish window)
 	 * 		- Response is not submitted (or) submitted and editing is allowed after submission
 	 *
 	 * @param    object   $response   Form response instance
@@ -112,11 +118,28 @@ class FormsAuth extends ComponentAuth
 	public function canCurrentUserFillResponse($response)
 	{
 		$currentUsersId = User::get('id');
-		$userIsAdmin = $this->currentIsAuthorized('core.admin');
+		$isResponseDisabled = $response->isDisabled();
+		$form = $response->getForm();
+		$isFormAdmin = $form->isAdmin($currentUsersId);
+		$isResponseFillable = $response->isFillableBy($currentUsersId);
+		$isFormActive = $form->isActive();
 
-		$canView = $response->isOwnedBy($currentUsersId) || $userIsAdmin;
+		$canFill = $isFormAdmin || ($isFormActive && $isResponseFillable && !$isResponseDisabled);
 
-		return $canView;
+		return $canFill;
+	}
+
+	/**
+	 * Determines if current user has existing responses
+	 *
+	 * @param    object   $response   Form response instance
+	 * @return   bool
+	 */
+	public function doesCurrentUserHaveResponses($formId = 0, $filter = '')
+	{
+		$currentUsersId = User::get('id');
+
+		return FormResponse::allForUser($currentUsersId, $formId, $filter)->count();
 	}
 
 }

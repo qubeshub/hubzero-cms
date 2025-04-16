@@ -22,6 +22,7 @@ $responses = $this->responses;
 $responsesCount = $responses->count();
 $responsesListUrl = $this->listUrl;
 $form = $this->form;
+$filter = $this->filter;
 $formId = ($this->form ? $this->form->get('id') : 0);
 $formName = ($this->form ? $this->form->get('name') : 'All');
 $sortingCriteria = $this->sortingCriteria;
@@ -48,6 +49,7 @@ $this->view('_forms_breadcrumbs', 'shared')
 				$this->view('_response_list_area')
 					->set('responses', $responses)
 					->set('form', $form)
+					->set('filter', $filter)
 					->set('sortingAction', $responsesListUrl)
 					->set('sortingCriteria', $sortingCriteria)
 					->display();

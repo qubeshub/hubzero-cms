@@ -34,6 +34,10 @@ function loadSurvey() {
         // console.log(JSON.parse(formText));
         FormLibrary.fromJSON(JSON.parse(formText));
         restoreSurveyData();
+        const responseAction = $("input[name=response_action]").val();
+        if (responseAction === 'view') {
+            FormLibrary.readOnly = true;
+        }
         FormLibrary.render(document.getElementById("formLibrary"));
     })
     .catch(error => {

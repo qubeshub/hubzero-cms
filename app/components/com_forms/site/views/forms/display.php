@@ -33,12 +33,23 @@ $this->view('_forms_breadcrumbs', 'shared')
 			->set('classes', 'icon-edit btn')
 			->display();
 
-        $this->view('_link_lang', 'shared')
+        $this->view('_protected_link', 'shared')
+			->set('authArgs', [$formId, ''])
+			->set('authMethod', 'doesCurrentUserHaveResponses')
 			->set('textKey', 'COM_FORMS_LINKS_MY_RESPONSES')
 			->set('urlFunction', 'usersResponsesUrl')
 			->set('urlFunctionArgs', [$formId])
 			->set('classes', 'icon-list btn')
 			->display();
+
+		$this->view('_protected_link', 'shared')
+			->set('authArgs', [$formId, 'shared'])
+			->set('authMethod', 'doesCurrentUserHaveResponses')
+            ->set('textKey', 'COM_FORMS_LINKS_SHARED_RESPONSES')
+            ->set('urlFunction', 'usersSharedResponsesUrl')
+            ->set('urlFunctionArgs', [$formId])
+            ->set('classes', 'icon-group btn')
+            ->display();
             
         $this->view('_protected_link', 'shared')
 			->set('authArgs', [$form])
