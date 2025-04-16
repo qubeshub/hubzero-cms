@@ -5,18 +5,18 @@
  */
  
 /*
- * Response list styles
+ * Form/Response list styles
  */
-.responses-list {
+.fr-list {
 	list-style: none;
 	font-size: 1.5em;
 }
 
-.responses-list .response-item:first-child {
+.fr-list .fr-item:first-child {
 	margin-top: 0;
 }
 
-.responses-list .response-item {
+.fr-list .fr-item {
 	border: 2px solid #d6d6d6;
 	box-shadow: 1px 1px 5px rgba(0,0,0,0.09);
 	font-size: 1.25em;

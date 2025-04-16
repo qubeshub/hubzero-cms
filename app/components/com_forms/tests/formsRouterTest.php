@@ -366,7 +366,7 @@ class FormsRouterTest extends Basic
 		$formId = 65;
 		$responseIds = [1, 2];
 		$queryString = http_build_query([
-			'form_id' => $formId, 'response_ids' => $responseIds
+			'form_id' => $formId, 'item_ids' => $responseIds
 		]);
 		$expectedUrl = "/forms/emailRespondents/responses?$queryString";
 		$routes = new FormsRouter();
@@ -391,7 +391,7 @@ class FormsRouterTest extends Basic
 		$formId = 65;
 		$responseIds = [1, 2];
 		$queryString = http_build_query([
-			'form_id' => $formId, 'response_ids' => $responseIds
+			'form_id' => $formId, 'item_ids' => $responseIds
 		]);
 		$expectedUrl = "/forms/tagResponses/responses?$queryString";
 		$routes = new FormsRouter();

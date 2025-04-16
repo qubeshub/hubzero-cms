@@ -11,15 +11,15 @@ FORMS.populateSortForm = (sortingData) => {
 }
 
 FORMS.populateResponseIds = () => {
-	const $responseIdInputs = $('input[name^="response_ids"]')
+	const $responseIdInputs = $('input[name^="item_ids"]')
 
 	FORMS.$sortForm.append($responseIdInputs)
 }
 
 $(document).ready(() => {
 
-	FORMS.$responsesList = FORMS.getResponsesList()
+	FORMS.$itemsList = FORMS.getItemsList()
 
-	FORMS.registerSortHandlers(FORMS.$responsesList)
+	FORMS.registerSortHandlers(FORMS.$itemsList)
 
 })

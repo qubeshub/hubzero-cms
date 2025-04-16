@@ -40,7 +40,7 @@ class RespondentEmails extends SiteController
 	protected static $_paramWhitelist = [
 		'email',
 		'form_id',
-		'response_ids'
+		'item_ids'
 	];
 
 	/**
@@ -80,7 +80,7 @@ class RespondentEmails extends SiteController
 		$this->_bouncer->redirectUnlessAuthorized('core.create');
 
 		$email = $email ? $email : new Email();
-		$responseIds = $this->_params->getVar('response_ids');
+		$responseIds = $this->_params->getVar('item_ids');
 		$responses = $form->getResponses()
 			->whereIn('id', $responseIds);
 		$responses = $this->_sortResponses($responses);
@@ -130,7 +130,7 @@ class RespondentEmails extends SiteController
 		$this->_bouncer->redirectUnlessAuthorized('core.create');
 
 		$emailData = $this->_params->get('email');
-		$responseIds = $this->_params->get('response_ids');
+		$responseIds = $this->_params->get('item_ids');
 		$emailData['reply_to'] = array_filter(explode(',', $emailData['reply_to']));
 		$emailData['to'] = $this->_respondentsHelper->getEmails($responseIds);
 

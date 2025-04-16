@@ -15,7 +15,7 @@ $formName = $form->get('name');
 $responseId = $response->get('id');
 ?>
 
-<li class="response-item">
+<li class="fr-item">
 	<span class="grid">
 
 		<span class="col span5">

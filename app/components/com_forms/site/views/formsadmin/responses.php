@@ -11,10 +11,10 @@ defined('_HZEXEC_') or die();
 $this->css('formsAdminResponses');
 
 $this->js('notify')
-	->js('formsAdminResponsesListActions')
-	->js('formsAdminResponsesListCheckbox')
-	->js('formsAdminResponsesListSorting')
-	->js('formsAdminResponsesList');
+	->js('formsAdminItemsListActions')
+	->js('formsAdminItemsListCheckbox')
+	->js('formsAdminItemsListSorting')
+	->js('formsAdminItemsList');
 
 $responsesEmailUrl = $this->responsesEmailUrl;
 $responsesTagsUrl = $this->responsesTagsUrl;
@@ -65,14 +65,14 @@ $this->view('_forms_breadcrumbs', 'shared')
 						?>
 					</span>
 
-					<span id="tag-responses-button" class="list-action">
+					<!-- <span id="tag-responses-button" class="list-action">
 						<?php
 							$this->view('_tag_responses_form')
 								->set('action', $responsesTagsUrl)
 								->set('formId', $formId)
 								->display();
 						?>
-					</span>
+					</span> -->
 
 					<span id="delete-responses-button" class="list-action">
 						<?php

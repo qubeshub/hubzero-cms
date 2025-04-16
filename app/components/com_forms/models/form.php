@@ -588,6 +588,18 @@ class Form extends Relational
 	}
 
 	/**
+	 * Returns user who created form
+	 *
+	 * @return   object
+	 */
+	public function getCreator()
+	{
+		$userId = $this->get('created_by');
+
+		return User::one($userId);
+	}
+
+	/**
 	 * Calculates number of days since form closed
 	 *
 	 * @return   float

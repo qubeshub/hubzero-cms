@@ -90,11 +90,31 @@ class Forms extends SiteController
 	}
 
 	/**
-	 * Renders searchable list of forms
+	 * Renders list of users forms
+	 */
+	public function listTask()
+	{
+		$filter = $this->params->getWord('filter', 'all');
+
+		$currentUserId = User::get('id');
+		$forms = Form::allForUser($currentUserId, 0, $filter);
+		$forms = $this->_sortForms($forms);
+		
+		$formsListUrl = $this->routes->formListUrl();
+
+		$this->view
+			->set('forms', $forms)
+			->set('filter', $filter)
+			->set('listUrl', $formsListUrl)
+			->display();
+	}
+
+	/**
+	 * Renders browsable list of forms
 	 *
 	 * @return   void
 	 */
-	public function listTask()
+	public function browseTask()
 	{
 		$formListUrl = $this->routes->formListUrl();
 		$searchFormAction = $this->routes->queryUpdateUrl();
@@ -365,4 +385,21 @@ class Forms extends SiteController
 			->display();
 	}
 
+	/**
+	 * Sort forms using given field and direction
+	 *
+	 * @param    object   $forms   Forms
+	 * @return   void
+	 */
+	protected function _sortForms($forms)
+	{
+		$sortDirection = $this->params->getString('sort_direction', 'asc');
+		$sortField = $this->params->getString('sort_field', 'id');
+		$sortingCriteria = ['field' => $sortField, 'direction' => $sortDirection];
+
+		$this->view->set('sortingCriteria', $sortingCriteria);
+		$forms->order($sortField, $sortDirection);
+
+		return $forms;
+	}
 }

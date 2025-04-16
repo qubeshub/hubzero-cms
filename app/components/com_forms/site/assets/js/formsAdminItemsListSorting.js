@@ -15,12 +15,12 @@ FORMS.sortFormId = 'sort-form'
 FORMS.directionDataAttribute = 'sort-direction'
 FORMS.directionOpposites = { asc: 'desc', desc: 'asc' }
 FORMS.fieldDataAttribute = 'sort-field'
-FORMS.responsesListId = 'response-list'
+FORMS.itemListId = 'item-list'
 FORMS.sortDirectionInputName="sort_direction"
 FORMS.sortFieldInputName="sort_field"
 
-FORMS.getResponsesList = () => {
-	return $(`#${FORMS.responsesListId}`)
+FORMS.getItemsList = () => {
+	return $(`#${FORMS.itemListId}`)
 }
 
 FORMS.registerSortHandlers = ($list) => {

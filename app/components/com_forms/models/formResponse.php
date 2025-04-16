@@ -411,32 +411,5 @@ class FormResponse extends Relational
 		return $responsesTags;
 	}
 
-	/**
-	 * Returns all responses for user w/ given ID
-	 *
-	 * @param    int      $userId   User record's ID
-	 * @param    int      $formId   Form record's ID
-	 * @param    string   $filter   Filter to apply (e.g. 'shared')
-	 * @return   object
-	 */
-	public static function allForUser($userId, $formId = 0, $filter = '')
-	{
-		$responses = self::all()
-			->join('#__forms_forms AS F', 'form_id', 'F.id', 'left')
-			->select('#__forms_form_responses.*, F.name AS form');
-		// Who (user or shared)
-		if ($filter == 'shared') {
-			$responses = $responses->whereShared();
-		} else { 
-			$responses = $responses->whereEquals('user_id', $userId);
-		}
-		// What (subset based on form)
-		if ($formId) {
-			$responses = $responses->whereEquals('form_id', $formId);
-		}
-		$responses = $responses->paginated('limitstart', 'limit');
-
-		return $responses;
-	}
 
 }

@@ -117,4 +117,40 @@ trait possessable
 			->where($obj_table . '.' . $obj_uid, '!=', $currentUserId);
 	}
 
+	/**
+	 * Returns all items for user w/ given ID
+	 *
+	 * @param    int      $userId   User record's ID
+	 * @param    int      $formId   Form record's ID
+	 * @param    string   $filter   Filter to apply (e.g. 'shared')
+	 * @return   object
+	 */
+	public static function allForUser($userId, $formId = 0, $filter = '')
+	{
+		$obj_type = (static::class == "Components\Forms\Models\Form" ? 'form' : 'response');
+		$userId_field = ($obj_type == 'form') ? 'created_by' : 'user_id';
+
+		$items = self::all();
+		
+		if ($obj_type == 'response') {
+			$items = $items->join('#__forms_forms AS F', 'form_id', 'F.id', 'left')
+				->select('#__forms_form_responses.*, F.name AS form');
+		}
+
+		// Who (user or shared)
+		if ($filter == 'shared') {
+			$items = $items->whereShared();
+		} else { 
+			$items = $items->whereEquals($userId_field, $userId);
+		}
+
+		// What (subset based on form)
+		if ($formId) {
+			$items = $items->whereEquals('form_id', $formId);
+		}
+
+		$items = $items->paginated('limitstart', 'limit');
+
+		return $items;
+	}
 }

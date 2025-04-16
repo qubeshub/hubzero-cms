@@ -16,7 +16,6 @@ use Components\Forms\Helpers\FormsAuth;
 
 $formsAuth = new FormsAuth();
 
-$checkboxName = $this->checkboxName;
 $response = $this->response;
 $reviewer = $response->getReviewer();
 $reviewerId = $reviewer->get('id');
@@ -37,11 +36,11 @@ $usersName = $user->get('name');
 $columns = $this->columns;
 ?>
 
-<tr class="response-item">
+<tr class="fr-item">
 
 	<?php	if ($selectable): ?>
 		<td>
-			<input type="checkbox" name="response_ids[]" value="<?php echo $responseId; ?>">
+			<input type="checkbox" name="item_ids[]" value="<?php echo $responseId; ?>">
 		</td>
 	<?php	endif; ?>
 	<?php foreach ($columns as $field => $title): ?>

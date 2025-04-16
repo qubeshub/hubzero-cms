@@ -22,7 +22,7 @@ $sortingCriteria = $this->sortingCriteria;
 $tagString = $this->tagString;
 
 foreach ($responseIds as $id):
-	$hiddenFields["response_ids[$id]"] = $id;
+	$hiddenFields["item_ids[$id]"] = $id;
 endforeach;
 
 $viewHeader = Lang::txt('COM_FORMS_HEADINGS_TAG_RESPONSES_FORM', $formName);

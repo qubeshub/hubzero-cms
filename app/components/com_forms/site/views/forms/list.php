@@ -8,47 +8,55 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
-$this->css('formList');
+$this->css('formResponsesList') // This one can probably go, or at least pull feed into formsAdminResponses
+	 ->css('formsAdminResponses')
+     ->css('formList');
 
-$formListUrl = $this->formListUrl;
+$this->js('notify')
+	 ->js('formsAdminItemsListActions')
+	 ->js('formsAdminItemsListCheckbox')
+	 ->js('formsAdminItemsListSorting')
+	 ->js('formsAdminItemsList');
+
 $forms = $this->forms;
-$query = $this->query;
-$searchFormAction = $this->searchFormAction;
+$formsCount = $forms->count();
+$formsListUrl = $this->listUrl;
+$filter = $this->filter;
+$sortingCriteria = $this->sortingCriteria;
 
+$breadcrumbs = [
+	'Forms' => ['formListUrl']
+];
 $this->view('_forms_breadcrumbs', 'shared')
-	->set('breadcrumbs', [])
-	->set('page', 'Forms list')
+	->set('breadcrumbs', $breadcrumbs)
+	->set('page', "Forms")
 	->display();
 ?>
 
 <section class="main section">
-	<?php
+    <?php
 		$this->view('_landing_header')
 			->display();
 	?>
 
 	<div class="grid">
 
-		<div class="col span2">
+		<div class="col span12 omega">
 			<?php
-				$this->view('_landing_sidebar')
-					->set('query', $query)
-					->set('searchFormAction', $searchFormAction)
+            $this->view('_form_list_area')
+                ->set('forms', $forms)
+                ->set('filter', $filter)
+                ->set('sortingAction', $formsListUrl)
+                ->set('sortingCriteria', $sortingCriteria)
+                ->display();
+                
+				$this->view('_pagination', 'shared')
+					->set('minDisplayLimit', 4)
+					->set('pagination', $forms->pagination)
+					->set('paginationUrl', $formsListUrl)
+					->set('recordsCount', $formsCount)
 					->display();
-			?>
+				?>
 		</div>
-
-		<div class="col span10 omega">
-			<?php
-				$this->view('_form_list')
-					->set('forms', $forms)
-					->display();
-			?>
-
-			<form method="POST" action="<?php echo $formListUrl; ?>">
-				<?php echo $forms->pagination; ?>
-			</form>
-		</div>
-
 	</div>
 </section>

@@ -280,7 +280,7 @@ class FormResponses extends SiteController
 		$formId = $this->_params->getInt('form_id');
 		$form = Form::oneOrFail($formId);
 
-		$responseIds = $this->_params->get('response_ids');	
+		$responseIds = $this->_params->get('item_ids');	
 		$returnUrl = $this->_params->get('return_url');
 
 		$this->_pageBouncer->redirectUnlessCanEditForm($form, $returnUrl);
@@ -563,7 +563,7 @@ class FormResponses extends SiteController
 	public function deleteTask()
 	{
 		$formId = $this->_params->getInt('form_id');
-		$responseIds = $this->_params->get('response_ids');	
+		$responseIds = $this->_params->get('item_ids');	
 		$returnUrl = $this->_params->get('return_url');
 
 		foreach ($responseIds as $responseId)

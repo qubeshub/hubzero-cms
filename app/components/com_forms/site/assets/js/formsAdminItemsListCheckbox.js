@@ -29,7 +29,7 @@ FORMS.toggleCheckboxes = ($masterCheckbox) => {
 }
 
 FORMS.toggleItemCheckboxes = (checked) => {
-  const checkboxes = $('input[type="checkbox"]', '.response-item')
+  const checkboxes = $('input[type="checkbox"]', '.fr-item')
 
   checkboxes.prop('checked', checked)
 }

@@ -8,16 +8,10 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
-$responses = $this->responses;
-
+$noneNotice = Lang::txt('COM_FORMS_NOTICES_FORMS_NONE');
 ?>
 
-<ul class="fr-list">
-	<?php
-		foreach ($responses as $response):
-			$this->view('_response_item')
-				->set('response', $response)
-				->display();
-		endforeach;
-	?>
-</ul>
+<h2 class="none-notice">
+	<?php echo $noneNotice; ?>
+</h2>
+
