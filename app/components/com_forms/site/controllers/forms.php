@@ -246,8 +246,8 @@ class Forms extends SiteController
 		// Access rules
 		$form->set('opening_time', (array_key_exists('openingTime', $json) ? $json['openingTime'] : '0000-00-00 00:00:00'));
 		$form->set('closing_time', (array_key_exists('closingTime', $json) ? $json['closingTime'] : '0000-00-00 00:00:00'));
-		$form->set('responses_locked', (array_key_exists('editable', $json) ? 1 : 0)); // If specified, will be 0 (default is 1); note that database stores opposite
-		$form->set('max_responses', (array_key_exists('limitResponses', $json) ? (array_key_exists('limitResponseNumber', $json) ? $json['limitResponseNumber'] : 1) : 0));
+		$form->set('responses_locked', (array_key_exists('editable', $json) ? (int)(!$json['editable']) : 0)); // If specified, will be 0 (default is 1); note that database stores opposite
+		$form->set('max_responses', (array_key_exists('limitResponses', $json) && $json['limitResponses'] ? (array_key_exists('limitResponseNumber', $json) ? $json['limitResponseNumber'] : 1) : 0));
 
 		// General permissions
 		Permissions::setPermissions($form, $json);

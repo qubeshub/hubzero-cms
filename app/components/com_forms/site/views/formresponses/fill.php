@@ -33,7 +33,11 @@ if ($userIsAdmin)
 		'Responses' => ['usersResponsesUrl', [$formId]]
 	];
 }
-$breadcrumbs['Fill'] = ['formsEditUrl', [$formId]];
+if ($this->task == 'fill') {
+	$breadcrumbs['Fill'] = ['formResponseFillUrl', [$responseId]];
+} else {
+	$breadcrumbs['View'] = ['formResponseViewUrl', [$responseId]];
+}
 
 $this->view('_forms_breadcrumbs', 'shared')
 	->set('breadcrumbs', $breadcrumbs)
@@ -66,6 +70,7 @@ $this->view('_forms_breadcrumbs', 'shared')
 					$this->view('_surveyjs_library', 'shared')
 						->set('form', $this->form)
 						->set('response', $this->response)
+						->set('action', $this->task)
 						->display();
 				?>
 			</div>

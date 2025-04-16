@@ -469,7 +469,7 @@ class Form extends Relational
 	}
 
 	/**
-	 * Indicates if form should be disabled for given user
+	 * [DEPRECATED] Indicates if form should be disabled for given user
 	 *
 	 * @param    int    $userId   User ID
 	 * @return   bool
@@ -505,7 +505,7 @@ class Form extends Relational
 	{
 		$closingTime = strtotime($this->get('closing_time'));
 
-		return time() > $closingTime;
+		return ($this->get('closing_time') != '0000-00-00 00:00:00') && (time() > $closingTime);
 	}
 
 	/**

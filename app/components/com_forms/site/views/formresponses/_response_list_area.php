@@ -12,15 +12,15 @@ $responses = $this->responses->rows();
 $form = $this->form;
 $sortingAction = $this->sortingAction;
 $sortingCriteria = $this->sortingCriteria;
-$columns = ['id', 'completion_percentage', 'created', 'modified', 'submitted', 'accepted'];
+$columns = ['created', 'modified', 'submitted', 'completion_percentage', 'action']; // , 'id', 'accepted'];
 if (!$form) {
 	array_splice( $columns, 2, 0, array('form') );
 }
 
 if ($form) {
-	echo '<h2>' . Lang::txt('COM_FORMS_HEADINGS_MY_RESPONSES_FORM', $form->get('name')) . '</h2>';
+	echo '<h2>' . Lang::txt('COM_FORMS_HEADINGS_' . ($this->filter == 'shared' ? 'SHARED' : 'MY') . '_RESPONSES_FORM', $form->get('name')) . '</h2>';
 } else {
-	echo '<h2>' . Lang::txt('COM_FORMS_HEADINGS_MY_RESPONSES_ALL') . '</h2>';
+	echo '<h2>' . Lang::txt('COM_FORMS_HEADINGS_' . ($this->filter == 'shared' ? 'SHARED' : 'MY') . '_RESPONSES_ALL') . '</h2>';
 }
 if (count($responses) > 0):
 	$this->view('_response_list', 'shared')

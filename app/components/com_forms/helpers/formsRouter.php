@@ -263,12 +263,28 @@ class FormsRouter extends ComponentRouter
 	/**
 	 * Generates form response fill (continue) URL
 	 *
-	 * @param    int      $formId   ID of form user is starting on
+	 * @param    int      $responseId   ID of response to fill
 	 * @return   string
 	 */
 	public function formResponseFillUrl($responseId)
 	{
 		$segments = ['responses', 'fill'];
+		$parameters = ['response_id' => $responseId];
+
+		$url = $this->_generateComponentUrl($segments, $parameters);
+
+		return $url;
+	}
+
+	/**
+	 * Generates form response view (continue) URL
+	 *
+	 * @param    int      $responseId   ID of response to view
+	 * @return   string
+	 */
+	public function formResponseViewUrl($responseId)
+	{
+		$segments = ['responses', 'view'];
 		$parameters = ['response_id' => $responseId];
 
 		$url = $this->_generateComponentUrl($segments, $parameters);
@@ -501,6 +517,25 @@ class FormsRouter extends ComponentRouter
 		if ($formId) {
 			$params = ['form_id' => $formId];
 		}
+
+		$url = $this->_generateComponentUrl($segments, $params);
+
+		return $url;
+	}
+
+	/**
+	 * Generates URL to user's shared responses list
+	 *
+	 * @return   string
+	 */
+	public function usersSharedResponsesUrl($formId = 0)
+	{
+		$segments = ['responses', 'list'];
+		$params = [];
+		if ($formId) {
+			$params['form_id'] = $formId;
+		}
+		$params['filter'] = 'shared';
 
 		$url = $this->_generateComponentUrl($segments, $params);
 

@@ -15,12 +15,13 @@ $columns = [
 	'id' => 'ID',
 	'form' => 'Form',
 	'user_id' => 'User',
-	'completion_percentage' => 'Completion',
 	'created' => 'Started',
 	'modified' => 'Last Activity',
+	'completion_percentage' => 'Completion',
 	'submitted' => 'Submitted',
 	'accepted' => 'Accepted',
-	'reviewed_by' => 'Reviewed By'
+	'reviewed_by' => 'Reviewed By',
+	'action' => 'Action'
 ];
 $formId = isset($this->formId) ? $this->formId : null;
 $columns = isset($this->columns) ? array_intersect_key($columns, array_flip($this->columns)) : $columns;

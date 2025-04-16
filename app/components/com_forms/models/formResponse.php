@@ -127,6 +127,31 @@ class FormResponse extends Relational
 	}
 
 	/**
+	 * Determines if the response is submitted
+	 *
+	 * @return   boolean
+	 */
+	public function isSubmitted()
+	{
+		return !!$this->get('submitted');
+	}
+
+	/**
+	 * Determines if the response is fillable (active and not submitted if locked)
+	 *
+	 * @return   boolean
+	 */
+	public function isDisabled()
+	{
+		$form = $this->getForm();
+		$isActive = $form->isActive();
+		$responsesLocked = $form->get('responses_locked');
+		$submitted = $this->isSubmitted();
+
+		return !$isActive || ($submitted && $responsesLocked);
+	}
+
+	/**
 	 * Calculates percentage of required questions user has responded to for
 	 * given page
 	 *
@@ -390,15 +415,27 @@ class FormResponse extends Relational
 	 * Returns all responses for user w/ given ID
 	 *
 	 * @param    int      $userId   User record's ID
+	 * @param    int      $formId   Form record's ID
+	 * @param    string   $filter   Filter to apply (e.g. 'shared')
 	 * @return   object
 	 */
-	public static function allForUser($userId, $formId = 0)
+	public static function allForUser($userId, $formId = 0, $filter = '')
 	{
 		$responses = self::all()
-			->whereEquals('user_id', $userId);
+			->join('#__forms_forms AS F', 'form_id', 'F.id', 'left')
+			->select('#__forms_form_responses.*, F.name AS form');
+		// Who (user or shared)
+		if ($filter == 'shared') {
+			$responses = $responses->whereShared();
+		} else { 
+			$responses = $responses->whereEquals('user_id', $userId);
+		}
+		// What (subset based on form)
 		if ($formId) {
 			$responses = $responses->whereEquals('form_id', $formId);
 		}
+		$responses = $responses->paginated('limitstart', 'limit');
+
 		return $responses;
 	}
 

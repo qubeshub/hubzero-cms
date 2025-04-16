@@ -62,9 +62,9 @@ class ResponseFeedItem extends Log
 	 * @param    int      $userId   User record's ID
 	 * @return   object
 	 */
-	public static function allForUser($userId, $formId = 0)
+	public static function allForUser($userId, $formId = 0, $filter = '')
 	{
-		$responses = FormResponse::allForUser($userId, $formId)->rows();
+		$responses = FormResponse::allForUser($userId, $formId, $filter)->rows();
 
 		$responseIds = $responses->fieldsByKey('id');
 

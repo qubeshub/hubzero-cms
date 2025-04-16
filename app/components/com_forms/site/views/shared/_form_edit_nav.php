@@ -21,7 +21,7 @@ $formId = $this->formId;
 $routes = new Routes();
 
 $steps = [
-	'Form Info' => $routes->formsEditUrl($formId),
+	'Form' => $routes->formsEditUrl($formId),
 	// 'Pages' => $routes->formsPagesUrl($formId),
 	// 'Steps' => $routes->formsPrereqsUrl($formId),
 	'Responses' => $routes->formsResponseList($formId)
