@@ -12,10 +12,10 @@ $this->css('formResponsesList') // This one can probably go, or at least pull fe
 	 ->css('formsAdminResponses');
 
 $this->js('notify')
-	 ->js('formsAdminResponsesListActions')
-	 ->js('formsAdminResponsesListCheckbox')
-	 ->js('formsAdminResponsesListSorting')
-	 ->js('formsAdminResponsesList');
+	 ->js('formsAdminItemsListActions')
+	 ->js('formsAdminItemsListCheckbox')
+	 ->js('formsAdminItemsListSorting')
+	 ->js('formsAdminItemsList');
 
 $feedItems = $this->feedItems;
 $responses = $this->responses;

@@ -568,7 +568,7 @@ class FormsRouter extends ComponentRouter
 	public function responsesEmailUrl($formId, $responseIds)
 	{
 		$segments = ['emailRespondents', 'responses'];
-		$params = ['form_id' => $formId, 'response_ids' => $responseIds];
+		$params = ['form_id' => $formId, 'item_ids' => $responseIds];
 
 		$url = $this->_generateComponentUrl($segments, $params);
 
@@ -585,7 +585,7 @@ class FormsRouter extends ComponentRouter
 	public function responsesDeleteUrl($formId, $responseIds)
 	{
 		$segments = ['responses', 'delete'];
-		$params = ['response_ids' => $responseIds];
+		$params = ['item_ids' => $responseIds];
 
 		$url = $this->_generateComponentUrl($segments, $params);
 
@@ -602,7 +602,7 @@ class FormsRouter extends ComponentRouter
 	public function responsesUnsubmitUrl($formId, $responseIds)
 	{
 		$segments = ['responses', 'unsubmit'];
-		$params = ['response_ids' => $responseIds];
+		$params = ['item_ids' => $responseIds];
 
 		$url = $this->_generateComponentUrl($segments, $params);
 
@@ -633,7 +633,7 @@ class FormsRouter extends ComponentRouter
 	public function responsesTagsUrl($formId, $responseIds)
 	{
 		$segments = ['tagResponses', 'responses'];
-		$params = ['form_id' => $formId, 'response_ids' => $responseIds];
+		$params = ['form_id' => $formId, 'item_ids' => $responseIds];
 
 		$url = $this->_generateComponentUrl($segments, $params);
 

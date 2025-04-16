@@ -10,7 +10,7 @@ defined('_HZEXEC_') or die();
 
 $this->css('respondentEmailsResponses');
 
-$this->js('formsAdminResponsesListSorting')
+$this->js('formsAdminItemsListSorting')
 	->js('respondentEmailsResponses');
 
 $email = $this->email;
@@ -25,7 +25,7 @@ $sortingAction = $this->sortingAction;
 $sortingCriteria = $this->sortingCriteria;
 
 foreach ($responseIds as $id):
-	$hiddenFields["response_ids[$id]"] = $id;
+	$hiddenFields["item_ids[$id]"] = $id;
 endforeach;
 
 $viewHeader = Lang::txt('COM_FORMS_HEADINGS_EMAIL_RESPONDENTS_FORM', $formName);

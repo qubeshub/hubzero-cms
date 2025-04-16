@@ -12,21 +12,18 @@ $this->css('formsAdminItemsList');
 
 $checkboxesName = 'items_ids[]';
 $columns = [
-	'id' => 'ID',
-	'form' => 'Form',
-	'user_id' => 'User',
+    'id' => 'ID',
+    'name' => 'Name',
 	'created' => 'Started',
+	'created_by' => 'Owner',
 	'modified' => 'Last Activity',
-	'completion_percentage' => 'Completion',
-	'submitted' => 'Submitted',
-	'accepted' => 'Accepted',
-	'reviewed_by' => 'Reviewed By',
+    'opening_time' => 'Opening Time',
+    'closing_time' => 'Closing Time',
 	'action' => 'Action'
 ];
-$formId = isset($this->formId) ? $this->formId : null;
 $columns = isset($this->columns) ? array_intersect_key($columns, array_flip($this->columns)) : $columns;
-$responses = $this->responses;
-$responsesSelectable = isset($this->selectable) ? $this->selectable : true;
+$forms = $this->forms;
+$formsSelectable = isset($this->selectable) ? $this->selectable : true;
 $sortingAction = $this->sortingAction;
 $sortingCriteria = $this->sortingCriteria;
 ?>
@@ -35,7 +32,7 @@ $sortingCriteria = $this->sortingCriteria;
 	<thead>
 		<tr>
 
-			<?php	if ($responsesSelectable): ?>
+			<?php	if ($formsSelectable): ?>
 				<td>
 					<input id="master-checkbox" type="checkbox">
 				</td>
@@ -52,11 +49,11 @@ $sortingCriteria = $this->sortingCriteria;
 
 	<tbody>
 		<?php
-			foreach ($responses as $response):
-				$this->view('_response_item')
+			foreach ($forms as $form):
+				$this->view('_form_item')
 					->set('columns', $columns)
-					->set('response', $response)
-					->set('selectable', $responsesSelectable)
+					->set('form', $form)
+					->set('selectable', $formsSelectable)
 					->display();
 			endforeach;
 		?>
@@ -66,7 +63,4 @@ $sortingCriteria = $this->sortingCriteria;
 <form id="sort-form" action="<?php echo $sortingAction; ?>">
 	<input type="hidden" name="sort_direction">
 	<input type="hidden" name="sort_field">
-	<?php if ($formId): ?>
-		<input type="hidden" name="form_id" value="<?php echo $formId; ?>">
-	<?php endif; ?>
 </form>

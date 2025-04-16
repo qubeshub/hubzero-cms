@@ -12,12 +12,12 @@ FORMS = HUB.FORMS
 
 $(document).ready(() => {
 
-	FORMS.$responseActionButtons = FORMS.getResponseActionButtons()
+	FORMS.$itemActionButtons = FORMS.getItemActionButtons()
 	FORMS.$masterCheckbox = FORMS.getMasterCheckbox()
-	FORMS.$responsesList = FORMS.getResponsesList()
+	FORMS.$itemsList = FORMS.getItemsList()
 
 	FORMS.registerCheckboxHandlers(FORMS.$masterCheckbox)
-	FORMS.registerListActionHandlers(FORMS.$responseActionButtons)
-	FORMS.registerSortHandlers(FORMS.$responsesList)
+	FORMS.registerListActionHandlers(FORMS.$itemActionButtons)
+	FORMS.registerSortHandlers(FORMS.$itemsList)
 
 })

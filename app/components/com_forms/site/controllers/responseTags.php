@@ -37,7 +37,7 @@ class ResponseTags extends SiteController
 	 */
 	protected static $_paramWhitelist = [
 		'form_id',
-		'response_ids'
+		'item_ids'
 	];
 
 	/**
@@ -78,7 +78,7 @@ class ResponseTags extends SiteController
 		$this->_bouncer->redirectUnlessCanEditForm($form);
 		$this->_bouncer->redirectUnlessAuthorized('core.create');
 
-		$responseIds = $this->_params->getVar('response_ids');
+		$responseIds = $this->_params->getVar('item_ids');
 		$responses = $form->getResponses()
 			->whereIn('id', $responseIds);
 		$responses = $this->_sortResponses($responses);
@@ -127,7 +127,7 @@ class ResponseTags extends SiteController
 		$this->_bouncer->redirectUnlessCanEditForm($form);
 		$this->_bouncer->redirectUnlessAuthorized('core.create');
 
-		$responseIds = $this->_params->get('response_ids');
+		$responseIds = $this->_params->get('item_ids');
 		$responses = $form->getResponses()
 			->whereIn('id', $responseIds);
 		$taggerId = User::get('id');

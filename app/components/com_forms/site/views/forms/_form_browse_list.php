@@ -19,7 +19,7 @@ $routes = new RoutesHelper();
 <ul class="form-list">
 	<?php
 		foreach ($forms as $form):
-			$this->view('_form_item')
+			$this->view('_form_browse_item')
 				->set('form', $form)
 				->set('displayUrl', $routes->formsDisplayUrl($form->get('id')))
 				->display();

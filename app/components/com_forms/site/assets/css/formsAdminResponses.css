@@ -21,11 +21,11 @@ thead td {
 	font-weight: bold;
 }
 
-#response-list {
+#item-list {
 	margin: 0 0 3em 0;
 }
 
-#response-list td {
+#item-list td {
   padding-left: 0;
 }
 
