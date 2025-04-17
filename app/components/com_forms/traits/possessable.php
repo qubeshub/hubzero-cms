@@ -90,14 +90,14 @@ trait possessable
 		return Permissions::getUsergroupPermissions($this, $obj_type);
 	}
 
-	public function whereShared()
+	public function whereShared($formId = 0)
 	{
 		$currentUserId = User::get('id');
 		$obj_type = (static::class == "Components\Forms\Models\Form" ? 'form' : 'response');
 		$obj_table = ($obj_type == 'form') ? '#__forms_forms' : '#__forms_form_responses';
 		$obj_uid = ($obj_type == 'form') ? 'created_by' : 'user_id';
-
-		return $this->join('((SELECT FP.usergroup_id AS user_id, FP.object_id FROM #__forms_permissions FP
+		
+		$items = $this->join('((SELECT FP.usergroup_id AS user_id, FP.object_id FROM #__forms_permissions FP
 			WHERE FP.usergroup = "user" AND FP.object = "' . $obj_type . '") UNION
 			(SELECT GM.uidNumber AS user_id, FP.object_id FROM #__xgroups_members GM
 				INNER JOIN #__forms_permissions FP ON GM.gidNumber = FP.usergroup_id
@@ -110,11 +110,16 @@ trait possessable
 				WHERE FP.usergroup = "role" AND FP.object = "' . $obj_type . '")) AS p', $obj_table . '.id', 'p.object_id', 'left')
 			->whereIn($obj_table . '.access', [0, 3])
 			->whereEquals('p.user_id', $currentUserId)
-			->where($obj_table . '.' . $obj_uid, '!=', $currentUserId) // Exclude own responses;
-			->orWhereEquals($obj_table . '.access', 1)
-			->where($obj_table . '.' . $obj_uid, '!=', $currentUserId)
-			->orWhereEquals($obj_table . '.access', 2)
+			->where($obj_table . '.' . $obj_uid, '!=', $currentUserId); // Exclude own responses;
+		if ($formId) { $items = $items->whereEquals('form_id', $formId);}
+		$items = $items->orWhereEquals($obj_table . '.access', 1)
 			->where($obj_table . '.' . $obj_uid, '!=', $currentUserId);
+		if ($formId) { $items = $items->whereEquals('form_id', $formId);}
+		$items = $items->orWhereEquals($obj_table . '.access', 2)
+			->where($obj_table . '.' . $obj_uid, '!=', $currentUserId);
+		if ($formId) { $items = $items->whereEquals('form_id', $formId);}
+
+		return $items;
 	}
 
 	/**
@@ -139,14 +144,10 @@ trait possessable
 
 		// Who (user or shared)
 		if ($filter == 'shared') {
-			$items = $items->whereShared();
+			$items = $items->whereShared($formId);
 		} else { 
 			$items = $items->whereEquals($userId_field, $userId);
-		}
-
-		// What (subset based on form)
-		if ($formId) {
-			$items = $items->whereEquals('form_id', $formId);
+			if ($formId) { $items = $items->whereEquals('form_id', $formId);}
 		}
 
 		$items = $items->paginated('limitstart', 'limit');
