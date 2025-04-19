@@ -21,7 +21,7 @@ $columns = [
 	'submitted' => 'Submitted',
 	'accepted' => 'Accepted',
 	'reviewed_by' => 'Reviewed By',
-	'action' => 'Action'
+	'action' => 'Actions'
 ];
 $formId = isset($this->formId) ? $this->formId : null;
 $columns = isset($this->columns) ? array_intersect_key($columns, array_flip($this->columns)) : $columns;

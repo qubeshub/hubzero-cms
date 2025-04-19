@@ -27,6 +27,7 @@ if (count($responses) > 0):
 		->set('responses', $responses)
 		->set('formId', ($form ? $form->get('id') : 0))
 		->set('sortingAction', $sortingAction)
+		->set('selectable', false)
 		->set('sortingCriteria', $sortingCriteria)
         ->set('columns', $columns)
 		->display();

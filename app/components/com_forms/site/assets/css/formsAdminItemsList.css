@@ -16,3 +16,64 @@
   cursor: pointer;
   color: #000;
 }
+
+/*
+ * Form/Response list styles
+ */
+ .fr-list {
+	list-style: none;
+	font-size: 1.5em;
+}
+
+.fr-list .fr-item:first-child {
+	margin-top: 0;
+}
+
+.fr-list .fr-item {
+	border: 2px solid #d6d6d6;
+	box-shadow: 1px 1px 5px rgba(0,0,0,0.09);
+	font-size: 1.25em;
+	line-height: 3em;
+	overflow: hidden;
+	padding: 0 0 0 1em;
+	white-space: nowrap;
+}
+
+.fr-icon-row {
+	display: flex;
+	gap: 5px;
+}
+
+.fr-icon-link {
+	position: relative;
+	width: 30px;
+	height: 30px;
+	overflow: hidden;
+	background: #597F2F;
+	border-radius: 15px;
+	text-decoration: none;
+	display: flex;
+	align-items: center;
+}
+
+.fr-icon-link:hover {
+	background: #008099;
+}
+
+.fr-icon {
+	width: 30px;
+	height: 30px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	font-size: 20px;
+}
+
+.fr-icon i {
+	font-style: normal;
+}
+
+.fr-icon i:before {
+	margin-right: 0;
+}
