@@ -143,21 +143,32 @@ $columns = $this->columns;
 	<?php 
 	if ($field == 'action'):
 		echo "<td>";
+		echo "<div class='fr-icon-row'>";
 		if ($formsAuth->canCurrentUserFillResponse($response)) {
 			$this->view('_link', 'shared')
-				->set('content', 'Edit')
+				->set('content', '<div class="fr-icon"><i class="icon-edit"></i></div>')
+				->set('tooltip', 'Edit')
 				->set('urlFunction', 'formResponseFillUrl')
 				->set('urlFunctionArgs', [$responseId])
-				->set('classes', 'icon-edit btn')
+				->set('classes', 'fr-icon-link tooltips')
 				->display();
 		} else {
 			$this->view('_link', 'shared')
-				->set('content', 'View')
+				->set('content', '<div class="fr-icon"><i class="icon-eye-open"></i></div>')
+				->set('tooltip', 'View')
 				->set('urlFunction', 'formResponseViewUrl')
 				->set('urlFunctionArgs', [$responseId])
-				->set('classes', 'icon-eye-open btn')
+				->set('classes', 'fr-icon-link tooltips')
 				->display();
 		}
+		$this->view('_link', 'shared')
+				->set('content', '<div class="fr-icon"><i class="icon-comment"></i></div>')
+				->set('tooltip', 'Comments')
+				->set('urlFunction', 'responseFeedUrl')
+				->set('urlFunctionArgs', [$responseId])
+				->set('classes', 'fr-icon-link tooltips')
+				->display();
+		echo "</div>";
 		echo "</td>";
 	endif;
 	?>

@@ -20,4 +20,10 @@ $(document).ready(() => {
 	FORMS.registerListActionHandlers(FORMS.$itemActionButtons)
 	FORMS.registerSortHandlers(FORMS.$itemsList)
 
+	$(document).on('click', '.fr-clipboard', (e) => {
+		const $target = $(e.target).closest('tr');
+		navigator.clipboard.writeText($target.data('share-link'));
+
+		FORMS.Notify['success']('Copied to clipboard: ' + $target.data('share-link'));
+	});
 })

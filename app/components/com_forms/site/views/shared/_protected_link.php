@@ -18,6 +18,7 @@ $formsAuth = new FormsAuth();
 
 $authArgs = isset($this->authArgs) ? $this->authArgs : [];
 $authMethod = $this->authMethod;
+$tooltip = isset($this->tooltip) ? $this->tooltip : '';
 $classes = isset($this->classes) ? $this->classes : '';
 $confirm = isset($this->confirm) ? $this->confirm : false;
 $isAuthorized = $formsAuth->$authMethod(...$authArgs);
@@ -28,6 +29,7 @@ $urlFunctionArgs = isset($this->urlFunctionArgs) ? $this->urlFunctionArgs : [];
 if ($isAuthorized):
 	$this->view('_link_lang')
 		->set('classes', $classes)
+		->set('tooltip', $tooltip)
 		->set('textKey', $textKey)
 		->set('confirm', $confirm)
 		->set('urlFunction', $urlFunction)

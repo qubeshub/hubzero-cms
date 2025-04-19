@@ -18,12 +18,13 @@ $routes = new FormsRouter();
 
 $classes = isset($this->classes) ? $this->classes : '';
 $confirm = isset($this->confirm) ? $this->confirm : false;
+$tooltip = isset($this->tooltip) ? $this->tooltip : '';
 $content = $this->content;
-$urlFunction = $this->urlFunction;
-$urlFunctionArgs = $this->urlFunctionArgs;
-$url = $routes->$urlFunction(...$urlFunctionArgs);
+$urlFunction = isset($this->urlFunction) ? $this->urlFunction : '';
+$urlFunctionArgs = isset($this->urlFunctionArgs) ? $this->urlFunctionArgs : [];
+$url = isset($this->urlFunction) ? $routes->$urlFunction(...$urlFunctionArgs) : '#';
 ?>
 
-<a href="<?php echo $url; ?>" class="protected-link <?php echo $classes; ?>" <?php if ($confirm): ?>onclick="return confirm('<?php echo $confirm; ?>');"<?php endif; ?>>
+<a href="<?php echo $url; ?>" class="protected-link <?php echo $classes; ?>" <?php if ($confirm): ?>onclick="return confirm('<?php echo $confirm; ?>');"<?php endif; ?> <?php if (!empty($tooltip)): ?>title="<?php echo $tooltip; ?>"<?php endif; ?>>
 	<?php echo $content; ?>
 </a>

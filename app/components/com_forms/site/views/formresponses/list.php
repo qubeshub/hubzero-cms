@@ -26,11 +26,12 @@ $filter = $this->filter;
 $formId = ($this->form ? $this->form->get('id') : 0);
 $formName = ($this->form ? $this->form->get('name') : 'All');
 $sortingCriteria = $this->sortingCriteria;
+$pageTitle = ($filter == 'shared' ? 'Shared Responses' : 'My Responses');
 
 $breadcrumbs = [
 	'Forms' => ['formListUrl'],
 	$formName => ['formsDisplayUrl', [$formId]],
-	'My Responses' => ['usersResponsesUrl']
+	$pageTitle => ['usersResponsesUrl']
 ];
 if (!$formId) {
 	unset($breadcrumbs['All']);

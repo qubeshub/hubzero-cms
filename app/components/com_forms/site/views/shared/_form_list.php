@@ -19,11 +19,11 @@ $columns = [
 	'modified' => 'Last Activity',
     'opening_time' => 'Opening Time',
     'closing_time' => 'Closing Time',
-	'action' => 'Action'
+	'action' => 'Actions'
 ];
 $columns = isset($this->columns) ? array_intersect_key($columns, array_flip($this->columns)) : $columns;
 $forms = $this->forms;
-$formsSelectable = isset($this->selectable) ? $this->selectable : true;
+$formsSelectable = isset($this->selectable) ? $this->selectable : false;
 $sortingAction = $this->sortingAction;
 $sortingCriteria = $this->sortingCriteria;
 ?>

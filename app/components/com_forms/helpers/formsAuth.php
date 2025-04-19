@@ -77,9 +77,8 @@ class FormsAuth extends ComponentAuth
 	{
 		$currentUsersId = User::get('id');
 
-		$form = $response->getForm();
 		$isFormAdmin = $form->isAdmin($currentUsersId);
-		$userOwnsForm = $form->isOwnedBy($userId);
+		$userOwnsForm = $form->isOwnedBy($currentUsersId);
 
 		$canDelete = $isFormAdmin || $userOwnsForm;
 
