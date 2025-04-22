@@ -20,29 +20,43 @@ FormLibrary.completeText = "Submit";
 
 function loadSurvey() {
     const id = $("input[name=form_id]").val();
-    const url = '/forms/forms/' + id + '/getjson';
-    fetch(url, {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'text/plain;charset=UTF-8'
-        }
-    })
-    .then(response => {
-        return response.text();
-    })
-    .then(formText => { 
-        // console.log(JSON.parse(formText));
-        FormLibrary.fromJSON(JSON.parse(formText));
-        restoreSurveyData();
-        const responseAction = $("input[name=response_action]").val();
-        if (responseAction === 'view') {
-            FormLibrary.readOnly = true;
-        }
-        FormLibrary.render(document.getElementById("formLibrary"));
-    })
-    .catch(error => {
-        console.log('Error fetching form JSON');
-    });
+    if (id) {
+        const url = '/forms/forms/' + id + '/getjson';
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'text/plain;charset=UTF-8'
+            }
+        })
+        .then(response => {
+            return response.text();
+        })
+        .then(formText => { 
+            // console.log(JSON.parse(formText));
+            FormLibrary.fromJSON(JSON.parse(formText));
+            
+            // Putting here avoids empty form showing before data is loaded
+            // Restore survey data to form element
+            const formLibraryEl = document.getElementById("formLibrary");
+            if (formLibraryEl) {
+                restoreSurveyData();
+                const responseAction = $("input[name=response_action]").val();
+                if (responseAction === 'view') {
+                    FormLibrary.readOnly = true;
+                }
+                FormLibrary.render(formLibraryEl);
+            }
+
+            // Restore response data to responses table
+            const responsesTableEl = document.getElementById("responsesTable");
+            if (responsesTableEl) {
+                loadSurveyResponses();
+            }
+        })
+        .catch(error => {
+            console.log('Error fetching form JSON');
+        });
+    }
 }
 
 function restoreSurveyData() {
@@ -66,6 +80,36 @@ function restoreSurveyData() {
                 FormLibrary.currentPageNo = data.pageNo;
             }
         }
+    })
+    .catch(error => {
+        console.log('Error fetching response JSON');
+    });
+}
+
+function loadSurveyResponses() {
+    const id = $("input[name=form_id]").val();
+    const url = '/forms/responses/getjson?form_id=' + id;
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'text/plain;charset=UTF-8'
+        }
+    })
+    .then(response => {
+        return response.text();
+    })
+    .then(responseText => {
+        if (responseText) {
+            responseText = JSON.parse(responseText, true);
+            const responses = responseText.map(JSON.parse);
+            console.log(responses);
+            const responsesTable = new SurveyAnalyticsTabulator.Tabulator(
+                FormLibrary,
+                responses
+            );
+            responsesTable.render(document.getElementById("responsesTable"));
+        }
+        return responsesTable;
     })
     .catch(error => {
         console.log('Error fetching response JSON');
