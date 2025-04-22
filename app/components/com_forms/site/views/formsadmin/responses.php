@@ -8,13 +8,25 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
-$this->css('formsAdminResponses');
+$this->css('formsAdminResponses')
+	 ->css('surveyjs/survey-core.min.css')
+	 ->css('tabulator/tabulator.min.css')
+	 ->css('surveyjs/survey.analytics.tabulator.min.css');
 
 $this->js('notify')
 	->js('formsAdminItemsListActions')
 	->js('formsAdminItemsListCheckbox')
 	->js('formsAdminItemsListSorting')
-	->js('formsAdminItemsList');
+	->js('formsAdminItemsList')
+	->js('jspdf/jspdf.umd.min.js')
+	->js('jspdf/jspdf.plugin.autotable.min.js')
+	->js('sheetjs/xlsx.full.min.js')
+	->js('tabulator/tabulator.min.js')
+	->js('surveyjs/survey.core.min.js')
+	->js('surveyjs/survey-js-ui.min.js')
+	->js('surveyjs/survey.analytics.tabulator.min.js')
+	->js('formSetup.js')
+	->js('formLibrary.js');
 
 $responsesEmailUrl = $this->responsesEmailUrl;
 $responsesTagsUrl = $this->responsesTagsUrl;
@@ -116,6 +128,11 @@ $this->view('_forms_breadcrumbs', 'shared')
 						->set('recordsCount', $responsesCount)
 						->display();
 				?>
+
+				<div id="surveyjsForm">
+					<div id="responsesTable"></div>
+					<input type="hidden" name="form_id" value="<?php echo $formId; ?>">
+				</div>
 
 				<?php if ($responsesCount > 0): ?>
 					<span>

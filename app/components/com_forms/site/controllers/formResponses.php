@@ -384,13 +384,28 @@ class FormResponses extends SiteController
 	}
 
 	/**
-	 * AJAX request to get form json
+	 * AJAX request to get response(s) json
 	 */
 	public function getjsonTask()
 	{
-		$responseId = $this->_params->getInt('response_id');
-		$response = FormResponse::oneOrFail($responseId);
-		$responseJson = $response->getJson();
+		// Get JSON for given response
+		$responseId = $this->_params->getInt('response_id', 0);
+		if ($responseId) {
+			$response = FormResponse::oneOrFail($responseId);
+			$responseJson = $response->getJson();
+		}
+
+		// Get all JSON responses for given form
+		$formId = $this->_params->getInt('form_id', 0);
+		if ($formId) {
+			$responses = FormResponseJson::blank()
+				->join('#__forms_form_responses R', 'response_id', 'R.id', 'left')
+				->select('json')
+				->whereEquals('R.form_id', $formId)
+				->rows()
+				->fieldsByKey('json');
+			$responseJson = json_encode($responses);
+		}
 
 		echo $responseJson;
 		exit();

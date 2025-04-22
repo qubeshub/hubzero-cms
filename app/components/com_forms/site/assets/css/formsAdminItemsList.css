@@ -77,3 +77,8 @@
 .fr-icon i:before {
 	margin-right: 0;
 }
+
+/* Tabulator */
+.tabulator-tooltip {
+    height: auto !important;
+}
