@@ -133,20 +133,6 @@ $this->view('_forms_breadcrumbs', 'shared')
 					<div id="responsesTable"></div>
 					<input type="hidden" name="form_id" value="<?php echo $formId; ?>">
 				</div>
-
-				<?php if ($responsesCount > 0): ?>
-					<span>
-						<?php
-							$this->view('_protected_link', 'shared')
-								->set('authMethod', 'canCurrentUserEditForm')
-								->set('authArgs', [$form])
-								->set('textKey', 'COM_FORMS_FIELDS_RESPONSES_EXPORT')
-								->set('urlFunction', 'formResponsesExportUrl')
-								->set('urlFunctionArgs', [$formId])
-								->display();
-						?>
-					</span>
-				<?php endif; ?>
 			</div>
 
 		</div>

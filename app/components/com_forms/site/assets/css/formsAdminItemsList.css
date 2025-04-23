@@ -82,3 +82,13 @@
 .tabulator-tooltip {
     height: auto !important;
 }
+
+button.sa-table__svg-button:hover,
+button.tabulator-page:hover {
+	background: unset;
+    border-color: unset;
+}
+
+.sa-table__btn--gray {
+	border-color: #a0a0a0 !important;
+}
