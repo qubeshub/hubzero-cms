@@ -102,18 +102,39 @@ function loadSurveyResponses() {
         if (responseText) {
             responseText = JSON.parse(responseText, true);
             const responses = responseText.map(JSON.parse);
-            console.log(responses);
-            const responsesTable = new SurveyAnalyticsTabulator.Tabulator(
-                FormLibrary,
-                responses
-            );
-            responsesTable.render(document.getElementById("responsesTable"));
+            // console.log(responses);
+            HUB.FORMS.ResponsesTable = renderResponsesTable(responses);
         }
-        return responsesTable;
     })
     .catch(error => {
         console.log('Error fetching response JSON');
     });
+}
+
+function renderResponsesTable(responses) {
+    var question = FormLibrary.pages[0].addNewQuestion("text", "_metadata_user", 0);
+    question.title = "User";
+
+    question = FormLibrary.pages[0].addNewQuestion("text", "_metadata_started", 1);
+    question.inputType = "datetime-local";
+    question.title = "Started";
+
+    question = FormLibrary.pages[0].addNewQuestion("text", "_metadata_modified", 2);
+    question.inputType = "datetime-local";
+    question.title = "Last Activity";
+
+    question = FormLibrary.pages[0].addNewQuestion("text", "_metadata_submitted", 3);
+    question.inputType = "datetime-local";
+    question.title = "Submitted";
+
+    question = FormLibrary.pages[0].addNewQuestion("text", "_metadata_link", 4);
+    question.inputType = "url";
+    question.title = "Link";
+
+    const responsesTable = new SurveyAnalyticsTabulator.Tabulator(FormLibrary, responses);
+    responsesTable.render(document.getElementById("responsesTable"));
+
+    return responsesTable
 }
 
 function submitSurvey() {

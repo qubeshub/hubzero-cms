@@ -398,13 +398,24 @@ class FormResponses extends SiteController
 		// Get all JSON responses for given form
 		$formId = $this->_params->getInt('form_id', 0);
 		if ($formId) {
-			$responses = FormResponseJson::blank()
-				->join('#__forms_form_responses R', 'response_id', 'R.id', 'left')
-				->select('json')
-				->whereEquals('R.form_id', $formId)
-				->rows()
-				->fieldsByKey('json');
-			$responseJson = json_encode($responses);
+			$responses = FormResponse::blank()
+				->join('#__forms_form_responses_json J', '#__forms_form_responses.id', 'J.response_id', 'left')
+				->select('#__forms_form_responses.*')
+				->select('J.json')
+				->whereEquals('form_id', $formId);
+			
+			// Loop through responses to add metadata
+			$json = [];
+			foreach ($responses as $response) {
+				$responseJson = json_decode($response->get('json'));
+				$responseJson->_metadata_user = $response->getUser()->get('name'); // $response->get('user_id');
+				$responseJson->_metadata_started = $response->get('created');
+				$responseJson->_metadata_modified = $response->get('modified');
+				$responseJson->_metadata_submitted = $response->get('submitted');
+				$responseJson->_metadata_link = "https://example.com" . $this->_routes->formResponseFillUrl($response->get('id'));
+				$json[] = json_encode($responseJson);
+			}
+			$responseJson = json_encode($json);
 		}
 
 		echo $responseJson;
