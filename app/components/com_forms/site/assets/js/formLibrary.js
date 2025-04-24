@@ -104,6 +104,12 @@ function loadSurveyResponses() {
             const responses = responseText.map(JSON.parse);
             // console.log(responses);
             HUB.FORMS.ResponsesTable = renderResponsesTable(responses);
+            HUB.FORMS.ResponsesTable.tabulatorTables.on("tableBuilt", function() { 
+                // https://tabulator.info/docs/6.3/columns#update
+                this.updateColumnDefinition("_metadata_link", {
+                    formatter: "link"
+                });
+            });
         }
     })
     .catch(error => {
@@ -112,6 +118,7 @@ function loadSurveyResponses() {
 }
 
 function renderResponsesTable(responses) {
+    const metadataQuestions = ["_metadata_user", "_metadata_started", "_metadata_modified", "_metadata_submitted", "_metadata_link"];
     var question = FormLibrary.pages[0].addNewQuestion("text", "_metadata_user", 0);
     question.title = "User";
 
@@ -132,6 +139,9 @@ function renderResponsesTable(responses) {
     question.title = "Link";
 
     const responsesTable = new SurveyAnalyticsTabulator.Tabulator(FormLibrary, responses);
+    for (const question of metadataQuestions) {
+        responsesTable.setColumnLocation(question, 1);
+    }
     responsesTable.render(document.getElementById("responsesTable"));
 
     return responsesTable

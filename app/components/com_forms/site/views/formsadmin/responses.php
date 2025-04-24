@@ -130,6 +130,7 @@ $this->view('_forms_breadcrumbs', 'shared')
 				?>
 
 				<div id="surveyjsForm">
+					<strong>Note</strong>: Click the <span><svg style="width:15px; height:15px;"><use xlink:href="#sa-svg-detail"></use></svg></span> icon in the first column of each row to show/expand response metadata. While the response metadata is expanded, click the "Show as Column" button to have the metadata column appear in the table and exported PDF, Excel, or CSV files.
 					<div id="responsesTable"></div>
 					<input type="hidden" name="form_id" value="<?php echo $formId; ?>">
 				</div>
