@@ -44,7 +44,12 @@ class RateLimitServiceProvider extends ServiceProvider
 
 		$timestamp = time();
 
-		if (empty($result))
+		// We aren't inserting any values into this table until the rest
+		// of this feature is committed, otherwise it just fills memory since
+		// there is nothing purging the entries or tracking the timestamps.
+
+		// if (empty($result)) 
+		if (false) 
 		{
 			$db->setQuery('INSERT IGNORE INTO #__ratelimit (ip,count) VALUE (INET6_ATON(' . $db->Quote($ip) . '),1);');
 			$db->execute();
@@ -54,5 +59,8 @@ class RateLimitServiceProvider extends ServiceProvider
 			$db->setQuery('UPDATE #__ratelimit SET count=count+1 WHERE rule_id=0 AND ip=INET6_ATON(' . $db->Quote($ip) . ');');
 			$db->execute();
 		}
+
+		$db->setQuery('UPDATE #__ratelimit SET count=count+1 WHERE rule_id=0 AND ip=INET6_ATON(' . $db->Quote($ip) . ');');
+		$db->execute();
 	}
 }
