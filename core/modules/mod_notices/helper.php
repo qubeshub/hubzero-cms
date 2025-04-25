@@ -188,7 +188,7 @@ class Helper extends Module
 			$the_countdown_date = $this->_mkt($stop);
 
 			// get current unix timestamp
-			$now = time() + (Config::get('offset') * 60 * 60);
+			$now = time() + (intval(Config::get('offset')) * 60 * 60);
 
 			$difference = $the_countdown_date - $now;
 			if ($difference < 0)
