@@ -215,8 +215,8 @@ class Helper extends Module
 			// Get some parameters
 			$this->moduleid   = $this->params->get('moduleid', 'sitenotice');
 			$this->alertlevel = $this->params->get('alertlevel', 'medium');
-			$timezone         = $this->params->get('timezone');
-			$message          = $this->params->get('message');
+			$timezone         = $this->params->get('timezone', '');
+			$message          = $this->params->get('message', '');
 
 			// Convert start time
 			$start = $this->_mkt($start);
