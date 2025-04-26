@@ -181,7 +181,7 @@ $txt['html'] = '<p>Embed an image in wiki-formatted text. The first argument is 
 		}
 		else if (preg_match("/^(https?:|mailto:|ftp:|gopher:|news:|file:)/", $file))
 		{
-			$attr['desc'] = $file;
+			$attr['desc'] = (isset($attr['desc'])) ? $attr['desc'] : '';
 
 			$ret = true;
 		}
