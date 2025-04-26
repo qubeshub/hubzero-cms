@@ -227,6 +227,7 @@ class plgGroupsWiki extends \Hubzero\Plugin\Plugin
 			}
 
 			Request::setVar('task', $action);
+			Request::setVar('option', 'com_wiki');
 
 			Lang::load('com_wiki') ||
 			Lang::load('com_wiki', Component::path('com_wiki') . DS . 'site');
