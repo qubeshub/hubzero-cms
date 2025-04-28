@@ -739,9 +739,9 @@
 	.wikipage ol {
 		list-style-type: decimal;
 	}
-	.wikipage li {
+	.wikipage li:not(:first-child) {
 		padding: 0;
-		margin: 0em 0 0em 2em;
+		margin: -1em 0 0em 2em;
 	}
 	.wikipage ul li {
 	}
@@ -969,6 +969,12 @@
 	}
 	.icon-approved:before {
 		content: "\2714";
+	}
+
+	/* Fixes */
+	.tex2jax_ignore a:target:before,
+	ol.footnotes a:target:before {
+		display: none;
 	}
 
 /* Hide the sidebar if the page is too narrow */
