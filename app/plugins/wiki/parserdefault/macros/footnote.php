@@ -60,7 +60,7 @@ class FootNoteMacro extends WikiMacro
 
 				$wm->footnotes[$i-1]->refs[] = 'fndef-' . $k;
 
-				return '<sup><a name="fndef-' . $k . '"></a><a href="#fnref-' . $i . '">&#91;' . $i . '&#93;</a></sup>';
+				return '<sup class="tex2jax_ignore"><a name="fndef-' . $k . '"></a><a href="#fnref-' . $i . '">&#91;' . $i . '&#93;</a></sup>';
 			}
 
 			$i = count($wm->footnotes) + 1;
@@ -90,7 +90,7 @@ class FootNoteMacro extends WikiMacro
 					$html .= '^ ';
 					foreach ($footnote->refs as $key => $ref)
 					{
-						$html .= '<sup><a href="#' . $ref . '">' . strtolower($letters[$key]) . '</a></sup> ';
+						$html .= '<sup class="tex2jax_ignore"><a href="#' . $ref . '">' . strtolower($letters[$key]) . '</a></sup> ';
 					}
 				}
 				else if (count($footnote->refs) == 1)
