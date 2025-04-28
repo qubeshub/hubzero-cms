@@ -690,33 +690,11 @@
 		border: 1pt solid #E5E5E5;
 		background-color: #F9F9FF;
 		color: black;
-		margin: 10pt 30pt 10pt 30pt;
+		margin: 1em 1.75em;
 		background-repeat: no-repeat;
 		background-position: 8px 8px;
 		min-height: 64px; /*64=48+8+8 but doesn't work with IE*/
-		padding-left: 64px;
-	}
-	div.admon-caution p, 
-	div.admon-important p, 
-	div.admon-note p, 
-	div.admon-tip p, 
-	div.admon-warning p {
-		margin-top: 8px; /*to align text with bg graphic*/
-	}
-	div.admon-tip { 
-		background-image: url("/components/com_wiki/site/assets/img/admon-tip.png"); 
-	}
-	div.admon-note { 
-		background-image: url("/components/com_wiki/site/assets/img/admon-note.png"); 
-	}
-	div.admon-important { 
-		background-image: url("/components/com_wiki/site/assets/img/admon-important.png"); 
-	}
-	div.admon-caution { 
-		background-image: url("/components/com_wiki/site/assets/img/admon-caution.png"); 
-	}
-	div.admon-warning { 
-		background-image: url("/components/com_wiki/site/assets/img/admon-warning.png"); 
+		padding: 0 0 0 5em;
 	}
 
 /* Wiki pages */
