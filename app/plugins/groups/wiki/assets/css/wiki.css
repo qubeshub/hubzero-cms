@@ -739,8 +739,11 @@
 	.wikipage ol {
 		list-style-type: decimal;
 	}
-	.wikipage li:not(:first-child) {
+	.wikipage li {
 		padding: 0;
+		margin: 0em 0 0em 2em;
+	}
+	.wikipage ol.footnotes li:not(:first-child) {
 		margin: -1em 0 0em 2em;
 	}
 	.wikipage ul li {
