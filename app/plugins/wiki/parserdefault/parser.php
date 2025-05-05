@@ -341,11 +341,12 @@ class WikiParser
 		$text = preg_replace('!<p>\s*(</?(?:table|tr|td|th|div|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)!', "$1", $text);
 		$text = preg_replace('!(</?(?:table|tr|td|th|div|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)\s*</p>!', "$1", $text);
 
-		// Format headings and build a table of contents
+		// Format headings and build a table of contents (Note: Always now that TOC is in aside)
 		if ($this->get('fullparse') && strstr($text, '<p>MACRO' . $this->token() . '[[TableOfContents]]' . "\n" . '</p>'))
 		{
-			$text = $this->toc($text);
+			// $text = $this->toc($text);
 		}
+		$text = $this->toc($text);
 
 		// If full parse and we have a page ID (i.e., this is a *wiki* page) and link logging is turned on...
 		if ($this->get('fullparse') && $this->get('pageid') && $this->get('loglinks'))
@@ -2831,7 +2832,7 @@ class WikiParser
 	 * @param   string  $text  Text to build TOC from
 	 * @return  string
 	 */
-	public function toc($text)
+	public function toc($text, $standalone = false)
 	{
 		$isMain              = true;
 		$maxTocLevel         = 15;
@@ -2895,7 +2896,12 @@ class WikiParser
 					if ($toclevel < $maxTocLevel)
 					{
 						$prevtoclevel = $toclevel;
-						$toc .= $this->_tocIndent();
+						if ($toc == '') {
+							$toc .= $this->_tocIndent();
+							$toc .= $this->_tocLine('article-content-header', '(Top)', '', 1);
+						} else {
+							$toc .= $this->_tocIndent();
+						}
 						$numVisible++;
 					}
 				}
@@ -3060,12 +3066,16 @@ class WikiParser
 			$i++;
 		}
 
+		if ($toc == '') {
+			$toc .= $this->_tocIndent();
+			$toc .= $this->_tocLine('article-content-header', '(Top)', '', 1);
+		}
 		$output  = '<div class="article-toc">' . "\n";
 		$output .= '<h3 class="article-toc-heading">Contents</h3>' . "\n";
 		$output .= $toc . "\n";
 		$output .= '</div>' . "\n";
 
-		return str_replace('<p>MACRO' . $this->token() . '[[TableOfContents]]' . "\n" . '</p>', $output, $full);
+		return ($standalone ? $output : str_replace('<p>MACRO' . $this->token() . '[[TableOfContents]]' . "\n" . '</p>', $output, $full));
 	}
 
 	/**
@@ -3090,7 +3100,7 @@ class WikiParser
 	 */
 	private function _tocIndent()
 	{
-		return "\n<ul>";
+		return "\n<ul class='toc-list'>";
 	}
 
 	/**
@@ -3118,11 +3128,14 @@ class WikiParser
 		$url = $this->get('url');
 		$url = $url ?: 'index.php?option=' . $this->get('option') . '&scope=' . $this->get('scope') . '&pagename=' . $this->get('pagename');
 
-		return "\n" . '<li class="toclevel-' . $level . '">' .
-						'<a href="' . Route::url($url) . '#' . $anchor . '">' .
-							'<span class="tocnumber">' . $tocnumber . ' </span>' .
-							'<span class="toctext">' . $tocLine . '</span>' .
-						'</a>';
+		return "\n" . '<li class="toclevel toclevel-' . $level . '">' .
+						'<div class="toc-item">' .
+							'<button class="toggle-button" aria-expanded="false" aria-label="Toggle subsection"></button>' .
+							'<a href="' . Route::url($url) . '#' . $anchor . '">' .
+								'<span class="tocnumber">' . $tocnumber . ' </span>' .
+								'<span class="toctext">' . $tocLine . '</span>' .
+							'</a>' .
+						'</div>';
 	}
 
 	/**
