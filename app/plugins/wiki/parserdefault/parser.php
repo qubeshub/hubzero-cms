@@ -2842,6 +2842,14 @@ class WikiParser
 		$forceTocPosition    = true;
 		//$mShowToc            = true;
 
+		$toc_title_anchor = 'content-header';
+		if ($this->get('domain') == 'group') {
+			$group = \Hubzero\User\Group::getInstance($this->get('domain_id'));
+			if (!$group->isSuperGroup()) {
+				$toc_title_anchor = 'sub-content-header';
+			}
+		}
+
 		// Get all headlines for numbering them and adding funky stuff like [edit]
 		// links - this is for later, but we need the number of headlines right now
 		$matches = array();
@@ -2897,10 +2905,10 @@ class WikiParser
 					{
 						$prevtoclevel = $toclevel;
 						if ($toc == '') {
-							$toc .= $this->_tocIndent();
-							$toc .= $this->_tocLine('article-content-header', '(Top)', '', 1);
+							$toc .= $this->_tocIndent($toclevel);
+							$toc .= $this->_tocLine($toc_title_anchor, '(Top)', '', 1);
 						} else {
-							$toc .= $this->_tocIndent();
+							$toc .= $this->_tocIndent($toclevel);
 						}
 						$numVisible++;
 					}
@@ -3067,10 +3075,10 @@ class WikiParser
 		}
 
 		if ($toc == '') {
-			$toc .= $this->_tocIndent();
-			$toc .= $this->_tocLine('article-content-header', '(Top)', '', 1);
+			$toc .= $this->_tocIndent($toclevel);
+			$toc .= $this->_tocLine($toc_title_anchor, '(Top)', '', 1);
 		}
-		$output  = '<div class="article-toc">' . "\n";
+		$output  = '<div class="article-toc' . (!$standalone ? ' macro-toc' : '') . '">' . "\n";
 		$output .= '<h3 class="article-toc-heading">Contents</h3>' . "\n";
 		$output .= $toc . "\n";
 		$output .= '</div>' . "\n";
@@ -3098,9 +3106,9 @@ class WikiParser
 	 *
 	 * @return  string
 	 */
-	private function _tocIndent()
+	private function _tocIndent($toclevel)
 	{
-		return "\n<ul class='toc-list'>";
+		return "\n<ul class='toc-list'" . ($toclevel > 1 ? " style='display: none;'": "") . ">";
 	}
 
 	/**
