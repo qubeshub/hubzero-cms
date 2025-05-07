@@ -355,6 +355,7 @@
 	.group_wiki .toc-item .toggle-button {
 		position: absolute;
 		left: -2em;
+		top: 0.45em;
 		color: #000;
 		background: none;
 		border: none;
