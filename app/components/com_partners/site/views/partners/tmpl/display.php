@@ -57,7 +57,7 @@ Pathway::append(
 
 <!-- Need to add checks if metadata is available before displaying -->
 <section class="main section">
-		<p>Please also visit the <a href="/community/groups/bioquest/about/funders">BioQUEST Funders page</a>.</p>
+		<p>Please also visit the <a href="/community/groups/bioquest/about/financials">BioQUEST Funders page</a>.</p>
 		<form class="section-inner" action="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller); ?>" method="get">
 		<div class="subject">
 			<div class="cards">
