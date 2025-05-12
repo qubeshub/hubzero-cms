@@ -326,7 +326,6 @@
 	.wikipage .article-toc ul ul {
 		max-height: none;
 		border: none;
-		margin: 0 0 0 1em;
 		padding: 0;
 	}
 	.wikipage .article-toc li {
@@ -372,6 +371,14 @@
 		top: 0.35em;
 	}
 
+	.group_wiki .wikipage .macro-toc .toggle-button {
+		top: -0.4em;
+	}
+
+	.super-group-content.group_wiki .wikipage .macro-toc .toggle-button {
+		top: 0.35em;
+	}
+
 	.group_wiki .toc-item .toggle-button::before {
 		font-family: 'Fontcons';
 		content: '\f0da'; /* Always show closed caret shape */
@@ -388,7 +395,7 @@
 	}
 
 	.group_wiki .wikipage .macro-toc .toc-list {
-		padding: 0.4em 0.4em 0.4em 0.8em;
+		padding: 0 0 0.25em 1em;
 	}
 
 	.group_wiki .wikipage .macro-toc > .toc-list {
