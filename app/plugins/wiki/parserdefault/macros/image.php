@@ -481,8 +481,14 @@ $txt['html'] = '<p>Embed an image in wiki-formatted text. The first argument is 
 
 		if ($this->pageid)
 		{
-			$page = \Components\Wiki\Models\Page::oneOrFail($this->pageid);
-			$link = $page->link();
+			if ($this->pageid > 0) {
+				$page = \Components\Wiki\Models\Page::oneOrFail($this->pageid);
+				$link = $page->link();
+			} else {
+				// Short circuit for new pages
+				$link = '/app/site/wiki/' . $this->pageid . '/' . $file;
+				return Route::url($link);
+			}
 		}
 		else
 		{
