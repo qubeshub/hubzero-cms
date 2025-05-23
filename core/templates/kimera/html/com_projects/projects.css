@@ -809,6 +809,10 @@
 	.ptitle h2 a:hover {
 		border: none;
 	}
+	#project-wrap .ptitle h2 {
+                padding-top: 10px;
+                padding-left: 60px;
+        }
 	#project-wrap .pthumb {
 		margin: 0;
 		padding: 0;

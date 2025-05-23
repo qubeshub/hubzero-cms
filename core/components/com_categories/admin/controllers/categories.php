@@ -101,7 +101,7 @@ class Categories extends AdminController
 			'access' => Request::getState(
 				$this->_option . '.' . $this->_controller . 'access',
 				'filter_access',
-				0
+				NULL
 			),
 			'published' => Request::getState(
 				$this->_option . '.' . $this->_controller . 'published',

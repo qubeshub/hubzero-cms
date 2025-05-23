@@ -21,6 +21,9 @@ use Date;
  */
 class Badges
 {
+	public $scope = '';
+	public $scopeId = '';
+	private $_db = '';
 
 	const LABEL = 'badge';
 

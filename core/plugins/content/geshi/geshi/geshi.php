@@ -2755,7 +2755,7 @@ class GeSHi
 											"|\xF0[\x90-\xBF][\x80-\xBF]{2}".
 											"|[\xF1-\xF3][\x80-\xBF]{3}".
 											"|\xF4[\x80-\x8F][\x80-\xBF]{2}/s",
-											$part, $es_char_m, null, $es_pos + 1)) {
+											$part, $es_char_m, 0, $es_pos + 1)) {
 											$es_char_m = $es_char_m[0];
 										} else {
 											$es_char_m = $es_char;
@@ -4817,7 +4817,7 @@ class GeSHi
 			// TODO: a|bb|c => [ac]|bb
 			static $callback_2;
 			if (!isset($callback_2)) {
-				$callback_2 = create_function('$matches', 'return "[" . str_replace("|", "", $matches[1]) . "]";');
+				$callback_2 = function ($matches) { return "[" . str_replace("|","",$matches[1]) . "]"; };
 			}
 			$list = preg_replace_callback('#\(\?\:((?:.\|)+.)\)#', $callback_2, $list);
 		}

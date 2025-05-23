@@ -68,6 +68,9 @@ class Cart extends ComponentController
 
 		if ($updateCartRequest && ($pIds || $skus))
 		{
+			// Check for request forgeries
+			Request::checkToken();
+
 			if (!empty($pIds))
 			{
 				$skus = array();
@@ -130,6 +133,9 @@ class Cart extends ComponentController
 
 					if ($toDelete[0] == 'delete')
 					{
+						// Check for request forgeries
+						Request::checkToken();
+
 						$sId = $toDelete[1];
 						// Delete the requested item by setting its QTY to zero
 						$redirect = true;
@@ -153,7 +159,10 @@ class Cart extends ComponentController
 
 		if ($addCouponRequest && $couponCode)
 		{
-			// Sync cart before pontial coupons applying
+			// Check for request forgeries
+			Request::checkToken();
+
+			// Sync cart before applying coupons
 			$cart->getCartInfo(true);
 
 			// Add coupon

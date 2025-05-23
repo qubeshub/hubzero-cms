@@ -75,16 +75,18 @@ if ($mode != 'preview')
 						$ghtml = array();
 						foreach ($this->model->groups as $allowedgroup)
 						{
-							$ghtml[] = '<a href="' . Route::url('index.php?option=com_groups&gid=' . $allowedgroup) . '">' . $allowedgroup . '</a>';
+							$ghtml[] = '<a href="' . Route::url('index.php?option=com_groups&cn=' . $allowedgroup) . '">' . $allowedgroup . '</a>';
 						}
 						?>
-						<p class="warning">
-							<?php if (User::isGuest()): ?>
-								<?php echo Lang::txt('COM_RESOURCES_ERROR_MUST_BE_LOGGED_IN', base64_encode(Request::path())); ?>
-							<?php else: ?>
-								<?php echo Lang::txt('COM_RESOURCES_ERROR_MUST_BE_PART_OF_GROUP') . ' ' . implode(', ', $ghtml); ?>
-							<?php endif; ?>
-						</p>
+							<p class="warning">
+								<?php if (User::isGuest()): ?>
+									<?php echo Lang::txt('COM_RESOURCES_ERROR_MUST_BE_LOGGED_IN', base64_encode(Request::path())); ?>
+								<?php elseif ($this->get('group_owner')): ?>
+									<?php echo Lang::txt('COM_RESOURCES_ERROR_MUST_BE_PART_OF_GROUP') . ' ' . implode(', ', $ghtml); ?>
+								<?php else: ?>
+									<?php echo Lang::txt('COM_RESOURCES_ALERTNOTAUTH'); ?>
+								<?php endif; ?>
+							</p>
 						<?php
 					}
 					else
@@ -297,6 +299,7 @@ if ($mode != 'preview')
 								$videoi       = '';
 								$breeze       = '';
 								$hubpresenter = '';
+								$youtube      = '';
 								$pdf          = '';
 								$video        = '';
 								$exercises    = '';
@@ -321,17 +324,24 @@ if ($mode != 'preview')
 										case 'hubpresenter':
 											$hubpresenter .= (!$hubpresenter) ? '<a title="View Presentation - HTML5 Version" class="hubpresenter html5" href="'.$grandchild->path.'" title="'.$this->escape(stripslashes($grandchild->title)).'">'.Lang::txt('View HTML').'</a>' : '';
 											break;
+										case 'elink':
+										case 'youtube':
+											if ($grandchild->get('logical_type') == 68) // youtube
+											{
+												$youtube .= (!$youtube) ? '<a title="View Presentation - YouTube Version" class="youtube" href="'.$grandchild->path.'" title="'.$this->escape(stripslashes($grandchild->title)).'">'.Lang::txt('View on YouTube').'</a>' : '';
+												break;	
+											}
 										case 'pdf':
 										default:
 											if ($grandchild->get('logical_type') == 14)
 											{
 												$ext = Filesystem::extension($grandchild->path);
 												$ext = (strpos($ext, '?') ? strstr($ext, '?', true) : $ext);
-												$pdf .= '<a href="'.$grandchild->path.'">'.Lang::txt('Notes').' (' . $ext . ')</a>'."\n";
+												$pdf .= '<a href="'.$grandchild->path.'">'.Lang::txt('Notes').' (' . $ext . ')</a><br />'."\n";
 											}
 											elseif ($grandchild->get('logical_type') == 51)
 											{
-												$exercises .= '<a href="'.$grandchild->path.'">'.stripslashes($grandchild->title).'</a>'."\n";
+												$exercises .= '<a href="'.$grandchild->path.'">'.stripslashes($grandchild->title).'</a><br />'."\n";
 											}
 											else
 											{
@@ -362,6 +372,10 @@ if ($mode != 'preview')
 								if ($hubpresenter)
 								{
 									$html .= "\t\t\t".'<td>'.$hubpresenter.'<br>'.$breeze.'</td>'."\n";
+								}
+								else if ($youtube)
+								{
+									$html .= "\t\t\t".'<td>'.$youtube.'</td>'."\n";
 								}
 								else
 								{

@@ -79,7 +79,7 @@ $router->rules('parse')->append('prep', function ($uri)
 */
 $router->rules('parse')->append('component', function ($uri)
 {
-	$option = $uri->getVar('option');
+	$option = $uri->getUriVar('option');
 	if (is_array($option))
 	{
 		$option = implode('', $option);
@@ -103,7 +103,7 @@ $router->rules('parse')->append('component', function ($uri)
 		$option = 'com_cpanel';
 	}
 
-	$uri->setVar('option', $option);
+	$uri->setUriVar('option', $option);
 
 	return true;
 });

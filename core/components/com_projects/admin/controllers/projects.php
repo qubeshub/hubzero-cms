@@ -23,6 +23,7 @@ use User;
 use App;
 
 include_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'orm' . DS . 'description' . DS . 'field.php';
+require_once dirname(dirname(dirname(__DIR__))) . DS . 'com_members' . DS . 'helpers' . DS . 'utility.php';
 
 /**
  * Manage projects
@@ -48,6 +49,8 @@ class Projects extends AdminController
 
 		// Include scripts
 		$this->_includeScripts();
+		
+		$this->registerTask('querygrantagency', 'getGrantAgency');
 
 		parent::execute();
 	}
@@ -406,7 +409,7 @@ class Projects extends AdminController
 			$result = $log
 				->join($r, $r . '.log_id', $l . '.id', 'inner')
 				->whereEquals($r . '.scope', 'project')
-				->whereEquals($r . '.scope_id', $this->model->get('id'))
+				->whereEquals($r . '.scope_id', $model->get('id'))
 				->whereEquals($l . '.description', Lang::txt('COM_PROJECTS_ACTIVITY_PROJECT_SUSPENDED'))
 				->order($l . '.created', 'desc')
 				->row();
@@ -498,6 +501,16 @@ class Projects extends AdminController
 				{
 					// convert GB to bytes
 					$value = Helpers\Html::convertSize(floatval($value), 'GB', 'b');
+				}
+				
+				if ($key == "grant_agency")
+				{
+					$grant_agency_id = $this->getGrantAgencyId($value);
+					
+					if ($grant_agency_id != false && !empty($grant_agency_id))
+					{
+						$model->saveParam("grant_agency_id", $grant_agency_id);
+					}
 				}
 
 				$model->saveParam($key, $value);
@@ -613,7 +626,7 @@ class Projects extends AdminController
 
 		if (!$objO->id)
 		{
-			throw new Exception(Lang::txt('Error loading user'), 404);
+			throw new \Exception(Lang::txt('Error loading user'), 404);
 		}
 
 		// Change in individual ownership
@@ -1348,5 +1361,119 @@ class Projects extends AdminController
 
 		// Redirect
 		$this->cancelTask();
+	}
+	
+	/**
+	 * Querying the grant agency name based on the input value
+	 *
+	 * @return  array   grant agency names that match the input value
+	 */
+	public function getGrantAgencyTask()
+	{
+		$term = trim(Request::getString('term', ''));
+		$term = \Components\Members\Helpers\Utility::escapeSpecialChars($term);
+		
+		$verNum = \Component::params('com_members')->get('rorApiVersion');
+		
+		if (!empty($verNum))
+		{
+			$queryURL = "https://api.ror.org/$verNum/organizations?filter=types:funder&query.advanced=names.value:" . urlencode($term);
+			
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $queryURL);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			
+			$result = curl_exec($ch);
+			
+			if (!$result)
+			{
+				return false;
+			}
+			
+			$info = curl_getinfo($ch);
+			
+			$code = $info['http_code'];
+			
+			if (($code != 201) && ($code != 200))
+			{
+				return false;
+			}
+			
+			$agencies = [];
+			
+			$resultObj = json_decode($result);
+			
+			foreach ($resultObj->items as $orgObj)
+			{
+				foreach ($orgObj->names as $nameObj)
+				{
+					if ($nameObj->lang == "en" && !in_array($nameObj->value, $agencies))
+					{
+						$agencies[] = $nameObj->value;
+					}
+				}
+			}
+			
+			curl_close($ch);
+			
+			echo json_encode($agencies);
+			exit();
+		}
+	}
+	
+	/**
+	 * Get the grant agency identifier on CrossRef
+	 * @param   string   $grantAgency
+	 *
+	 * @return  string   grant agency identifier
+	 */
+	public function getGrantAgencyId($grantAgency)
+	{
+		$agency = trim($grantAgency);
+		$agencyQry = \Components\Members\Helpers\Utility::escapeSpecialChars($agency);
+		
+		$verNum = \Component::params('com_members')->get('rorApiVersion');
+		
+		if (!empty($verNum))
+		{
+			$queryURL = "https://api.ror.org/$verNum/organizations?filter=types:funder&query.advanced=names.value:" . urlencode($agencyQry);
+					
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $queryURL);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			
+			$result = curl_exec($ch);
+			
+			if (!$result)
+			{
+				return false;
+			}
+			
+			$info = curl_getinfo($ch);
+			
+			$code = $info['http_code'];
+			
+			if (($code != 201) && ($code != 200))
+			{
+				return false;
+			}
+			
+			$resultObj = json_decode($result);
+			
+			foreach ($resultObj->items as $orgObj)
+			{
+				foreach ($orgObj->names as $nameObj)
+				{
+					if (strcmp($nameObj->value, $agency) == 0)
+					{
+						curl_close($ch);
+						return $orgObj->id;
+					}
+				}
+			}
+			
+			curl_close($ch);
+			return "";
+		}
 	}
 }

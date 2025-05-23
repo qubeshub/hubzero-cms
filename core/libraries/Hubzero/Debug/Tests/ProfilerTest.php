@@ -27,7 +27,7 @@ class ProfilerTest extends Basic
 	 *
 	 * @return  void
 	 */
-	protected function setUp()
+	protected function setUp(): void
 	{
 		parent::setUp();
 
@@ -197,7 +197,7 @@ class ProfilerTest extends Basic
 
 		$started = $instance->started();
 
-		sleep(0.1);
+		usleep(100000);
 
 		$this->assertEquals($instance->ended(), $started);
 

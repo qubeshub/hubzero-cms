@@ -106,6 +106,11 @@ class Migration
 
 			foreach ($nodes as $base)
 			{
+				if (!is_dir($base))
+				{
+					continue;
+				}
+
 				$directories = array_diff(scandir($base), ['.', '..']);
 
 				foreach ($directories as $directory)
@@ -133,6 +138,11 @@ class Migration
 
 			foreach ($nodes as $base)
 			{
+				if (!is_dir($base))
+				{
+					continue;
+				}
+
 				$directories = array_diff(scandir($base), ['.', '..']);
 
 				foreach ($directories as $directory)

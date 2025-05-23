@@ -23,6 +23,7 @@ use App;
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'orm' . DS . 'description' . DS . 'field.php';
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'orm' . DS . 'description.php';
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'orm' . DS . 'project.php';
+require_once dirname(dirname(dirname(__DIR__))) . DS . 'com_members' . DS . 'helpers' . DS . 'utility.php';
 
 /**
  * Projects setup controller class
@@ -63,6 +64,8 @@ class Setup extends Base
 				'warning'
 			);
 		}
+		
+		$this->registerTask('querygrantagency', 'getGrantAgency');
 
 		parent::execute();
 	}
@@ -490,13 +493,29 @@ class Setup extends Base
 			if ($this->config->get('grantinfo', 0) && Request::getInt('grant_info', 0))
 			{
 				$grant_agency = Request::getString('grant_agency', '');
+				if (empty($grant_agency) && !empty($this->model->params->get('grant_agency_id')))
+				{
+					$this->model->saveParam('grant_agency_id', '');
+				}
+				else
+				{
+					$grant_agency_id = $this->getGrantAgencyId($grant_agency);
+				
+					if ($grant_agency_id != false && !empty($grant_agency_id))
+					{
+						$this->model->saveParam('grant_agency_id', $grant_agency_id);
+					}
+				}
+				
 				$grant_title  = Request::getString('grant_title', '');
 				$grant_PI     = Request::getString('grant_PI', '');
+				$award_number = Request::getString('award_number', '');
 				$grant_budget = Request::getString('grant_budget', '');
 				$this->model->saveParam('grant_budget', $grant_budget);
 				$this->model->saveParam('grant_agency', $grant_agency);
 				$this->model->saveParam('grant_title', $grant_title);
 				$this->model->saveParam('grant_PI', $grant_PI);
+				$this->model->saveParam('award_number', $award_number);
 				$this->model->saveParam('grant_status', 0);
 			}
 		}
@@ -819,6 +838,23 @@ class Setup extends Base
 						{
 							$this->model->saveParam($key, $value);
 							$this->model->params->set($key, $value);
+							
+							if ($key == "grant_agency")
+							{
+								if (empty($value) && !empty($this->model->params->get('grant_agency_id')))
+								{
+									$this->model->saveParam("grant_agency_id", '');
+								}
+								else
+								{
+									$grant_agency_id = $this->getGrantAgencyId($value);
+								
+									if ($grant_agency_id != false && !empty($grant_agency_id))
+									{
+										$this->model->saveParam("grant_agency_id", $grant_agency_id);
+									}
+								}
+							}
 
 							// If grant information changed
 							if ($key == 'grant_status')
@@ -1183,5 +1219,119 @@ class Setup extends Base
 		$text = preg_replace('/<!--.+?-->/', '', $text);
 
 		return $text;
+	}
+	
+	/**
+	 * Querying the grant agency name based on the input value
+	 *
+	 * @return  array   grant agency names that match the input value
+	 */
+	public function getGrantAgencyTask()
+	{
+		$term = trim(Request::getString('term', ''));
+		$term = \Components\Members\Helpers\Utility::escapeSpecialChars($term);
+		
+		$verNum = \Component::params('com_members')->get('rorApiVersion');
+		
+		if (!empty($verNum))
+		{
+			$queryURL = "https://api.ror.org/$verNum/organizations?filter=types:funder&query.advanced=names.value:" . urlencode($term);
+			
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $queryURL);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			
+			$result = curl_exec($ch);
+			
+			if (!$result)
+			{
+				return false;
+			}
+			
+			$info = curl_getinfo($ch);
+			
+			$code = $info['http_code'];
+			
+			if (($code != 201) && ($code != 200))
+			{
+				return false;
+			}
+			
+			$agencies = [];
+			
+			$resultObj = json_decode($result);
+			
+			foreach ($resultObj->items as $orgObj)
+			{
+				foreach ($orgObj->names as $nameObj)
+				{
+					if ($nameObj->lang == "en" && !in_array($nameObj->value, $agencies))
+					{
+						$agencies[] = $nameObj->value;
+					}
+				}
+			}
+			
+			curl_close($ch);
+			
+			echo json_encode($agencies);
+			exit();
+		}
+	}
+	
+	/**
+	 * Get the grant agency identifier on CrossRef
+	 * @param   string   $grantAgency
+	 *
+	 * @return  string   grant agency identifier
+	 */
+	public function getGrantAgencyId($grantAgency)
+	{
+		$agency = trim($grantAgency);
+		$agencyQry = \Components\Members\Helpers\Utility::escapeSpecialChars($agency);
+		
+		$verNum = \Component::params('com_members')->get('rorApiVersion');
+		
+		if (!empty($verNum))
+		{
+			$queryURL = "https://api.ror.org/$verNum/organizations?filter=types:funder&query.advanced=names.value:" . urlencode($agencyQry);
+			
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $queryURL);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			
+			$result = curl_exec($ch);
+			
+			if (!$result)
+			{
+				return false;
+			}
+			
+			$info = curl_getinfo($ch);
+			
+			$code = $info['http_code'];
+			
+			if (($code != 201) && ($code != 200))
+			{
+				return false;
+			}
+			
+			$resultObj = json_decode($result);
+			
+			foreach ($resultObj->items as $orgObj)
+			{
+				foreach ($orgObj->names as $nameObj)
+				{
+					if (strcmp($nameObj->value, $agency) == 0)
+					{
+						curl_close($ch);
+						return $orgObj->id;
+					}
+				}
+			}
+			
+			curl_close($ch);
+			return "";
+		}
 	}
 }

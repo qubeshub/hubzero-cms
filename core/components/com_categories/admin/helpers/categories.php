@@ -31,7 +31,7 @@ class CategoriesHelper
 			return;
 		}
 
-		$parts = explode('.', $extension);
+		$parts = explode('.', $extension == null ? '' : $extension);
 		$component = $parts[0];
 
 		if (count($parts) > 1)

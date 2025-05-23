@@ -67,7 +67,7 @@ class Yaml extends Base
 		try
 		{
 			// Parse config string
-			$parsed = SymfonyYaml::parse($data, true);
+			$parsed = SymfonyYaml::parse($data, SymfonyYaml::PARSE_EXCEPTION_ON_INVALID_TYPE);
 		}
 		catch (Exception $e)
 		{
@@ -139,7 +139,7 @@ class Yaml extends Base
 		try
 		{
 			// Parse config string
-			$parsed = SymfonyYaml::parse($data, true);
+			$parsed = SymfonyYaml::parse($data,  SymfonyYaml::PARSE_EXCEPTION_ON_INVALID_TYPE);
 		}
 		catch (Exception $e)
 		{

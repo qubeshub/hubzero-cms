@@ -8,6 +8,11 @@
 // No direct access.
 defined('_HZEXEC_') or die;
 
+if ($rootLink)
+{
+	$item->anchor_css = $item->anchor_css ? $item->anchor_css . ' main-link' : 'main-link';
+}
+
 // Note. It is important to remove spaces between elements.
 $class = $item->anchor_css   ? 'class="' . $item->anchor_css . '" '   : '';
 $title = $item->anchor_title ? 'title="' . $item->anchor_title . '" ' : '';
@@ -24,14 +29,34 @@ else
 $flink = $item->flink;
 $flink = \Hubzero\Utility\Str::ampReplace(htmlspecialchars($flink));
 
+if ($disclosureMenu)
+{
+	echo '<div class="inner">';
+}
+
 switch ($item->browserNav) :
 	default:
 	case 0:
-		?><a <?php echo $class; ?>href="<?php echo $flink; ?>" <?php echo $title; ?>><?php echo $linktype; ?></a><?php
+		if ($parentLink && $disclosureMenu  && $toplevelLinks)
+		{
+?>
+	<button type="button" aria-expanded="false" aria-controls="<?php echo $ariaControlTarget; ?>" aria-label="More pages for: <?php echo $linktype; ?>">
+		<?php echo $linktype; ?>
+	</button>
+<?php
+		}
+		else
+		{
+?>
+
+		<a <?php echo $class; ?>href="<?php echo $flink; ?>" <?php echo $title; ?>><?php echo $linktype; ?></a>
+
+<?php
+		}
 		break;
 	case 1:
 		// _blank
-		?><a <?php echo $class; ?>href="<?php echo $flink; ?>" rel="noopener" target="_blank" <?php echo $title; ?>><?php echo $linktype; ?></a><?php
+		?><a <?php echo $class; ?>href="<?php echo $flink; ?>" rel="noreferrer" target="_blank" <?php echo $title; ?>><?php echo $linktype; ?></a><?php
 		break;
 	case 2:
 		// window.open
@@ -39,3 +64,14 @@ switch ($item->browserNav) :
 			?><a <?php echo $class; ?>href="<?php echo $flink; ?>" onclick="window.open(this.href,'targetWindow','<?php echo $options;?>');return false;" <?php echo $title; ?>><?php echo $linktype; ?></a><?php
 		break;
 endswitch;
+
+if ($parentLink && $disclosureMenu && !$toplevelLinks)
+{
+	?><button type="button" aria-expanded="false" aria-controls="<?php echo $ariaControlTarget; ?>" aria-label="More pages for: <?php echo $linktype; ?>"> </button><?php
+}
+
+if ($disclosureMenu)
+{
+echo '</div>';
+}
+

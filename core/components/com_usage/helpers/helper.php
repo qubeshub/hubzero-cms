@@ -51,14 +51,14 @@ class Helper
 
 					$instance = \Hubzero\Database\Driver::getInstance($options);
 				}
-				catch (Exception $e)
+				catch (\Throwable $e)
 				{
 					$instance = App::get('db');
 				}
 			}
 		}
 
-		if ($instance instanceof Exception)
+		if ($instance instanceof Throwable)
 		{
 			return null;
 		}

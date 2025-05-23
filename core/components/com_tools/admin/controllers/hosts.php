@@ -147,7 +147,8 @@ class Hosts extends AdminController
 		$retval = 1; // Assume success.
 		$fnoutput = array();
 
-		$cmd = "/bin/sh " . dirname(__DIR__) . "/../scripts/mw $comm 2>&1 </dev/null";
+		$dbname = \App::get('config')->get('database.db');
+		$cmd = "/bin/sh " . dirname(__DIR__) . "/../scripts/mw $comm dbname=$dbname 2>&1 </dev/null";
 		exec($cmd, $output, $status);
 
 		$outln = 0;
@@ -156,7 +157,7 @@ class Hosts extends AdminController
 			$retval = 0;
 		}
 
-		// Print out the applet tags or the error message, as the case may be.
+		// Print out the viewer  tags or the error message, as the case may be.
 		foreach ($output as $line)
 		{
 			// If it's a new session, catch the session number...

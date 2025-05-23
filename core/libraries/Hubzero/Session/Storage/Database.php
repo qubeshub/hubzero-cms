@@ -32,6 +32,13 @@ class Database extends Store
 	private $skipWrites = false;
 
 	/**
+	 * Database connection
+	 *
+	 * @var object
+	 */
+	private $connection = null;
+
+	/**
 	 * Constructor
 	 *
 	 * @param   array  $options  Optional parameters.
@@ -39,7 +46,7 @@ class Database extends Store
 	 */
 	public function __construct($options = array())
 	{
-		if (!isset($options['database']) || !($options['database'] instanceof \JDatabase))
+		if (!isset($options['database']) || !($options['database'] instanceof Database))
 		{
 			$options['database'] = \App::get('db');
 		}
@@ -65,7 +72,8 @@ class Database extends Store
 	 * @param   string  $id  The session identifier.
 	 * @return  mixed   The session data on success, False on failure.
 	 */
-	public function read($session_id)
+	#[\ReturnTypeWillChange]
+	public function read($id)
 	{
 		// Get the database connection object and verify its connected.
 		if (!$this->connection->connected())
@@ -79,7 +87,7 @@ class Database extends Store
 			$query = $this->connection->getQuery()
 				->select('data')
 				->from('#__session')
-				->whereEquals('session_id', $session_id);
+				->whereEquals('session_id', $id);
 
 			$this->connection->setQuery($query->toString());
 
@@ -94,11 +102,12 @@ class Database extends Store
 	/**
 	 * Write session data to the SessionHandler backend.
 	 *
-	 * @param   string   $session_id    The session identifier.
-	 * @param   string   $session_data  The session data.
+	 * @param   string   $id    The session identifier.
+	 * @param   string   $data  The session data.
 	 * @return  boolean  True on success, false otherwise.
 	 */
-	public function write($session_id, $session_data)
+	#[\ReturnTypeWillChange]
+	public function write($id, $data)
 	{
 		// Skip session write on API and command line calls
 		if ($this->skipWrites)
@@ -118,11 +127,11 @@ class Database extends Store
 				$query = $this->connection->getQuery()
 					->update('#__session')
 					->set(array(
-						'data' => $session_data,
+						'data' => $data,
 						'time' => (int) time(),
 						'ip'   => $_SERVER['REMOTE_ADDR']
 					))
-					->whereEquals('session_id', $session_id);
+					->whereEquals('session_id', $id);
 
 				// Try to update the session data in the database table.
 				$this->connection->setQuery($query->toString());
@@ -158,7 +167,8 @@ class Database extends Store
 	 * @param   string   $id  The session identifier.
 	 * @return  boolean  True on success, false otherwise.
 	 */
-	public function destroy($session_id)
+	#[\ReturnTypeWillChange]
+	public function destroy($id)
 	{
 		// Get the database connection object and verify its connected.
 		if (!$this->connection->connected())
@@ -170,7 +180,7 @@ class Database extends Store
 		{
 			$query = $this->connection->getQuery()
 				->delete('#__session')
-				->whereEquals('session_id', $session_id);
+				->whereEquals('session_id', $id);
 
 			// Remove a session from the database.
 			$this->connection->setQuery($query->toString());
@@ -186,10 +196,11 @@ class Database extends Store
 	/**
 	 * Garbage collect stale sessions from the SessionHandler backend.
 	 *
-	 * @param   integer  $lifetime  The maximum age of a session.
+	 * @param   int  $maxlifetime  The maximum age of a session.
 	 * @return  boolean  True on success, false otherwise.
 	 */
-	public function gc($lifetime = 1440)
+	#[\ReturnTypeWillChange]
+	public function gc($maxlifetime = null)
 	{
 		// Get the database connection object and verify its connected.
 		if (!$this->connection->connected())
@@ -198,7 +209,7 @@ class Database extends Store
 		}
 
 		// Determine the timestamp threshold with which to purge old sessions.
-		$past = time() - $lifetime;
+		$past = time() - $maxlifetime;
 
 		try
 		{
@@ -220,10 +231,10 @@ class Database extends Store
 	/**
 	 * Get single session data as an object
 	 *
-	 * @param   integer  $session_id  Session Id
+	 * @param   int  $id  Session Id
 	 * @return  object
 	 */
-	public function session($session_id)
+	public function session($id)
 	{
 		$query = $this->connection->getQuery()
 			->select('*')

@@ -10,8 +10,14 @@ defined('_HZEXEC_') or die();
 
 $attachments = 0;
 $authors     = 0;
-$tags        = array();
+$tags        = 0;
 $state       = 'draft';
+
+if ($this->progress == null) 
+{
+	$this->progress = array();
+	$this->progress['submitted'] = 0;
+}
 
 if ($this->resource->get('id'))
 {
@@ -36,6 +42,9 @@ if ($this->resource->get('id'))
 	$authors =  $this->resource->authors()->total();
 	$tags = count($this->resource->tags());
 }
+
+$this->group_cn = (isset($this->group_cn) ? $this->group_cn : Request::getString('group',''));
+
 ?>
 <div class="meta-container">
 	<table class="meta">
@@ -99,7 +108,7 @@ if ($this->resource->get('id'))
 		$html .= "\t".'<li';
 		if ($this->step == $i) {
 			$html .= ' class="active"';
-		} elseif ($this->progress[$this->steps[$i]] == 1) {
+		} elseif (isset($this->progress[$this->steps[$i]]) && $this->progress[$this->steps[$i]] == 1) {
 			$html .= ' class="completed"';
 		}
 		$html .= '>';
@@ -107,9 +116,9 @@ if ($this->resource->get('id'))
 		{
 			$html .= '<strong>' . Lang::txt('COM_CONTRIBUTE_STEP_'.strtoupper($this->steps[$i])) . '</strong>';
 		}
-		elseif ($this->progress[$this->steps[$i]] == 1 || $this->step > $i)
+		elseif ((isset($this->progress[$this->steps[$i]]) && $this->progress[$this->steps[$i]] == 1) || $this->step > $i)
 		{
-			$html .= '<a href="'. Route::url('index.php?option='.$this->option.'&task=draft&step='.$i.'&id='.$this->id) .'">'.Lang::txt('COM_CONTRIBUTE_STEP_'.strtoupper($this->steps[$i])).'</a>';
+			$html .= '<a href="'. Route::url('index.php?option='.$this->option.'&task=draft&step='.$i.'&id='.$this->id.'&group='.$this->group_cn) .'">'.Lang::txt('COM_CONTRIBUTE_STEP_'.strtoupper($this->steps[$i])).'</a>';
 		}
 		else
 		{

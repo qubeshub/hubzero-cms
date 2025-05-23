@@ -36,7 +36,7 @@ class plgGeocodeGeonames extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		return new \Geocoder\Provider\GeonamesProvider(
+		return new \Geocoder\Provider\Geonames\Geonames(
 			$adapter,
 			$this->params->get('username')
 		);

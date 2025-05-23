@@ -308,17 +308,14 @@ class Override extends Obj
 			return array();
 		}
 
-		// Capture hidden PHP errors from the parsing
 		$version      = phpversion();
-		$php_errormsg = null;
-		$track_errors = ini_get('track_errors');
-		ini_set('track_errors', true);
+		error_clear_last();
 
 		if ($version >= '5.3.1')
 		{
 			$contents = file_get_contents($filename);
 			$contents = str_replace('_QQ_', '"\""', $contents);
-			$strings  = @parse_ini_string($contents);
+			$strings  = parse_ini_string($contents, false, INI_PARSER_RAW);
 
 			if ($strings === false)
 			{
@@ -327,7 +324,7 @@ class Override extends Obj
 		}
 		else
 		{
-			$strings = @parse_ini_file($filename);
+			$strings = parse_ini_file($filename, false, INI_PARSER_RAW);
 
 			if ($strings === false)
 			{

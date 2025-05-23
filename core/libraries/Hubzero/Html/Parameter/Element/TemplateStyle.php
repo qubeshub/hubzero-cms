@@ -61,7 +61,7 @@ class TemplateStyle extends Element
 	 */
 	protected function _getSelected()
 	{
-		$id = App::get('request')->getVar('cid', 0);
+		$id = Request::getVar('cid', 0);
 
 		$db = App::get('db');
 		$query = $db->getQuery()

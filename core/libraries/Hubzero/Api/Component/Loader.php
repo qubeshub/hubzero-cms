@@ -43,8 +43,8 @@ class Loader extends Base
 		$client = (isset($this->app['client']->alias) ? $this->app['client']->alias : $this->app['client']->name);
 		$found      = false;
 
-		$version    = $this->app['request']->getVar('version');
-		$controller = $this->app['request']->getCmd('controller', $this->app['request']->segment(2, 'api'));
+		$version    = Request::getVar('version');
+		$controller = Request::getCmd('controller', Request::segment(3, 'api'));
 		$controllerClass = '\\Hubzero\\Component\\ApiController';
 
 		// Make sure the component is enabled
@@ -126,7 +126,7 @@ class Loader extends Base
 	 * @param   string  $path  The component path.
 	 * @return  string  The component output
 	 */
-	protected function execute($path)
+	protected function execute($path, $type = 'path')
 	{
 		return '';
 	}

@@ -84,7 +84,7 @@ class Helper extends Module
 			$grouped = false;
 			$article_grouping = $params->get('article_grouping', 'none');
 			$article_grouping_direction = $params->get('article_grouping_direction', 'ksort');
-			$moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
+			$moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx',''));
 			$item_heading = $params->get('item_heading');
 
 			if ($article_grouping !== 'none')
@@ -493,7 +493,7 @@ class Helper extends Module
 	 * @param   string  $month_year_format
 	 * @return  array
 	 */
-	public static function groupByDate($list, $type = 'year', $article_grouping_direction, $month_year_format = 'F Y')
+	public static function groupByDate($list, $type, $article_grouping_direction, $month_year_format = 'F Y')
 	{
 		$grouped = array();
 

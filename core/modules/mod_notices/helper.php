@@ -188,7 +188,7 @@ class Helper extends Module
 			$the_countdown_date = $this->_mkt($stop);
 
 			// get current unix timestamp
-			$now = time() + (Config::get('offset') * 60 * 60);
+			$now = time() + (intval(Config::get('offset')) * 60 * 60);
 
 			$difference = $the_countdown_date - $now;
 			if ($difference < 0)
@@ -215,8 +215,8 @@ class Helper extends Module
 			// Get some parameters
 			$this->moduleid   = $this->params->get('moduleid', 'sitenotice');
 			$this->alertlevel = $this->params->get('alertlevel', 'medium');
-			$timezone         = $this->params->get('timezone');
-			$message          = $this->params->get('message');
+			$timezone         = $this->params->get('timezone', '');
+			$message          = $this->params->get('message', '');
 
 			// Convert start time
 			$start = $this->_mkt($start);
@@ -247,7 +247,7 @@ class Helper extends Module
 			$message = str_replace('<notice:end>', $time_end, $message);
 			$message = str_replace('<notice:countdowntostart>', $time_cd_tostart, $message);
 			$message = str_replace('<notice:countdowntoreturn>', $time_cd_toreturn, $message);
-			$message = str_replace('<notice:timezone>', $timezone, $message);
+			$message = str_replace('<notice:timezone>', $timezone==null ? '' : $timezone, $message==null ? '' : $message);
 
 			// auto link?
 			if ($this->params->get('autolink', 1))

@@ -36,7 +36,7 @@ class plgGeocodeBingmaps extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		return new \Geocoder\Provider\BingMapsProvider(
+		return new \Geocoder\Provider\BingMaps\BingMaps(
 			$adapter, $this->params->get('apiKey')
 		);
 	}

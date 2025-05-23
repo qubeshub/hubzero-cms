@@ -41,18 +41,18 @@ $this->js();
 
 				<div class="input-wrap">
 					<label for="field-title"><?php echo Lang::txt('COM_KB_TITLE'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span></label><br />
-					<input type="text" name="fields[title]" id="field-title" class="required" maxlength="255" value="<?php echo $this->escape(stripslashes($this->row->get('title'))); ?>" />
+					<input type="text" name="fields[title]" id="field-title" class="required" maxlength="255" value="<?php echo $this->escape(stripslashes($this->row->get('title',''))); ?>" />
 				</div>
 
 				<div class="input-wrap" data-hint="<?php echo Lang::txt('COM_KB_ALIAS_HINT'); ?>">
 					<label for="field-alias"><?php echo Lang::txt('COM_KB_ALIAS'); ?>:</label><br />
-					<input type="text" name="fields[alias]" id="field-alias" size="30" maxlength="100" value="<?php echo $this->escape(stripslashes($this->row->get('alias'))); ?>" />
+					<input type="text" name="fields[alias]" id="field-alias" size="30" maxlength="100" value="<?php echo $this->escape(stripslashes($this->row->get('alias',''))); ?>" />
 					<span class="hint"><?php echo Lang::txt('COM_KB_ALIAS_HINT'); ?></span>
 				</div>
 
 				<div class="input-wrap">
 					<label for="field-fulltxt"><?php echo Lang::txt('COM_KB_BODY'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span></label><br />
-					<?php echo $this->editor('fields[fulltxt]', $this->escape(stripslashes($this->row->get('fulltxt'))), 60, 30, 'field-fulltxt', array('class' => 'required', 'buttons' => array('pagebreak', 'readmore', 'article'))); ?>
+					<?php echo $this->editor('fields[fulltxt]', $this->escape(stripslashes($this->row->get('fulltxt',''))), 60, 30, 'field-fulltxt', array('class' => 'required', 'buttons' => array('pagebreak', 'readmore', 'article'))); ?>
 				</div>
 
 				<div class="input-wrap" data-hint="<?php echo Lang::txt('COM_KB_FIELD_TAGS_HINT'); ?>">

@@ -53,10 +53,19 @@ class Router extends Base
 
 		if (isset($segments[0]))
 		{
-			if (is_numeric($segments[0]))
+			if ( ($segments[0] == 'currentuser') && (\App::get('request')->method() == 'GET'))
 			{
 				$vars['id'] = $segments[0];
-				if (\App::get('request')->method() == 'GET')
+				$vars['task'] = 'read';
+			}
+			else if (is_numeric($segments[0]))
+			{
+				$vars['id'] = $segments[0];
+				if (isset($segments[1]))
+				{
+					$vars['task'] = $segments[1];
+				}
+				else if (\App::get('request')->method() == 'GET')
 				{
 					$vars['task'] = 'read';
 				}
@@ -67,6 +76,16 @@ class Router extends Base
 				$vars['task'] = 'index';
 				if (isset($segments[1]))
 				{
+					$vars['task'] = $segments[1];
+				}
+			}
+			
+			// Added this for mentions API
+			else if ($segments[0] == 'mentions') 
+			{
+				$vars['controller'] = $segments[0];
+				$vars['task'] = 'index';
+				if (isset($segments[1])) {
 					$vars['task'] = $segments[1];
 				}
 			}

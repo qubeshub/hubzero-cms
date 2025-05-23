@@ -525,7 +525,7 @@ class RegistryTest extends Basic
 		// Try reading a nonexistant file
 		$data = new Registry();
 
-		$this->setExpectedException('Hubzero\\Error\\Exception\\InvalidArgumentException');
+		$this->expectException(\Hubzero\Error\Exception\InvalidArgumentException::class);
 
 		$data->read(__DIR__ . '/Fles/test.md');
 	}

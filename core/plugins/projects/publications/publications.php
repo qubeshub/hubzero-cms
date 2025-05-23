@@ -513,11 +513,11 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 			$view->editor = $modelHandler->loadEditor($view->handler, $view->publication, $element);
 		}
 
-		$view->option   = $this->_option;
+		$view->set('option', $this->_option);
 		$view->database = $this->_database;
 		$view->uid      = $this->_uid;
 		$view->ajax     = $ajax;
-		$view->task     = $this->_task;
+		$view->set('task', $this->_task);
 		$view->element  = $element;
 		$view->block    = $block;
 		$view->blockId  = $blockId;
@@ -1122,7 +1122,8 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 		$view->config   = $this->model->config();
 		$view->choices  = $choices;
 		$view->title    = $this->_area['title'];
-
+		$view->pubConfig = $this->_pubconfig;
+		
 		// Get messages	and errors
 		$view->msg = $this->_msg;
 		if ($this->getError())
@@ -1260,6 +1261,8 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 		$row = new \Components\Publications\Tables\Version($this->_database);
 		$row->publication_id = $this->_pid;
 		$row->title          = $row->getDefaultTitle($this->model->get('id'), $title);
+		$row->abstract       = "";
+		$row->description    = "";
 		$row->state          = 3; // dev
 		$row->main           = 1;
 		$row->created_by     = $this->_uid;
@@ -2088,6 +2091,16 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 					continue;
 				}
 
+				// Prompt error message if an invited author is chosen as contact but the email address is empty
+				$owner = $author->getAuthorByOwnerId($pub->version->id, $author->project_owner_id);
+				
+				if (empty($owner->user_id) && empty($owner->invited_email))
+				{
+					Notify::error(Lang::txt('PLG_PROJECTS_PUBLICATIONS_PUBLICATION_ERROR_CONTACT_EMAIL_ADDRESS_MISSING'), 'projects');
+					App::redirect(Route::url($pub->link('editversion') . '&action=' . $this->_task));
+					return;
+				}
+
 				$author->repository_contact = 1;
 
 				if (!$author->store())
@@ -2149,7 +2162,7 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 			else
 			{
 				$apu = $this->_pubconfig->get('autoapproved_users');
-				$apu = explode(',', $apu);
+				$apu = explode(',', $apu == null ? array() : $apu);
 				$apu = array_map('trim', $apu);
 
 				if (in_array(User::get('username'), $apu))
@@ -2210,8 +2223,10 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 			}
 		}
 
+		$updateDoiMetadata = ($pub->version->doi ? preg_match("/" . $doiService->configs()->shoulder . "/", $pub->version->doi) : false);
+
 		// When dataset is automatically approved.
-		if (!$review && ($autoApprove || $this->_pubconfig->get('autoapprove') == 1) && $pub->version->get('doi'))
+		if (!$review && ($autoApprove || $this->_pubconfig->get('autoapprove') == 1) && $updateDoiMetadata)
 		{
 			// Update DOI metadata
 			$doiService->update($pub->version->get('doi'), true);
@@ -2234,7 +2249,7 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 			}
 		}
 
-		if ($this->_task == 'revert' && $pub->version->doi && $originalStatus == 1)
+		if ($this->_task == 'revert' && $updateDoiMetadata && $originalStatus == 1)
 		{
 			$doiService->revert($pub->version->doi, $doiService::STATE_FROM_PUBLISHED_TO_DRAFTREADY);
 
@@ -2245,7 +2260,7 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 			}
 		}
 
-		if ($this->_task == 'publish' && $pub->version->doi && $originalStatus == 4)
+		if ($this->_task == 'publish' && $updateDoiMetadata && $originalStatus == 4)
 		{
 			$doiService->revert($pub->version->doi, $doiService::STATE_FROM_DRAFTREADY_TO_PUBLISHED);
 

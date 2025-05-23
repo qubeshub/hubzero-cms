@@ -10,7 +10,7 @@ namespace Hubzero\Test;
 /**
  * Basic PHPUnit test
  */
-class Basic extends \PHPUnit_Framework_TestCase
+class Basic extends \PHPUnit\Framework\TestCase
 {
 
 	public function testExample()

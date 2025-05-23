@@ -8,7 +8,7 @@
 // no direct access
 defined('_HZEXEC_') or die;
 
-require_once Component::path('com_menus') . '/admin/helpers/menus.php';
+require_once Component::path('com_menus') . '/helpers/menus.php';
 require_once Component::path('com_languages') . '/helpers/multilangstatus.php';
 
 /**
@@ -133,7 +133,7 @@ class plgSystemLanguageFilter extends \Hubzero\Plugin\Plugin
 					$parts = explode('/', $path);
 
 					// The language segment is always at the beginning of the route path if it exists.
-					$sef = $uri->getVar('lang');
+					$sef = $uri->getUriVar('lang');
 
 					if (!empty($parts) && empty($sef))
 					{
@@ -142,7 +142,7 @@ class plgSystemLanguageFilter extends \Hubzero\Plugin\Plugin
 				}
 				else
 				{
-					$sef = $uri->getVar('lang');
+					$sef = $uri->getUriVar('lang');
 				}
 
 				if (isset(self::$sefs[$sef]))
@@ -219,7 +219,7 @@ class plgSystemLanguageFilter extends \Hubzero\Plugin\Plugin
 	 */
 	public function buildRule($uri)
 	{
-		$sef = $uri->getVar('lang');
+		$sef = $uri->getUriVar('lang');
 		if (empty($sef))
 		{
 			$sef = self::$lang_codes[self::$tag]->sef;
@@ -229,12 +229,12 @@ class plgSystemLanguageFilter extends \Hubzero\Plugin\Plugin
 			$sef = self::$default_sef;
 		}
 
-		$Itemid = $uri->getVar('Itemid');
+		$Itemid = $uri->getUriVar('Itemid');
 		if (!is_null($Itemid))
 		{
 			if ($item = App::get('menu')->getItem($Itemid))
 			{
-				if ($item->home && $uri->getVar('option') != 'com_search')
+				if ($item->home && $uri->getUriVar('option') != 'com_search')
 				{
 					$link  = $item->link;
 					$parts = parse_url($link);
@@ -258,21 +258,21 @@ class plgSystemLanguageFilter extends \Hubzero\Plugin\Plugin
 					{
 						foreach ($vars as $key => $value)
 						{
-							$uri->delVar($key);
+							$uri->delUriVar($key);
 						}
-						$uri->delVar('Itemid');
+						$uri->delUriVar('Itemid');
 					}
 				}
 			}
 			else
 			{
-				$uri->delVar('Itemid');
+				$uri->delUriVar('Itemid');
 			}
 		}
 
 		if (self::$mode_sef)
 		{
-			$uri->delVar('lang');
+			$uri->delUriVar('lang');
 			if ($this->params->get('remove_default_prefix', 0) == 0
 			 || $sef != self::$default_sef
 			 || $sef != self::$lang_codes[self::$tag]->sef
@@ -288,7 +288,7 @@ class plgSystemLanguageFilter extends \Hubzero\Plugin\Plugin
 		}
 		else
 		{
-			$uri->setVar('lang', $sef);
+			$uri->setUriVar('lang', $sef);
 		}
 
 		return $uri;
@@ -401,11 +401,11 @@ class plgSystemLanguageFilter extends \Hubzero\Plugin\Plugin
 		}
 		else
 		{
-			$sef = $uri->getVar('lang');
+			$sef = $uri->getUriVar('lang');
 			if (!isset(self::$sefs[$sef]))
 			{
 				$sef = isset(self::$lang_codes[$lang_code]) ? self::$lang_codes[$lang_code]->sef : self::$default_sef;
-				$uri->setVar('lang', $sef);
+				$uri->setUriVar('lang', $sef);
 				$post = Request::get('POST');
 				if (Request::method() != "POST" || count($post) == 0)
 				{

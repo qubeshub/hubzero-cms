@@ -8,10 +8,19 @@
 // No direct access.
 defined('_HZEXEC_') or die;
 
+$classnames = "menu{$class_sfx}";
+
+if ($disclosureMenu)
+{
+	$classnames .= " main-nav-bar disclosure-nav";
+}
+
+$ariaControlTarget = '';
+
 // Note. It is important to remove spaces between elements.
 ?>
 
-<ul class="menu<?php echo $class_sfx; ?>"<?php
+<ul class="<?php echo $classnames ?>"<?php
 	$tag = '';
 	if ($params->get('tag_id') != null)
 	{
@@ -22,6 +31,9 @@ defined('_HZEXEC_') or die;
 	<?php
 	foreach ($list as $i => &$item) :
 		$class = 'item-' . $item->id;
+		$rootLink = false;
+		$parentLink = false;
+
 		if ($item->id == $active_id)
 		{
 			$class .= ' current';
@@ -44,6 +56,11 @@ defined('_HZEXEC_') or die;
 			}
 		}
 
+		if ($item->level == 1)
+		{
+			$rootLink = true;
+		}
+
 		if ($item->deeper)
 		{
 			$class .= ' deeper';
@@ -51,7 +68,9 @@ defined('_HZEXEC_') or die;
 
 		if ($item->parent)
 		{
+			$parentLink = true;
 			$class .= ' parent';
+			$ariaControlTarget = 'aria-control-target-' . $item->id;
 		}
 
 		if (!empty($class))
@@ -77,7 +96,7 @@ defined('_HZEXEC_') or die;
 		// The next item is deeper.
 		if ($item->deeper)
 		{
-			echo '<ul>';
+			echo '<ul id="' . $ariaControlTarget . '">';
 		}
 		// The next item is shallower.
 		elseif ($item->shallower)

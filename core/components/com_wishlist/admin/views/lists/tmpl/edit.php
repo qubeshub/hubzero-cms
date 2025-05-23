@@ -48,19 +48,19 @@ $this->js();
 					<div class="col span6">
 						<div class="input-wrap">
 							<label for="field-referenceid"><?php echo Lang::txt('COM_WISHLIST_REFERENCEID'); ?>:</label><br />
-							<input type="text" name="fields[referenceid]" id="field-referenceid" size="11" maxlength="11" value="<?php echo $this->escape(stripslashes($this->row->get('referenceid'))); ?>" />
+							<input type="text" name="fields[referenceid]" id="field-referenceid" size="11" maxlength="11" value="<?php echo $this->escape(stripslashes($this->row->get('referenceid',''))); ?>" />
 						</div>
 					</div>
 				</div>
 
 				<div class="input-wrap">
 					<label for="field-title"><?php echo Lang::txt('COM_WISHLIST_TITLE'); ?>:</label><br />
-					<input type="text" name="fields[title]" id="field-title" size="30" maxlength="150" value="<?php echo $this->escape(stripslashes($this->row->get('title'))); ?>" />
+					<input type="text" name="fields[title]" id="field-title" size="30" maxlength="150" value="<?php echo $this->escape(stripslashes($this->row->get('title',''))); ?>" />
 				</div>
 
 				<div class="input-wrap">
 					<label for="field-description"><?php echo Lang::txt('COM_WISHLIST_DESCRIPTION'); ?>:</label><br />
-					<input type="text" name="fields[description]" id="field-description" size="30" maxlength="255" value="<?php echo $this->escape(stripslashes($this->row->get('description'))); ?>" />
+					<input type="text" name="fields[description]" id="field-description" size="30" maxlength="255" value="<?php echo $this->escape(stripslashes($this->row->get('description',''))); ?>" />
 				</div>
 			</fieldset>
 		</div>

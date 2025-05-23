@@ -144,6 +144,8 @@ class Trail implements \Iterator, \ArrayAccess, \Countable
 	 *
 	 * @return  array
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function rewind()
 	{
 		return reset($this->items);
@@ -154,6 +156,8 @@ class Trail implements \Iterator, \ArrayAccess, \Countable
 	 *
 	 * @return  object
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		return current($this->items);
@@ -164,6 +168,8 @@ class Trail implements \Iterator, \ArrayAccess, \Countable
 	 *
 	 * @return  integer
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return key($this->items);
@@ -174,16 +180,20 @@ class Trail implements \Iterator, \ArrayAccess, \Countable
 	 *
 	 * @return  object
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function next()
 	{
-		return next($this->items);
+		next($this->items);
 	}
 
 	/**
 	 * Is current position valid?
 	 *
-	 * @return  voolean
+	 * @return  boolean
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function valid()
 	{
 		return key($this->items) !== null;
@@ -195,6 +205,8 @@ class Trail implements \Iterator, \ArrayAccess, \Countable
 	 * @param   integer  $offset
 	 * @return  boolean
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function offsetExists($offset)
 	{
 		return isset($this->items[$offset]);
@@ -207,6 +219,8 @@ class Trail implements \Iterator, \ArrayAccess, \Countable
 	 * @param   object   $value
 	 * @return  void
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function offsetSet($offset, $value)
 	{
 		$this->items[$offset] = $value;
@@ -218,6 +232,8 @@ class Trail implements \Iterator, \ArrayAccess, \Countable
 	 * @param   integer  $offset
 	 * @return  mixed
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function offsetGet($offset)
 	{
 		return isset($this->items[$offset]) ? $this->items[$offset] : null;
@@ -229,6 +245,8 @@ class Trail implements \Iterator, \ArrayAccess, \Countable
 	 * @param   integer  $offset
 	 * @return  void
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function offsetUnset($offset)
 	{
 		unset($this->items[$offset]);
@@ -239,6 +257,8 @@ class Trail implements \Iterator, \ArrayAccess, \Countable
 	 *
 	 * @return  integer
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function count()
 	{
 		return count($this->items);

@@ -407,7 +407,8 @@ class Membership extends Base
 			// build message object and send
 			$message->setSubject($subject)
 					->addFrom($from['email'], $from['name'])
-					->setTo($groupInvitees)
+					->setTo($from['email'], $from['name'])
+					->setBcc($groupInvitees)
 					->addHeader('X-Mailer', 'PHP/' . phpversion())
 					->addHeader('X-Component', 'com_groups')
 					->addHeader('X-Component-Object', 'group_invite')
@@ -712,7 +713,7 @@ class Membership extends Base
 
 		// Build the e-mail message
 		$eview = new \Hubzero\Component\View(array('name' => 'emails', 'layout' => 'accepted'));
-		$eview->option   = $this->_option;
+		$eview->set('option', $this->_option);
 		$eview->sitename = Config::get('sitename');
 		$eview->user     = User::getInstance();
 		$eview->group    = $this->view->group;
@@ -744,7 +745,8 @@ class Membership extends Base
 		// build message object and send
 		$message->setSubject($subject)
 				->addFrom($from['email'], $from['name'])
-				->setTo($managers)
+				->setTo($from['email'], $from['name'])
+				->setBcc($managers)
 				->addHeader('X-Mailer', 'PHP/' . phpversion())
 				->addHeader('X-Component', 'com_groups')
 				->addHeader('X-Component-Object', 'group_invite_accepted')
@@ -839,7 +841,7 @@ class Membership extends Base
 
 		// Build the e-mail message
 		$eview = new \Hubzero\Component\View(array('name' => 'emails', 'layout' => 'cancelled'));
-		$eview->option   = $this->_option;
+		$eview->set('option', $this->_option);
 		$eview->sitename = Config::get('sitename');
 		$eview->user     = User::getInstance();
 		$eview->group    = $this->view->group;
@@ -1150,7 +1152,7 @@ class Membership extends Base
 			'name'   => 'emails',
 			'layout' => 'request'
 		));
-		$eview->option = $this->_option;
+		$eview->set('option', $this->_option);
 		$eview->sitename = Config::get('sitename');
 		$eview->user = User::getInstance();
 		$eview->group = $this->view->group;
@@ -1183,7 +1185,8 @@ class Membership extends Base
 		// build message object and send
 		$message->setSubject($subject)
 				->addFrom($from['email'], $from['name'])
-				->setTo($managers)
+				->setTo($from['email'], $from['name'])
+				->setBcc($managers)
 				->addHeader('X-Mailer', 'PHP/' . phpversion())
 				->addHeader('X-Component', 'com_groups')
 				->addHeader('X-Component-Object', 'group_membership_requested')

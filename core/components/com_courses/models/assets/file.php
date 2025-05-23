@@ -29,8 +29,8 @@ class File extends Handler
 		'responds_to'    => array(
 			'txt', 'pdf', 'jpg', 'jpeg', 'gif', 'png', 'ppt',
 			'pptx', 'pps', 'ppsx', 'doc', 'docx', 'xls', 'xlsx',
-			'zip', 'tgz', 'tar', 'mp3', 'm', 'cpp', 'c', 'r', 'rmd',
-			'wm2d', 'slx', 'srt'
+			'gz', 'zip', 'tgz', 'tar', 'mp3', 'm', 'cpp', 'c', 'r', 'rmd',
+			'wm2d', 'slx', 'srt', 'ipynb', 'aedt', 'csv', 'xyz', 'prm', 'avi'
 		),
 	);
 

@@ -30,6 +30,9 @@ class CurrentCart extends Cart
 	// Cookie max age
 	var $cookieTTL = 7776000; // 60 * 60 * 24 * 90 = 90 days
 
+	var $cartCoupons;
+	var $tInfo;
+
 	/**
 	 * Cart constructor
 	 *

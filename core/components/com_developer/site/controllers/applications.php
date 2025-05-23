@@ -55,10 +55,22 @@ class Applications extends SiteController
 			return;
 		}
 
+		$memberships = Member::all()
+			->whereEquals('uidNumber', User::get('id'))
+			->rows();
+
+		$apps = array();
+		foreach ($memberships as $membership)
+		{
+			$apps[] = $membership->application_id;
+		}
+
 		// get developers apps
 		$applications = Application::all()
-			->whereEquals('created_by', User::get('id'))
-			->whereIn('state', array(0,1))
+			->whereEquals('created_by', User::get('id'), 1)
+			->orWhereIn('id', $apps, 1)
+			->resetDepth()
+			->whereIn('state', array(0, 1))
 			->rows();
 
 		// get developers authorized apps
@@ -154,7 +166,7 @@ class Applications extends SiteController
 		// must be logged in
 		if (User::isGuest())
 		{
-			$return = Route::url('index.php?option=' . $this->_option . '&controller=' . $this->_controller . '&task=edit&id=' . $id, false, true);
+			$return = Route::url('index.php?option=' . $this->_option . '&controller=' . $this->_controller . '&task=edit', false, true);
 			App::redirect(
 				Route::url('index.php?option=com_users&view=login&return=' . base64_encode($return))
 			);
@@ -582,7 +594,7 @@ class Applications extends SiteController
 		// Validate and handle the authorization request
 		if (!$server->validateAuthorizeRequest($request, $response))
 		{
-			throw new Exception($response->getParameter('error_description'), 400);
+			throw new \Exception($response->getParameter('error_description'), 400);
 		}
 		$server->handleAuthorizeRequest($request, $response, true, User::get('id'));
 
@@ -596,7 +608,7 @@ class Applications extends SiteController
 		$request->server['REQUEST_METHOD'] = 'POST';
 		$request->request['client_id'] = $application->get('client_id');
 		$request->request['redirect_uri'] = $application->get('redirect_uri');
-		$request->request['code'] = $code_url->getVar('code');
+		$request->request['code'] = $code_url->getUriVar('code');
 		$request->request['grant_type'] = 'authorization_code';
 
 		// Ask OAuth for an access token to be added to the application

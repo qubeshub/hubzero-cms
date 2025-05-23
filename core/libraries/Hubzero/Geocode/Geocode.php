@@ -32,7 +32,7 @@ class Geocode
 			return self::$countries[$continent];
 		}
 
-		$adapter  = new \Geocoder\HttpAdapter\CurlHttpAdapter();
+		$adapter = new \Http\Discovery\Psr18Client();
 
 		$p = array();
 
@@ -58,11 +58,13 @@ class Geocode
 		}
 
 		// Instantiate the Geocoder service and pass it the list of providers
-		$geocoder = new \Geocoder\Geocoder();
-		$geocoder->registerProvider(new \Geocoder\Provider\ChainProvider($p));
+		$geocoder = new \Geocoder\ProviderAggregator();
+
+		$chain = new \Geocoder\Provider\Chain\Chain($p);
+
+		$geocoder->registerProvider($chain);
 
 		// Try to get some data...
-		$geocoder->setResultFactory(new Result\CountriesResultFactory());
 
 		$countries = array();
 
@@ -71,9 +73,9 @@ class Geocode
 			foreach ($data as $item)
 			{
 				$country = new \stdClass();
-				$country->code      = $item->getCountryCode();
-				$country->name      = $item->getCountry();
-				$country->continent = $item->getRegion();
+				$country->code      = $item->getCountry()->getCode();
+				$country->name      = $item->getCountry()->getName();
+				$country->continent = $item->getLocality();
 
 				$countries[] = $country;
 			}
@@ -92,7 +94,7 @@ class Geocode
 	 */
 	public static function country($code)
 	{
-		$adapter  = new \Geocoder\HttpAdapter\CurlHttpAdapter();
+		$adapter = new \Http\Discovery\Psr18Client();
 
 		$p = array();
 
@@ -114,25 +116,66 @@ class Geocode
 		}
 
 		// Instantiate the Geocoder service and pass it the list of providers
-		$geocoder = new \Geocoder\Geocoder();
-		$geocoder->registerProvider(new \Geocoder\Provider\ChainProvider($p));
+		$geocoder = new \Geocoder\ProviderAggregator();
 
-		// Try to get some data...
-		$geocoder->setResultFactory(new Result\CountryResultFactory());
+		$chain = new \Geocoder\Provider\Chain\Chain($p);
+
+		$geocoder->registerProvider($chain);
 
 		$country = $code;
+
 		if ($data = $geocoder->geocode($code))
 		{
-			if (is_array($data))
+			$country = $data->first()->getCountry()->getName();
+		}
+
+		return $country;
+	}
+
+	/**
+	 * Get continent based on country name or short code
+	 *
+	 * @param   string  $country  Country name or Short code (ex: us, de, fr, jp)
+	 * @return  string
+	 */
+	public static function continent($country)
+	{
+		$adapter = new \Http\Discovery\Psr18Client();
+
+		$p = array();
+
+		// Get a list of providers
+		if ($providers = \Event::trigger('geocode.onGeocodeProvider', array('geocode.continent', $adapter)))
+		{
+			foreach ($providers as $provider)
 			{
-				$country = $data[0]->getCountry();
-			}
-			else
-			{
-				$country = $data->getCountry();
+				if ($provider)
+				{
+					$p[] = $provider;
+				}
 			}
 		}
-		return $country;
+
+		if (!count($p))
+		{
+			return '';
+		}
+
+		// Instantiate the Geocoder service and pass it the list of providers
+		$geocoder = new \Geocoder\ProviderAggregator();
+
+		$chain = new \Geocoder\Provider\Chain\Chain($p);
+
+		$geocoder->registerProvider($chain);
+
+		$continent = null;
+
+		if ($data = $geocoder->geocode($country))
+		{
+			$continent = $data->first()->getLocality();
+		}
+
+		return $continent;
 	}
 
 	/**
@@ -149,7 +192,7 @@ class Geocode
 			$ip = true;
 		}
 
-		$adapter  = new \Geocoder\HttpAdapter\CurlHttpAdapter();
+		$adapter = new \Http\Discovery\Psr18Client();
 
 		$p = array();
 
@@ -171,11 +214,16 @@ class Geocode
 		}
 
 		// Instantiate the Geocoder service and pass it the list of providers
-		$geocoder = new \Geocoder\Geocoder();
-		$geocoder->registerProvider(new \Geocoder\Provider\ChainProvider($p));
+		$geocoder = new \Geocoder\ProviderAggregator();
+
+		$chain = new \Geocoder\Provider\Chain\Chain($p);
+
+		$geocoder->registerProvider($chain);
 
 		// Try to get some data...
-		return $geocoder->geocode($address);
+		$data = $geocoder->geocode($address);
+
+		return $data;
 	}
 
 	/**
@@ -186,8 +234,7 @@ class Geocode
 	 */
 	public static function address($coordinates)
 	{
-		$adapter  = new \Geocoder\HttpAdapter\CurlHttpAdapter();
-
+		$adapter = new \Http\Discovery\Psr18Client();
 		$p = array();
 
 		// Get a list of providers
@@ -255,7 +302,7 @@ class Geocode
 			}
 		}
 
-		if (!$instance || ($instance instanceof Exception) || !$instance->getConnection())
+		if (!$instance || ($instance instanceof \Exception) || !$instance->getConnection())
 		{
 			return null;
 		}
@@ -420,7 +467,10 @@ class Geocode
 				return $country;
 			}
 
-			$sql = "SELECT LOWER(countrySHORT) FROM ipcountry WHERE ipFROM <= INET_ATON(" . $gdb->quote($ip) . ") AND ipTO >= INET_ATON(" . $gdb->quote($ip) . ")";
+			// Convert the dotted quad IP address to long:
+			$n_ip = ip2long($ip);
+
+			$sql = "SELECT LOWER(countrySHORT) FROM ipcountry WHERE ipFROM <= " .  $gdb->quote($n_ip) . " AND ipTO >= " . $gdb->quote($n_ip);
 			$gdb->setQuery($sql);
 			$country = stripslashes($gdb->loadResult());
 		}
@@ -443,7 +493,7 @@ class Geocode
 				return $d1nation;
 			}
 
-			$gdb->setQuery("SELECT COUNT(*) FROM countrygroup WHERE LOWER(countrycode) = LOWER(" . $gdb->quote($country) . ") AND countrygroup = 'D1'");
+			$gdb->setQuery("SELECT COUNT(*) FROM countrygroup WHERE LOWER(countrycode) = " . $gdb->quote(strtolower($country)) . " AND countrygroup = 'D1'");
 			$c = $gdb->loadResult();
 			if ($c > 0)
 			{
@@ -469,7 +519,7 @@ class Geocode
 				return $e1nation;
 			}
 
-			$gdb->setQuery("SELECT COUNT(*) FROM countrygroup WHERE LOWER(countrycode) = LOWER(" . $gdb->quote($country) . ") AND countrygroup = 'E1'");
+			$gdb->setQuery("SELECT COUNT(*) FROM countrygroup WHERE LOWER(countrycode) = " . $gdb->quote(strtolower($country)) . " AND countrygroup = 'E1'");
 			$c = $gdb->loadResult();
 			if ($c > 0)
 			{
@@ -496,7 +546,10 @@ class Geocode
 				return $iplocation;
 			}
 
-			$sql = "SELECT COUNT(*) FROM iplocation WHERE ipfrom <= INET_ATON(" . $gdb->quote($ip) . ") AND ipto >= INET_ATON(" . $gdb->quote($ip) . ") AND LOWER(location) = LOWER(" . $gdb->quote($location) . ")";
+			// Convert the dotted quad IP address to long:
+			$n_ip = ip2long($ip);
+
+			$sql = "SELECT COUNT(*) FROM iplocation WHERE ipfrom <= " .  $gdb->quote($n_ip) . " AND ipto >= " . $gdb->quote($n_ip) . " AND LOWER(location) = " .  $gdb->quote(strtolower($location));
 			$gdb->setQuery($sql);
 			$c = $gdb->loadResult();
 			if ($c > 0)

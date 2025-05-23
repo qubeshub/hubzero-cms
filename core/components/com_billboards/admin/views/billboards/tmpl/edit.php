@@ -35,7 +35,7 @@ $this->js();
 
 				<div class="input-wrap">
 					<label for="billboardname"><?php echo Lang::txt('COM_BILLBOARDS_FIELD_NAME'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span></label><br />
-					<input type="text" name="billboard[name]" id="billboardname" class="required" value="<?php echo $this->escape(stripslashes($this->row->name)); ?>" />
+					<input type="text" name="billboard[name]" id="billboardname" class="required" value="<?php echo $this->escape(stripslashes($this->row->name == null ? '' : $this->row->name)); ?>" />
 				</div>
 				<div class="input-wrap">
 					<label for="billboardcollection"><?php echo Lang::txt('COM_BILLBOARDS_FIELD_COLLECTION'); ?>:</label><br />
@@ -64,7 +64,7 @@ $this->js();
 				</div>
 				<div class="input-wrap">
 					<label for="billboardheader"><?php echo Lang::txt('COM_BILLBOARDS_FIELD_HEADER'); ?>:</label><br />
-					<input type="text" name="billboard[header]" id="billboardheader" value="<?php echo $this->escape(stripslashes($this->row->header)); ?>" />
+					<input type="text" name="billboard[header]" id="billboardheader" value="<?php echo $this->escape(stripslashes($this->row->header == null ? '' : $this->row->header)); ?>" />
 				</div>
 				<div class="input-wrap">
 					<label for="billboard-image"><?php echo Lang::txt('COM_BILLBOARDS_FIELD_BACKGROUND_IMG'); ?>:</label><br />
@@ -72,7 +72,7 @@ $this->js();
 				</div>
 				<div class="input-wrap">
 					<label for="billboard[text]"><?php echo Lang::txt('COM_BILLBOARDS_FIELD_TEXT'); ?>:</label><br />
-					<?php echo $this->editor('billboard[text]', $this->escape(stripslashes($this->row->text)), 45, 13, 'billboard-text', ['buttons' => false]); ?>
+					<?php echo $this->editor('billboard[text]', $this->escape(stripslashes($this->row->text == null ? '' : $this->row->text)), 45, 13, 'billboard-text', ['buttons' => false]); ?>
 				</div>
 			</fieldset>
 		</div>
@@ -81,15 +81,15 @@ $this->js();
 				<legend><span><?php echo Lang::txt('COM_BILLBOARDS_LEARN_MORE'); ?></span></legend>
 				<div class="input-wrap">
 					<label for="billboardlearnmoretext"><?php echo Lang::txt('COM_BILLBOARDS_FIELD_LEARN_MORE_TEXT'); ?>:</label><br />
-					<input type="text" name="billboard[learn_more_text]" id="billboardlearnmoretext" value="<?php echo $this->escape(stripslashes($this->row->learn_more_text)); ?>" />
+					<input type="text" name="billboard[learn_more_text]" id="billboardlearnmoretext" value="<?php echo $this->escape(stripslashes($this->row->learn_more_text == null ? '' : $this->row->learn_more_text)); ?>" />
 				</div>
 				<div class="input-wrap">
 					<label for="billboardlearnmoretarget"><?php echo Lang::txt('COM_BILLBOARDS_FIELD_LEARN_MORE_TARGET'); ?>:</label><br />
-					<input type="text" name="billboard[learn_more_target]" id="billboardlearnmoretarget" value="<?php echo $this->escape(stripslashes($this->row->learn_more_target)); ?>" />
+					<input type="text" name="billboard[learn_more_target]" id="billboardlearnmoretarget" value="<?php echo $this->escape(stripslashes($this->row->learn_more_target == null ? '' : $this->row->learn_more_target)); ?>" />
 				</div>
 				<div class="input-wrap">
 					<label for="billboardlearnmoreclass"><?php echo Lang::txt('COM_BILLBOARDS_FIELD_LEARN_MORE_CLASS'); ?>:</label><br />
-					<input type="text" name="billboard[learn_more_class]" id="billboardlearnmoreclass" value="<?php echo $this->escape(stripslashes($this->row->learn_more_class)); ?>" />
+					<input type="text" name="billboard[learn_more_class]" id="billboardlearnmoreclass" value="<?php echo $this->escape(stripslashes($this->row->learn_more_class == null ? '' : $this->row->learn_more_class)); ?>" />
 				</div>
 				<div class="input-wrap">
 					<label for="billboardlearnmorelocation"><?php echo Lang::txt('COM_BILLBOARDS_FIELD_LEARN_MORE_LOCATION'); ?>:</label><br />
@@ -129,15 +129,15 @@ $this->js();
 				<div id="styling_table">
 					<div class="input-wrap">
 						<label for="billboardalias"><?php echo Lang::txt('COM_BILLBOARDS_FIELD_ALIAS'); ?>:</label><br />
-						<input type="text" name="billboard[alias]" id="billboardalias" value="<?php echo $this->escape(stripslashes($this->row->alias)); ?>" />
+						<input type="text" name="billboard[alias]" id="billboardalias" value="<?php echo $this->escape(stripslashes($this->row->alias == null ? '' : $this->row->alias)); ?>" />
 					</div>
 					<div class="input-wrap">
 						<label for="billboardpadding"><?php echo Lang::txt('COM_BILLBOARDS_FIELD_PADDING'); ?>:</label><br />
-						<input type="text" name="billboard[padding]" id="billboardpadding" value="<?php echo $this->escape(stripslashes($this->row->padding)); ?>" />
+						<input type="text" name="billboard[padding]" id="billboardpadding" value="<?php echo $this->escape(stripslashes($this->row->padding == null ? '' : $this->row->padding)); ?>" />
 					</div>
 					<div class="input-wrap">
 						<label for="billboardcss"><?php echo Lang::txt('COM_BILLBOARDS_FIELD_CSS'); ?>:</label><br />
-						<textarea name="billboard[css]" id="billboardcss" cols="45" rows="13"><?php echo $this->escape(stripslashes($this->row->css)); ?></textarea>
+						<textarea name="billboard[css]" id="billboardcss" cols="45" rows="13"><?php echo $this->escape(stripslashes($this->row->css == null ? '' : $this->row->css)); ?></textarea>
 					</div>
 				</div>
 			</fieldset>

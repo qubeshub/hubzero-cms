@@ -31,7 +31,7 @@ Toolbar::help('sponsors');
 			</tr>
 		</thead>
 		<tbody>
-			<?php if (count($this->sponsors) > 0) : ?>
+			<?php if (is_array($this->sponsors) && count($this->sponsors) > 0) : ?>
 				<?php foreach ($this->sponsors as $sponsor) : ?>
 					<tr>
 						<td class="priority-3"><?php echo $sponsor['id']; ?></td>

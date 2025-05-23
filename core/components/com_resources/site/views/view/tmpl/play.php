@@ -8,15 +8,10 @@
 // No direct access.
 defined('_HZEXEC_') or die();
 
-$html = '';
+	$html = '';
 
-	$url = $this->activechild->path;
-	$url = DS . ltrim($url, DS);
-
-	if (substr($url, 0, strlen($this->config->get('uploadpath'))) != $this->config->get('uploadpath'))
-	{
-		$url = DS . trim($this->config->get('uploadpath'), DS) . $url;
-	}
+	$source = $this->activechild->basepath() . '/' . $this->activechild->path;
+	$url = '/resources/' . $this->activechild->id . '/download/' . $this->activechild->relativeurl();
 
 	// Get some attributes
 	$attribs = new \Hubzero\Config\Registry($this->activechild->get('attribs'));
@@ -51,6 +46,8 @@ $html = '';
 	$width  = (intval($width) > 0) ? $width : 0;
 	$height = (intval($height) > 0) ? $height : 0;
 
+	$videos = array('mp4');
+	$audios = array('mp3');
 	$images = array('png', 'jpeg', 'jpe', 'jpg', 'gif', 'bmp');
 	$files  = array('pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pages', 'ai', 'psd', 'tiff', 'dxf', 'eps', 'ps', 'ttf', 'xps', 'zip', 'rar', 'svg');
 
@@ -90,29 +87,23 @@ $html = '';
 				}
 				$url = 'https://www.youtube.com/embed/' . $video_id . '?wmode=transparent';
 			}
-			$html .= '<iframe sandbox="allow-scripts allow-same-origin" width="' . ($width ? $width : 640) . '" height="' . ($height ? $height : 360) . '" src="' . $url . '" frameborder="0" allowfullscreen></iframe>';
+			$html .= '<iframe width="' . ($width ? $width : 640) . '" height="' . ($height ? $height : 360) . '" src="' . $url . '" frameborder="0" allowfullscreen></iframe>';
 		}
 		else if (stristr($parsed['host'], 'vimeo'))
 		{
-			$html .= '<iframe sandbox="allow-scripts allow-same-origin" width="' . ($width ? $width : 640) . '" height="' . ($height ? $height : 360) . '" src="' . $url . '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+			$html .= '<iframe width="' . ($width ? $width : 640) . '" height="' . ($height ? $height : 360) . '" src="' . $url . '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
 		}
 		else if (stristr($parsed['host'], 'blip'))
 		{
-			$html .= '<iframe sandbox="allow-scripts allow-same-origin" width="' . ($width ? $width : 640) . '" height="' . ($height ? $height : 360) . '" src="' . $url . '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+			$html .= '<iframe width="' . ($width ? $width : 640) . '" height="' . ($height ? $height : 360) . '" src="' . $url . '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
 		}
 		else
 		{
-			$html .= '<iframe sandbox="allow-scripts allow-same-origin" width="' . ($width ? $width : 640) . '" height="' . ($height ? $height : 360) . '" src="' . $url . '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+			$html .= '<iframe width="' . ($width ? $width : 640) . '" height="' . ($height ? $height : 360) . '" src="' . $url . '" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
 		}
 	}
-	else if (is_file(PATH_APP . $url))
+	else if (is_file($source))
 	{
-		$base = substr(PATH_APP, strlen(PATH_ROOT));
-		if (substr($url, 0, strlen($base)) != $base)
-		{
-			$url = $base . $url;
-		}
-
 		if (strtolower($type) == 'swf')
 		{
 			$height = '400px';
@@ -120,6 +111,8 @@ $html = '';
 			{
 				$height = '100%';
 			}
+			$rufle_path =  Component::path('com_resources') . DS . 'site' . DS . 'assets' . DS . 'js' . DS . 'ruffle';
+			$rufle_path = (substr($rufle_path, strlen(PATH_ROOT) + 0));
 			$html .= '<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="https://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,65,0" width="100%" height="'.$height.'" id="SlideContent" VIEWASTEXT>'."\n";
 			$html .= ' <param name="movie" value="'. $url .'" />'."\n";
 			$html .= ' <param name="quality" value="high" />'."\n";
@@ -128,6 +121,13 @@ $html = '';
 			$html .= ' <param name="scale" value="showall" />'."\n";
 			$html .= ' <embed src="'. $url .'" menu="false" quality="best" loop="false" width="100%" height="'.$height.'" scale="showall" name="SlideContent" align="" type="application/x-shockwave-flash" pluginspage="https://www.macromedia.com/go/getflashplayer" swLiveConnect="true"></embed>'."\n";
 			$html .= '</object>'."\n";
+			$html .= '<script>'."\n";
+			$html .= 'window.RufflePlayer = window.RufflePlayer || {};'."\n";
+			$html .= 'window.RufflePlayer.config = {'."\n";
+			$html .= '  "publicPath": "' . $rufle_path. '",'."\n";
+			$html .= '}'."\n";
+			$html .= '</script>'."\n";
+			$html .= '<script src="' . $rufle_path. '/ruffle.js"></script>'."\n";
 		}
 		else if (in_array(strtolower($type), $images))
 		{
@@ -155,7 +155,19 @@ $html = '';
 
 			$html .= '<iframe sandbox="allow-scripts allow-same-origin allow-popups" src="https://docs.google.com/viewer?url=' . urlencode(Request::base() . ltrim($sef, '/')).'&amp;embedded=true#:0.page.0" width="100%" height="500" name="file_resource" frameborder="0" bgcolor="white"></iframe>'."\n";
 		}
-		else
+		else if (in_array(strtolower($type), $videos))
+		{
+			$html .= '<video controls autoplay ' . $attributes . '>' . "\n";
+			$html .= '    <source src="' . $url .  '" type="video/mp4"/>' . "\n";
+			$html .= '</video>' . "\n";
+		}
+		else if (in_array(strtolower($type), $audios))
+		{
+			$html .= '<audio controls autoplay ' . $attributes . '>' . "\n";
+			$html .= '    <source src="' . $url .  '" type="audio/mpeg"/>' . "\n";
+			$html .= '</audio>' . "\n";
+		}
+		else if (strtolower($type) == 'jar')
 		{
 			$html .= '<applet ' . $attributes . ' archive="'. $url .'" width="';
 			$html .= ($width > 0) ? $width : '';
@@ -172,10 +184,14 @@ $html = '';
 			}
 			$html .= '</applet>'."\n";
 		}
+		else
+		{
+			$html .= '<p class="error">'.Lang::txt('COM_RESOURCES_FILE_BAD_TYPE').'</p>'."\n";
+		}
 	}
 	else
 	{
 		$html .= '<p class="error">'.Lang::txt('COM_RESOURCES_FILE_NOT_FOUND').'</p>'."\n";
 	}
 
-echo $html;
+	echo $html;

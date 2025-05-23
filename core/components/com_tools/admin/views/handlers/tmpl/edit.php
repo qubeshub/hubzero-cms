@@ -40,7 +40,7 @@ $this->css('handlers')
 
 		<div class="input-wrap">
 			<label for="field-prompt"><?php echo Lang::txt('COM_TOOLS_HANDLERS_PROMPT'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span></label><br />
-			<input type="text" name="prompt" id="field-prompt" value="<?php echo $this->escape(stripslashes($this->row->prompt)); ?>" size="50" />
+			<input type="text" name="prompt" id="field-prompt" value="<?php echo $this->escape(stripslashes($this->row->prompt == null ? '' : $this->row->prompt)); ?>" size="50" />
 		</div>
 	</fieldset>
 	<fieldset class="adminform">
@@ -69,7 +69,7 @@ $this->css('handlers')
 		<div class="rules">
 			<?php foreach ($this->row->rules as $rule) : ?>
 				<div class="rule">
-					<input type="hidden" name="rules[<?php echo $i; ?>][id]" value="<?php echo $this->escape(stripslashes($rule->id)); ?>" />
+					<input type="hidden" name="rules[<?php echo $i; ?>][id]" value="<?php echo $this->escape(stripslashes($rule->id == null ? '' : $rule->id)); ?>" />
 					<div class="input-wrap">
 						<label for="field-extension-<?php echo $i; ?>"><?php echo Lang::txt('COM_TOOLS_HANDLERS_EXTENSION'); ?>:</label><br />
 						<input type="text" name="rules[<?php echo $i; ?>][extension]" id="field-extension-<?php echo $i; ?>" value="<?php echo $this->escape(stripslashes($rule->extension)); ?>" size="50" />

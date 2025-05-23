@@ -36,12 +36,12 @@ defined('_HZEXEC_') or die();
 
 				<label for="field-title">
 					<?php echo Lang::txt('PLG_COURSES_DISCUSSIONS_FIELD_TITLE'); ?> <span class="required"><?php echo Lang::txt('PLG_COURSES_DISCUSSIONS_REQUIRED'); ?></span>
-					<input type="text" name="fields[title]" id="field-title" value="<?php echo $this->escape(stripslashes($this->category->get('title'))); ?>" />
+					<input type="text" name="fields[title]" id="field-title" value="<?php echo $this->escape(stripslashes($this->category->get('title',''))); ?>" />
 				</label>
 
 				<label for="field-description">
 					<?php echo Lang::txt('PLG_COURSES_DISCUSSIONS_FIELD_DESCRIPTION'); ?>
-					<textarea name="fields[description]" id="field-description" cols="35" rows="5"><?php echo $this->escape(stripslashes($this->category->get('description'))); ?></textarea>
+					<textarea name="fields[description]" id="field-description" cols="35" rows="5"><?php echo $this->escape(stripslashes($this->category->get('description',''))); ?></textarea>
 				</label>
 
 				<div class="grid">

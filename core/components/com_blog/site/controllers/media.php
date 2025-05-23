@@ -41,12 +41,14 @@ class Media extends SiteController
 
 		if (!$entry->get('id') || !$entry->access('view'))
 		{
-			throw new Exception(Lang::txt('Access denied.'), 403);
+			throw new \Exception(Lang::txt('Access denied.'), 403);
 		}
 
 		if (!($file = Request::getString('file', '')))
 		{
-			$filename = array_pop(explode('/', $_SERVER['REQUEST_URI']));
+			$parts = explode('/', $_SERVER['REQUEST_URI']);
+
+			$filename = array_pop($parts);
 
 			// Get the file name
 			if (substr(strtolower($filename), 0, strlen('image:')) == 'image:')
@@ -214,7 +216,7 @@ class Media extends SiteController
 		);
 
 		// Build the file path
-		$folder = $path . DS . $archive->filespace();
+		$folder = $archive->filespace();
 
 		// Delete the folder
 		if (is_dir($folder))

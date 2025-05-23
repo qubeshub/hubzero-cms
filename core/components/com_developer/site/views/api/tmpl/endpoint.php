@@ -112,7 +112,7 @@ $base = 'index.php?option=' . $this->option . '&controller=' . $this->controller
 						</div>
 					<?php endif; ?>
 				</h2>
-				<?php foreach ($endpoints[$activeVersion] as $endpoint): ?>
+				<?php foreach (isset($endpoints[$activeVersion]) ? $endpoints[$activeVersion] : array() as $endpoint): ?>
 					<?php
 						$key = $endpoint['_metadata']['component'] . '-' . $endpoint['_metadata']['method'];
 
@@ -179,7 +179,7 @@ $base = 'index.php?option=' . $this->option . '&controller=' . $this->controller
 												<?php echo $param['description']; ?>
 											</td>
 											<td>
-												<code class="nohighlight"><?php echo (!is_null($param['default'])) ? $param['default'] : 'null'; ?></code>
+												<code class="nohighlight"><?php echo (isset($param['default'])) ? $param['default'] : 'null'; ?></code>
 											</td>
 											<td>
 												<?php if (isset($param['allowedValues'])) : ?>

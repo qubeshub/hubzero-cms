@@ -1,7 +1,7 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
+ * @copyright  Copyright (c) 2005-2024 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
@@ -55,6 +55,7 @@ class Members extends AdminController
 		$this->registerTask('unblock', 'block');
 		$this->registerTask('block', 'block');
 		$this->registerTask('disapprove', 'approve');
+		$this->registerTask('queryorganization', 'getOrganizations');
 
 		parent::execute();
 	}
@@ -442,9 +443,9 @@ class Members extends AdminController
 			$user->set('registerDate', Date::toSql());
 		}
 
-		$givenTrimmed = preg_replace('/\s+/', ' ', trim($fields['givenName']));
-		$middleTrimmed = preg_replace('/\s+/', ' ', trim($fields['middleName']));
-		$surTrimmed = preg_replace('/\s+/', ' ', trim($fields['surname']));
+		$givenTrimmed = \Hubzero\Utility\Sanitize::cleanProperName($fields['givenName']);
+		$middleTrimmed = \Hubzero\Utility\Sanitize::cleanProperName($fields['middleName']);
+		$surTrimmed = \Hubzero\Utility\Sanitize::cleanProperName($fields['surname']);
 
 		$user->set('givenName', $givenTrimmed);
 		$user->set('middleName', $middleTrimmed);
@@ -455,7 +456,7 @@ class Members extends AdminController
 			$surTrimmed
 		);
 		$name = implode(' ', $name);
-		$name = preg_replace('/\s+/', ' ', $name);
+		$name = \Hubzero\Utility\Sanitize::cleanProperName($name);
 
 		$user->set('name', $name);
 		$user->set('modifiedDate', Date::toSql());
@@ -513,6 +514,13 @@ class Members extends AdminController
 		// Save profile data
 		$profile = Request::getArray('profile', array(), 'post');
 		$access  = Request::getArray('profileaccess', array(), 'post');
+
+        // Querying the organization id on ror.org. 
+		// If RoR Api is turned off because of failed API or if key doesn't exist, don't retrieve list from Api.
+        $useRorApi = \Component::params('com_members')->get('rorApi');
+        if (isset($profile['organization']) && !empty($profile['organization']) && $useRorApi) {
+            $profile['orgid'] = $this->getOrganizationId($profile['organization']);
+        }
 
 		foreach ($profile as $key => $data)
 		{
@@ -618,6 +626,15 @@ class Members extends AdminController
 			}
 		}
 
+		// Was a user secret reset requested?
+		$newSecret = trim(Request::getVar('resetSecret', '', 'post'));
+		// set new secret if indicated
+		if (null !== $newSecret && $newSecret == 1)
+		{
+			$user->set('secret', Member::generateSecret(null));
+			$user->save();
+		}
+
 		// Check for spam count
 		$reputation = Request::getVar('spam_count', null, 'post');
 
@@ -628,7 +645,7 @@ class Members extends AdminController
 		}
 
 		// Email the user that their account has been approved
-		if (!$prev->get('approved') && $this->config->get('useractivation_email'))
+		if (!$prev->get('approved') && $user->get('approved') && $this->config->get('useractivation_email'))
 		{
 			if (!$this->emailApprovedUser($user))
 			{
@@ -665,7 +682,7 @@ class Members extends AdminController
 	public function resendConfirmTask()
 	{
 		// Check for request forgeries
-		Request::checkToken('get');
+		Request::checkToken(['get', 'post']);
 
 		// Check for permission to perform this aciton
 		if (!User::authorise('core.manage', $this->_option)
@@ -688,7 +705,7 @@ class Members extends AdminController
 			$sendEmail = \Components\Members\Helpers\Utility::sendConfirmEmail($user, $xregistration);
 		}
 
-		if ($sendEmail)
+		if (isset($sendEmail))
 		{
 			Notify::success(Lang::txt('COM_MEMBERS_RESEND_CONFIRM_SUCCESS'));
 		}
@@ -697,7 +714,19 @@ class Members extends AdminController
 			Notify::error(Lang::txt('COM_MEMBERS_RESEND_CONFIRM_ERROR'));
 		}
 
-		return $this->editTask($user);
+		$return = base64_decode(Request::getString('return', ''));
+		if ($return)
+		{
+			// return $this->editTask($user);
+			App::redirect(
+				Route::url($return, false)
+			);
+		}
+		else
+		{
+			$this->cancelTask();
+		}
+
 	}
 
 	/**
@@ -959,6 +988,88 @@ class Members extends AdminController
 		}
 
 		return true;
+	}
+
+	/**
+	 * Different SQL functions
+	 */
+	public function runSelectQuery($query) {
+        $db = \App::get('db');
+        $db->setQuery($query);
+        $objRows = $db->loadObjectList();
+
+        // json_encode: returns a string containing the JSON representation from the mySQL -> json_decode: Returns the value encoded in json in appropriate PHP type
+        $objString = json_encode($objRows, true);
+        return json_decode($objString, true);
+    }
+
+    public function runInsertQuery($query, $vars) {
+        $db = \App::get('db');
+        $db->prepare($query);
+        $db->bind($vars);
+        return $db->execute();
+    }
+
+    public function runUpdateOrDeleteQuery($query) {
+        $db = \App::get('db');
+        $db->setQuery($query);
+        return $db->query();
+    }
+
+	/**
+	 * Run through SQL statements of deidentifying a member by userId
+	 * Task is ran through the toolbar
+	 */
+	public function deidentifyTask() {
+		$db = \App::get('db');
+
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
+		// Incoming user ID
+		$ids = Request::getArray('id', array());
+		$ids = (!is_array($ids) ? array($ids) : $ids);
+
+		// No Id, throw up a warning
+		if (empty($ids)){
+			Notify::warning(Lang::txt('COM_MEMBERS_NO_ID'));
+			return $this->cancelTask();
+		}
+
+		// Loop through the array of user Ids
+		// Make sure plugin user/deidentify has been migrated / imported
+		// Run through main CMS tables, then run through client specific database tables that pertains to jobs, sessions, views with same trigger name
+		foreach ($ids as $id) {
+			// Creating New Credentials for each user
+			$anonPassword = "anonPassword_" . $id;
+			$anonUserName = "anonUsername_" . $id;
+			$anonUserNameSpace = "AnonFirst Middle Last" . $id;
+
+			// Can't rely on any order the plugins run in. Setting the deletion profile key in controller before calling the plugins 
+			$insert_UserProfileWithStatus_Query = "INSERT INTO `#__user_profiles` (`user_id`, `profile_key`, `profile_value`) values (?, 'deletion', 'marked')";
+			$this->runInsertQuery($insert_UserProfileWithStatus_Query, array($id));
+
+			// Running the plugin with all deletions
+			$result = Event::trigger('user.onUserDeidentify', $id);
+
+			if ($result) {
+				// ----------- UPDATES TO THE PROFILES AND USERS TABLE, and User Profiles Table  ----------
+				// Unset the keys and updates the final user records until after all plugins run. 
+				// If anything fail, jos_users still exist which is enough to re-run deidentification. 
+				$update_UsersById_Query = "UPDATE `#__users` set name=" . $db->quote($anonUserNameSpace) . ", givenName=" . $db->quote($anonUserName) .", middleName='', surname='anonSurName', username=" . $db->quote($anonUserName) . ", password=" .  $db->quote($anonPassword) . ", block='1', registerIP='', params='', homeDirectory='', email=" .  $db->quote($anonUserName . "@example.com") . " where id =" . $db->quote($id);
+				$this->runUpdateOrDeleteQuery($update_UsersById_Query);
+				
+				$update_UserProfiles_Query = "UPDATE `#__user_profiles` SET profile_value='sanitized' WHERE user_id=" . $db->quote($id) . " AND profile_key='deletion'";
+				$this->runUpdateOrDeleteQuery($update_UserProfiles_Query);
+			} else {
+				Notify::warning("Could not deidentify several user id");
+				return $this->cancelTask();
+			}
+			
+		}
+
+		Notify::success("Deidentified several user id: " . implode(" ", $ids));
+        $this->cancelTask();
 	}
 
 	/**
@@ -1599,4 +1710,113 @@ class Members extends AdminController
 
 		echo json_encode($object);
 	}
+
+
+	/**
+     * Perform querying of research organization based on the input value
+     *
+     * @return  array or false  matched research organization names
+     */
+    public function getOrganizationsTask(){
+        $term = trim(Request::getString('term', ''));
+		$term = \Components\Members\Helpers\Utility::escapeSpecialChars($term);
+		
+		$verNum = \Component::params('com_members')->get('rorApiVersion');
+		
+		if (!empty($verNum))
+		{
+			$queryURL = "https://api.ror.org/$verNum/organizations?query.advanced=names.value:" . urlencode($term);
+			
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $queryURL);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+			$result = curl_exec($ch);
+
+			if (!$result){
+				return false;
+			}
+
+			$info = curl_getinfo($ch);
+
+			$code = $info['http_code'];
+
+			if (($code != 201) && ($code != 200)){
+				return false;
+			}
+
+			$organizations = [];
+
+			$resultObj = json_decode($result);
+			
+			foreach ($resultObj->items as $orgObj)
+			{
+				foreach ($orgObj->names as $nameObj)
+				{
+					if ($nameObj->lang == "en" && !in_array($nameObj->value, $organizations))
+					{
+						$organizations[] = $nameObj->value;
+					}
+				}
+			}
+
+			curl_close($ch);
+
+			echo json_encode($organizations);
+			exit();
+		}
+    }
+
+    /**
+     * Perform querying of research organization id on ror.org
+     * @param   string   $organization
+     *
+     * @return  string   organization id
+     */
+    public function getOrganizationId($organization){
+        $org = trim($organization);
+		$orgQry = \Components\Members\Helpers\Utility::escapeSpecialChars($org);
+		
+		$verNum = \Component::params('com_members')->get('rorApiVersion');
+		
+		if (!empty($verNum))
+		{
+			$queryURL = "https://api.ror.org/$verNum/organizations?query.advanced=names.value:" . urlencode($orgQry);
+			
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $queryURL);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+			$result = curl_exec($ch);
+
+			if (!$result){
+				return false;
+			}
+
+			$info = curl_getinfo($ch);
+
+			$code = $info['http_code'];
+
+			if (($code != 201) && ($code != 200)){
+				return false;
+			}
+
+			$resultObj = json_decode($result);
+
+			foreach ($resultObj->items as $orgObj)
+			{
+				foreach ($orgObj->names as $nameObj)
+				{
+					if (strcmp($nameObj->value, $org) == 0)
+					{
+						curl_close($ch);
+						return $orgObj->id;
+					}
+				}
+			}
+			
+			curl_close($ch);
+			return "";
+		}
+    }
 }

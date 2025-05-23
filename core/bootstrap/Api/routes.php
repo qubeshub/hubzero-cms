@@ -34,7 +34,7 @@ $router->rules('build')->append('component', function ($uri)
 	{
 		$query = $router->preprocess($query);
 		$parts = $router->build($query);
-
+		$parts = array_filter($parts, function($v) { return !is_array($v); });
 		$tmp   = implode('/', $parts);
 	}
 
@@ -66,11 +66,11 @@ $router->rules('build')->append('rewrite', function ($uri)
 
 	if (\App::get('config')->get('sef_suffix') && !(substr($route, -9) == 'index.php' || substr($route, -1) == '/'))
 	{
-		if ($format = $uri->getVar('format', 'html'))
+		if ($format = $uri->getUriVar('format', 'html'))
 		{
 			$route .= '.' . $format;
 
-			$uri->delVar('format');
+			$uri->delUriVar('format');
 		}
 	}
 
@@ -98,10 +98,10 @@ $router->rules('build')->append('rewrite', function ($uri)
 */
 $router->rules('build')->append('groups', function ($uri)
 {
-	if ($limitstart = $uri->getVar('limitstart'))
+	if ($limitstart = $uri->getUriVar('limitstart'))
 	{
-		$uri->setVar('start', (int) $limitstart);
-		$uri->delVar('limitstart');
+		$uri->setUriVar('start', (int) $limitstart);
+		$uri->delUriVar('limitstart');
 	}
 
 	return $uri;
@@ -159,19 +159,19 @@ $router->rules('parse')->append('version', function ($uri)
 	}
 
 	// Does the accept header have version identifier?
-	if (preg_match('/application\/vnd\.[a-zA-Z]{2,20}\.v([0-9x]{1,2}\.[0-9x]{1,2}|[0-9x]{1,2})/', \App::get('request')->headers->get('accept'), $matches))
+	if (preg_match('/application\/vnd\.[a-zA-Z]{2,20}\.v([0-9x]{1,2}\.[0-9x]{1,2}|[0-9x]{1,2})/', \App::get('request')->headers->get('accept',''), $matches))
 	{
 		$version = $matches[1];
 	}
 
 	// Does the query string have a version identifier?
-	if ($uri->getVar('v'))
+	if ($uri->getUriVar('v'))
 	{
-		$version = $uri->getVar('v');
+		$version = $uri->getUriVar('v');
 	}
-	elseif ($uri->getVar('version'))
+	elseif ($uri->getUriVar('version'))
 	{
-		$version = $uri->getVar('version');
+		$version = $uri->getUriVar('version');
 	}
 
 	// Normalize version
@@ -191,9 +191,9 @@ $router->rules('parse')->append('version', function ($uri)
 	$calc['major'] = $calc['major'] ? $calc['major'] : 1;
 
 	// Push data to URI
-	$uri->setVar('version.major', $calc['major']);
-	$uri->setVar('version.minor', $calc['minor']);
-	$uri->setVar('version', implode('.', $calc));
+	$uri->setUriVar('version.major', $calc['major']);
+	$uri->setUriVar('version.minor', $calc['minor']);
+	$uri->setUriVar('version', implode('.', $calc));
 });
 
 /*
@@ -210,15 +210,15 @@ $router->rules('parse')->append('crud', function ($uri)
 		break;
 
 		case 'post':
-			$uri->setVar('task', 'create');
+			$uri->setUriVar('task', 'create');
 		break;
 
 		case 'put':
-			$uri->setVar('task', 'update');
+			$uri->setUriVar('task', 'update');
 		break;
 
 		case 'delete':
-			$uri->setVar('task', 'delete');
+			$uri->setUriVar('task', 'delete');
 		break;
 	}
 });
@@ -232,7 +232,7 @@ $router->rules('parse')->append('crud', function ($uri)
 */
 $router->rules('parse')->append('component', function ($uri)
 {
-	$component = $uri->getVar('option');
+	$component = $uri->getUriVar('option');
 	if (is_array($component))
 	{
 		$component = implode('', $component);
@@ -251,11 +251,11 @@ $router->rules('parse')->append('component', function ($uri)
 		return;
 	}
 
-	$uri->setVar('option', \App::get('component')->canonical($component));
+	$uri->setUriVar('option', \App::get('component')->canonical($component));
 
-	if ($uri->getVar('version', null))
+	if ($uri->getUriVar('version', null))
 	{
-		$router = \App::get('component')->router($component, 'api', str_replace('.', '_', $uri->getVar('version')));
+		$router = \App::get('component')->router($component, 'api', str_replace('.', '_', $uri->getUriVar('version')));
 	}
 	else
 	{
@@ -268,7 +268,7 @@ $router->rules('parse')->append('component', function ($uri)
 		{
 			foreach ($vars as $key => $var)
 			{
-				$uri->setVar($key, $var);
+				$uri->setUriVar($key, $var);
 			}
 		}
 

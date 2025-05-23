@@ -300,7 +300,7 @@ class Asset
 	 * @param   boolean  $detect_debug    detect debug to search for compressed files if debug is on
 	 * @return  mixed  nothing if $path_only is false, null, path or array of path if specific js browser files were detected
 	 */
-	public static function script($file, $framework = false, $relative = false, $path_only = false, $detect_browser = true, $detect_debug = true)
+	public static function script($file, $framework = false, $relative = false, $path_only = false, $detect_browser = true, $detect_debug = true, $defer = false, $async = false)
 	{
 		if ($framework)
 		{
@@ -329,9 +329,10 @@ class Asset
 		else
 		{
 			$document = App::get('document');
+
 			foreach ($includes as $include)
 			{
-				$document->addScript($include);
+				$document->addScript($include, "text/javascript", $defer, $async);
 			}
 		}
 	}

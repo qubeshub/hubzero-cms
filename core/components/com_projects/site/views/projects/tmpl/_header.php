@@ -23,7 +23,7 @@ else
 
 $start = ($this->showPrivacy == 2 && $this->model->access('member')) ? '<span class="h-privacy">' . $privacy . '</span> ' . strtolower(Lang::txt('COM_PROJECTS_PROJECT')) : ucfirst(Lang::txt('COM_PROJECTS_PROJECT'));
 ?>
-<div id="content-header" <?php if (!$this->showPic) { echo 'class="nopic"'; } ?>>
+<header class="content-header<?php if (!$this->showPic) { echo ' nopic'; } ?>">
 	<?php if ($this->showPic)
 	{
 		// Check if there is a picture
@@ -64,4 +64,4 @@ $start = ($this->showPrivacy == 2 && $this->model->access('member')) ? '<span cl
 		echo '</p>';
 	 } ?>
 	</div>
-</div>
+</header>

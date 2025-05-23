@@ -33,12 +33,12 @@ class Helper extends Module
 		if ($itemid =  $params->get($type))
 		{
 			$db = App::get('db');
-			$query = $db->getQuery(true);
+			$query = $db->getQuery();
 
 			$query->select($db->quoteName('link'));
-			$query->from($db->quoteName('#__menu'));
-			$query->where($db->quoteName('published') . '=1');
-			$query->where($db->quoteName('id') . '=' . $db->quote($itemid));
+			$query->from('#__menu');
+			$query->where($db->quoteName('published'), '=', 1);
+			$query->where($db->quoteName('id'), '=', $db->quote($itemid));
 
 			$db->setQuery($query);
 			if ($link = $db->loadResult())
@@ -116,12 +116,12 @@ class Helper extends Module
 		$return  = Request::getString('return', null);
 
 		$uri = \Hubzero\Utility\Uri::getInstance();
-		if ($rtrn = $uri->getVar('return'))
+		if ($rtrn = $uri->getUriVar('return'))
 		{
 			if (preg_match('/[^A-Za-z0-9\+\/\=]/', $rtrn))
 			{
 				// This isn't a base64 string and most likely is someone trying to do something nasty (XSS)
-				$uri->setVar('return', base64_encode($uri->toString(array('path'))));
+				$uri->setUriVar('return', base64_encode($uri->toString(array('path'))));
 			}
 		}
 		$freturn = base64_encode($uri->toString());

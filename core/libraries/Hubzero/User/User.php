@@ -133,11 +133,23 @@ class User extends \Hubzero\Database\Relational
 	 */
 	public function serialize()
 	{
+		$attr = $this->__serialize();
+
+		return serialize($attr);
+	}
+
+	/**
+	 * Serializes the model data for storage
+	 *
+	 * @return  array
+	 */
+	public function __serialize()
+	{
 		$attr = $this->getAttributes();
 
 		$attr['guest'] = $this->guest;
 
-		return serialize($attr);
+		return $attr;
 	}
 
 	/**
@@ -149,9 +161,19 @@ class User extends \Hubzero\Database\Relational
 	 */
 	public function unserialize($data)
 	{
-		$this->__construct();
-
 		$data = unserialize($data);
+		$this->__unserialize($data);
+	}
+
+	/**
+	 * Unserializes the data into a new model
+	 *
+	 * @param   array $data  The data to build from
+	 * @return  void
+	 */
+	public function __unserialize($data)
+	{
+		$this->__construct();
 
 		if (isset($data['guest']))
 		{
@@ -435,6 +457,11 @@ class User extends \Hubzero\Database\Relational
 			$key = 'id';
 		}
 
+		if (is_string($key) && in_array($key, array('givenName','middleName','surname','name')))
+		{
+			$value = \Hubzero\Utility\Sanitize::cleanProperName($value);
+		}
+
 		return parent::set($key, $value);
 	}
 
@@ -463,7 +490,7 @@ class User extends \Hubzero\Database\Relational
 				{
 					if ($jwt->exp < time())
 					{
-						setcookie('jwt', -86400, '', '/', '.' . \Hubzero\Utility\Dns::domain(), true, true);
+						setcookie('jwt', -86400, 0, '/', '.' . \Hubzero\Utility\Dns::domain(), true, true);
 						return $this->guest();
 					}
 					$jwtid = $jwt->id;
@@ -880,6 +907,11 @@ class User extends \Hubzero\Database\Relational
 	 */
 	public function save()
 	{
+		if ($this->get('username') == false)
+		{
+			return false;
+		}
+
 		// Trigger the onUserBeforeSave event.
 		$data  = $this->toArray();
 		$isNew = $this->isNew();

@@ -15,7 +15,7 @@ use Hubzero\Config\Registry;
 /**
  * ManagerTest
  */
-class ManagerTest extends \PHPUnit_Framework_TestCase
+class ManagerTest extends \PHPUnit\Framework\TestCase
 {
 	/**
 	 * Cache manager
@@ -29,7 +29,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 	 *
 	 * @return  void
 	 */
-	public function setUp()
+	public function setUp(): void
 	{
 		$configurationFile = __DIR__ . DIRECTORY_SEPARATOR . 'Fixtures' . DIRECTORY_SEPARATOR . 'config.json';
 
@@ -64,6 +64,7 @@ class ManagerTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testStorageThrowsException()
 	{
+		$this->expectException(\InvalidArgumentException::class);
 		$this->cache->storage('foo');
 	}
 

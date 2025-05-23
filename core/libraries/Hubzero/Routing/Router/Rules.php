@@ -226,6 +226,8 @@ class Rules implements Countable, Iterator
 	 *
 	 * @return  integer
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function count()
 	{
 		return count($this->data);
@@ -271,6 +273,8 @@ class Rules implements Countable, Iterator
 	 *
 	 * @return  void
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function rewind()
 	{
 		reset($this->data);
@@ -281,6 +285,8 @@ class Rules implements Countable, Iterator
 	 *
 	 * @return  object
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		return current($this->data);
@@ -291,6 +297,8 @@ class Rules implements Countable, Iterator
 	 *
 	 * @return  string
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return key($this->data);
@@ -301,6 +309,8 @@ class Rules implements Countable, Iterator
 	 *
 	 * @return  void
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function next()
 	{
 		next($this->data);
@@ -311,6 +321,8 @@ class Rules implements Countable, Iterator
 	 *
 	 * @return  boolean
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function valid()
 	{
 		return key($this->data) !== null;

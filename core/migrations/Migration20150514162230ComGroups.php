@@ -30,14 +30,16 @@ class Migration20150514162230ComGroups extends Base
 
 			if (!$id)
 			{
-				$tbl = new \JTableAsset($this->db);
-				$tbl->level  = 1;
-				$tbl->parent = 1;
-				$tbl->name   = 'com_groups';
-				$tbl->title  = 'com_groups';
-				$tbl->rules  = $rules;
-				$tbl->check();
-				$tbl->store();
+
+				$parent = \Hubzero\Access\Asset::oneOrNew(\Hubzero\Access\Asset::getRootId());
+
+				$tbl = \Hubzero\Access\Asset::blank();
+				$tbl->set('level', 1);
+				$tbl->set('parent', 1);
+				$tbl->set('name', 'com_groups');
+				$tbl->set('title', 'com_groups');
+				$tbl->set('rules', $rules);
+				$tbl->saveAsLastChildOf($parent);
 			}
 			else
 			{
@@ -64,14 +66,15 @@ class Migration20150514162230ComGroups extends Base
 
 			if (!$id)
 			{
-				$tbl = new \JTableAsset($this->db);
-				$tbl->level  = 1;
-				$tbl->parent = 1;
-				$tbl->name   = 'com_groups';
-				$tbl->title  = 'com_groups';
-				$tbl->rules  = $rules;
-				$tbl->check();
-				$tbl->store();
+				$parent = \Hubzero\Access\Asset::oneOrNew(\Hubzero\Access\Asset::getRootId());
+
+				$tbl = \Hubzero\Access\Asset::blank();
+				$tbl->set('level', 1);
+				$tbl->set('parent', 1);
+				$tbl->set('name', 'com_groups');
+				$tbl->set('title', 'com_groups');
+				$tbl->set('rules', $rules);
+				$tbl->saveAsLastChildOf($parent);
 			}
 			else
 			{

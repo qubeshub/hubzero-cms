@@ -798,32 +798,33 @@ class Resources extends SiteController
 		}
 
 		//base url for the resource
-		$base = substr(PATH_APP, strlen(PATH_ROOT)) . DS . trim($this->config->get('uploadpath', '/site/resources'), DS);
+		$base = trim($this->config->get('uploadpath', '/site/resources'), DS);
 
 		//build the rest of the resource path and combine with base
 		$path = $path ? $path : $activechild->relativepath(); //Html::build_path($activechild->created, $activechild->id, '');
 		$path = $base . $path;
 
 		// we must have a folder
-		if (!\Filesystem::exists(PATH_ROOT . DS . $path))
+		if (!\Filesystem::exists(PATH_APP . DS . $path))
 		{
 			$this->setError(Lang::txt('Folder containing assets does not exist.'));
 
 			$return = array();
 			$return['errors'] = $this->getErrors();
 			$return['content_folder'] = $path;
+			$return['content_url'] = '/resources/' . $resid . '/download';
 			$return['manifest'] = null;
 			return $return;
 		}
 
 		//check to make sure we have a presentation document defining cuepoints, slides, and media
-		//$manifest_path_json = PATH_ROOT . $path . DS . 'presentation.json';
-		$manifests = \Filesystem::files(PATH_ROOT . DS . $path, '.json');
+		//$manifest_path_json = PATH_APP . $path . DS . 'presentation.json';
+		$manifests = \Filesystem::files(PATH_APP . DS . $path, '.json');
 		$manifest_path_json = (isset($manifests[0])) ? $manifests[0] : null;
-		$manifest_path_xml  = PATH_ROOT . $path . DS . 'presentation.xml';
+		$manifest_path_xml  = PATH_APP . DS . $path . DS . 'presentation.xml';
 
 		//check if the formatted json exists
-		if (!file_exists(PATH_ROOT . $path . DS . $manifest_path_json))
+		if (!file_exists(PATH_APP . DS . $path . DS . $manifest_path_json))
 		{
 			//check to see if we just havent converted yet
 			if (!file_exists($manifest_path_xml))
@@ -841,7 +842,7 @@ class Resources extends SiteController
 		}
 
 		//path to media
-		$media_path = PATH_ROOT . $path;
+		$media_path = PATH_APP . DS . $path;
 
 		//check if path exists
 		if (!is_dir($media_path))
@@ -907,6 +908,7 @@ class Resources extends SiteController
 		$return = array();
 		$return['errors'] = $this->getErrors();
 		$return['content_folder'] = $path;
+		$return['content_url'] = '/resources/' . $resid . '/download';
 		$return['manifest'] = $path . DS . $manifest_path_json;
 
 		return $return;
@@ -921,6 +923,38 @@ class Resources extends SiteController
 	{
 		$parent = $this->_id;
 		$child = Request::getInt('resid', '');
+
+		try
+		{
+			$model = Entry::oneOrFail($parent);
+			$activeChild = Entry::oneOrFail($child);
+		}
+		catch (Exception $e)
+		{
+			App::abort(404, Lang::txt('COM_RESOURCES_RESOURCE_NOT_FOUND'));
+		}
+
+		// Make sure the resource is standalone
+		if (!$model->get('standalone') || $activeChild->get('standalone'))
+		{
+			App::abort(403, Lang::txt('COM_RESOURCES_ALERTNOTAUTH'));
+		}
+
+		if (!$model->access('view-all') || !$activeChild->access('view-all'))
+		{
+			if (User::isGuest())
+			{
+				$return = base64_encode(Request::current(true));
+
+				App::redirect(
+					Route::url('index.php?option=com_users&view=login&return=' . $return, false),
+					Lang::txt('COM_RESOURCES_ALERTLOGIN_REQUIRED'),
+					'warning'
+				);
+			}
+
+			App::abort(403, Lang::txt('COM_CONTRIBUTE_NOT_AUTH'));
+		}
 
 		//media tracking object
 		require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'mediatracking.php';
@@ -961,6 +995,7 @@ class Resources extends SiteController
 
 			//get the content path
 			$content_folder = $pre['content_folder'];
+			$content_url = $pre['content_url'];
 
 			//if we have no errors
 			if (count($errors) > 0)
@@ -981,12 +1016,13 @@ class Resources extends SiteController
 					'name'   => 'view',
 					'layout' => 'watch'
 				));
-				$this->view->option         = $this->_option;
+				$this->view->set('option', $this->_option);
 				$this->view->config         = $this->config;
 				$this->view->database       = $this->database;
 				$this->view->doc            = Document::getRoot();
 				$this->view->manifest       = $manifest;
 				$this->view->content_folder = $content_folder;
+				$this->view->content_url    = $content_url;
 				$this->view->pid            = $parent;
 				$this->view->resid          = $child;
 
@@ -1015,49 +1051,37 @@ class Resources extends SiteController
 		$parent = Request::getInt('id', 0);
 		$child  = Request::getInt('resid', '');
 
-		if (!$parent || !$child)
+		try
+		{
+			$model = Entry::oneOrFail($parent);
+			$activechild = Entry::oneOrFail($child);
+		}
+		catch (Exception $e)
 		{
 			App::abort(404, Lang::txt('COM_RESOURCES_RESOURCE_NOT_FOUND'));
 		}
 
-		// Load the resource
-		$model = Entry::oneOrFail($parent);
-
-		// Make sure we got a result from the database
-		if ($model->isDeleted())
-		{
-			App::abort(404, Lang::txt('COM_RESOURCES_RESOURCE_NOT_FOUND'));
-		}
-
-		// Make sure the resource is published and standalone
-		if (!$model->get('standalone')) // || !$this->model->isPublished())
+		// Make sure the resource is standalone
+		if (!$model->get('standalone') || $activechild->get('standalone'))
 		{
 			App::abort(403, Lang::txt('COM_RESOURCES_ALERTNOTAUTH'));
 		}
 
-		// Is the visitor authorized to view this resource?
-		if (User::isGuest() && ($model->access == 1 || $model->access == 4))
+		if (!$model->access('view-all') || !$activechild->access('view-all'))
 		{
-			$return = base64_encode(Request::getString('REQUEST_URI', Route::url($model->link(), false, true), 'server'));
-			App::redirect(
-				Route::url('index.php?option=com_users&view=login&return=' . $return, false),
-				Lang::txt('COM_RESOURCES_ALERTLOGIN_REQUIRED'),
-				'warning'
-			);
-		}
+			if (User::isGuest())
+			{
+				$return = base64_encode(Request::current(true));
 
-		if ($model->get('group_owner') && !$model->access('view-all'))
-		{
-			App::abort(403, Lang::txt('COM_RESOURCES_ALERTNOTAUTH_GROUP', $model->get('group_owner'), Route::url('index.php?option=com_groups&cn=' . $model->get('group_owner'))));
-		}
+				App::redirect(
+					Route::url('index.php?option=com_users&view=login&return=' . $return, false),
+					Lang::txt('COM_RESOURCES_ALERTLOGIN_REQUIRED'),
+					'warning'
+				);
+			}
 
-		if (!$model->access('view'))
-		{
-			App::abort(403, Lang::txt('COM_RESOURCES_ALERTNOTAUTH'));
+			App::abort(403, Lang::txt('COM_CONTRIBUTE_NOT_AUTH'));
 		}
-
-		// Load resource
-		$activechild = Entry::oneOrFail($child);
 
 		// Check to see if we have a manifest
 		if (!$this->videoManifestExistsForResource($activechild))
@@ -1127,7 +1151,7 @@ class Resources extends SiteController
 			'name'   => 'view',
 			'layout' => 'video'
 		));
-		$this->view->option   = $this->_option;
+		$this->view->set('option', $this->_option);
 		$this->view->config   = $this->config;
 		$this->view->database = $this->database;
 		$this->view->resource = $activechild;
@@ -1182,7 +1206,7 @@ class Resources extends SiteController
 		$manifest = $this->getVideoManifestForResource($resource);
 
 		// Do we have a manifest already?
-		return (count($manifest) < 1) ? false : true;
+		return (!is_array($manifest) || count($manifest) < 1) ? false : true;
 	}
 
 	/**
@@ -1478,7 +1502,7 @@ class Resources extends SiteController
 				'name'      => 'view',
 				'layout'    => 'play'
 			));
-			$view->option      = $this->_option;
+			$view->set('option', $this->_option);
 			$view->config      = $this->config;
 			$view->tconfig     = $tconfig;
 			$view->resource    = $this->model;
@@ -1513,6 +1537,7 @@ class Resources extends SiteController
 
 			//get the content path
 			$content_folder = $pre['content_folder'];
+			$content_url = $pre['content_url'];
 
 			//if we have no errors
 			if (count($errors) > 0)
@@ -1522,6 +1547,8 @@ class Resources extends SiteController
 					'name'   => 'view',
 					'layout' => 'watch_error'
 				));
+				$this->view->set('controller', $this->_controller);
+				$this->view->set('task', $this->_task);
 				$this->view->setErrors($errors);
 				$body = $this->view->loadTemplate();
 			}
@@ -1538,6 +1565,7 @@ class Resources extends SiteController
 				//$view->database       = $this->database;
 				$view->set('manifest', $manifest);
 				$view->set('content_folder', $content_folder);
+				$view->set('content_url', $content_url);
 				$view->set('pid', $id);
 				$view->set('resid', Request::getInt('resid', ''));
 				$view->set('doc', Document::getRoot());
@@ -2146,17 +2174,20 @@ class Resources extends SiteController
 	public function downloadTask()
 	{
 		// Incoming
+
 		$id    = Request::getInt('id', 0);
 		$alias = Request::getString('alias', '');
 		$d     = Request::getString('d', 'inline');
 
 		//make sure we have a proper disposition
+
 		if ($d != "inline" && $d != "attachment")
 		{
 			$d = "inline";
 		}
 
 		// Load the resource
+
 		if ($alias)
 		{
 			$resource = Entry::oneByAlias($alias);
@@ -2166,12 +2197,13 @@ class Resources extends SiteController
 				App::abort(404, Lang::txt('COM_RESOURCES_RESOURCE_NOT_FOUND'));
 			}
 		}
-		// allow for temp resource uploads
-		elseif (substr($id, 0, 4) == '9999')
+		elseif (substr($id, 0, 4) == '9999') // allow for temp resource uploads
 		{
+
 			$resource = Entry::blank();
 			$resource->set('id', $id);
 			$resource->set('standalone', 1);
+			$resource->set('published', 1);
 			$resource->set('created', Date::of('now')->format('Y-m-d 00:00:00'));
 		}
 		else
@@ -2184,16 +2216,26 @@ class Resources extends SiteController
 			}
 		}
 
+		// Ensure resource is published - stemedhub #472
+
+		if (($resource->published != 1)  && !User::authorise('core.admin'))
+		{
+			App::abort(404, Lang::txt('COM_RESOURCES_FILE_NOT_FOUND'));
+		}
+
 		// Check if direct access is restricted. If so, look for a token
+
 		$activeParams = $resource->params;
 		$typeParams = $resource->type->params;
 		$restrictDirectDownload = $activeParams->get('restrict_direct_access') ? $activeParams->get('restrict_direct_access') : $typeParams->get('restrict_direct_access');
+
 		if ($restrictDirectDownload == 2)
 		{
 			Request::checkToken('get');
 		}
 
 		// Check if the resource is for logged-in users only and the user is logged-in
+
 		if (($token = Request::getString('token', '', 'get')))
 		{
 			$token = base64_decode($token);
@@ -2218,6 +2260,7 @@ class Resources extends SiteController
 		}
 
 		// Get parent Access level and use it if it is more restrictive
+
 		if ($resource->standalone != 1)
 		{
 			$parents = $resource->parents;
@@ -2227,11 +2270,13 @@ class Resources extends SiteController
 				$parent = $parents->first();
 			}
 		}
+
 		$accessLevel = (isset($parent) && ($parent->access > $resource->access)) ? $parent->access : $resource->access;
+
 		if ($accessLevel == 1 && $user->isGuest())
 		{
-			//App::abort(403, Lang::txt('COM_RESOURCES_ALERTNOTAUTH'));
 			$return = base64_encode(Request::getString('REQUEST_URI', Route::url('index.php?option=' . $this->_option . '&id=' . $this->id . '&d=' . $d, false, true), 'server'));
+
 			App::redirect(
 				Route::url('index.php?option=com_users&view=login&return=' . $return, false),
 				Lang::txt('COM_RESOURCES_ALERTLOGIN_REQUIRED'),
@@ -2240,8 +2285,9 @@ class Resources extends SiteController
 		}
 
 		// Check if the resource is "private" and the user is allowed to view it
+
 		if ($accessLevel == 4  // private
-		 || ($accessLevel == 3 && $resource->get('path')))  // protected -- We need to allow images in the sbtract to come through
+		 || ($accessLevel == 3 && !$resource->get('standalone')))  // protected -- We need to allow images from 'protected' resource abstracts to come through
 		{
 			if ($user->isGuest())
 			{
@@ -2258,53 +2304,112 @@ class Resources extends SiteController
 			}
 		}
 
-		if ($resource->get('standalone') && !$resource->get('path'))
-		{
-			$resource->set('path', $resource->filespace() . DS . 'media' . DS . Request::getString('file'));
-		}
+		$resource_path = $resource->get('path');
 
-		$path = trim($resource->get('path'));
-		$path = DS . trim($path, DS);
-
-		// Ensure we have a path
-		// Ensure resource is published - stemedhub #472
-		if (!$path && $resource->published != 1)
+		if (preg_match('/^.*:\/\//', $resource_path))
 		{
+			// Can't serve an external link as a downloadable resource
+
 			App::abort(404, Lang::txt('COM_RESOURCES_FILE_NOT_FOUND'));
 		}
 
-		// Get the configured upload path
-		$base_path = $resource->basepath();
-
-		// Does the beginning of the $resource->path match the config path?
-		if (substr($path, 0, strlen($base_path)) != $base_path)
+		if ($resource_path != '' && $resource_path[0] == '/') 
 		{
-			// No - append it
-			$path = $base_path . $path;
+			// Can't serve an internal link as a downloadable resource
+
+			App::abort(404, Lang::txt('COM_RESOURCES_FILE_NOT_FOUND'));
 		}
 
+		$resource_base = ltrim($resource->relativepath(),'/');
+
+		if (preg_match('/^([1|2]\d{3})\/+(0\d|1[012])\/+(\d{5})\/+(.*)$/', $resource_path, $matches))
+		{
+			if ($resource_base != $matches[1] . "/" . $matches[2] . "/" . $matches[3])
+			{
+				// Can't serve a protected resource belonging
+				// to a different resource
+
+				App::abort(404, Lang::txt('COM_RESOURCES_FILE_NOT_FOUND'));
+			}
+		}
+		else if (strpos($resource_path,'/') !== false)
+		{
+			// Not using a protected directory, we
+			// need the base to be the directory the main 
+			// file is in so we can download supporting peer
+			// files (hubpresenter slides, etc) as well
+			// as the main file.
+
+			$resource_base = rtrim(dirname($resource_path),'/');
+		}
+
+		$resource_file = ltrim(str_replace($resource_base, '', $resource_path),'/');
+
+		$request_file = trim(trim(Request::getString('file','')),'/');
+
+		if ($request_file === '' && $resource_file === '')
+		{
+			// No file was requested and there is no main resource file
+
+			App::abort(404, Lang::txt('COM_RESOURCES_FILE_NOT_FOUND'));
+		}
+
+		if ($request_file == '')
+		{
+			// No file was requested so we use the main resource file
+
+			$request_file = ltrim(str_replace($resource_base, '', $resource->path),'/');
+		}
+		else
+		{
+			// Use the file requested
+
+			$request_file = ltrim(str_replace($resource_base, '', $request_file),'/');
+		}
+
+		// Rebuild the full file path frome site base, resource base and the request file
+
+		$path =  $resource->basepath() . '/' . $resource_base  . '/' . $request_file;
+
 		// Ensure the file exist
+
 		if (!file_exists($path))
 		{
-			App::abort(404, Lang::txt('COM_RESOURCES_FILE_NOT_FOUND') . ' ' . $path);
+			// Look in media subdirectory for the file
+
+			$path = $resource->basepath() . '/' . $resource_base  . '/media/' . $request_file;
+
+			if (!file_exists($path))
+			{
+				App::abort(404, Lang::txt('COM_RESOURCES_FILE_NOT_FOUND') . ' ' . $path);
+			}
 		}
 
 		$ext = strtolower(\Filesystem::extension($path));
 
-		if (!in_array($ext, array('jpg', 'jpeg', 'jpe', 'gif', 'png', 'pdf', 'htm', 'html', 'txt', 'json', 'xml')))
+		// Set disposition to attachment unless we think the browser can inline the file
+
+		if (!in_array($ext, array('tiff', 'tif', 'jpg', 'jpeg', 'jpe', 'gif', 'png', 'pdf', 'htm', 'html', 'txt', 'json', 'xml', 'ogv', 'mp4', 'webm', 'ogg', 'mp3')))
 		{
 			$d = 'attachment';
 		}
 
 		// Initiate a new content server and serve up the file
+
 		$xserver = new \Hubzero\Content\Server();
 		$xserver->filename($path);
 		$xserver->disposition($d);
-		$xserver->acceptranges(false); // @TODO fix byte range support
+		$xserver->acceptranges(true);
+
+		if ($ext == 'html' || $ext == 'htm')
+		{
+			$xserver->setContentType('text/html');
+		}
 
 		if (!$xserver->serve())
 		{
 			// Should only get here on error
+
 			App::abort(500, Lang::txt('COM_RESOURCES_SERVER_ERROR'));
 		}
 
@@ -2366,7 +2471,7 @@ class Resources extends SiteController
 		$xserver = new \Hubzero\Content\Server();
 		$xserver->filename($tarpath . $tarname);
 		$xserver->disposition('attachment');
-		$xserver->acceptranges(false); // @TODO fix byte range support
+		$xserver->acceptranges(true);
 		$xserver->saveas($tarname);
 
 		if (!$xserver->serve_attachment($tarpath . $tarname, $tarname, false))
@@ -2547,7 +2652,7 @@ class Resources extends SiteController
 				$bibtex = new \Structures_BibTex();
 				$addarray = array();
 				$addarray['type']  = 'misc';
-				$addarray['cite']  = $this->_config['sitename'] . $row->id;
+				$addarray['cite']  = $this->config['sitename'] . $row->id;
 				$addarray['title'] = stripslashes($row->title);
 
 				//$auths = explode(';', $row->author);
@@ -2609,17 +2714,14 @@ class Resources extends SiteController
 	 * @param   string   $mime    Mimetype
 	 * @return  void
 	 */
-	protected function _serveup($inline = false, $p, $f, $mime)
+	protected function _serveup($inline, $p, $f, $mime)
 	{
 		$user_agent = (isset($_SERVER["HTTP_USER_AGENT"]))
 					? $_SERVER["HTTP_USER_AGENT"]
 					: $HTTP_USER_AGENT;
 
-		// Clean all output buffers (needs PHP > 4.2.0)
-		while (@ob_end_clean())
-		{
-			continue;
-		}
+		while(ob_get_level())
+			ob_end_clean();
 
 		$fsize = filesize($p . $f);
 		$mod_date = date('r', filemtime($p.$f));

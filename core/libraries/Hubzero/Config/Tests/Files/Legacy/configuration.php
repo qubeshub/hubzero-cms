@@ -9,7 +9,7 @@ class JConfig
 	var $debug = '0';
 	var $debug_lang = '0';
 	var $editor = 'ckeditor';
-	var $error_reporting = 'simple';
+	var $error_reporting = 'relaxed';
 	var $feed_email = 'author';
 	var $feed_limit = '10';
 	var $force_ssl = '1';

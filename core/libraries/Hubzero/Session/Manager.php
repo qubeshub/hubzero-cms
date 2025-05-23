@@ -272,7 +272,7 @@ class Manager extends Obj
 
 		foreach ($method as $m)
 		{
-			if (\App::get('request')->getVar($token, '', $m, 'alnum'))
+			if (\Request::getVar($token, '', $m, 'alnum'))
 			{
 				$result = true;
 				break;
@@ -496,6 +496,11 @@ class Manager extends Obj
 			unset($_SESSION[$namespace][$name]);
 		}
 
+		if (isset($_SESSION[$namespace]) && count($_SESSION[$namespace]) == 0)
+		{
+			unset($_SESSION[$namespace]);
+		}
+
 		return $value;
 	}
 
@@ -535,7 +540,7 @@ class Manager extends Obj
 		session_start();
 
 		// Regenerate session id if passed a session id that no longer exists
-		if ($_SESSION === array())
+		if (!isset($_SESSION) || $_SESSION === array())
 		{
 			session_destroy();
 			session_id($this->createId());
@@ -582,7 +587,17 @@ class Manager extends Obj
 
 		return true;
 	}
-
+	
+	/**
+	 * Register session handlers
+	 *
+	 * @return  void
+	 */
+	public function reregister()
+	{
+		$this->store->register();
+	}
+	
 	/**
 	 * Restart an expired or locked session.
 	 *

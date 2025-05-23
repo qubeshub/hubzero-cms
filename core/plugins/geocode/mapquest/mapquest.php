@@ -36,7 +36,7 @@ class plgGeocodeMapquest extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		return new \Geocoder\Provider\MapQuestProvider(
+		return new \Geocoder\Provider\MapQuest\MapQuest(
 			$adapter,
 			$this->params->get('apiKey')
 		);

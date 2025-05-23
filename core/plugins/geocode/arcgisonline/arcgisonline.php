@@ -39,7 +39,7 @@ class plgGeocodeArcgisonline extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		return new \Geocoder\Provider\ArcGISOnlineProvider(
+		return new \Geocoder\Provider\ArcGISList\ArcGISList(
 			$adapter, $this->params->get('sourceCountry', null), $this->params->get('useSsl', false)
 		);
 	}

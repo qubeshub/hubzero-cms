@@ -199,7 +199,7 @@ class Tool extends Content
 	{
 		$courseParams = Component::params('com_courses');
 		$toolPath = $courseParams->get('tool_path');
-		$toolPath = trim($toolPath, '/');
+		$toolPath = trim($toolPath == null ? '' : $toolPath, '/');
 		$toolPath = '/' . $toolPath . '/';
 		if (!empty($toolPath) && is_writable($toolPath))
 		{

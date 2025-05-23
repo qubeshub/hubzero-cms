@@ -4,7 +4,7 @@
  * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
-
+ 
 namespace Components\Tools\Models;
 
 use Log;
@@ -473,13 +473,13 @@ class Version
 	}
 
 	/**
-	 * Short description for '_mysql_create'
+	 * Short description for '_sql_create'
 	 *
 	 * Long description (if any) ...
 	 *
 	 * @return	 boolean Return description (if any) ...
 	 */
-	private function _mysql_create()
+	private function _sql_create()
 	{
 		$db = \App::get('db');
 
@@ -549,7 +549,7 @@ class Version
 	{
 		if (true)
 		{
-			$result = $this->_mysql_create();
+			$result = $this->_sql_create();
 
 			if ($result === false)
 			{
@@ -561,13 +561,13 @@ class Version
 	}
 
 	/**
-	 * Short description for '_mysql_read'
+	 * Short description for '_sql_read'
 	 *
 	 * Long description (if any) ...
 	 *
 	 * @return	 boolean Return description (if any) ...
 	 */
-	private function _mysql_read()
+	private function _sql_read()
 	{
 		$db = \App::get('db');
 		$lazyloading = false;
@@ -661,7 +661,7 @@ class Version
 			$this->clear();
 			$this->instance = $instance;
 
-			$result = $this->_mysql_read();
+			$result = $this->_sql_read();
 
 			if ($result === false)
 			{
@@ -673,18 +673,17 @@ class Version
 	}
 
 	/**
-	 * Short description for '_mysql_update'
+	 * Short description for '_sql_update'
 	 *
 	 * Long description (if any) ...
 	 *
 	 * @param	  boolean $all Parameter description (if any) ...
 	 * @return	 boolean Return description (if any) ...
 	 */
-	private function _mysql_update($all = false)
+	private function _sql_update($all = false)
 	{
 		$db = \App::get('db');
 
-		Log::debug('_mysql_update() start');
 		$query = "UPDATE #__tool_version SET ";
 
 		$classvars = get_class_vars(__CLASS__);
@@ -693,6 +692,7 @@ class Version
 
 		foreach ($classvars as $property => $value)
 		{
+
 			if (($property[0] == '_') || in_array($property, $this->_list_keys))
 			{
 				continue;
@@ -731,10 +731,10 @@ class Version
 			$query = '';
 		}
 
-		$db->setQuery($query);
-
 		if (!empty($query))
 		{
+			$db->setQuery($query);
+
 			$result = $db->query();
 
 			if ($result === false)
@@ -749,7 +749,7 @@ class Version
 				continue;
 			}
 
-			if ($property == 'author' || $property == 'xauthor')
+			if ($property == 'author')
 			{
 				$aux_table = '#__tool_authors';
 			}
@@ -777,10 +777,6 @@ class Version
 				{
 					$query = "REPLACE INTO $aux_table (toolname,revision,uid,ordering,version_id) VALUES ";
 				}
-				else if ($property == 'xauthor')
-				{
-					$query = "REPLACE INTO $aux_table (toolname,revision,uid,ordering,version_idi,name,organization) VALUES ";
-				}
 				else if ($property == 'member' || $property == 'owner')
 				{
 					$query = "REPLACE INTO $aux_table (cn,toolid,role) VALUES ";
@@ -806,13 +802,6 @@ class Version
 						$query .= '(' . $db->Quote($this->toolname) . ',' .
 							$db->Quote($this->revision) . ',' . $db->Quote($value) . ',' .
 							$db->Quote($order) . ',' . $db->Quote($this->id) . ')';
-					}
-					else if ($property == 'xauthor')
-					{
-						$query .= '(' . $db->Quote($this->toolname) . ',' .
-							$db->Quote($this->revision) . ',' . $db->Quote($value['uid']) . ',' .
-							$db->Quote($order) . ',' . $db->Quote($this->id) . ',' .
-							$db->Quote($value['name']) . ',' . $db->Quote($value['organization']) . ')';
 					}
 					else if ($property == 'member')
 					{
@@ -851,7 +840,7 @@ class Version
 
 			if (!is_array($list) || count($list) == 0)
 			{
-				if ($property == 'author' || $property == 'xauthor')
+				if ($property == 'author')
 				{
 					$query = "DELETE FROM $aux_table WHERE version_id=" . $db->Quote($this->id) . ";";
 				}
@@ -875,14 +864,14 @@ class Version
 					$list[$key] = $db->Quote($value);
 				}
 
-				$valuelist = implode($list, ",");
+				$valuelist = implode(",", $list);
 
 				if (empty($valuelist))
 				{
 					$valuelist = "''";
 				}
 
-				if ($property == 'author' || $property == 'xauthor')
+				if ($property == 'author')
 				{
 					$query = "DELETE FROM $aux_table WHERE version_id=" . $db->Quote($this->id) .
 						" AND uid NOT IN ($valuelist);";
@@ -908,7 +897,7 @@ class Version
 
 			if (!$db->query())
 			{
-				Log::debug('_mysql_update_failed');
+				Log::debug('_sql_update_failed');
 				return false;
 			}
 		}
@@ -944,7 +933,7 @@ class Version
 
 		if (true)
 		{
-			$result = $this->_mysql_update($this->_updateAll);
+			$result = $this->_sql_update($this->_updateAll);
 
 			if ($result === false)
 			{
@@ -957,13 +946,13 @@ class Version
 	}
 
 	/**
-	 * Short description for '_mysql_delete'
+	 * Short description for '_sql_delete'
 	 *
 	 * Long description (if any) ...
 	 *
 	 * @return	 boolean Return description (if any) ...
 	 */
-	private function _mysql_delete()
+	private function _sql_delete()
 	{
 		if (!isset($this->instance) && !isset($this->id))
 		{
@@ -1033,7 +1022,7 @@ class Version
 
 		if (true)
 		{
-			$result = $this->_mysql_delete();
+			$result = $this->_sql_delete();
 
 			if ($result === false)
 			{
@@ -1084,11 +1073,6 @@ class Version
 						$query = "SELECT uid FROM #__tool_authors WHERE version_id=" .
 							$db->Quote($this->id) . " ORDER BY ordering ASC;";
 					}
-					else if ($property == 'xauthor')
-					{
-						$query = "SELECT uid,name,organization FROM #__tool_authors WHERE version_id=" .
-							$db->Quote($this->id) . " ORDER BY ordering ASC;";
-					}
 					else if ($property == 'member')
 					{
 						$query = "SELECT cn FROM #__tool_groups WHERE role='0' AND toolid=" .
@@ -1106,13 +1090,7 @@ class Version
 
 					$db->setQuery($query);
 
-					if ($property == 'xauthor')
-					{
-						$result = $db->loadAssocList();
-					}
-					else {
-						$result = $db->loadColumn();
-					}
+					$result = $db->loadColumn();
 
 					if ($result !== false)
 					{
@@ -1162,47 +1140,6 @@ class Version
 		{
 			$this->$property = array_map("strtolower",
 				array_values(array_unique(array_diff((array) $value, array('')))));
-		}
-		else if ($property == 'xauthor')
-		{
-			if (array_key_exists('uid', $value)) {
-				$value = array($value);
-			} else if (is_numeric($value))
-			{
-				$val['uid'] = $value;
-				$value[0] = $val;
-			}
-
-			foreach ($value as $nvalue)
-			{
-				unset($val);
-
-				if (is_numeric($nvalue)) {
-					$val['uid'] = $nvalue;
-				}
-
-				$val['uid'] = isset($nvalue['uid']) ? $nvalue['uid'] : '';
-				$val['name'] = isset($nvalue['name']) ? $nvalue['name'] : '';
-				$val['organization'] = isset($nvalue['organization']) ? $nvalue['organization'] : '';
-
-				if (array_key_exists('uid', $val) && is_numeric($val['uid']))
-				{
-					$found = false;
-
-					foreach ($this->$property as $prop)
-					{
-						if ($prop['uid'] == $val['uid'])
-						{
-							$found = true;
-							break;
-						}
-					}
-
-					if (!$found) {
-						$this->xauthor[] = $val;
-					}
-				}
-			}
 		}
 		else if (in_array($property, $this->_list_keys))
 		{
@@ -1277,7 +1214,9 @@ class Version
 	 */
 	private function _error($message, $level = E_USER_NOTICE)
 	{
-		$caller = next(debug_backtrace());
+		$backtrace = debug_backtrace();
+
+		$caller = next($backtrace);
 
 		switch ($level)
 		{
@@ -1389,7 +1328,7 @@ class Version
 	public static function getVersionInfo($id, $version=null, $toolname=null, $instance=null)
 	{
 		$db = \App::get('db');
-		// data comes from mysql
+		// data comes from db
 		$query  = "SELECT v.*, d.doi_label as doi ";
 		$query .= "FROM #__tool_version as v LEFT JOIN #__doi_mapping as d ON d.alias = v.toolname AND d.local_revision=v.revision ";
 		if ($id)

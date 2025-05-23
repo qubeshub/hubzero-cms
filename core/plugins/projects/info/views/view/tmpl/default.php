@@ -32,6 +32,7 @@ $config  = $this->model->config();
 						<p>
 							<span class="block"><span class="faded"><?php echo Lang::txt('COM_PROJECTS_SETUP_TERMS_GRANT_TITLE'); ?>:</span> <?php echo $this->model->params->get( 'grant_title'); ?></span>
 							<span class="block"><span class="faded"><?php echo Lang::txt('COM_PROJECTS_SETUP_TERMS_GRANT_PI'); ?>:</span> <?php echo $this->model->params->get( 'grant_PI', 'N/A'); ?></span>
+							<span class="block"><span class="faded"><?php echo Lang::txt('COM_PROJECTS_SETUP_TERMS_AWARD_NUMBER'); ?>:</span> <?php echo $this->model->params->get( 'award_number', 'N/A'); ?></span>
 							<span class="block"><span class="faded"><?php echo Lang::txt('COM_PROJECTS_SETUP_TERMS_GRANT_AGENCY'); ?>:</span> <?php echo $this->model->params->get( 'grant_agency', 'N/A'); ?></span>
 							<span class="block"><span class="faded"><?php echo Lang::txt('COM_PROJECTS_SETUP_TERMS_GRANT_BUDGET'); ?>:</span> <?php echo $this->model->params->get( 'grant_budget', 'N/A'); ?></span>
 							<?php if ($this->model->access('manager')) { ?>

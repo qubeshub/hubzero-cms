@@ -404,12 +404,16 @@ class CartMessenger
 					Config::get('mailfrom'),
 					Config::get('sitename')
 			);
+			$message->setTo(
+					Config::get('mailfrom'),
+					Config::get('sitename')
+			);
 			$message->addPart($plain, 'text/plain');
 			foreach ($notifyTo as $email)
 			{
 				if (\Hubzero\Utility\Validate::email($email))
 				{
-					$message->addTo($email);
+					$message->addBcc($email);
 				}
 			}
 			$message->setBody($plain);
@@ -436,12 +440,16 @@ class CartMessenger
 					Config::get('mailfrom'),
 					Config::get('sitename')
 				);
+				$message->setTo(
+					Config::get('mailfrom'),
+					Config::get('sitename')
+				);
 				$message->addPart($plain, 'text/plain');
 				foreach ($notifyTo as $email)
 				{
 					if (\Hubzero\Utility\Validate::email($email))
 					{
-						$message->addTo($email);
+						$message->addBcc($email);
 					}
 				}
 				$message->setBody($plain);

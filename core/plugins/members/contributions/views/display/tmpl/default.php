@@ -82,7 +82,7 @@ foreach ($this->cats as $cat)
 	<input type="hidden" name="area" value="<?php echo $this->escape($this->active) ?>" />
 
 	<div class="container">
-		<nav class="entries-filters">
+		<nav class="entries-filters" aria-label="<?php echo Lang::txt('JGLOBAL_FILTER_AND_SORT_RESULTS'); ?>">
 			<?php if (count($links) > 0) { ?>
 				<ul class="entries-menu filter-options">
 					<li>
@@ -214,11 +214,12 @@ foreach ($this->results as $category)
 		$html .= '<ol class="search results">' . "\n";
 		foreach ($category as $row)
 		{
+			$row->href = $row->href ? $row->href : '';
 			$row->href = str_replace('&amp;', '&', $row->href);
 			$row->href = str_replace('&', '&amp;', $row->href);
 
 			// Does this category have a unique output display?
-			$func = 'plgMembers' . ucfirst($row->section) . 'Out';
+			$func = 'plgMembers' . ($row->section ? ucfirst($row->section) : '') . 'Out';
 			// Check if a method exist (using old Plugin style)
 			$obj = 'plgMembers' . ucfirst($this->cats[$k]['category']);
 

@@ -263,13 +263,13 @@ class Tool
 	}
 
 	/**
-	 * Short description for '_mysql_create'
+	 * Short description for '_sql_create'
 	 *
 	 * Long description (if any) ...
 	 *
 	 * @return	 boolean Return description (if any) ...
 	 */
-	public function _mysql_create()
+	public function _sql_create()
 	{
 		$db = \App::get('db');
 
@@ -335,7 +335,7 @@ class Tool
 
 		if (true)
 		{
-			$result = $this->_mysql_create();
+			$result = $this->_sql_create();
 
 			if ($result === false)
 			{
@@ -351,7 +351,7 @@ class Tool
 	 *
 	 * @return  boolean
 	 */
-	private function _mysql_read()
+	private function _sql_read()
 	{
 		$db = \App::get('db');
 		$lazyloading = false;
@@ -434,7 +434,7 @@ class Tool
 			$this->clear();
 			$this->toolname = $toolname;
 
-			$result = $this->_mysql_read();
+			$result = $this->_sql_read();
 
 			if ($result === false)
 			{
@@ -446,14 +446,14 @@ class Tool
 	}
 
 	/**
-	 * Short description for '_mysql_update'
+	 * Short description for '_sql_update'
 	 *
 	 * Long description (if any) ...
 	 *
 	 * @param	  boolean $all Parameter description (if any) ...
 	 * @return	 boolean Return description (if any) ...
 	 */
-	public function _mysql_update($all = false)
+	public function _sql_update($all = false)
 	{
 		$db = \App::get('db');
 
@@ -503,10 +503,10 @@ class Tool
 			$query = '';
 		}
 
-		$db->setQuery($query);
-
 		if (!empty($query))
 		{
+			$db->setQuery($query);
+
 			$result = $db->query();
 
 			if ($result === false)
@@ -587,7 +587,7 @@ class Tool
 					$list[$key] = $db->Quote($value);
 				}
 
-				$valuelist = implode($list, ",");
+				$valuelist = implode(",", $list);
 
 				if (empty($valuelist))
 				{
@@ -643,7 +643,7 @@ class Tool
 
 		if (true)
 		{
-			$result = $this->_mysql_update($this->_updateAll);
+			$result = $this->_sql_update($this->_updateAll);
 
 			if ($result === false)
 			{
@@ -656,13 +656,13 @@ class Tool
 	}
 
 	/**
-	 * Short description for '_mysql_delete'
+	 * Short description for '_sql_delete'
 	 *
 	 * Long description (if any) ...
 	 *
 	 * @return	 boolean Return description (if any) ...
 	 */
-	public function _mysql_delete()
+	public function _sql_delete()
 	{
 		if (!isset($this->toolname) && !isset($this->id))
 		{
@@ -715,7 +715,7 @@ class Tool
 
 		if (true)
 		{
-			$result = $this->_mysql_delete();
+			$result = $this->_sql_delete();
 
 			if ($result === false)
 			{
@@ -893,7 +893,9 @@ class Tool
 	 */
 	private function _error($message, $level = E_USER_NOTICE)
 	{
-		$caller = next(debug_backtrace());
+		$backtrace = debug_backtrace();
+
+		$caller = next($backtrace);
 
 		switch ($level)
 		{
@@ -1437,7 +1439,7 @@ class Tool
 	 * @param   integer  $id
 	 * @return  boolean
 	 */
-	public static function validate(&$tool, &$err, $id)
+	public static function validate(&$tool, &$err, $id, $group_prefix = 'app-')
 	{
 		$db = \App::get('db');
 
@@ -1485,6 +1487,11 @@ class Tool
 		if ($result)
 		{
 			$err['title'] = Lang::txt('COM_TOOLS_ERR_TITLE_EXISTS');
+		}
+
+		if ($tool['repohost'] == 'gitExternal' && empty($tool['github']))
+		{
+			$err['repohost'] = Lang::txt('COM_TOOLS_ERR_GITHUB');
 		}
 
 		if (empty($tool['title']))
@@ -1568,7 +1575,7 @@ class Tool
 		{
 			if (!filter_var($tool['github'], FILTER_VALIDATE_URL))
 			{
-				$err['github'] = Lang::txt('invalid Github URL');
+				$err['github'] = Lang::txt('invalid GitHub URL');
 			}
 		}
 
@@ -1582,7 +1589,10 @@ class Tool
 				$grp = Group::getInstance($groupName);
 				if (!is_object($grp) || !$grp->get('gidNumber'))
 				{
-					$err['membergroups' . $k] = 'Group name ' . $groupName . ' is not valid';
+					if ($groupName != ($group_prefix . strtolower($tool['toolname'])))
+					{
+						$err['membergroups' . $k] = 'Group name ' . $groupName . ' is not valid';
+					}
 				}
 			}
 		}
@@ -1601,7 +1611,7 @@ class Tool
 			}
 		}
 
-		if (count($err) > 0)
+		if (is_array($err) && count($err) > 0)
 		{
 			return false;
 		}
@@ -1704,6 +1714,27 @@ class Tool
 	}
 
 	/**
+	 * Get all tools
+	 *
+	 * @return  array
+	 */
+	public static function getAllTools()
+	{
+		$db = \App::get('db');
+		$sql = "SELECT r.alias, r.published, v.toolaccess AS access, GROUP_CONCAT(v.revision SEPARATOR ',') AS versions
+				FROM `#__resources` AS r LEFT OUTER JOIN  `#__tool_version` AS v 
+				ON
+				r.alias=v.toolname
+				WHERE
+				r.type=7
+				AND r.standalone=1
+				GROUP BY v.toolname";
+
+		$db->setQuery($sql);
+		return $db->loadObjectList();
+	}
+
+	/**
 	 * Get tool ID based on tool name
 	 *
 	 * @param   string  $toolname
@@ -1730,9 +1761,10 @@ class Tool
 	{
 		$db = \App::get('db');
 
-		$query  = "SELECT m.uidNumber FROM `#__tool_groups` AS g ";
+		$query  = "SELECT m.uidNumber, u.username FROM `#__tool_groups` AS g ";
 		$query .= "JOIN `#__xgroups` AS xg ON g.cn=xg.cn ";
 		$query .= "JOIN `#__xgroups_members` AS m ON xg.gidNumber=m.gidNumber ";
+                $query .= "JOIN `#__users` AS u ON u.id=m.uidNumber ";
 		$query .= "WHERE g.toolid = " . $db->quote($toolid) . " AND g.role=1";
 
 		$db->setQuery($query);

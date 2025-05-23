@@ -31,7 +31,7 @@ switch ($task)
 	case 'remind':
 	case 'unapproved':
 	case 'userconsent':
-		$uri->setVar('option', 'com_members');
+		$uri->setUriVar('option', 'com_members');
 
 		$url = $uri->toString();
 

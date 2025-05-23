@@ -426,3 +426,38 @@ jQuery(document).ready(function($){
 
 	HUB.Projects.initialize();
 });
+
+$(function(){
+	$("#param-grant_agency, input[name='grant_agency']").autocomplete({	
+		open: function() {
+			$("ul.ui-menu").width( $(this).innerWidth() );
+		},
+		
+		source: function(req, resp){
+			var rorURL = "index.php?option=com_projects&controller=setup&task=getGrantAgency&term=";
+			
+			if ($("#param-grant_agency").length)
+			{
+				rorURL += $("#param-grant_agency").val();
+			}
+			else if ($("input[name='grant_agency']").length)
+			{
+				rorURL += $("input[name='grant_agency']").val();
+			}
+			
+			$.ajax({
+				url: rorURL,
+				data: null,
+				dataType: "json",
+				success:function(result){
+					resp(result);
+				},
+				error:function(jqXHR, textStatus, errorThrown){
+					console.log(textStatus);
+					console.log(errorThrown);
+					console.log(jqXHR.responseText);
+				}
+			});
+		}
+	});
+});

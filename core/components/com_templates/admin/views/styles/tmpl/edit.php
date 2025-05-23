@@ -103,7 +103,7 @@ $this->js();
 						</tr>
 					<?php endif; ?>
 					<?php if ($this->item->parent->xml) : ?>
-						<?php if ($text = trim($this->item->parent->xml->get('description'))) : ?>
+						<?php if ($text = trim($this->item->parent->xml->get('description', ''))) : ?>
 							<tr>
 								<th scope="row"><?php echo Lang::txt('COM_TEMPLATES_TEMPLATE_DESCRIPTION'); ?></th>
 								<td><?php echo Lang::txt($text); ?></td>

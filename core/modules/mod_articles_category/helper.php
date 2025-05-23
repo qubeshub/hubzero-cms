@@ -84,7 +84,7 @@ class Helper extends Module
 			$grouped = false;
 			$article_grouping = $params->get('article_grouping', 'none');
 			$article_grouping_direction = $params->get('article_grouping_direction', 'ksort');
-			$moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
+			$moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx',''));
 			$item_heading = $params->get('item_heading');
 
 			if ($article_grouping !== 'none')
@@ -154,22 +154,27 @@ class Helper extends Module
 							if ($params->get('show_on_article_page', 1))
 							{
 								$article_id = Request::getInt('id');
-								$catid      = Request::getInt('catid');
 
+								$catid      = $params->get('catid', NULL);
+								if (empty(implode($catid)))
+								{
+									$catid = false;
+								}
+
+								$catids = $catid;
 								if (!$catid)
 								{
 									// Get an instance of the generic article model
 									$article = Article::all();
-									$article->whereEquals('published', Article::STATE_PUBLISHED);
+									$article->whereEquals('state', Article::STATE_PUBLISHED);
 									$article->whereEquals('id', (int) $article_id);
 
 									$item = $article->row();
 
-									$catids = array($item->catid);
-								}
-								else
-								{
-									$catids = array($catid);
+									if ($item->catid)
+									{
+										$catids = array($item->catid);
+									}
 								}
 							}
 							else
@@ -196,45 +201,42 @@ class Helper extends Module
 			case 'normal':
 			default:
 				$catids = $params->get('catid');
+
+				if (is_array($catids) && empty(implode($catids)))
+				{
+					$catids = false;
+				}
+
 				break;
 		}
 
 		// Category filter
 		if ($catids)
 		{
-			if ($params->get('show_child_category_articles', 0) && (int) $params->get('levels', 0) > 0)
+			if ($params->get('show_child_category_articles', 0))
 			{
-				require_once Component::path('com_category') . '/models/category.php';
+				$levels = $params->get('levels', 1);
 
-				// Get an instance of the generic categories model
-				$categories = Category::all();
-				$levels = $params->get('levels', 1) ? $params->get('levels', 1) : 9999;
-				$categories->where('level', '<=', $levels);
-				$categories->whereEquals('published', Category::STATE_PUBLISHED);
-				if (!Component::params('com_content')->get('show_noauth'))
-				{
-					$categories->whereIn('access', User::getAuthorisedViewLevels());
-				}
 				$additional_catids = array();
 
 				foreach ($catids as $catid)
 				{
-					$catgories = clone $categories;
-					$catgories->whereEquals('parent_id', $catid);
+					$db = App::get('db');
 
-					$items = $catgories->rows();
+					$vars = array($catid, implode(',', User::getAuthorisedViewLevels()));
 
-					if ($items)
+					// For each category find children up to needed depth
+					$sql = "SELECT id FROM (SELECT * FROM #__categories ORDER BY parent_id, id) cats, (SELECT @pID := ?) varInit
+							WHERE `access` IN (?) AND FIND_IN_SET(parent_id, @pID)";
+					if ($levels)
 					{
-						foreach ($items as $category)
-						{
-							$condition = (($category->level - $categories->getParent()->level) <= $levels);
-							if ($condition)
-							{
-								$additional_catids[] = $category->id;
-							}
-						}
+						$sql .= " AND level <= ?";
+						$vars[] = $levels;
 					}
+					$sql .= " AND @pID := CONCAT(@pID, ',', id)";
+
+					$db->prepare($sql)->bind($vars);
+					$additional_catids = array_merge($db->loadColumn(), $additional_catids);
 				}
 
 				$catids = array_unique(array_merge($catids, $additional_catids));
@@ -257,7 +259,8 @@ class Helper extends Module
 			$query->whereEquals('featured', 1);
 		}
 
-		if ($creator = $params->get('created_by', ''))
+		$creator = $params->get('created_by', '');
+		if (count($creator) > 0 && implode(',', $creator) != '')
 		{
 			$query->whereEquals('created_by', $creator);
 		}
@@ -265,24 +268,30 @@ class Helper extends Module
 		if ($excluded_articles = $params->get('excluded_articles', ''))
 		{
 			$excluded_articles = explode("\r\n", $excluded_articles);
-			$query->whereRaw('id', 'NOT IN(' . implode(',', $excluded_articles) . ')');
+			$query->whereRaw('id NOT IN(' . implode(',', $excluded_articles) . ')');
 		}
 
 		$date_filtering = $params->get('date_filtering', 'off');
-		if ($date_filtering !== 'off')
+		if ($date_filtering == 'range')
 		{
 			$fld = str_replace('a.', '', $params->get('date_field', 'a.created'));
 
 			$query->where($fld, '>=', $params->get('start_date_range', '1000-01-01 00:00:00'));
 			$query->where($fld, '<', $params->get('end_date_range', '9999-12-31 23:59:59'));
+		}
+		elseif ($date_filtering == 'relative')
+		{
+			$fld = str_replace('a.', '`#__content`.`', $params->get('date_field', 'a.created')) . '`';
 			if ($relativeDate = $params->get('relative_date', 30))
 			{
-				$query->whereRaw($fld, '>= DATE_SUB(' . Date::toSql() . ', INTERVAL ' . $relativeDate . ' DAY)');
+				$query->whereRaw($fld . " >= DATE_SUB('" . Date::toSql() . "', INTERVAL " . $relativeDate . " DAY)");
 			}
 		}
 
 		// Filter by language
-		$query->whereEquals('language', App::get('language.filter'));
+		if (App::get('language.filter') != '') {
+			$query->whereEquals('language', App::get('language.filter'));
+		}
 
 		$query->start(0)
 			->limit((int) $params->get('count', 5));
@@ -312,16 +321,32 @@ class Helper extends Module
 			$active_article_id = 0;
 		}
 
+		$access = !Component::params('com_content')->get('show_noauth');
+		$authorised = User::getAuthorisedViewLevels();
 		// Prepare data for display using display options
 		foreach ($items as $item)
 		{
 			$item->slug    = $item->id . ':' . $item->alias;
-			$item->catslug = $item->catid ? $item->catid . ':' . $item->category_alias : $item->catid;
+			if ($item->catid)
+			{
+
+				$categories = Category::all();
+				$categories->whereEquals('id', $item->catid);
+				$category = $categories->rows()->first();
+				$item->catslug = $item->catid . ':' . $category->alias;
+				$item->displayCategoryLink  = Route::url(\Components\Content\Site\Helpers\Route::getCategoryRoute($item->catid));
+				$item->displayCategoryTitle = $show_category ? '<a href="' . $item->displayCategoryLink . '">' . $category->title . '</a>' : '';
+			}
+			else
+			{
+				$item->catslug = '';
+				$item->displayCategoryTitle = '';
+			}
 
 			if ($access || in_array($item->access, $authorised))
 			{
 				// We know that user has the privilege to view the article
-				$item->link = Route::url(\Components\Content\Site\Helpers\Route::getArticleRoute($item->slug, $item->catslug, $item->language));
+				$item->link = \Components\Content\Site\Helpers\Route::getArticleRoute($item->slug, $item->catslug, $item->language);
 			}
 			else
 			{
@@ -350,16 +375,6 @@ class Helper extends Module
 				$item->displayDate = Date::of($item->$show_date_field)->toLocal($show_date_format);
 			}
 
-			if ($item->catid)
-			{
-				$item->displayCategoryLink  = Route::url(\Components\Content\Site\Helpers\Route::getCategoryRoute($item->catid));
-				$item->displayCategoryTitle = $show_category ? '<a href="' . $item->displayCategoryLink . '">' . $item->category_title . '</a>' : '';
-			}
-			else
-			{
-				$item->displayCategoryTitle = $show_category ? $item->category_title : '';
-			}
-
 			$item->displayHits = $show_hits ? $item->hits : '';
 			$item->displayAuthorName = $show_author ? $item->author : '';
 			if ($show_introtext)
@@ -369,6 +384,26 @@ class Helper extends Module
 			}
 			$item->displayIntrotext = $show_introtext ? self::truncate($item->introtext, $introtext_limit) : '';
 			$item->displayReadmore  = $item->alternative_readmore;
+
+			$item->params = clone $params;
+
+			if ($access || in_array($item->access, $authorised))
+			{
+				// If the access filter has been set, we already know this user can view.
+				$item->params->set('access-view',true);
+			}
+			else
+			{
+				// If no access filter is set, the layout takes some responsibility for display of limited information.
+				if ($item->catid == 0 || $item->category_access === null)
+				{
+					$item->params->set('access-view', in_array($item->access, $authorised));
+				}
+				else
+				{
+					$item->params->set('access-view', in_array($item->access, $authorised) && in_array($item->category_access, $authorised));
+				}
+			}
 		}
 
 		return $items;
@@ -491,7 +526,7 @@ class Helper extends Module
 	 * @param   string  $month_year_format
 	 * @return  array
 	 */
-	public static function groupByDate($list, $type = 'year', $article_grouping_direction, $month_year_format = 'F Y')
+	public static function groupByDate($list, $type, $article_grouping_direction, $month_year_format = 'F Y')
 	{
 		$grouped = array();
 

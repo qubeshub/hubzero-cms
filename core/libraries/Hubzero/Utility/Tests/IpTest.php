@@ -77,6 +77,7 @@ class IpTest extends Basic
 	public function testInvalidArgumentThrowsException()
 	{
 		$ip = new \Hubzero\Utility\Ip('172.16.0.1');
+		$this->expectException(\RuntimeException::class);
 		$ip->isBetween('rock', 'hard place');
 	}
 }

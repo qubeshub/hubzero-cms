@@ -27,17 +27,17 @@ $sponsors = $this->sponsors;
 
 //determine the separator
 $urlSeparator = PHP_EOL;
-if (strstr($citation->url, " ") !== false)
+if (strstr($citation->url == null ? '' : $citation->url, " ") !== false)
 {
 	$urlSeparator = " ";
 }
-else if (strstr($citation->url, "\t") !== false)
+else if (strstr($citation->url == null ? '' : $citation->url, "\t") !== false)
 {
 	$urlSeparator = "\t";
 }
 
 //get citation url
-$urls = array_map("trim", explode($urlSeparator, html_entity_decode($citation->url)));
+$urls = array_map("trim", explode($urlSeparator, html_entity_decode($citation->url == null ? '' : $citation->url)));
 $url = (filter_var($urls[0], FILTER_VALIDATE_URL)) ? $urls[0] : '';
 
 //get citation eprint
@@ -539,7 +539,7 @@ $area = Request::getString('area', 'about');
 			<p><?php echo Lang::txt('COM_CITATIONS_CITED_DESC'); ?></p>
 			<ul class="">
 				<li>
-					<?php echo implode($associationLinks, '</li><li>'); ?>
+					<?php echo implode('</li><li>', $associationLinks); ?>
 				</li>
 			</ul>
 		<?php else : ?>
@@ -662,7 +662,10 @@ $area = Request::getString('area', 'about');
 
 	//fix title
 	$title = html_entity_decode($citation->title);
-	$title = (!preg_match('!\S!u', $title)) ? utf8_encode($title) : $title;
+	if (function_exists('mbstring'))
+	{
+		$title = (!preg_match('!\S!u', $title)) ? mbstring($title) : $title;
+	}
 
 	//coins data
 	$coinsData = array(

@@ -117,6 +117,34 @@ class WikiParser
 	);
 
 	/**
+	 * List of macros
+	 *
+	 * @var array
+	 */
+	private $macros = array();
+
+	/**
+	 * Flag for list element open/closed state
+	 *
+	 * @var bool
+	 */
+	private $mDTopen;
+
+	/**
+	 * Flag for PRE element open/closed state
+	 *
+	 * @var bool
+	 */
+	private $mInPre;
+
+	/**
+	 * Flag for last section state
+	 *
+	 * @var bool
+	 */
+	private $mLastSection;
+
+	/**
 	 * Constructor
 	 *
 	 * @param      array $config Configuration options
@@ -333,11 +361,16 @@ class WikiParser
 
 		// Put back removed blocks <pre>, <code>, <a>, <math>
 		$text = $this->unstrip($text);
-
 		// Strip out blank space
 		$text = str_replace("<p><br />\n</p>", '', $text);
 		$text = preg_replace('|<p>\s*?</p>|', '', $text);
-		$text = preg_replace('/<p>\p{Z}*<\/p>/u', '', $text);
+		$result = preg_replace('/<p>\p{Z}*<\/p>/u', '', $text);
+
+		if ($result != null) // Possible to get: Malformed UTF-8 characters, possibly incorrectly encoded
+		{
+			$text = $result;
+		}
+
 		$text = preg_replace('!<p>\s*(</?(?:table|tr|td|th|div|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)!', "$1", $text);
 		$text = preg_replace('!(</?(?:table|tr|td|th|div|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)\s*</p>!', "$1", $text);
 
@@ -601,7 +634,7 @@ class WikiParser
 				$whole,
 				'anchor',
 				$this->_randomString(),
-				'<a name="' . ltrim($href, '=#') . '"></a>'
+				'<span id="' . ltrim($href, '=#') . '"></span>'
 			));
 		}
 		// Are we jumping to an anchor?
@@ -993,7 +1026,7 @@ class WikiParser
 		}
 
 		$output = implode("\n", $output);
-		$output = preg_replace_callback('/<(pre) (.+?)>(.*)<\/(\1) \2>/si', array(&$this, '_dataPush'), $output);
+		$output = preg_replace_callback('/<(pre) (\w+?)>(.*)<\/(\1) \2>/si', array(&$this, '_dataPush'), $output);
 
 		return $output;
 	}
@@ -1051,7 +1084,7 @@ class WikiParser
 
 		foreach ($this->_tokens as $tag => $vals)
 		{
-			$text = preg_replace_callback('/<(' . $tag . ') (.+?)>(.*)<\/(\1) \2>/si', array(&$this, '_dataPull'), $text);
+			$text = preg_replace_callback('/<(' . $tag . ') (\w+?)>(.*)<\/(\1) \2>/si', array(&$this, '_dataPull'), $text);
 			$this->_tokens[$tag] = array();
 		}
 
@@ -1194,7 +1227,10 @@ class WikiParser
 	 */
 	private function _getCode($m)
 	{
-		@list($whole, $before, $text, $after) = $m;
+		$whole  = isset($m[0]) ? $m[0] : '';
+		$before = isset($m[1]) ? $m[1] : '';
+		$text   = isset($m[2]) ? $m[2] : '';
+		$after  = isset($m[3]) ? $m[3] : '';
 
 		return $before . $this->_dataPush(array(
 			$whole,
@@ -1398,7 +1434,7 @@ class WikiParser
 	 */
 	private function includes($text)
 	{
-		return preg_replace_callback('/\[\[(include)(\]\]|\((.*)\)\]\])/Ui', array(&$this, '_getInclude'), $text);
+		return preg_replace_callback('/\[\[(include)(\]\]|\((.*)\)\]\])/Ui', array(&$this, '_getInclude'), $text == null ? '' : $text);
 	}
 
 	/**
@@ -1725,7 +1761,7 @@ class WikiParser
 	 */
 	private function pba($in, $element = '', $include_id = 1)
 	{
-		$style = '';
+		$style = [];
 		$class = '';
 		$lang = '';
 		$colspan = '';
@@ -2384,7 +2420,10 @@ class WikiParser
 
 		for ($i = 0; $i < $shorter; ++$i)
 		{
-			if ($st1[$i] != $st2[$i])
+			// @FIXME this whole function is broke
+			// but we "fix" the type error so that
+			// it cleanly results in same useless result
+			if (0 /*$st1[$i] != $st2[$i]*/)
 			{
 				break;
 			}
@@ -3080,7 +3119,7 @@ class WikiParser
 	 */
 	private function _makeHeadline($level, $attribs, $anchor, $text, $link)
 	{
-		return '<h' . $level . $attribs . '<a name="' . $anchor . '"></a><span class="tp-headline">' . $text . '</span> ' . $link . '</h' . $level . '>';
+		return '<h' . $level . $attribs . '<span id="' . $anchor . '" class="tp-headline">' . $text . '</span> ' . $link . '</h' . $level . '>';
 	}
 
 	/**

@@ -703,11 +703,12 @@ class Item extends Nested
 		// Initialise form with component view params if available.
 		if ($type == 'component')
 		{
-			$link = htmlspecialchars_decode($link);
+			$link = htmlspecialchars_decode($link == null ? '' : $link);
 
 			// Parse the link arguments.
 			$args = array();
-			parse_str(parse_url(htmlspecialchars_decode($link), PHP_URL_QUERY), $args);
+			$url = parse_url(htmlspecialchars_decode($link), PHP_URL_QUERY);
+			parse_str($url == null ? '' : $url, $args);
 
 			// Confirm that the option is defined.
 			$option = '';
@@ -785,13 +786,13 @@ class Item extends Nested
 			// We need to qualify the full path to avoid collisions with component file names.
 			if ($form->loadFile($formFile, true, '/metadata') == false)
 			{
-				throw new Exception(Lang::txt('JERROR_LOADFILE_FAILED'));
+				throw new \Exception(Lang::txt('JERROR_LOADFILE_FAILED'));
 			}
 
 			// Attempt to load the xml file.
 			if (!$xml = simplexml_load_file($formFile))
 			{
-				throw new Exception(Lang::txt('JERROR_LOADFILE_FAILED'));
+				throw new \Exception(Lang::txt('JERROR_LOADFILE_FAILED'));
 			}
 
 			// Get the help data from the XML file if present.
@@ -805,7 +806,7 @@ class Item extends Nested
 			// Attempt to load the xml file.
 			if (!$xmlFile || ($xmlFile && !$xml = simplexml_load_file($xmlFile)))
 			{
-				throw new Exception(Lang::txt('JERROR_LOADFILE_FAILED'));
+				throw new \Exception(Lang::txt('JERROR_LOADFILE_FAILED'));
 			}
 
 			// Get the help data from the XML file if present.
@@ -839,14 +840,14 @@ class Item extends Nested
 			// Add the component params last of all to the existing form.
 			if (!$form->load($path, true, '/config'))
 			{
-				throw new Exception(Lang::txt('JERROR_LOADFILE_FAILED'));
+				throw new \Exception(Lang::txt('JERROR_LOADFILE_FAILED'));
 			}
 		}
 
 		// Load the specific type file
 		if (!$form->loadFile('item_' . $type, false, false))
 		{
-			throw new Exception(Lang::txt('JERROR_LOADFILE_FAILED'));
+			throw new \Exception(Lang::txt('JERROR_LOADFILE_FAILED'));
 		}
 
 		// Association menu items
@@ -895,9 +896,9 @@ class Item extends Nested
 			// Get the last error.
 			$error = $dispatcher->getError();
 
-			if (!($error instanceof Exception))
+			if (!($error instanceof \Exception))
 			{
-				throw new Exception($error);
+				throw new \Exception($error);
 			}
 		}*/
 
@@ -1361,7 +1362,7 @@ class Item extends Nested
 
 		$table = $this->getTable();
 		$db = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->getQuery();
 		$i = 0;
 
 		// Check that the parent exists
@@ -1511,7 +1512,7 @@ class Item extends Nested
 
 		$table = $this->getTable();
 		$db = $this->getDbo();
-		$query = $db->getQuery(true);
+		$query = $db->getQuery();
 
 		// Check that the parent exists.
 		if ($parentId)

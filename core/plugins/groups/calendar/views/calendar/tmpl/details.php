@@ -74,7 +74,7 @@ $ignoreDst = $params->get('ignore_dst', 0) == 1 ? true : false;
 <table class="group-event-details">
 	<tbody>
 		<?php
-			$timezone     = timezone_name_from_abbr('', $this->event->get('time_zone')*3600, null);
+			$timezone     = timezone_name_from_abbr('', $this->event->get('time_zone')*3600);
 			$publish_up   = $this->event->get('publish_up');
 			$publish_down = $this->event->get('publish_down');
 			$allday_event = $this->event->get('allday');
@@ -97,7 +97,7 @@ $ignoreDst = $params->get('ignore_dst', 0) == 1 ? true : false;
 					<?php
 						// check to see if its a single date all day event
 						$d1 = Date::of($publish_up);
-						$d2 = Date::of($publish_down)->subtract('24 hours');
+						$d2 = Date::of($publish_down)->modify('-24 hours');
 						if ($d1 == $d2 || !$publish_down || $publish_down == '0000-00-00 00:00:00')
 						{
 							echo $d1->format('l, F d, Y', true);

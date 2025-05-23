@@ -68,12 +68,12 @@ if ($this->ownerassignees)
 
 				<div class="input-wrap">
 					<label for="field-subject"><?php echo Lang::txt('COM_WISHLIST_TITLE'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span></label><br />
-					<input type="text" name="fields[subject]" id="field-subject" maxlength="150" value="<?php echo $this->escape(stripslashes($this->row->get('subject'))); ?>" />
+					<input type="text" name="fields[subject]" id="field-subject" maxlength="150" value="<?php echo $this->escape(stripslashes($this->row->get('subject',''))); ?>" />
 				</div>
 
 				<div class="input-wrap">
 					<label for="field-about"><?php echo Lang::txt('COM_WISHLIST_DESCRIPTION'); ?>:</label><br />
-					<?php echo $this->editor('fields[about]', $this->escape(preg_replace('/^(<!-- \{FORMAT:.*\} -->)/i', '', stripslashes($this->row->get('about')))), 50, 30, 'field-about', array('class' => 'minimal no-footer', 'buttons' => false)); ?>
+					<?php echo $this->editor('fields[about]', $this->escape(preg_replace('/^(<!-- \{FORMAT:.*\} -->)/i', '', stripslashes($this->row->get('about','')))), 50, 30, 'field-about', array('class' => 'minimal no-footer', 'buttons' => false)); ?>
 				</div>
 
 				<div class="input-wrap">

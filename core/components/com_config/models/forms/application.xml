@@ -242,6 +242,8 @@
 					value="sendmail">COM_CONFIG_FIELD_VALUE_SENDMAIL</option>
 				<option
 					value="smtp">COM_CONFIG_FIELD_VALUE_SMTP</option>
+				<option
+					value="mandrill">COM_CONFIG_FIELD_VALUE_MANDRILL</option>
 			</field>
 
 			<field
@@ -334,6 +336,15 @@
 				description="COM_CONFIG_FIELD_MAIL_SMTP_HOST_DESC"
 				filter="string"
 				size="30" />
+
+			<field
+				name="maildsn"
+				type="text"
+				default=""
+				label="COM_CONFIG_FIELD_MAIL_DSN_LABEL"
+				description="COM_CONFIG_FIELD_MAIL_DSN_DESC"
+				filter="string"
+				size="80" />
 		</fieldset>
 	</fields>
 	<fields name="meta">
@@ -590,13 +601,11 @@
 				<option
 					value="default">COM_CONFIG_FIELD_VALUE_SYSTEM_DEFAULT</option>
 				<option
-					value="none">COM_CONFIG_FIELD_VALUE_NONE</option>
-				<option
-					value="simple">COM_CONFIG_FIELD_VALUE_SIMPLE</option>
-				<option
 					value="maximum">COM_CONFIG_FIELD_VALUE_MAXIMUM</option>
 				<option
-					value="development">COM_CONFIG_FIELD_VALUE_DEVELOPMENT</option>
+					value="relaxed">COM_CONFIG_FIELD_VALUE_RELAXED</option>
+				<option
+					value="none">COM_CONFIG_FIELD_VALUE_NONE</option>
 			</field>
 
 			<field
@@ -895,6 +904,22 @@
 				type="media"
 				label="COM_CONFIG_FIELD_OFFLINE_IMAGE_LABEL"
 				description="COM_CONFIG_FIELD_OFFLINE_IMAGE_DESC" />
+		</fieldset>
+	</fields>
+	<fields name="hub_secret">
+		<fieldset name="hub_secret">
+			<field
+				name="reset_secret"
+				type="list"
+				default="noop"
+				label="COM_CONFIG_FIELD_HUB_SECRET_LABEL"
+				description="COM_CONFIG_FIELD_HUB_SECRET_DESC"
+				filter="word">
+				<option
+					value="noop">COM_CONFIG_FIELD_HUB_SECRET_NOOP</option>
+				<option
+					value="reset">COM_CONFIG_FIELD_HUB_SECRET_RESET</option>
+			</field>
 		</fieldset>
 	</fields>
 	<fields name="rate_limit">

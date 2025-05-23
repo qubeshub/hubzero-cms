@@ -29,11 +29,11 @@ Toolbar::cancel('cancelclass');
 
 				<div class="input-wrap">
 					<label for="field-alias"><?php echo Lang::txt('COM_TOOLS_SESSION_CLASS_ALIAS'); ?>:</label>
-					<input <?php echo ($this->row->alias == 'default') ? 'readonly' : ''; ?> type="text" name="fields[alias]" id="field-alias" value="<?php echo $this->escape(stripslashes($this->row->alias)); ?>" />
+					<input <?php echo ($this->row->alias == 'default') ? 'readonly' : ''; ?> type="text" name="fields[alias]" id="field-alias" value="<?php echo $this->escape(stripslashes($this->row->alias == null ? '' : $this->row->alias)); ?>" />
 				</div>
 				<div class="input-wrap">
 					<label for="field-jobs"><?php echo Lang::txt('COM_TOOLS_SESSION_CLASS_JOBS'); ?>:</label>
-					<input type="text" name="fields[jobs]" id="field-jobs" value="<?php echo $this->escape(stripslashes($this->row->jobs)); ?>" />
+					<input type="text" name="fields[jobs]" id="field-jobs" value="<?php echo $this->escape(stripslashes($this->row->jobs == null ? '' : $this->row->jobs)); ?>" />
 				</div>
 			</fieldset>
 			<fieldset class="adminform">

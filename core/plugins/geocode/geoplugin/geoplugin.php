@@ -36,7 +36,7 @@ class plgGeocodeGeoplugin extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		return new \Geocoder\Provider\GeoPluginProvider(
+		return new \Geocoder\Provider\GeoPlugin\GeoPlugin(
 			$adapter
 		);
 	}

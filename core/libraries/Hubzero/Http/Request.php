@@ -119,11 +119,11 @@ class Request extends BaseRequest
 		switch ($hash)
 		{
 			case 'server':
-				return $this->server($key, $default);
+				return $this->server($key, $default, $type);
 			break;
 
 			case 'cookie':
-				return $this->cookie($key, $default);
+				return $this->cookie($key, $default, $type);
 			break;
 
 			case 'files':
@@ -164,15 +164,15 @@ class Request extends BaseRequest
 			break;
 
 			case 'post':
-				return $this->request($key, $default);
+				return $this->request($key, $default, $type);
 			break;
 
 			case 'get':
-				return $this->query($key, $default);
+				return $this->query($key, $default, $type);
 			break;
 
 			default:
-				return $this->input($key, $default);
+				return $this->input($key, $default, $type);
 			break;
 		}
 	}
@@ -189,9 +189,14 @@ class Request extends BaseRequest
 	{
 		$str = $this->getVar($key, $default, $hash);
 		$str = is_array($str) ? self::_flatten('', $str) : $str;
-		preg_match('/-?[0-9]+/', $str, $matches);
-		$result = @ $matches[0];
-		return (!is_null($result) ? (int) $result : $default);
+
+		if (preg_match('/-?[0-9]+/', $str == null ? '' : $str, $matches))
+		{
+			$result = $matches[0];
+			return (!is_null($result) ? (int) $result : $default);
+		}
+
+		return $default;
 	}
 
 	/**
@@ -249,7 +254,7 @@ class Request extends BaseRequest
 	{
 		$result = $this->getVar($key, $default, $hash);
 		$result = is_array($result) ? self::_flatten('', $result) : $result;
-		return preg_replace(static::$filters['word'], '', $result);
+		return preg_replace(static::$filters['word'], '', $result ? $result : '');
 	}
 
 	/**
@@ -264,7 +269,7 @@ class Request extends BaseRequest
 	{
 		$result = $this->getVar($key, $default, $hash);
 		$result = is_array($result) ? self::_flatten('', $result) : $result;
-		$result = (string) preg_replace(static::$filters['cmd'], '', $result);
+		$result = (string) preg_replace(static::$filters['cmd'], '', $result ? $result : '');
 		return ltrim($result, '.');
 	}
 
@@ -278,7 +283,24 @@ class Request extends BaseRequest
 	 */
 	public function getArray($key = null, $default = array(), $hash = 'input')
 	{
-		return (array) $this->getVar($key, $default, $hash);
+		return (array) $this->getVar($key, $default, $hash, 'array');
+	}
+
+	/**
+	 * Fetches and returns a given variable as a simple array.
+	 *
+	 * @param   string  $key      Request key
+	 * @param   mixed   $default  Default value
+	 * @param   string  $hash     Where the var should come from (POST, GET, FILES, COOKIE, METHOD)
+	 * @return  array   Request variable
+	 */
+	public function getSimpleArray($key = null, $default = array(), $hash = 'input')
+	{
+		$result = (array) $this->getVar($key, $default, $hash, 'array');
+
+		$result = array_filter($result, function($v) { return !is_array($v); });
+
+		return $result;
 	}
 
 	/**
@@ -291,8 +313,15 @@ class Request extends BaseRequest
 	 */
 	public function getString($name, $default = null, $hash = 'input')
 	{
-		$result = $this->getVar($name, $default, $hash);
+		$result = $this->getVar($name, null, $hash);
+
 		$result = is_array($result) ? self::_flatten('', $result) : $result;
+
+		if ($result === null)
+		{
+			return $default;
+		}
+
 		return (string) $result;
 	}
 
@@ -525,9 +554,9 @@ class Request extends BaseRequest
 	 * @param   mixed   $default
 	 * @return  string
 	 */
-	public function request($key = null, $default = null)
+	public function request($key = null, $default = null, $type = null)
 	{
-		return $this->retrieveItem('request', $key, $default);
+		return $this->retrieveItem('request', $key, $default, $type);
 	}
 
 	/**
@@ -537,9 +566,9 @@ class Request extends BaseRequest
 	 * @param   mixed   $default
 	 * @return  string
 	 */
-	public function query($key = null, $default = null)
+	public function query($key = null, $default = null, $type = null)
 	{
-		return $this->retrieveItem('query', $key, $default);
+		return $this->retrieveItem('query', $key, $default, $type);
 	}
 
 	/**
@@ -549,9 +578,9 @@ class Request extends BaseRequest
 	 * @param   mixed   $default
 	 * @return  string
 	 */
-	public function cookie($key = null, $default = null)
+	public function cookie($key = null, $default = null, $type = null)
 	{
-		return $this->retrieveItem('cookies', $key, $default);
+		return $this->retrieveItem('cookies', $key, $default, $type);
 	}
 
 	/**
@@ -585,9 +614,9 @@ class Request extends BaseRequest
 	 * @param   mixed   $default
 	 * @return  string
 	 */
-	public function header($key = null, $default = null)
+	public function header($key = null, $default = null, $type = null)
 	{
-		return $this->retrieveItem('headers', $key, $default);
+		return $this->retrieveItem('headers', $key, $default, $type);
 	}
 
 	/**
@@ -597,9 +626,9 @@ class Request extends BaseRequest
 	 * @param   mixed   $default
 	 * @return  string
 	 */
-	public function server($key = null, $default = null)
+	public function server($key = null, $default = null, $type = null)
 	{
-		return $this->retrieveItem('server', $key, $default);
+		return $this->retrieveItem('server', $key, $default, $type);
 	}
 
 	/**
@@ -610,14 +639,28 @@ class Request extends BaseRequest
 	 * @param   mixed   $default
 	 * @return  string
 	 */
-	protected function retrieveItem($source, $key, $default)
+	protected function retrieveItem($source, $key, $default, $type = null)
 	{
 		if (is_null($key))
 		{
 			return $this->$source->all();
 		}
 
-		return $this->$source->get($key, $default, true);
+		if ($type == 'array')
+		{
+			try
+			{
+				return $this->$source->all($key, $default, true);
+			}
+			catch (\Symfony\Component\HttpFoundation\Exception\BadRequestException $e)
+			{
+				return $default;
+			}
+		}
+		else
+		{
+			return $this->$source->get($key, $default, true);
+		}
 	}
 
 	/**

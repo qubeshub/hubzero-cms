@@ -549,13 +549,23 @@ class Citation extends Relational implements \Hubzero\Search\Searchable
 	}
 
 	/**
-	 * Defines a one to many relationship with authors
+	 * Defines a one to many relationship with authors for search results
 	 *
 	 * @return  object
 	 */
 	public function relatedAuthors()
 	{
 		return $this->oneToMany('Author', 'cid');
+	}
+
+	/**
+	 * Defines a one to many relationship with authors for resource citations tab
+	 *
+	 * @return  object
+	 */
+	public function relatedAuthorsByCitation()
+	{
+		return $this->oneToMany('Author', 'cid', 'cid');
 	}
 
 	/**
@@ -842,18 +852,21 @@ class Citation extends Relational implements \Hubzero\Search\Searchable
 						case 'title':
 							break;
 						case 'doi':
-							$coins_data[] = $this->_coins_keys[$k] . $this->$k;
+							$coins_data[] = $coins_keys[$k] . $this->$k;
 							break;
 						case 'url':
-							$coins_data[] = $this->_coins_keys[$k] . '=' . htmlentities($this->$k);
+							$coins_data[] = $coins_keys[$k] . '=' . htmlentities($this->$k);
 							break;
 						case 'journaltitle':
 							$jt = html_entity_decode($this->$k);
-							$jt = (!preg_match('!\S!u', $jt)) ? utf8_encode($jt) : $jt;
-							$coins_data[] = $this->_coins_keys[$k] . '=' . $jt;
+							if (function_exists('mbstring'))
+							{
+								$jt = (!preg_match('!\S!u', $jt)) ? mbstring($jt) : $jt;
+							}
+							$coins_data[] = $coins_keys[$k] . '=' . $jt;
 							break;
 						default:
-							$coins_data[] = $this->_coins_keys[$k] . '=' . $this->$k;
+							$coins_data[] = isset($this->$k) ? $coins_keys[$k] . '=' . $this->$k : '';
 					}
 				}
 
@@ -871,11 +884,20 @@ class Citation extends Relational implements \Hubzero\Search\Searchable
 				{
 					$a = array();
 
-					$auth = html_entity_decode($this->$k);
-					$auth = (!preg_match('!\S!u', $auth)) ? utf8_encode($auth) : $auth;
+					$auth = '';
+					if (isset($this->$k) && $this->$k)
+					{
+						$auth = html_entity_decode($this->$k);
+						if (function_exists('mbstring'))
+						{
+							$auth = (!preg_match('!\S!u', $auth)) ? mbstring($auth) : $auth;
+						}
+					}
 
 					// prefer the use of the relational table
-					$authors = $this->relatedAuthors()
+					// Fix for the citation tab of a resource. 
+					// There were mismatch of author names to a citation, reason being it was using the id to match it with cid in table. 
+					$authors = $this->relatedAuthorsByCitation()
 						->order('ordering', 'asc')
 						->order('id', 'asc')
 						->rows();
@@ -985,19 +1007,22 @@ class Citation extends Relational implements \Hubzero\Search\Searchable
 					}
 
 					//prepare url
-					if (strstr($url, "\r\n"))
+					if ($url && strstr($url, "\r\n"))
 					{
 						$url = array_filter(array_values(explode("\r\n", $url)));
 						$url = $url[0];
 					}
-					elseif (strstr($url, ' '))
+					elseif ($url && strstr($url, ' '))
 					{
 						$url = array_filter(array_values(explode(" ", $url)));
 						$url = $url[0];
 					}
 
 					$t = html_entity_decode($this->$k);
-					$t = (!preg_match('!\S!u', $t)) ? utf8_encode($t) : $t;
+					if (function_exists('mbstring'))
+					{
+						$t = (!preg_match('!\S!u', $t)) ? mbstring($t) : $t;
+					}
 
 					$title = ($url != '' && preg_match('/http:|https:/', $url))
 							? '<a rel="external" class="citation-title" href="' . $url . '">' . $t . '</a>'
@@ -1570,7 +1595,7 @@ class Citation extends Relational implements \Hubzero\Search\Searchable
 		$citation->id = $this->searchId();
 		$citation->description = $this->abstract;
 		$citation->doi = $this->doi;
-		$tags = explode(',', $this->keywords);
+		$tags = explode(',', $this->keywords == null ? '' : $this->keywords);
 		foreach ($tags as $key => &$tag)
 		{
 			$tag = \Hubzero\Utility\Sanitize::stripAll($tag);
@@ -1581,7 +1606,8 @@ class Citation extends Relational implements \Hubzero\Search\Searchable
 		}
 		$citation->tags = $tags;
 
-		$citation->author = explode(';', $this->getAuthorString(false));
+		$authorString = $this->getAuthorString(false);
+		$citation->author = explode(';', $authorString == null ? '' : $authorString);
 		if ($this->scope == 'member')
 		{
 			$url = '/members/' . $this->uid . '/citations';

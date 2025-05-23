@@ -23,7 +23,7 @@ if ($this->contributors)
 
 	foreach ($this->contributors as $contributor)
 	{
-		if (strtolower($contributor->role) == 'submitter')
+		if (strtolower($contributor->role == null ? '' : $contributor->role) == 'submitter')
 		{
 			continue;
 		}
@@ -55,7 +55,7 @@ if ($this->contributors)
 		{
 			$contributor->org = $contributor->xorg;
 		}*/
-		$contributor->organization = $this->escape(stripslashes(trim($contributor->organization)));
+		$contributor->organization = $this->escape(stripslashes(trim($contributor->organization ? $contributor->organization : '')));
 
 		if (!isset($contributor->authorid) && isset($contributor->uid))
 		{
@@ -74,7 +74,7 @@ if ($this->contributors)
 
 		$link .= ($contributor->role) ? ' (' . $contributor->role . ')' : '';
 
-		if (trim($contributor->organization) != '' && !in_array(trim($contributor->organization), $orgs))
+		if (trim($contributor->organization == null ? '' : $contributor->organization) != '' && !in_array(trim($contributor->organization == null ? '' : $contributor->organization), $orgs))
 		{
 			$orgs[$i-1] = trim($contributor->organization);
 			$orgsln    .= $i . '. ' . trim($contributor->organization) . ' ';
@@ -84,10 +84,10 @@ if ($this->contributors)
 		}
 		else
 		{
-			$k = array_search(trim($contributor->organization), $orgs) + 1;
+			$k = array_search(trim($contributor->organization == null ? '' : $contributor->organization), $orgs) + 1;
 		}
 		$link_s = $link;
-		if (trim($contributor->organization) != '')
+		if (trim($contributor->organization == null ? '' : $contributor->organization) != '')
 		{
 			$link .= '<sup>' . $k . '</sup>';
 		}
@@ -98,7 +98,7 @@ if ($this->contributors)
 
 	if (count($names) > 0)
 	{
-		$html = '<p>' . Lang::txt('COM_RESOURCES_BY_AUTHORS', (count($this->contributors) > 1 ? implode(', ', $names) : implode(', ', $names_s))) . '</p>';
+		$html = '<p>' . Lang::txt('COM_RESOURCES_BY_AUTHORS', (count($this->contributors) > 1 ? implode('; ', $names) : implode('; ', $names_s))) . '</p>';
 	}
 
 	if (count($orgs) > 0)

@@ -45,6 +45,10 @@ else
 
 Html::behavior('framework', true);
 
+// Default width and height
+$width  = 'auto';
+$height = 'auto';
+
 // If the video type is 'hubpresenter', perform next steps
 if ($type == 'hubpresenter')
 {
@@ -182,6 +186,25 @@ elseif ($type == 'html5')
 	// Determine height and width
 	$width  = (isset($presentation->width) && $presentation->width != 0) ? $presentation->width . 'px' : 'auto';
 	$height = (isset($presentation->height) && $presentation->height != 0) ? $presentation->height . 'px' : 'auto';
+
+	$this->css('
+	#video-flowplayer {
+		width: '. $width . ';
+		height: ' . $height . ';
+	}
+	#font-color {
+		background-color: #FFF;
+	}
+	#background-color {
+		background-color: #000;
+	}
+	.test {
+		font-family:arial;
+		background-color: #000;
+		color: #FFF;
+		font-size:18px;
+	}
+	');
 }
 
 if ($type == 'hubpresenter' || $type == 'html5')
@@ -217,24 +240,6 @@ if ($type == 'hubpresenter' || $type == 'html5')
 	}
 }
 
-$this->css('
-	#video-flowplayer {
-		width: '. $width . ';
-		height: ' . $height . ';
-	}
-	#font-color {
-		background-color: #FFF;
-	}
-	#background-color {
-		background-color: #000;
-	}
-	.test {
-		font-family:arial;
-		background-color: #000;
-		color: #FFF;
-		font-size:18px;
-	}
-');
 ?>
 <?php if ($type == 'html5') : ?>
 	<div id="video-container">
@@ -753,8 +758,8 @@ $last_slide_id = 0; ?>
 		$path = DS . trim(substr(PATH_APP, strlen(PATH_ROOT)), DS) . DS . ltrim($path . DS . $this->model->get('url'), DS);
 		$ext  = strtolower(Filesystem::extension(PATH_ROOT . $path));
 
-		Document::addStyleSheet('//releases.flowplayer.org/5.4.2/skin/minimalist.css');
-		Document::addScript('//releases.flowplayer.org/5.4.2/flowplayer.min.js');
+		Document::addStyleSheet('//releases.flowplayer.org/6.0.5/skin/minimalist.css');
+		Document::addScript('//releases.flowplayer.org/6.0.5/flowplayer.min.js');
 	?>
 	<div class="flowplayer">
 		<video id="movie<?php echo rand(0, 1000); ?>" preload controls>
@@ -782,3 +787,4 @@ $last_slide_id = 0; ?>
 <?php else : ?>
 	<p class="warning"><?php echo (isset($error)) ? $error : Lang::txt('COM_COURSES_VIDEO_ERROR_NO_PLAYABLE_ASSETS'); ?></p>
 <?php endif; 
+

@@ -31,50 +31,6 @@ class Ldap extends AdminController
 	}
 
 	/**
-	 * Import the hub configuration
-	 *
-	 * @return  void
-	 */
-	public function importHubconfigTask()
-	{
-		if (file_exists(PATH_APP . DS . 'hubconfiguration.php'))
-		{
-			include_once PATH_APP . DS . 'hubconfiguration.php';
-		}
-
-		if (class_exists('HubConfig'))
-		{
-			$hub_config = new \HubConfig();
-
-			$this->config->set('ldap_basedn', $hub_config->hubLDAPBaseDN);
-			$this->config->set('ldap_primary', $hub_config->hubLDAPMasterHost);
-			$this->config->set('ldap_secondary', $hub_config->hubLDAPSlaveHosts);
-			$this->config->set('ldap_tls', $hub_config->hubLDAPNegotiateTLS);
-			$this->config->set('ldap_searchdn', $hub_config->hubLDAPSearchUserDN);
-			$this->config->set('ldap_searchpw', $hub_config->hubLDAPSearchUserPW);
-			$this->config->set('ldap_managerdn', $hub_config->hubLDAPAcctMgrDN);
-			$this->config->set('ldap_managerpw', $hub_config->hubLDAPAcctMgrPW);
-		}
-
-		$db = App::get('db');
-
-		$query = $db->getQuery()
-			->update('#__extensions')
-			->set(array(
-				'params' => $this->config->toString()
-			))
-			->whereEquals('element', $this->_option)
-			->whereEquals('type', 'component');
-
-		$db->setQuery($query->toString());
-		$db->query();
-
-		Notify::success(Lang::txt('COM_SYSTEM_LDAP_IMPORT_COMPLETE'));
-
-		$this->cancelTask();
-	}
-
-	/**
 	 * Delete LDAP group entries
 	 *
 	 * @return  void

@@ -12,8 +12,6 @@ $this->css()
 	->css('jquery.fancybox.css', 'system')
 	->js();
 
-$html = '';
-
 $this->publication->authors();
 $this->publication->attachments();
 $this->publication->license();
@@ -38,27 +36,12 @@ if ($this->config->get('launcher_layout', 0))
 else
 {
 	?>
-	<section class="main upperpane">
-		<div class="aside rankarea">
-			<?php
-			// Show metadata
-			$this->view('_metadata')
-			     ->set('option', $this->option)
-			     ->set('publication', $this->publication)
-			     ->set('config', $this->config)
-			     ->set('version', $this->version)
-			     ->set('sections', $this->sections)
-			     ->set('cats', $this->cats)
-			     ->set('params', $this->publication->params)
-			     ->set('lastPubRelease', $this->lastPubRelease)
-			     ->display();
-			?>
-		</div><!-- / .aside -->
 
+	<?php echo \Components\Publications\Helpers\Html::title($this->publication); ?>
+	<section class="main section upperpane">
 		<div class="subject">
-			<div class="overviewcontainer">
-				<?php echo \Components\Publications\Helpers\Html::title($this->publication); ?>
-
+			<div class="grid overviewcontainer">
+				<div class="col span8">
 				<?php if ($this->publication->params->get('show_authors') && $this->publication->_authors) { ?>
 					<div id="authorslist">
 						<?php echo \Components\Publications\Helpers\Html::showContributors($this->publication->_authors, true, false, false, false, $this->publication->params->get('format_authors', 0)); ?>
@@ -77,10 +60,15 @@ else
 				echo \Components\Publications\Helpers\Html::showSubInfo($this->publication);
 				?>
 			</div><!-- / .overviewcontainer -->
-			<div class="aside launcharea">
+			<div class="col span4 omega launcharea">
+				<?php if ($this->publication->version->get('downloadDisabled')): ?>
+						<p>
+							<?php echo Lang::txt('COM_PUBLICATIONS_DOWNLOAD_DATASET_DISABLED'); echo Lang::txt('COM_PUBLICATIONS_PLEASE')?>
+							<a href="/support/ticket/new" target="_blank"><?php echo Lang::txt('COM_PUBLICATIONS_SUBMIT_TICKET');?></a>
+							<?php echo Lang::txt('COM_PUBLICATIONS_TO_INQUIRE_DATASET_STATUS'); ?>
+						</p>
+				<?php else: ?>
 				<?php
-				$html = '';
-
 				// Sort out primary files and draw a launch button
 				if ($this->tab != 'play')
 				{
@@ -122,8 +110,9 @@ else
 					}
 				}
 				?>
+				<?php endif; ?>
 			</div><!-- / .aside launcharea -->
-			<div class="clear"></div>
+			</div>
 
 			<?php
 			// Show fork attribution
@@ -155,11 +144,26 @@ else
 			// Show status for authorized users
 			if ($this->contributable)
 			{
-				$html .= \Components\Publications\Helpers\Html::showAccessMessage($this->publication);
+				echo \Components\Publications\Helpers\Html::showAccessMessage($this->publication);
 			}
 			?>
 		</div><!-- / .subject -->
-		<div class="clear sep"></div>
+
+		<div class="aside rankarea">
+				<?php
+				// Show metadata
+				$this->view('_metadata')
+				     ->set('option', $this->option)
+				     ->set('publication', $this->publication)
+				     ->set('config', $this->config)
+				     ->set('version', $this->version)
+				     ->set('sections', $this->sections)
+				     ->set('cats', $this->cats)
+				     ->set('params', $this->publication->params)
+				     ->set('lastPubRelease', $this->lastPubRelease)
+				     ->display();
+				?>
+		</div><!-- / .aside -->
 	</section><!-- / .main section -->
 	<?php
 }
@@ -168,8 +172,8 @@ else
 if ($this->publication->access('view-all'))
 {
 	?>
+	<div class="clear sep"></div>
 	<section class="main section noborder">
-		<div class="section-inner hz-layout-with-aside">
 			<div class="subject tabbed">
 				<?php
 				echo \Components\Publications\Helpers\Html::tabs(
@@ -212,7 +216,6 @@ if ($this->publication->access('view-all'))
 			}
 			?>
 		</div><!-- / .aside extracontent -->
-		</div>
 	</section><!-- / .main section -->
 	<div class="clear"></div>
 	<?php

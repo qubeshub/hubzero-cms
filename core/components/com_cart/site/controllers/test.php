@@ -196,7 +196,7 @@ class Test extends ComponentController
 	public function postTask()
 	{
 
-		//$user =& JUser::getInstance((int)1057);
+		//$user =& User::getInstance((int)1057);
 
 		//echo '==>' . $user->get( 'gid' );
 

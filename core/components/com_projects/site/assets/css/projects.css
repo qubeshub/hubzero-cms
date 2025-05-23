@@ -89,7 +89,7 @@
 	.th_privacy {
 		padding-right: 0;
 		width: 20px;
-		*padding-left: 20px;
+		/*padding-left: 20px;*/
 	}
 	#browseForm .container-block {
 		padding: 2em 0 1em 0;
@@ -1007,8 +1007,8 @@
 	}
 	.com_projects #member_options li:hover #options-dock {
 		top: 0;
-		*margin-left: -200px;
-		*display: block;
+		/*margin-left: -200px;*/
+		/*display: block;*/
 	}
 	.com_projects #member_options #options-dock:before {
 		content: "";
@@ -2140,3 +2140,16 @@
 	#hubForm small.hubform-before {
 		display: none;
 	}
+/*Grant agency name normalization*/
+ul[id^='ui-id-'] {
+	list-style-type: none;
+	background: white;	
+	padding-left: 0;
+	overflow-y: scroll;
+	overflow-x: scroll;
+	max-height: 300px;
+}
+
+ul[id^='ui-id-'] li {
+	padding-left: 12px;
+}

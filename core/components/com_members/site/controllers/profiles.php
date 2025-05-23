@@ -57,6 +57,7 @@ class Profiles extends SiteController
 
 		//$this->registerTask('__default', 'browse');
 		$this->registerTask('promo-opt-out', 'incremOptOut');
+		$this->registerTask('queryorganization', 'getOrganizations');
 
 		parent::execute();
 	}
@@ -438,6 +439,8 @@ class Profiles extends SiteController
 			}])
 			->whereEquals($a . '.block', 0)
 			->where($a . '.activation', '>', 0)
+			->where($a . '.sendEmail', '>=', 0)
+			->where($a . '.email', 'NOT LIKE', '%@invalid%')
 			->where($a . '.approved', '>', 0);
 
 		// Tags
@@ -1506,14 +1509,23 @@ class Profiles extends SiteController
 
 		if ($name && !empty($name))
 		{
-			$member->set('givenName', trim($name['first']));
-			$member->set('middleName', trim($name['middle']));
-			$member->set('surname', trim($name['last']));
+			$name['first']  = strip_tags($name['first']);
+			$name['middle'] = strip_tags($name['middle']);
+			$name['last']   = strip_tags($name['last']);
+			$name['first']  = preg_replace('/[<>]/', '', trim($name['first']));
+			$name['middle'] = preg_replace('/[<>]/', ' ', trim($name['middle']));
+			$name['last']   = preg_replace('/[<>]/', ' ', trim($name['last']));
+			$name['first']  = htmlentities($name['first'], ENT_QUOTES, "UTF-8");
+			$name['middle']  = htmlentities($name['middle'], ENT_QUOTES, "UTF-8");
+			$name['last']  = htmlentities($name['last'], ENT_QUOTES, "UTF-8");
+			$member->set('givenName', \Hubzero\Utility\Sanitize::cleanProperName($name['first']));
+			$member->set('middleName', \Hubzero\Utility\Sanitize::cleanProperName($name['middle']));
+			$member->set('surname', \Hubzero\Utility\Sanitize::cleanProperName($name['last']));
 
 			$name = implode(' ', $name);
 			$name = preg_replace('/\s+/', ' ', $name);
 
-			$member->set('name', $name);
+			$member->set('name', \Hubzero\Utility\Sanitize::cleanProperName($name));
 		}
 
 		// Set profile access
@@ -1594,6 +1606,13 @@ class Profiles extends SiteController
 		// Incoming profile edits
 		$profile = Request::getArray('profile', array(), 'post');
 		$field_to_check = Request::getArray('field_to_check', array());
+
+		// Querying the organization id on ror.org
+		// If RoR Api is turned off because of failed API or if key doesn't exist, don't retrieve list from Api.
+        $useRorApi = \Component::params('com_members')->get('rorApi');
+		if (isset($profile['organization']) && !empty($profile['organization']) && $useRorApi){
+			$profile['orgid'] = $this->getOrganizationId($profile['organization']);
+		}
 
 		$old = Profile::collect($member->profiles);
 		$profile = array_merge($old, $profile);
@@ -1712,7 +1731,19 @@ class Profiles extends SiteController
 		// Send a new confirmation code AFTER we've successfully saved the changes to the e-mail address
 		if ($email != $oldemail)
 		{
-			$this->_sendConfirmationCode($member->get('username'), $email, $confirm);
+                        $result = \Components\Members\Helpers\Utility::sendConfirmEmail($user, null, false);
+
+			if ($result)
+			{
+				Notify::success('A confirmation email has been sent to "'. htmlentities($email, ENT_COMPAT, 'UTF-8') .'". You must click the link in that email to re-activate your account.');
+			}
+			else
+			{
+				Notify::error('An error occurred emailing "'. htmlentities($email, ENT_COMPAT, 'UTF-8') .'" your confirmation.');
+			}
+
+			//$this->_sendConfirmationCode($member->get('username'), $email, $confirm, $member->get('registerDate'),$member->get('name'));
+
 
 			Event::trigger('onUserAfterChangeEmail', array($member->toArray()));
 		}
@@ -1746,7 +1777,7 @@ class Profiles extends SiteController
 	 * @param   string   $confirm  Confirmation code
 	 * @return  boolean
 	 */
-	private function _sendConfirmationCode($login, $email, $confirm)
+	private function _sendConfirmationCode($login, $email, $confirm, $name, $registerDate)
 	{
 		// Email subject
 		$subject = Config::get('sitename') .' account email confirmation';
@@ -1756,12 +1787,15 @@ class Profiles extends SiteController
 			'name'   => 'emails',
 			'layout' => 'confirm'
 		));
+
 		$eview->set('option', $this->_option)
 			->set('sitename', Config::get('sitename'))
 			->set('login', $login)
 			->set('email', $email)
 			->set('confirm', $confirm)
-			->set('baseURL', Request::base());
+			->set('baseURL', Request::base())
+			->set('registerDate', $registerDate)
+			->set('name', $name);
 
 		$message = $eview->loadTemplate();
 		$message = str_replace("\n", "\r\n", $message);
@@ -1959,5 +1993,113 @@ class Profiles extends SiteController
 		}
 
 		$this->view->display();
+	}
+
+	/**
+	 * Perform querying of research organization based on the input value
+	 *
+	 * @return  array   matched research organization names
+	 */
+	public function getOrganizationsTask() {
+		$term = trim(Request::getString('term', ''));
+		$term = \Components\Members\Helpers\Utility::escapeSpecialChars($term);
+		
+		$verNum = \Component::params('com_members')->get('rorApiVersion');
+		
+		if (!empty($verNum))
+		{
+			$queryURL = "https://api.ror.org/$verNum/organizations?query.advanced=names.value:" . urlencode($term);
+			
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $queryURL);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+			$result = curl_exec($ch);
+
+			if (!$result){
+				return false;
+			}
+
+			$info = curl_getinfo($ch);
+
+			$code = $info['http_code'];
+
+			if (($code != 201) && ($code != 200)){
+				return false;
+			}
+
+			$organizations = [];
+
+			$resultObj = json_decode($result);			
+
+			foreach ($resultObj->items as $orgObj)
+			{
+				foreach ($orgObj->names as $nameObj)
+				{
+					if ($nameObj->lang == "en" && !in_array($nameObj->value, $organizations))
+					{
+						$organizations[] = $nameObj->value;
+					}
+				}
+			}
+
+			curl_close($ch);
+
+			echo json_encode($organizations);
+			exit();
+		}
+	}
+
+	/**
+	 * Perform querying of research organization id on ror.org
+	 * @param   string   $organization
+	 *
+	 * @return  string   organization id
+	 */
+	public function getOrganizationId($organization){
+		$org = trim($organization);
+		$orgQry = \Components\Members\Helpers\Utility::escapeSpecialChars($org);
+		
+		$verNum = \Component::params('com_members')->get('rorApiVersion');
+		
+		if (!empty($verNum))
+		{
+			$queryURL = "https://api.ror.org/$verNum/organizations?query.advanced=names.value:" . urlencode($orgQry);
+			
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $queryURL);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+			$result = curl_exec($ch);
+
+			if (!$result){
+				return false;
+			}
+
+			$info = curl_getinfo($ch);
+
+			$code = $info['http_code'];
+
+			if (($code != 201) && ($code != 200)){
+				return false;
+			}
+
+			$resultObj = json_decode($result);
+			
+			foreach ($resultObj->items as $orgObj)
+			{
+				foreach ($orgObj->names as $nameObj)
+				{
+					if (strcmp($nameObj->value, $org) == 0)
+					{
+						curl_close($ch);
+						return $orgObj->id;
+					}
+				}
+			}
+			
+			curl_close($ch);
+			return "";
+		}
 	}
 }

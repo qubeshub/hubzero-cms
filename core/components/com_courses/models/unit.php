@@ -23,6 +23,9 @@ require_once __DIR__ . DS . 'section' . DS . 'date.php';
  */
 class Unit extends Base
 {
+
+	protected $course_id = 0;
+
 	/**
 	 * Table class name
 	 *

@@ -107,7 +107,7 @@ class plgContentPagenavigation extends \Hubzero\Plugin\Plugin
 				' AND (publish_down IS NULL OR publish_down = ' . $db->quote($nullDate) . ' OR publish_down >= ' . $db->quote($now) . ')';
 
 			// Array of articles in same category correctly ordered.
-			$query = $db->getQuery(true);
+			$query = $db->getQuery();
 			//sqlsrv changes
 			$case_when = ' CASE WHEN ';
 			$case_when .= $query->charLength('a.alias');
@@ -127,11 +127,12 @@ class plgContentPagenavigation extends \Hubzero\Plugin\Plugin
 			$query->select('a.id, a.language,' . $case_when . ',' . $case_when1);
 			$query->from('#__content AS a');
 			$query->leftJoin('#__categories AS cc ON cc.id = a.catid');
+			// TODO: Fix where clause
 			$query->where('a.catid = ' . (int)$row->catid . ' AND a.state = '. (int)$row->state . ($canPublish ? '' : ' AND a.access = ' .(int)$row->access) . $xwhere);
 			$query->order($orderby);
 			if (App::isSite() && App::get('language.filter'))
 			{
-				$query->where('a.language in (' . $db->quote(Lang::getTag()) . ',' . $db->quote('*') . ')');
+				$query->where('a.language', 'in', '(' . $db->quote(Lang::getTag()) . ',' . $db->quote('*') . ')');
 			}
 
 			$db->setQuery($query);

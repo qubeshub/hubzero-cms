@@ -69,7 +69,7 @@ class Grid
 		// Load the behavior.
 		self::behavior();
 
-		$direction = strtolower($direction);
+		$direction = strtolower($direction == null ? '' : $direction);
 		$index = intval($direction == 'desc');
 
 		if ($order != $selected)
@@ -108,7 +108,7 @@ class Grid
 			return '';
 		}
 
-		return '<input type="checkbox" id="cb' . $rowNum . '" name="' . $name . '[]" value="' . $recId . '" class="checkbox-toggle" title="' . Lang::txt('JGRID_CHECKBOX_ROW_N', ($rowNum + 1)) . '" />';
+		return '<input type="checkbox" id="cb' . $rowNum . '" name="' . $name . '[]" value="' . $recId . '" class="checkbox-toggle" title="' . Lang::txt('JGRID_CHECKBOX_ROW_N', ($rowNum + 1)) . '" /><label for="cb' . $rowNum . '" class="sr-only visually-hidden">' . $recId . '</label>';
 	}
 
 	/**
@@ -124,13 +124,13 @@ class Grid
 		$userid = User::get('id');
 
 		$result = false;
-		if ($row instanceof \JTable)
+		if ($row instanceof \Hubzero\Database\Table)
 		{
 			$result = $row->isCheckedOut($userid);
 		}
 		else
 		{
-			$result = \JTable::isCheckedOut($userid, $row->checked_out);
+			$result = \Hubzero\Database\Table::isCheckedOut($userid, $row->checked_out);
 		}
 
 		$checked = '';
@@ -359,7 +359,7 @@ class Grid
 			$prefix   = array_key_exists('prefix', $options)   ? $options['prefix']   : '';
 		}
 
-		$text = addslashes(htmlspecialchars($editorName, ENT_COMPAT, 'UTF-8'));
+		$text = addslashes(htmlspecialchars($editorName ? $editorName : "", ENT_COMPAT, 'UTF-8'));
 		$date = addslashes(htmlspecialchars(with(new Date($time))->toLocal(Lang::txt('DATE_FORMAT_LC')), ENT_COMPAT, 'UTF-8'));
 		$time = addslashes(htmlspecialchars(with(new Date($time))->toLocal('H:i'), ENT_COMPAT, 'UTF-8'));
 

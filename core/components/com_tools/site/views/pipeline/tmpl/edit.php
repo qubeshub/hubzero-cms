@@ -59,8 +59,6 @@ $this->css('pipeline.css')
 		<form action="<?php echo Route::url('index.php?option=' . $this->option); ?>" method="post" id="hubForm" enctype="multipart/form-data">
 			<div class="explaination">
 				<?php if (!$this->id) { ?>
-					<h3><?php echo Lang::txt('COM_TOOLS_SIDE_HOW_CONTRIBUTE'); ?></h3>
-					<p><?php echo Lang::txt('COM_TOOLS_SIDE_EASY_PROCESS').' '.Lang::txt('COM_TOOLS_VIEW').' <a href="' . Route::url('index.php?option=com_tools') . '">'.Lang::txt('COM_TOOLS_RESOURCES').'</a> '.Lang::txt('COM_TOOLS_EXPLAINING_CONTRIBUTION').'.'; ?></p>
 					<h3><?php echo Lang::txt('COM_TOOLS_SIDE_WHAT_TOOLNAME'); ?></h3>
 					<p><?php echo Lang::txt('COM_TOOLS_SIDE_TIPS_TOOLNAME'); ?></p>
 				<?php } else { ?>
@@ -160,13 +158,15 @@ $this->css('pipeline.css')
 				<fieldset class="hidden">
 					<legend><?php echo Lang::txt('COM_TOOLS_EDIT_REPO_HOST'); ?>:</legend>
 	
-					<div class="form-group form-check">
-						<label for="tool_repohost_svnlocal" class="form-check-label">
-							<input readonly type="radio" name="tool[repohost]" id="tool_repohost_svnlocal" value="svnLocal" <?php echo (!$this->defaults['repohost'] || $this->defaults['repohost'] == 'svnLocal') ? 'checked="checked"' :  "disabled"; ?> class="option form-check-input" />
-							<?php echo Lang::txt('COM_TOOLS_EDIT_LOCAL_SUBVERSION'); ?>
-						</label>
-					</div>
-	
+					<?php if ($this->config->get('github', 1)) { ?>
+						<div class="form-group form-check">
+							<label for="tool_repohost_gitexternal" class="form-check-label">
+								<input readonly type="radio" name="tool[repohost]" id="tool_repohost_gitexternal" value="gitExternal" <?php echo (!$this->defaults['repohost'] || $this->defaults['repohost'] == 'gitExternal') ? 'checked="checked"' : "disabled"; ?> class="option form-check-input" />
+								<?php echo Lang::txt('COM_TOOLS_EDIT_EXT_GIT'); ?>
+							</label>
+						</div>
+					<?php } ?>
+
 					<?php if (file_exists('/usr/bin/addrepo.sh')) { ?>
 						<div class="form-group form-check">
 							<label for="tool_repohost_gitlocal" class="form-check-label">
@@ -176,14 +176,13 @@ $this->css('pipeline.css')
 						</div>
 					<?php } ?>
 
-					<?php if ($this->config->get('github', 1)) { ?>
-						<div class="form-group form-check">
-							<label for="tool_repohost_gitexternal" class="form-check-label">
-								<input readonly type="radio" name="tool[repohost]" id="tool_repohost_gitexternal" value="gitExternal" <?php echo ($this->defaults['repohost'] == 'gitExternal') ? 'checked="checked"' : "disabled"; ?> class="option form-check-input" />
-								<?php echo Lang::txt('COM_TOOLS_EDIT_EXT_GIT'); ?>
-							</label>
-						</div>
-					<?php } ?>
+					<div class="form-group form-check">
+						<label for="tool_repohost_svnlocal" class="form-check-label">
+							<input readonly type="radio" name="tool[repohost]" id="tool_repohost_svnlocal" value="svnLocal" <?php echo ($this->defaults['repohost'] == 'svnLocal') ? 'checked="checked"' :  "disabled"; ?> class="option form-check-input" />
+							<?php echo Lang::txt('COM_TOOLS_EDIT_LOCAL_SUBVERSION'); ?>
+						</label>
+					</div>
+	
 				</fieldset>
 	
 				<?php if ($this->config->get('github', 1)) { ?>
@@ -237,13 +236,15 @@ $this->css('pipeline.css')
 				<fieldset>
 					<legend><?php echo Lang::txt('COM_TOOLS_EDIT_REPO_HOST'); ?>:</legend>
 	
-					<div class="form-group form-check">
-						<label for="tool_repohost_svnlocal" class="form-check-label">
-							<input type="radio" name="tool[repohost]" id="tool_repohost_svnlocal" value="svnLocal" <?php if (!$this->defaults['repohost'] || $this->defaults['repohost'] == 'svnLocal') { echo 'checked="checked"'; } ?> class="option form-check-input" />
-							<?php echo Lang::txt('COM_TOOLS_EDIT_LOCAL_SUBVERSION'); ?>
-						</label>
-					</div>
-	
+					<?php if ($this->config->get('github', 1)) { ?>
+						<div class="form-group form-check">
+							<label for="tool_repohost_gitexternal" class="form-check-label">
+								<input type="radio" name="tool[repohost]" id="tool_repohost_gitexternal" value="gitExternal" <?php if (!$this->defaults['repohost'] || $this->defaults['repohost'] == 'gitExternal') { echo 'checked="checked"'; } ?> class="option form-check-input" />
+								<?php echo Lang::txt('COM_TOOLS_EDIT_EXT_GIT'); ?>
+							</label>
+						</div>
+					<?php } ?>
+
 					<?php if (file_exists('/usr/bin/addrepo.sh')) { ?>
 						<div class="form-group form-check">
 							<label for="tool_repohost_gitlocal" class="form-check-label">
@@ -253,14 +254,13 @@ $this->css('pipeline.css')
 						</div>
 					<?php } ?>
 
-					<?php if ($this->config->get('github', 1)) { ?>
-						<div class="form-group form-check">
-							<label for="tool_repohost_gitexternal" class="form-check-label">
-								<input type="radio" name="tool[repohost]" id="tool_repohost_gitexternal" value="gitExternal" <?php if ($this->defaults['repohost'] == 'gitExternal') { echo 'checked="checked"'; } ?> class="option form-check-input" />
-								<?php echo Lang::txt('COM_TOOLS_EDIT_EXT_GIT'); ?>
-							</label>
-						</div>
-					<?php } ?>
+					<div class="form-group form-check">
+						<label for="tool_repohost_svnlocal" class="form-check-label">
+							<input type="radio" name="tool[repohost]" id="tool_repohost_svnlocal" value="svnLocal" <?php if ($this->defaults['repohost'] == 'svnLocal') { echo 'checked="checked"'; } ?> class="option form-check-input" />
+							<?php echo Lang::txt('COM_TOOLS_EDIT_LOCAL_SUBVERSION'); ?>
+						</label>
+					</div>
+	
 				</fieldset>
 	
 				<?php if ($this->config->get('github', 1)) { ?>
@@ -274,7 +274,7 @@ $this->css('pipeline.css')
 					<fieldset id="gitExternalInput">
 						<legend><?php echo Lang::txt('COM_TOOLS_EDIT_GIT_URL'); ?>:</legend>
 						<label for="github">
-							<?php echo Lang::txt('COM_TOOLS_EDIT_GIT_SOURCE') ?>: 
+							<?php echo Lang::txt('COM_TOOLS_EDIT_GIT_SOURCE') ?>:  <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span>
 							<input type="text" name="tool[github]" id="github" placeholder="<?php echo Lang::txt('COM_TOOLS_EDIT_GIT_SOURCE_PASTE'); ?>" value="<?php echo $this->defaults['github']; ?>" />
 						</label>
 						<?php if (file_exists('/usr/bin/addrepo.sh')) { ?>
@@ -354,7 +354,7 @@ $this->css('pipeline.css')
 					<label for="t_team">
 						<?php echo Lang::txt('COM_TOOLS_DEVELOPMENT_TEAM'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span>
 						<input type="text" name="tool[developers]" id="t_team" class="form-control" value="<?php echo \Components\Tools\Helpers\Html::getDevTeam($this->defaults['developers'], $this->id);  ?>" />
-						<span class="hint"><?php echo Config::get('sitename') . ' ' . Lang::txt('COM_TOOLS_HINT_TEAM'); ?></span>
+						<span class="hint"><?php echo Lang::txt('COM_TOOLS_HINT_TEAM'); ?></span>
 					</label>
 				</div>
 			</fieldset>

@@ -415,16 +415,29 @@ class Tags extends Cloud
 
 	/**
 	 * Get a tag cloud for an object
-	 *
+	 * 
 	 * @param   integer  $limit
 	 * @param   string   $tagstring
+	 * @param   integer  $maxTagCount -- max count of tags that can be searched
 	 * @return  string
 	 */
-	public function getTopTagCloud($limit, $tagstring='')
+	public function getTopTagCloud($limit, $tagstring='', $maxTagCount=null)
 	{
-		$tags = $this->getTopTags($limit);
+		$tagArray = explode(",", $tagstring);
 
-		return $this->buildTopCloud($tags, 'alpha', 0, $tagstring);
+		// check that we haven't been handed too many tags to search:
+		if ( ($maxTagCount != null) && (count($tagArray) > $maxTagCount))
+		{
+			// nope, too many, don't search:
+			$retval = null;
+		}
+		else
+		// ok, search for the tags:
+		{
+			$tags = $this->getTopTags($limit);
+			$retval = $this->buildTopCloud($tags, 'alpha', 0, $tagstring);
+		}
+		return $retval;
 	}
 
 	/**
@@ -592,11 +605,11 @@ class Tags extends Cloud
 				if ($showsizes == 1)
 				{
 					$size = $min_font_size + ($tag->count - $min_qty) * $step;
-					$tll[$tag->tag] = "\t".'<li' . $class . '><span data-size="' . round($size, 1) . 'em"><a class="tag' . ($tag->admin ? ' admin' : '') . '" href="' . Route::url('index.php?option=com_resources&task=browse&tag=' . implode(',', $lsst)) . '">' . stripslashes($tag->raw_tag) . '</a></li>' . "\n"; //' <span>' . $tag->count . '</span></a></span></li>' . "\n";
+					$tll[$tag->tag] = "\t".'<li' . $class . '><span data-size="' . round($size, 1) . 'em"><a class="tag' . ($tag->admin ? ' admin' : '') . '" rel="nofollow"  href="' . Route::url('index.php?option=com_resources&task=browse&tag=' . implode(',', $lsst)) . '">' . stripslashes($tag->raw_tag) . '</a></li>' . "\n"; //' <span>' . $tag->count . '</span></a></span></li>' . "\n";
 				}
 				else
 				{
-					$tll[$tag->tag] = "\t".'<li' . $class . '><a class="tag' . ($tag->admin ? ' admin' : '') . '" href="' . urldecode(Route::url('index.php?option=com_resources&task=browse&tag=' . implode(',', $lsst))) . '">' . stripslashes($tag->raw_tag) . '</a></li>' . "\n"; //' <span>' . $tag->count . '</span></a></li>' . "\n";
+					$tll[$tag->tag] = "\t".'<li' . $class . '><a class="tag' . ($tag->admin ? ' admin' : '') . '" rel="nofollow" href="' . urldecode(Route::url('index.php?option=com_resources&task=browse&tag=' . implode(',', $lsst))) . '">' . stripslashes($tag->raw_tag) . '</a></li>' . "\n"; //' <span>' . $tag->count . '</span></a></li>' . "\n";
 				}
 			}
 			if ($sort == 'alpha')

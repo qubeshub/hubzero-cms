@@ -33,7 +33,7 @@ class plgGeocodeMaxmindbinary extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		return new \Geocoder\Provider\MaxMindBinaryProvider(
+		return new \Geocoder\Provider\MaxMindBinary\MaxMindBinary(
 			$adapter,
 			$this->params->get('apiKey')
 		);

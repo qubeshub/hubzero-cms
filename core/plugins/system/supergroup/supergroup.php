@@ -120,7 +120,7 @@ class plgSystemSupergroup extends \Hubzero\Plugin\Plugin
 		App::get('router')->rules('build')->append('supergroup', function ($uri)
 		{
 			// get the current segments
-			$currentSegments = explode('/', trim(App::get('request')->path(), '/'));
+			$currentSegments = explode('/', trim(Request::path(), '/'));
 
 			// make sure were building within groups
 			if (!isset($currentSegments[0]) || !isset($currentSegments[1]) || $currentSegments[0] != 'groups')
@@ -140,8 +140,8 @@ class plgSystemSupergroup extends \Hubzero\Plugin\Plugin
 			}
 
 			// get request options
-			$cn     = App::get('request')->getVar('cn', '');
-			$active = App::get('request')->getVar('active', '');
+			$cn     = Request::getVar('cn', '');
+			$active = Request::getVar('active', '');
 
 			// load group object
 			$group  = Hubzero\User\Group::getInstance($cn);
@@ -209,7 +209,7 @@ class plgSystemSupergroup extends \Hubzero\Plugin\Plugin
 					// set the new uri path and query string
 					$uri->setPath($routeResult);
 					$uri->setQuery($query);
-					$uri->delVar('option');
+					$uri->delUriVar('option');
 				}
 			}
 

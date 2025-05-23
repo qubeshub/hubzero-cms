@@ -164,7 +164,7 @@ class Format
 	 * @param   boolean  $coins_only     Only output COINs?
 	 * @return  string   Formatted citation
 	 */
-	public function formatCitation($citation, $highlight = null, $include_coins = true, $config, $coins_only = false)
+	public function formatCitation($citation, $highlight, $include_coins, $config, $coins_only = false)
 	{
 		//get hub specific details
 		$hub_name = \Config::get('sitename');
@@ -256,7 +256,10 @@ class Format
 							break;
 						case 'journaltitle':
 							$jt = html_entity_decode($citation->$k);
-							$jt = (!preg_match('!\S!u', $jt)) ? utf8_encode($jt) : $jt;
+							if (function_exists('mbstring'))
+							{
+								$jt = (!preg_match('!\S!u', $jt)) ? mbstring($jt) : $jt;
+							}
 							$coins_data[] = $this->_coins_keys[$k] . '=' . $jt;
 							break;
 						default:
@@ -279,7 +282,10 @@ class Format
 					$a = array();
 
 					$auth = html_entity_decode($citation->$k);
-					$auth = (!preg_match('!\S!u', $auth)) ? utf8_encode($auth) : $auth;
+					if (function_exists('mbstring'))
+					{
+						$auth = (!preg_match('!\S!u', $auth)) ? mbstring($auth) : $auth;
+					}
 
 					$author_string = $auth;
 					$authors = explode(';', $author_string);
@@ -312,7 +318,7 @@ class Format
 						$coins_data[] = 'rft.au=' . trim(preg_replace('/\{\{\d+\}\}/', '', trim($author)));
 					}
 
-					$replace_values[$v] = implode(", ", $a);
+					$replace_values[$v] = implode("; ", $a);
 				}
 
 				if ($k == 'title')
@@ -351,6 +357,8 @@ class Format
 					}
 
 					//prepare url
+					$url = $url ?: '';
+
 					if (strstr($url, "\r\n"))
 					{
 						$url = array_filter(array_values(explode("\r\n", $url)));
@@ -363,7 +371,10 @@ class Format
 					}
 
 					$t = html_entity_decode($citation->$k);
-					$t = (!preg_match('!\S!u', $t)) ? utf8_encode($t) : $t;
+					if (function_exists('mbstring'))
+					{
+						$t = (!preg_match('!\S!u', $t)) ? mbstring($t) : $t;
+					}
 
 					$title = ($url != '' && preg_match('/http:|https:/', $url))
 							? '<a rel="external" class="citation-title" href="' . $url . '">' . $t . '</a>'
@@ -748,7 +759,7 @@ class Format
 		$html = '';
 		$cite->separateTagsAndBadges();
 		$badges = array();
-		$badges = $cite->get('badges');
+		$badges = $cite->get('badges',array());
 
 		if (count($badges) > 0)
 		{
@@ -797,7 +808,7 @@ class Format
 		$tags = $cite->get('filteredTags');
 		$html = '';
 		$isAdmin = (\User::authorise('core.manage', 'com_citations') ? true : false);
-		if (count($tags) > 0)
+		if (is_array($tags) && count($tags) > 0)
 		{
 			if ($includeHtml)
 			{

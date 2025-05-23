@@ -77,7 +77,7 @@ class plgGroupsUsage extends \Hubzero\Plugin\Plugin
 	 * @param   array    $areas       Active area(s)
 	 * @return  array
 	 */
-	public function onGroup($group, $option, $authorized, $limit=0, $limitstart=0, $action='', $access, $areas=null)
+	public function onGroup($group, $option, $authorized, $limit, $limitstart, $action, $access, $areas=null)
 	{
 		$return = 'html';
 		$active = 'usage';
@@ -230,7 +230,7 @@ class plgGroupsUsage extends \Hubzero\Plugin\Plugin
 	 * @param      string  $authorized Authorization level
 	 * @return     integer
 	 */
-	public static function getResourcesCount($gid=null, $authorized)
+	public static function getResourcesCount($gid, $authorized)
 	{
 		if (!$gid)
 		{
@@ -251,7 +251,7 @@ class plgGroupsUsage extends \Hubzero\Plugin\Plugin
 	 * @param   string   $authorized  Authorization level
 	 * @return  integer
 	 */
-	public static function getWikipageCount($gid=null, $authorized)
+	public static function getWikipageCount($gid, $authorized)
 	{
 		if (!$gid)
 		{
@@ -270,7 +270,7 @@ class plgGroupsUsage extends \Hubzero\Plugin\Plugin
 	 * @param   string   $authorized  Authorization level
 	 * @return  integer
 	 */
-	public static function getWikifileCount($gid=null, $authorized)
+	public static function getWikifileCount($gid, $authorized)
 	{
 		if (!$gid)
 		{
@@ -303,7 +303,7 @@ class plgGroupsUsage extends \Hubzero\Plugin\Plugin
 	 * @param      string  $state      State of threads
 	 * @return     integer
 	 */
-	public static function getForumCount($gid=null, $authorized, $state='')
+	public static function getForumCount($gid, $authorized, $state='')
 	{
 		if (!$gid)
 		{
@@ -365,7 +365,7 @@ class plgGroupsUsage extends \Hubzero\Plugin\Plugin
 	 * @param      string  $end     End date
 	 * @return     array
 	 */
-	public function getGroupPageViews($gid, $pageid = null, $start, $end)
+	public function getGroupPageViews($gid, $pageid, $start, $end)
 	{
 		$database = App::get('db');
 

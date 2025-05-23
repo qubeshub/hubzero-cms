@@ -168,6 +168,7 @@ if (!empty($errors))
 					?>
 					<input type="hidden" name="option" value="<?php echo $this->option; ?>" />
 					<input type="hidden" name="controller" value="<?php echo $this->controller; ?>" />
+					<?php echo Html::input('token'); ?>
 				</form>
 			</div><!-- // cartItems -->
 			<div id="cartInfo" class="col span4 omega">
@@ -238,6 +239,7 @@ if (!empty($errors))
 						<input type="submit" name="addCouponCode" id="addCouponCode" class="btn" value="Apply" />
 						<input type="hidden" name="option" value="<?php echo $this->option; ?>" />
 						<input type="hidden" name="controller" value="<?php echo $this->controller; ?>" />
+						<?php echo Html::input('token'); ?>
 					</form>
 				</div>
 			</div><!-- / cart info -->

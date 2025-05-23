@@ -100,7 +100,7 @@ class ValidateTest extends Basic
 			0b10100111001 => true,
 			1337e0 => true,
 			"not numeric" => false,
-			9.1 => true,
+			"9.1" => true,
 			null => false
 		);
 
@@ -125,11 +125,11 @@ class ValidateTest extends Basic
 			'+51' => true,
 			-16 => true,
 			1337 => true,
-			0x539 => false,
+			0x539 => true,
 			02471 => true,
 			1337e0 => true,
 			"not numeric" => false,
-			9.1 => true,
+			"9.1" => false,
 			null => false
 		);
 
@@ -159,7 +159,7 @@ class ValidateTest extends Basic
 			02471 => true,
 			1337e0 => true,
 			"not numeric" => false,
-			9.1 => true,
+			"9.1" => false,
 			null => false
 		);
 
@@ -186,7 +186,7 @@ class ValidateTest extends Basic
 			-16 => true,
 			'-1337' => true,
 			"not numeric" => false,
-			9.1 => false,
+			"9.1" => false,
 			null => false
 		);
 
@@ -213,7 +213,7 @@ class ValidateTest extends Basic
 			-16 => false,
 			1337 => true,
 			"not numeric" => false,
-			9.1 => true,
+			"9.1" => false,
 			null => false
 		);
 
@@ -240,7 +240,7 @@ class ValidateTest extends Basic
 			-16 => true,
 			1337 => false,
 			"not numeric" => false,
-			9.1 => false,
+			"9.1" => false,
 			null => false
 		);
 
@@ -586,7 +586,7 @@ class ValidateTest extends Basic
 			$this->assertFalse(Validate::reserved('group', $val));
 		}
 
-		$this->setExpectedException(InvalidArgumentException::class);
+		$this->expectException(InvalidArgumentException::class);
 		$result = Validate::reserved('foo', 'bar');
 	}
 

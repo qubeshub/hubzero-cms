@@ -1,0 +1,24 @@
+@import "_page-head-vars";
+@import "navigation/_navigation";
+
+.page-head {
+	position: relative;
+
+	& > .inner {
+		// position: relative; -- this prevents flyouts
+		z-index: 99;
+		.outerPadding();
+
+		& > header {
+			position: relative;
+			z-index: 100;
+			padding: @headerPaddingTop 0 @headerPaddingBottom;
+
+			& > .inner {
+				display: flex;
+				align-items: center; // vertical align
+				position: relative;
+			}
+		}
+	}
+}

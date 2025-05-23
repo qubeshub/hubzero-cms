@@ -24,38 +24,38 @@ $router->rules('build')->append('content', function ($uri)
 	$menu = \App::get('menu.manager')->menu('site');
 
 	// Get the itemid form the URI
-	$itemid = $uri->getVar('Itemid');
+	$itemid = $uri->getUriVar('Itemid');
 
 	if (is_null($itemid))
 	{
-		if ($option = $uri->getVar('option'))
+		if ($option = $uri->getUriVar('option'))
 		{
-			$item  = $menu->getItem($uri->getVar('Itemid'));
+			$item  = $menu->getItem($uri->getUriVar('Itemid'));
 			if (isset($item) && $item->component == $option)
 			{
-				$uri->setVar('Itemid', $item->id);
+				$uri->setUriVar('Itemid', $item->id);
 			}
 		}
 		else
 		{
 			if ($option = \App::get('router')->get('option'))
 			{
-				$uri->setVar('option', $option);
+				$uri->setUriVar('option', $option);
 			}
 
 			if ($itemid = \App::get('router')->get('Itemid'))
 			{
-				$uri->setVar('Itemid', $itemid);
+				$uri->setUriVar('Itemid', $itemid);
 			}
 		}
 	}
 	else
 	{
-		if (!$uri->getVar('option'))
+		if (!$uri->getUriVar('option'))
 		{
 			if ($item = $menu->getItem($itemid))
 			{
-				$uri->setVar('option', $item->component);
+				$uri->setUriVar('option', $item->component);
 			}
 		}
 	}
@@ -159,7 +159,7 @@ $router->rules('build')->append('component', function ($uri)
 	{
 		$query = $router->preprocess($query);
 		$parts = $router->build($query);
-
+		$parts = array_filter($parts, function($v) { return !is_array($v); });
 		$tmp   = implode('/', $parts);
 	}
 
@@ -212,11 +212,11 @@ $router->rules('build')->append('rewrite', function ($uri)
 
 	if (\App::get('config')->get('sef_suffix') && !(substr($route, -9) == 'index.php' || substr($route, -1) == '/'))
 	{
-		if ($format = $uri->getVar('format', 'html'))
+		if ($format = $uri->getUriVar('format', 'html'))
 		{
 			$route .= '.' . $format;
 
-			$uri->delVar('format');
+			$uri->delUriVar('format');
 		}
 	}
 
@@ -270,10 +270,10 @@ $router->rules('build')->append('groups', function ($uri)
 */
 $router->rules('build')->append('limit', function ($uri)
 {
-	if ($uri->hasVar('limitstart'))
+	if ($uri->hasUriVar('limitstart'))
 	{
-		$uri->setVar('start', (int) $uri->getVar('limitstart'));
-		$uri->delVar('limitstart');
+		$uri->setUriVar('start', (int) $uri->getUriVar('limitstart'));
+		$uri->delUriVar('limitstart');
 	}
 
 	return $uri;
@@ -315,19 +315,19 @@ $router->rules('parse')->append('prep', function ($uri)
 */
 $router->rules('parse')->append('limit', function ($uri)
 {
-	$limitstart = $uri->getVar('start');
+	$limitstart = $uri->getUriVar('start');
 	if (!is_null($limitstart))
 	{
-		$uri->setVar('limitstart', $limitstart);
-		$uri->delVar('start');
+		$uri->setUriVar('limitstart', $limitstart);
+		$uri->delUriVar('start');
 		\App::get('router')->forget('start');
 	}
 	// Make sure the values are sane
-	if (intval($uri->getVar('limitstart')) > 9223372036854775807 || intval($uri->getVar('limit')) > 9223372036854775807)
+	if (intval($uri->getUriVar('limitstart')) > 9223372036854775807 || intval($uri->getUriVar('limit')) > 9223372036854775807)
 	{
 		\App::abort(404, \Lang::txt('Pagination value beyond the bounds of supported integer values.'));
 	}
-	if (intval($uri->getVar('limitstart')) < 0 || intval($uri->getVar('limit')) < 0)
+	if (intval($uri->getUriVar('limitstart')) < 0 || intval($uri->getUriVar('limit')) < 0)
 	{
 		\App::abort(404, \Lang::txt('Invalid pagination value.'));
 	}
@@ -358,7 +358,7 @@ $router->rules('parse')->append('menu', function ($uri)
 	$query = $uri->getQuery(true);
 
 	// Handle an empty URL (special case)
-	if (empty($route) && \App::get('request')->getVar('option', '', 'post') == '')
+	if (empty($route) && \Request::getCmd('option', '', 'post') == '')
 	{
 		// If route is empty AND option is set in the query, assume it's non-sef url, and parse appropriately
 		if (isset($query['option'])) // || isset($query['Itemid']))
@@ -382,7 +382,7 @@ $router->rules('parse')->append('menu', function ($uri)
 
 			foreach ($vars as $key => $var)
 			{
-				$uri->setVar($key, $var);
+				$uri->setUriVar($key, $var);
 			}
 		}
 
@@ -468,15 +468,15 @@ $router->rules('parse')->append('menu', function ($uri)
 		$route = substr($route, 1);
 	}
 
-	$uri->setVar('Itemid', $found->id);
-	$uri->setVar('option', $found->component);
+	$uri->setUriVar('Itemid', $found->id);
+	$uri->setUriVar('option', $found->component);
 	$uri->setPath($route);
 	foreach ($found->query as $key => $val)
 	{
-		$uri->setVar($key, $val);
+		$uri->setUriVar($key, $val);
 	}
 
-	$menu->setActive($uri->getVar('Itemid'));
+	$menu->setActive($uri->getUriVar('Itemid'));
 
 	// No more segments.
 	// No more processing needed.
@@ -493,7 +493,7 @@ $router->rules('parse')->append('menu', function ($uri)
 */
 $router->rules('parse')->append('content', function ($uri)
 {
-	if ($uri->getVar('option') && $uri->getVar('option') != 'com_content')
+	if ($uri->getUriVar('option') && $uri->getUriVar('option') != 'com_content')
 	{
 		return;
 	}
@@ -514,7 +514,10 @@ $router->rules('parse')->append('content', function ($uri)
 		$vars['id']     = $segments[0];
 		$vars['view']   = 'article';
 
-		$item->query['view'] = 'article';
+		if (isset($item))
+		{
+			$item->query['view'] = 'article';
+		}
 	}
 	// Count 1 - we're either looking for an article alias that matches and is in the uncategorised category,
 	// or, an article alias and category series that are all the same (ex: about/about/about - supported for legacy reasons)
@@ -542,7 +545,11 @@ $router->rules('parse')->append('content', function ($uri)
 			$vars['id']     = $result->id;
 			$vars['view']   = 'article';
 
-			$item->query['view'] = 'article';
+			if (isset($item))
+			{
+				$item->query['view'] = 'article';
+			}
+
 		}
 		else
 		{
@@ -568,7 +575,10 @@ $router->rules('parse')->append('content', function ($uri)
 				$vars['id']     = $result->id;
 				$vars['view']   = 'article';
 
-				$item->query['view'] = 'article';
+				if (isset($item))
+				{
+					$item->query['view'] = 'article';
+				}
 			}
 		}
 	}
@@ -599,7 +609,10 @@ $router->rules('parse')->append('content', function ($uri)
 			$vars['id']     = $result;
 			$vars['view']   = 'article';
 
-			$item->query['view'] = 'article';
+			if (isset($item))
+			{
+				$item->query['view'] = 'article';
+			}
 		}
 	}
 
@@ -607,7 +620,7 @@ $router->rules('parse')->append('content', function ($uri)
 	{
 		foreach ($vars as $key => $var)
 		{
-			$uri->setVar($key, $var);
+			$uri->setUriVar($key, $var);
 		}
 
 		return true;
@@ -623,7 +636,7 @@ $router->rules('parse')->append('content', function ($uri)
 */
 $router->rules('parse')->append('component', function ($uri)
 {
-	$component = $uri->getVar('option');
+	$component = $uri->getUriVar('option');
 	if (is_array($component))
 	{
 		$component = implode('', $component);
@@ -647,7 +660,7 @@ $router->rules('parse')->append('component', function ($uri)
 	}
 
 	// First segment is potentially a component name.
-	$uri->setVar('option', \App::get('component')->canonical($component));
+	$uri->setUriVar('option', \App::get('component')->canonical($component));
 
 	if (!count($segments))
 	{
@@ -662,7 +675,7 @@ $router->rules('parse')->append('component', function ($uri)
 		{
 			foreach ($vars as $key => $var)
 			{
-				$uri->setVar($key, $var);
+				$uri->setUriVar($key, $var);
 			}
 		}
 
@@ -683,6 +696,8 @@ $router->rules('parse')->append('redirect', function ($uri)
 	// the $uri by adding/removing vars
 	$alturi = new \Hubzero\Utility\Uri($uri->uri());
 
+	$menu  = App::get('menu');
+
 	$db = \App::get('db');
 	$db->setQuery(
 		"SELECT *
@@ -701,7 +716,7 @@ $router->rules('parse')->append('redirect', function ($uri)
 
 		foreach ($vars as $key => $var)
 		{
-			$uri->setVar($key, $var);
+			$uri->setUriVar($key, $var);
 		}
 
 		if (isset($vars['Itemid']))
@@ -723,7 +738,7 @@ $router->rules('parse')->append('post', function ($uri)
 	if (\App::get('request')->method() == 'POST')
 	{
 		$component = \App::get('request')->getCmd('option', '', 'post');
-		$uri->setVar('option', $component);
+		$uri->setUriVar('option', $component);
 
 		return true;
 	}

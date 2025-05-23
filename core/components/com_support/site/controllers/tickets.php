@@ -72,11 +72,11 @@ class Tickets extends SiteController
 		if (Pathway::count() == 1  && $this->_task)
 		{
 			$task = $this->_task;
-			if (in_array($this->_task, array('ticket', 'new', 'display', 'save')))
+			if (in_array($this->_task, array('ticket', 'new', 'display', 'save')) || $ticket === null)
 			{
 				$task = 'tickets';
 			}
-			if ($task == 'update')
+			if ($task == 'update' && $ticket !== null)
 			{
 				$task = 'ticket';
 			}
@@ -112,11 +112,11 @@ class Tickets extends SiteController
 		$this->_title = Lang::txt(strtoupper($this->_option));
 		if ($this->_task)
 		{
-			if ($this->_task == 'new' || $this->_task == 'display')
+			if ($this->_task == 'new' || $this->_task == 'display' || $ticket === null)
 			{
 				$this->_title .= ': ' . Lang::txt('COM_SUPPORT_TICKETS');
 			}
-			if ($this->_task != 'display')
+			if (in_array($this->_task, array('ticket', 'new', 'update', 'save')) && $ticket !== null)
 			{
 				if ($this->_task == 'update')
 				{
@@ -175,7 +175,7 @@ class Tickets extends SiteController
 		$date = new \Hubzero\Utility\Date();
 
 		$year  = Request::getInt('year', $date->toLocal('Y'));
-		$month = strftime("%m", $date->toLocal('m'));
+		$month = $date->toLocal('m');
 
 		$this->view->year = $year;
 		$this->view->opened = array();
@@ -755,7 +755,7 @@ class Tickets extends SiteController
 				->set('status', 0)
 				->set('ip', Request::ip())
 				->set('uas', Request::getString('HTTP_USER_AGENT', '', 'server'))
-				->set('referrer', base64_encode(Request::getString('HTTP_REFERER', null, 'server')))
+				->set('referrer', base64_encode(Request::getString('HTTP_REFERER', '', 'server')))
 				->set('cookies', (Request::getString('sessioncookie', '', 'cookie') ? 1 : 0))
 				->set('instances', 1)
 				->set('section', 1)
@@ -801,14 +801,14 @@ class Tickets extends SiteController
 
 		if ($row->get('verified') && $this->acl->check('update', 'tickets') > 0)
 		{
-			if (trim($this->config->get('group')))
+			if (trim($this->config->get('group','')))
 			{
 				$lists['owner'] = $this->_userSelectGroup(
 					'problem[owner]',
 					'',
 					1,
 					'',
-					trim($this->config->get('group'))
+					trim($this->config->get('group',''))
 				);
 			}
 			else
@@ -1606,14 +1606,14 @@ class Tickets extends SiteController
 				$row->get('group_id')
 			);
 		}
-		elseif (trim($this->config->get('group')))
+		elseif (trim($this->config->get('group','')))
 		{
 			$lists['owner'] = $this->_userSelectGroup(
 				'ticket[owner]',
 				$row->get('owner'),
 				1,
 				'',
-				trim($this->config->get('group'))
+				trim($this->config->get('group',''))
 			);
 		}
 		else
@@ -1818,12 +1818,20 @@ class Tickets extends SiteController
 				// submitter regardless of the above setting
 				if (!$rowc->isPrivate())
 				{
-					$rowc->addTo(array(
-						'role'  => Lang::txt('COM_SUPPORT_COMMENT_SEND_EMAIL_SUBMITTER'),
-						'name'  => $row->submitter->get('name'),
-						'email' => $row->submitter->get('email'),
-						'id'    => $row->submitter->get('id')
-					));
+					# Users can submit a ticket while not logged in and without a username, that has to be handled differently
+					if (is_string($row->login) && strlen($row->login) == 0)
+					{
+						$rowc->addTo($row->email);
+					}
+					else 
+					{
+						$rowc->addTo(array(
+							'role'  => Lang::txt('COM_SUPPORT_COMMENT_SEND_EMAIL_SUBMITTER'),
+							'name'  => $row->submitter->get('name'),
+							'email' => $row->submitter->get('email'),
+							'id'    => $row->submitter->get('id')
+						));
+					}
 				}
 			}
 

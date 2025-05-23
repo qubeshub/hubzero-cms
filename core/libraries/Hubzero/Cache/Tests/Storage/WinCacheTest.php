@@ -10,14 +10,14 @@ namespace Hubzero\Cache\Tests\Storage;
 /**
  * WincacheTest
  */
-class WincacheTest extends AbstractCacheTest
+class WincacheTest extends AbstractCache
 {
 	/**
 	 * Test setup
 	 *
 	 * @return  void
 	 */
-	public function setUp()
+	public function setUp(): void
 	{
 		if (!extension_loaded('wincache') || !function_exists('wincache_ucache_get'))
 		{

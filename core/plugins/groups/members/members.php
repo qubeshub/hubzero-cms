@@ -81,7 +81,7 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 	 * @param   array    $areas       Active area(s)
 	 * @return  array
 	 */
-	public function onGroup($group, $option, $authorized, $limit=0, $limitstart=0, $action='', $access, $areas=null)
+	public function onGroup($group, $option, $authorized, $limit, $limitstart, $action, $access, $areas=null)
 	{
 		$returnhtml = true;
 		$active = 'members';
@@ -225,7 +225,7 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 				{
 					$view->filter = '';
 				}
-				$view->role_filter = Request::getString('role_filter', '');
+				$view->role_filter = Request::getInt('role_filter', '');
 
 				if ($view->authorized != 'manager' && $view->authorized != 'admin')
 				{

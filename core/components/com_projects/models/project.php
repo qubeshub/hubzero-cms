@@ -97,10 +97,15 @@ class Project extends Model
 		$this->params = $paramsRegistry;
 	}
 
+	/**
+	 * Get params as an array
+	 *
+	 * @return array
+	 */
 	protected function _getParsedParams()
 	{
 		$parsedParams = [];
-		$splitParams = explode("\n", $this->_tbl->get('params'));
+		$splitParams = explode("\n", $this->_tbl->get('params', ''));
 
 		foreach ($splitParams as $param)
 		{
@@ -610,7 +615,7 @@ class Project extends Model
 		// Allowed to create a project
 		if (!$this->exists())
 		{
-			$cg = $this->config()->get('creatorgroup');
+			$cg = $this->config()->get('creatorgroup', '');
 			$cg = explode(',', $cg);
 			$cg = array_map('trim', $cg);
 

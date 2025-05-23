@@ -158,7 +158,7 @@ HUB.Members.Profile = {
 
 		//get the needed vars
 		var form = submit_button.parents("form"),
-			registration_field = form.attr("data-section-registation"),
+			registration_field = form.attr("data-section-registration"),
 			profile_field = form.attr("data-section-profile");
 
 		//disable submit button and show saving graphic
@@ -423,10 +423,10 @@ HUB.Members.Profile = {
 		{
 			var w = $identity.find("img").width() + 2;
 			w = (w < 165) ? 165 : w;
-
+			ajaxuploadurl = window.location.href.replace("profile","") + "/ajaxupload";
 			$change
 				.css('width',  w)
-				.attr("href", window.location.href.replace("profile","ajaxupload"))
+				.attr("href", ajaxuploadurl)
 				.appendTo($identity);
 
 			//edit picture

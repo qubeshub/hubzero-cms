@@ -50,7 +50,7 @@ $this->js();
 						<div class="input-wrap">
 							<label for="field-scope_id"><?php echo Lang::txt('COM_BLOG_FIELD_SCOPE_ID'); ?>:</label><br />
 							<?php if ($this->row->isNew() || User::authorise('core.admin', $this->option)) { ?>
-								<input type="text" name="fields[scope_id]" id="field-scope_id" value="<?php echo $this->escape(stripslashes($this->row->get('scope_id'))); ?>" />
+								<input type="text" name="fields[scope_id]" id="field-scope_id" value="<?php echo $this->escape(stripslashes($this->row->get('scope_id',''))); ?>" />
 							<?php } else { ?>
 								<input type="text" name="fields[scope_id]" id="field-scope_id" disabled="disabled" value="<?php echo $this->escape(stripslashes($this->row->get('scope_id'))); ?>" />
 							<?php } ?>
@@ -65,12 +65,12 @@ $this->js();
 
 				<div class="input-wrap">
 					<label for="field-title"><?php echo Lang::txt('COM_BLOG_FIELD_TITLE'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span></label><br />
-					<input type="text" name="fields[title]" id="field-title" class="required" maxlength="250" value="<?php echo $this->escape(stripslashes($this->row->get('title'))); ?>" />
+					<input type="text" name="fields[title]" id="field-title" class="required" maxlength="250" value="<?php echo $this->escape(stripslashes($this->row->get('title',''))); ?>" />
 				</div>
 
 				<div class="input-wrap" data-hint="<?php echo Lang::txt('COM_BLOG_FIELD_ALIAS_HINT'); ?>">
 					<label for="field-alias"><?php echo Lang::txt('COM_BLOG_FIELD_ALIAS'); ?>:</label><br />
-					<input type="text" name="fields[alias]" id="field-alias" maxlength="250" value="<?php echo $this->escape(stripslashes($this->row->get('alias'))); ?>" />
+					<input type="text" name="fields[alias]" id="field-alias" maxlength="250" value="<?php echo $this->escape(stripslashes($this->row->get('alias',''))); ?>" />
 					<span class="hint"><?php echo Lang::txt('COM_BLOG_FIELD_ALIAS_HINT'); ?></span>
 				</div>
 

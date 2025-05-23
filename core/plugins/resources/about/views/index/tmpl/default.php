@@ -13,7 +13,7 @@ $this->css();
 $sef = Route::url($this->model->link());
 
 // Set the display date
-$thedate = $this->model->date;
+$thedate = $this->model->datetime;
 if ($this->model->isTool() && $this->model->curtool)
 {
 	$thedate = $this->model->curtool->released;
@@ -54,6 +54,8 @@ if ($this->model->introtext)
 	Document::setDescription(strip_tags($this->model->introtext));
 }
 
+$tab = Request::getCmd('active', 'about');  // The active tab (section)
+
 // Check if there's anything left in the fulltxt after removing custom fields
 // If not, set it to the introtext
 $maintext = $this->model->description;
@@ -74,7 +76,6 @@ $maintext = $this->model->description;
 			     ->set('id', $this->model->id)
 			     ->set('created', $this->model->created)
 			     ->set('upath', $this->model->params->get('uploadpath'))
-			     ->set('wpath', $this->model->params->get('uploadpath'))
 			     ->set('versionid', $this->model->versionid)
 			     ->set('sinfo', $ss)
 			     ->set('slidebar', 1)
@@ -134,12 +135,12 @@ $maintext = $this->model->description;
 						{
 							$citations = $data[$field->name];
 						}
-						else if ($value = $elements->display($field->type, $data[$field->name]))
+						else if ($elements->display($field->type, $data[$field->name]) && ((isset($field->display) && $field->display == $tab) || (!isset($field->display) && 'about' == $tab)))
 						{
 							?>
 							<h4><?php echo $field->label; ?></h4>
 							<div class="resource-content">
-								<?php echo $value; ?>
+								<?php echo $elements->display($field->type, $data[$field->name]); ?>
 							</div>
 							<?php
 						}
@@ -263,7 +264,7 @@ $maintext = $this->model->description;
 						'name'      => 'view',
 						'layout'    => '_submitters',
 					));
-					$view->option       = $this->option;
+					$view->set('option', $this->option);
 					$view->contributors = $this->model->contributors('submitter');
 					$view->badges       = $this->plugin->get('badges', 0);
 					$view->showorgs     = 1;

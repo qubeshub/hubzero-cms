@@ -109,7 +109,7 @@ class Router
 
 		if ($xhtml)
 		{
-			$url = htmlspecialchars($url);
+			$url = htmlspecialchars($url == null ? '' : $url);
 		}
 
 		return $url;

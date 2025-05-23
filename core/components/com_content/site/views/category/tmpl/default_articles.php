@@ -147,7 +147,7 @@ $listDirn  = $this->escape($this->filters['direction']);
 								$link = Route::url('index.php?option=com_users&view=login&Itemid=' . $itemId);
 								$returnURL = Route::url(Components\Content\Site\Helpers\Route::getArticleRoute($article->slug, $article->catid, $article->language));
 								$fullURL = new Hubzero\Utility\Uri($link);
-								$fullURL->setVar('return', base64_encode(urlencode($returnURL)));
+								$fullURL->setUriVar('return', base64_encode(urlencode($returnURL)));
 							?>
 							<a href="<?php echo $fullURL; ?>" class="register">
 								<?php echo Lang::txt('COM_CONTENT_REGISTER_TO_READ_MORE'); ?>

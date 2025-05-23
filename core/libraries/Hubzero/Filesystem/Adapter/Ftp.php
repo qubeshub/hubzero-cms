@@ -14,7 +14,7 @@ use RuntimeException;
 /**
  * FTP adapter for filesystem.
  */
-class Ftp extends AbstractFtpAdapter
+class Ftp implements AdapterInterface
 {
 	/**
 	 * FTP Transfer mode
@@ -493,7 +493,7 @@ class Ftp extends AbstractFtpAdapter
 	 */
 	public function find($paths, $file)
 	{
-		$paths = is_array($path) ? $path : array($path);
+		$paths = is_array($paths) ? $paths : array($paths);
 
 		foreach ($paths as $path)
 		{
@@ -649,7 +649,7 @@ class Ftp extends AbstractFtpAdapter
 	 */
 	public function isFile($file)
 	{
-		$result = @ftp_chdir($this->connection(), $directory);
+		$result = @ftp_chdir($this->connection(), $file);
 		$result = $result ? false : true;
 
 		return $result;
@@ -887,5 +887,21 @@ class Ftp extends AbstractFtpAdapter
 	public function __destruct()
 	{
 		$this->disconnect();
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function copy($path, $target)
+	{
+		return false;
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function exists($path)
+	{
+		return false;
 	}
 }

@@ -4,6 +4,7 @@ app/language/**
 app/logs/**
 app/site/**
 app/tmp/**
+app/**
 core/vendor/**
 .vscode/**
 *.sublime-*
@@ -13,7 +14,11 @@ logs/**
 js_apps/**
 google*.html
 bans
-configuration.php
-hubconfiguration.php
 robots.txt
-
+auto-deployments.log
+deployments.log
+freeze-auto-deployments
+config/
+favicon.ico
+.phan/**
+psalm.xml

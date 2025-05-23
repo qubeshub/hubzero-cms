@@ -33,7 +33,8 @@ Html::behavior('multiselect');
 			<button type="button" class="filter-clear"><?php echo Lang::txt('JSEARCH_FILTER_CLEAR'); ?></button>
 		</div>
 		<div class="filter-select fltrt">
-			<select name="filter_client_id" class="inputbox filter filter-submit">
+			<label for="filter_client_id"><?php echo Lang::txt('JGLOBAL_FILTER_CLIENT'); ?></label>
+			<select name="filter_client_id" id="filter_client_id" class="inputbox filter filter-submit">
 				<option value="*"><?php echo Lang::txt('JGLOBAL_FILTER_CLIENT'); ?></option>
 				<?php echo Html::select('options', \Components\Templates\Helpers\Utilities::getClientOptions(), 'value', 'text', $this->filters['client_id']);?>
 			</select>
@@ -53,7 +54,7 @@ Html::behavior('multiselect');
 					<?php echo Html::grid('sort', 'JCLIENT', 'a.client_id', $this->filters['sort_Dir'], $this->filters['sort']); ?>
 				</th>
 				<th scope="col" class="priority-4">
-					<?php echo Lang::txt('JVERSION'); ?>
+					<?php echo Lang::txt('HVERSION'); ?>
 				</th>
 				<th scope="col" class="priority-5">
 					<?php echo Lang::txt('JDATE'); ?>

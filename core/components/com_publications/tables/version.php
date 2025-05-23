@@ -393,6 +393,42 @@ class Version extends Table
 		$result = $this->_db->loadObjectList();
 		return $result ? $result[0] : false;
 	}
+	
+	/**
+	 * Get previous version publication
+	 *
+	 * @param   integer	$pid	Pub ID
+	 * @param	integer	$verNum	version number
+	 * @return  object
+	 */
+	public function getPrevPublication($pid, $version_number)
+	{
+		if ($pid === null || $version_number == 1)
+		{
+			return false;
+		}
+		$query = "SELECT * FROM $this->_tbl WHERE publication_id=" . $this->_db->quote($pid) . " AND version_number=" . $this->_db->quote(--$version_number) . " AND state = 1";
+		$this->_db->setQuery($query);
+		return $this->_db->loadObject();
+	}
+	
+	/**
+	 * Get next version publication
+	 *
+	 * @param	integer	$pid	Pub ID
+	 * @param	integer	$verNum	version number
+	 * @return  object
+	 */
+	public function getNextPublication($pid, $version_number)
+	{
+		if ($pid === null)
+		{
+			return false;
+		}
+		$query = "SELECT * FROM $this->_tbl WHERE publication_id=" . $this->_db->quote($pid) . " AND version_number=" . $this->_db->quote(++$version_number) . " AND state = 1";
+		$this->_db->setQuery($query);
+		return $this->_db->loadObject();
+	}
 
 	/**
 	 * Remove main flag
@@ -629,5 +665,51 @@ class Version extends Table
 		{
 			return $this->_db->loadResult();
 		}
+	}
+	
+	/**
+	 * Save the reason that why the dataset is unpublished
+	 *
+	 * @param   int   $pid	publication id
+	 * @param   int   $verNumber	version number
+	 * @param   string  $selectedReason	the reason that users select
+	 * @param   string  $otherReason	the reason that users specify
+	 * @return  null or void
+	 */
+	public function saveUnPubReason($pid, $verNumber, $selectedReason, $otherReason='')
+	{
+		if (empty($pid) || empty($verNumber))
+		{
+			return null;
+		}
+		
+		if ($otherReason == '')
+		{
+			$query = "UPDATE $this->_tbl SET unpublished_reason = " . $this->_db->quote($selectedReason) . " WHERE publication_id=" . $this->_db->quote($pid) . " AND version_number=" . $this->_db->quote($verNumber);
+		}
+		else
+		{
+			$query = "UPDATE $this->_tbl SET unpublished_reason = " . $this->_db->quote($otherReason) . " WHERE publication_id=" . $this->_db->quote($pid) . " AND version_number=" . $this->_db->quote($verNumber);
+		}
+		
+		$this->_db->setQuery($query);
+		$this->_db->query();		
+	}
+	
+	/**
+	 * Get publication version by ID
+	 *
+	 * @param	integer	$vid	Publication Version ID
+	 * @return	object
+	 */
+	public function getPubVersion($vid = null)
+	{
+		if ($vid === null)
+		{
+			return false;
+		}
+		$query = "SELECT * FROM $this->_tbl WHERE id=" . $this->_db->quote($vid) . " AND state = 1";
+		$this->_db->setQuery($query);
+		return $this->_db->loadObject();
 	}
 }

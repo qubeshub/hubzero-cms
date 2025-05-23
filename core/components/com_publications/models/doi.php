@@ -59,6 +59,28 @@ class Doi extends Obj
 	 */
 	const STATE_FROM_PUBLISHED_TO_DRAFTREADY = 0;
 	const STATE_FROM_DRAFTREADY_TO_PUBLISHED = 1;
+	
+	/**
+	 * DataCite
+	 *
+	 * @const
+	 */
+	const DATACITE = "datacite::";
+	
+	/**
+	 * Relation type
+	 *
+	 * @const
+	 */
+	const REFERENCES = "references";
+	const REFERENCEDBY = "referencedby";
+	const ISREFERENCEDBY = "IsReferencedBy";
+	
+	/*
+	* Handle
+	*/
+	const HANDLE = "handle";
+	const HANDLE_DOMAIN_NAME = "hdl.handle.net";
 
 	/**
 	 * Constructor
@@ -97,6 +119,9 @@ class Doi extends Obj
 			$configs->ezidServiceURL = $params->get('ezid_doi_service');
 			$configs->ezidUserPW = $params->get('ezid_doi_userpw');
 			$configs->publisher = $params->get('doi_publisher', Config::get('sitename'));
+			$configs->publisherIdentifier = $params->get('doi_publisher_identifier');
+			$configs->publisherIdentifierScheme = $params->get('doi_publisher_identifier_scheme');
+			$configs->publisherIdentifierSchemeURI = $params->get('doi_publisher_identifier_scheme_uri');
 			$configs->livesite  = trim(Request::root(), DS);
 			$configs->xmlSchema = trim($params->get('doi_xmlschema', 'http://schema.datacite.org/meta/kernel-4/metadata.xsd'), DS);
 
@@ -222,7 +247,9 @@ class Doi extends Obj
 		$this->set('doi', $pub->version->doi);
 		$this->set('title', htmlspecialchars($pub->version->title));
 		$this->set('version', htmlspecialchars($pub->version->version_label));
-		$this->set('abstract', htmlspecialchars($pub->version->abstract));
+		$this->set('abstract', htmlspecialchars($pub->version->description));
+		$this->set('synopsis', htmlspecialchars($pub->version->abstract));
+		
 		$this->set('url', $this->_configs->livesite . DS . 'publications'. DS . $pub->id . DS . $pub->version->version_number);
 
 		// Set dates
@@ -230,16 +257,29 @@ class Doi extends Obj
 				? date('Y', strtotime($pub->version->published_up)) : date('Y');
 		$pubDate = $pub->version->published_up && $pub->version->published_up != $this->_db->getNullDate()
 				? date('Y-m-d', strtotime($pub->version->published_up)) : date('Y-m-d');
+		$acceptedDate = $pub->version->accepted && $pub->version->accepted != $this->_db->getNullDate()
+				? date('Y-m-d', strtotime($pub->version->accepted)) : "0000-00-00";
+		$submittedDate = $pub->version->submitted && $pub->version->submitted != $this->_db->getNullDate()
+				? date('Y-m-d', strtotime($pub->version->submitted)) : "0000-00-00";
 		$this->set('pubYear', $pubYear);
 		$this->set('datePublished', $pubDate);
-
+		$this->set('dateAccepted', $acceptedDate);
+		$this->set('dateSubmitted', $submittedDate);
+		
 		// Map authors & creator
 		$this->set('authors', $pub->authors());
 		$this->mapUser($pub->version->created_by, $pub->_authors, 'creator');
-
-		// Project creator as contributor
-		$project = $pub->project();
-		$this->mapUser($project->get('owned_by_user'), array(), 'contributor');
+		
+		// Publication contact person as contributor
+		$contactPerson = [];
+		foreach($this->get('authors') as $author)
+		{
+			if ($author->repository_contact == 1)
+			{
+				$contactPerson[] = $author;
+			}
+		}
+		$this->set('contactPerson', $contactPerson);
 
 		// Map resource type
 		$category = $pub->category();
@@ -252,12 +292,138 @@ class Doi extends Obj
 		$license = $pub->license();
 		$licenseTitle = is_object($license) ? $license->title : null;
 		$this->set('license', htmlspecialchars($licenseTitle));
+		
+		$licenseURI = is_object($license) ? $license->url : null;
+		if ($licenseURI != null && !empty($licenseURI))
+		{
+			$this->set('licenseURI', $licenseURI);
+		}
 
 		// Map related identifier
-		$lastPub = $pub->lastPublicRelease();
-		if ($lastPub && $lastPub->doi && $pub->version->version_number > 1)
+		$prevPub = $pub->prevPublication();
+		if ($prevPub && $prevPub->doi)
 		{
-			$this->set('relatedDoi', $lastPub->doi);
+			$this->set('doiOfPrevPub', $prevPub->doi);
+		}
+		
+		$nextPub = $pub->nextPublication();
+		if ($nextPub && $nextPub->doi)
+		{
+			$this->set('doiOfNextPub', $nextPub->doi);
+		}
+		
+		$citations = $pub->getCitationsForMetadataSet();
+		if ($citations)
+		{
+			$this->set('citations', $citations);
+		}
+		
+		// Format
+		$type = $pub->masterType();
+		$this->set('pubType', $type->id);
+		$attachments = $pub->attachments();
+		
+		if ($type->id == 1)
+		{
+			// get the quantity of files of file publication
+			$quantity = $pub->attachmentsCount();
+			
+			// get mime-type for all files
+			$mimeTypes = \Components\Publications\Helpers\Html::getMimeTypes($type->id, $pub->version->publication_id, $pub->version->id, $pub->version->secret, $attachments);
+		}
+		else if($type->id == 5)
+		{
+			// get the quantity of publication in series publication.
+			$quantity = count($attachments[1]);
+		}
+		else if ($type->id == 7)
+		{
+			// get the quantity of the support and gallery files in database publication
+			$quantity = $pub->attachmentsCount();
+			$quantity--;
+			
+			$files = \Components\Publications\Helpers\Html::getdatabaseFiles($pub->version->publication_id, $pub->version->id);
+			
+			if ($files != false && !empty($files))
+			{
+				$quantity += count($files);
+			}
+			
+			// get MIME type for support and gallery file
+			$mimeTypes = \Components\Publications\Helpers\Html::getMimeTypes($type->id, $pub->version->publication_id, $pub->version->id, $pub->version->secret, $attachments);
+			
+			// get MIME type of files in data directory
+			if ($files != false && !empty($files))
+			{
+				foreach ($files as $file)
+				{
+					$mimeType = mime_content_type($file);
+					if ($mimeType && !in_array($mimeType, $mimeTypes))
+					{
+						$mimeTypes[] = $mimeType;
+					}
+				}
+			}
+		}
+		else
+		{
+			$quantity = 0;
+			$mimeTypes = [];
+		}
+		$this->set('fileCount', $quantity);
+		if ($type->id == 1 || $type->id == 7)
+		{
+			$this->set('mimeTypes', $mimeTypes);
+		}
+		
+		// Size
+		$path = \Components\Publications\Helpers\Html::buildPubPath($pub->version->publication_id, $pub->version->id, '', '', 1);
+		$path .= DIRECTORY_SEPARATOR . str_replace(['.', '/'], '_', $pub->version->doi) . ".zip";
+		
+		if ($type->id == 1 && file_exists($path))
+		{
+			$size = filesize($path);
+			if ($size)
+			{
+				$this->set('size', \Hubzero\Utility\Number::formatBytes($size));
+			}
+		}
+		
+		// Project grant info
+		$project = $pub->project();
+		$grantInfo = [];
+		if ($project->params->get('grant_title'))
+		{
+			$grantInfo['grant_title'] = $project->params->get('grant_title');
+		}
+		if ($project->params->get('award_number'))
+		{
+			$grantInfo['award_number'] = $project->params->get('award_number');
+		}
+		if ($project->params->get('grant_agency'))
+		{
+			$grantInfo['grant_agency'] = $project->params->get('grant_agency');
+		}
+		if ($project->params->get('grant_agency_id'))
+		{
+			$grantInfo['grant_agency_id'] = $project->params->get('grant_agency_id');
+		}
+		if (!empty($grantInfo))
+		{
+			$this->set('grantInfo', $grantInfo);
+		}
+		
+		// Get tags
+		$regTags = $pub->getTagsOfPublication();
+		if (!empty($regTags))
+		{
+			$this->set('regTags', $regTags);
+		}
+		
+		$fosTag = $pub->getFOSTag();
+		if (!empty($fosTag))
+		{
+			$this->set('fosTag', $fosTag);
 		}
 	}
 
@@ -314,10 +480,12 @@ class Doi extends Obj
 		$this->set('language', 'en');
 		$this->set('pubYear', date('Y'));
 		$this->set('publisher', htmlspecialchars($this->_configs->publisher));
+		$this->set('publisherIdentifier', htmlspecialchars($this->_configs->publisherIdentifier == null ? '' : $this->_configs->publisherIdentifier));
+		$this->set('publisherIdentifierScheme', htmlspecialchars($this->_configs->publisherIdentifierScheme == null ? '' : $this->_configs->publisherIdentifierScheme));
+		$this->set('publisherIdentifierSchemeURI', htmlspecialchars($this->_configs->publisherIdentifierSchemeURI == null ? '' : $this->_configs->publisherIdentifierSchemeURI));
 		$this->set('resourceType', 'Dataset');
 		$this->set('resourceTypeTitle', 'Dataset');
 		$this->set('datePublished', date('Y-m-d'));
-		$this->set('dateAccepted', date('Y-m-d'));
 	}
 
 	/**
@@ -376,7 +544,7 @@ class Doi extends Obj
 		}
 
 		// Start XML
-		$xmlfile  = '<?xml version="1.0" encoding="UTF-8"?><resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 http://schema.datacite.org/meta/kernel-4/metadata.xsd">';
+		$xmlfile  = '<?xml version="1.0" encoding="UTF-8"?><resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://datacite.org/schema/kernel-4" xsi:schemaLocation="http://datacite.org/schema/kernel-4 https://schema.datacite.org/meta/kernel-4.5/metadata.xsd">';
 		$xmlfile .='<identifier identifierType="DOI">' . $doi . '</identifier>';
 		$xmlfile .='<creators>';
 
@@ -391,10 +559,43 @@ class Doi extends Obj
 				$name        .= count($nameParts) > 1 ? ', ' . $nameParts[0] : '';
 				$xmlfile .='<creator>';
 				$xmlfile .='	<creatorName>' . $name . '</creatorName>';
+				
+				if ($author->user_id != 0)
+				{
+					if (!empty($author->givenName))
+					{
+						$xmlfile .='	<givenName>' . $author->givenName . '</givenName>';
+					}
+					
+					if (!empty($author->surname))
+					{
+						$xmlfile .='	<familyName>' . $author->surname . '</familyName>';
+					}
+				}
+				else
+				{
+					if (!empty($author->firstName))
+					{
+						$xmlfile .='	<givenName>' . $author->firstName . '</givenName>';
+					}
+					
+					if (!empty($author->lastName))
+					{
+						$xmlfile .='	<familyName>' . $author->lastName . '</familyName>';
+					}
+				}
+				
 				if (isset($author->orcid) && !empty($author->orcid))
 				{
-					$xmlfile.='	<nameIdentifier nameIdentifierScheme="ORCID">' . $author->orcid . '</nameIdentifier>';
+					$xmlfile.='	<nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/">' . $author->orcid . '</nameIdentifier>';
 				}
+				
+				if ($author->organization)
+				{
+					$orgidAtr = (isset($author->orgid) && !empty($author->orgid)) ? ' affiliationIdentifier="' . $author->orgid . '"' . ' affiliationIdentifierScheme="ROR" schemeURI="https://ror.org"' : "";
+					$xmlfile .= ' <affiliation' .  $orgidAtr . '>' . $author->organization . '</affiliation>';
+				}
+				
 				$xmlfile.='</creator>';
 			}
 		}
@@ -404,56 +605,278 @@ class Doi extends Obj
 			$xmlfile .='	<creatorName>' . $this->get('creator') . '</creatorName>';
 			if ($this->get('creatorOrcid'))
 			{
-				$xmlfile.='	<nameIdentifier nameIdentifierScheme="ORCID">'.'http://orcid.org/' .  $this->get('creatorOrcid') . '</nameIdentifier>';
+				$xmlfile.='	<nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/">' .  $this->get('creatorOrcid') . '</nameIdentifier>';
 			}
 			$xmlfile.='</creator>';
 		}
 		$xmlfile.='</creators>';
 		$xmlfile.='<titles>
 			<title>' . $this->get('title') . '</title>
-		</titles>
-		<publisher>' . $this->get('publisher') . '</publisher>
-		<publicationYear>' . $this->get('pubYear') . '</publicationYear>';
-		if ($this->get('contributor'))
+		</titles>';
+		
+		if ($this->get('publisher'))
+		{
+			$publisherIdentifier = $this->get('publisherIdentifier') ? ' publisherIdentifier="' . $this->get('publisherIdentifier') . '"' : "";
+			$publisherIdentifierScheme = $this->get('publisherIdentifierScheme') ? ' publisherIdentifierScheme="' . $this->get('publisherIdentifierScheme') . '"' : "";
+			$publisherIdentifierSchemeURI = $this->get('publisherIdentifierSchemeURI') ? ' schemeURI="' . $this->get('publisherIdentifierSchemeURI') . '"' : "";
+			$xmlfile .= ' <publisher xml:lang="en"' . $publisherIdentifier . $publisherIdentifierScheme . $publisherIdentifierSchemeURI . '>' . $this->get('publisher') . '</publisher>';
+		}
+		
+		$xmlfile.= '<publicationYear>' . $this->get('pubYear') . '</publicationYear>';
+		
+		if ($this->get('contactPerson'))
 		{
 			$xmlfile.='<contributors>';
-			$xmlfile.='	<contributor contributorType="ProjectLeader">';
-			$xmlfile.='		<contributorName>' . htmlspecialchars($this->get('contributor')) . '</contributorName>';
-			$xmlfile.='	</contributor>';
+			
+			foreach ($this->get('contactPerson') as $contactPerson)
+			{
+				$xmlfile.='	<contributor contributorType="ContactPerson">';
+				$xmlfile.='		<contributorName nameType="Personal">' . $contactPerson->name . '</contributorName>';
+				if ($contactPerson->user_id)
+				{
+					$xmlfile.='		<givenName>' . $contactPerson->givenName . '</givenName>';
+					$xmlfile.='		<familyName>' . $contactPerson->surname . '</familyName>';
+				}
+				else
+				{
+					$xmlfile.='		<givenName>' . $contactPerson->firstName . '</givenName>';
+					$xmlfile.='		<familyName>' . $contactPerson->lastName . '</familyName>';
+				}
+				
+				if (isset($contactPerson->orcid) && !empty($contactPerson->orcid))
+				{
+					$xmlfile.='		<nameIdentifier nameIdentifierScheme="ORCID" schemeURI="https://orcid.org/">' .  $contactPerson->orcid . '</nameIdentifier>';
+				}
+				
+				if ($contactPerson->organization)
+				{
+					$orgidAtr = (isset($contactPerson->orgid) && !empty($contactPerson->orgid)) ? ' affiliationIdentifier="' . $contactPerson->orgid . '"' . ' affiliationIdentifierScheme="ROR" schemeURI="https://ror.org"' : "";
+					$xmlfile .= '		<affiliation' .  $orgidAtr . '>' . $contactPerson->organization . '</affiliation>';
+				}
+				
+				$xmlfile.='	</contributor>';
+			}
+			
 			$xmlfile.='</contributors>';
 		}
-		$xmlfile.='<dates>
-			<date dateType="Valid">' . $this->get('datePublished') . '</date>
-			<date dateType="Accepted">' . $this->get('dateAccepted') . '</date>
-		</dates>
-		<language>' . $this->get('language') . '</language>
+		
+		$xmlfile.='<dates>';
+		$xmlfile .= '<date dateType="Available">' . $this->get('datePublished') . '</date>';
+		$xmlfile .= '<date dateType="Submitted">' . $this->get('dateSubmitted') . '</date>';
+		$xmlfile .= '<date dateType="Accepted">' . $this->get('dateAccepted') . '</date>';
+		$xmlfile .= '</dates>';
+		
+		$xmlfile .= '<language>' . $this->get('language') . '</language>
 		<resourceType resourceTypeGeneral="' . $this->get('resourceType') . '">' . $this->get('resourceTypeTitle') . '</resourceType>';
-		if ($this->get('relatedDoi'))
+		
+		$doiOfPrevPub = $this->get('doiOfPrevPub');
+		$doiOfNextPub = $this->get('doiOfNextPub');
+		$citations = $this->get('citations');
+		if ($doiOfPrevPub || $doiOfNextPub || $citations)
 		{
-			$xmlfile.='<relatedIdentifiers>
-				<relatedIdentifier relatedIdentifierType="DOI" relationType="IsNewVersionOf">' . $this->get('relatedDoi') . '</relatedIdentifier>
-			</relatedIdentifiers>';
+			$xmlfile .= '<relatedIdentifiers>';
+			
+			if ($doiOfPrevPub)
+			{
+				$xmlfile .= '	<relatedIdentifier relatedIdentifierType="DOI" relationType="IsNewVersionOf">' . $doiOfPrevPub . '</relatedIdentifier>';
+			}
+			
+			if ($doiOfNextPub)
+			{
+				$xmlfile .= '	<relatedIdentifier relatedIdentifierType="DOI" relationType="IsPreviousVersionOf">' . $doiOfNextPub . '</relatedIdentifier>';
+			}
+			
+			if ($citations)
+			{
+				foreach ($citations as $citation)
+				{
+					$pos = strpos(trim($citation->resourceTypeGeneral), self::DATACITE);
+					
+					if ($pos == 0)
+					{
+						$citation->resourceTypeGeneral = substr(trim($citation->resourceTypeGeneral), $pos + strlen(self::DATACITE));
+					}
+					
+					if (!empty($citation->relationType) && (preg_match("/" . self::REFERENCES . "/i", $citation->relationType) || preg_match("/" . self::REFERENCEDBY . "/i", $citation->relationType)))
+					{
+						if (preg_match("/" . self::REFERENCES . "/i", $citation->relationType))
+						{
+							$citation->relationType = ucfirst(self::REFERENCES);
+						}
+						else if (preg_match("/" . self::REFERENCEDBY . "/i", $citation->relationType))
+						{
+							$citation->relationType = self::ISREFERENCEDBY;
+						}
+						
+						if (!empty($citation->resourceTypeGeneral))
+						{
+							if (!empty($citation->relatedIdentifier))
+							{
+								$xmlfile .= '<relatedIdentifier relatedIdentifierType="DOI" relationType="' . $citation->relationType . '" resourceTypeGeneral="' . $citation->resourceTypeGeneral . '">' . trim($citation->relatedIdentifier) . '</relatedIdentifier>';
+							}
+							else
+							{
+								if (!empty($citation->url))
+								{
+									if (preg_match("/purl/i", $citation->url))
+									{
+										$xmlfile .= '<relatedIdentifier relatedIdentifierType="PURL" relationType="' . $citation->relationType . '" resourceTypeGeneral="' . $citation->resourceTypeGeneral . '">' . trim($citation->url) . '</relatedIdentifier>';
+									}
+									elseif (preg_match("/handle/i", $citation->url))
+									{
+										if (preg_match("/hdl\.handle\.net/i", $citation->url))
+										{
+											$pos = strpos($citation->url, self::HANDLE_DOMAIN_NAME);
+											$val = substr($citation->url, $pos + strlen(self::HANDLE_DOMAIN_NAME) + 1);
+										}
+										else
+										{
+											$pos = strpos($citation->url, self::HANDLE);
+											$val = substr($citation->url, $pos + strlen(self::HANDLE) + 1);
+										}
+										$xmlfile .= '<relatedIdentifier relatedIdentifierType="Handle" relationType="' . $citation->relationType . '" resourceTypeGeneral="' . $citation->resourceTypeGeneral . '">' . $val . '</relatedIdentifier>';
+									}
+									elseif (preg_match("/ark:/i", $citation->url) && !empty($citation->eprint))
+									{
+										$xmlfile .= '<relatedIdentifier relatedIdentifierType="ARK" relationType="' . $citation->relationType . '" resourceTypeGeneral="' . $citation->resourceTypeGeneral . '">' . $citation->eprint . '</relatedIdentifier>';
+									}
+									elseif (preg_match("/arxiv/i", $citation->url) && !empty($citation->eprint))
+									{
+										$xmlfile .= '<relatedIdentifier relatedIdentifierType="arXiv" relationType="' . $citation->relationType . '" resourceTypeGeneral="' . $citation->resourceTypeGeneral . '">' . $citation->eprint . '</relatedIdentifier>';
+									}
+									elseif (preg_match("/urn:/i", $citation->url) && !empty($citation->eprint))
+									{
+										$xmlfile .= '<relatedIdentifier relatedIdentifierType="URN" relationType="' . $citation->relationType . '" resourceTypeGeneral="' . $citation->resourceTypeGeneral . '">' . $citation->eprint . '</relatedIdentifier>';
+									}
+									else
+									{
+										$xmlfile .= '<relatedIdentifier relatedIdentifierType="URL" relationType="' . $citation->relationType . '" resourceTypeGeneral="' . $citation->resourceTypeGeneral . '">' . $citation->url . '</relatedIdentifier>';
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			$xmlfile .= '</relatedIdentifiers>';
 		}
+		
 		if ($this->get('version'))
 		{
 			$xmlfile.= '<version>' . $this->get('version') . '</version>';
 		}
 		if ($this->get('license'))
 		{
-			$xmlfile.='<rightsList><rights>' . htmlspecialchars($this->get('license')) . '</rights></rightsList>';
+			$rightsURI = $this->get('licenseURI') ? 'rightsURI="' . $this->get('licenseURI') . '"' : "";
+			$xmlfile.='<rightsList><rights ' . $rightsURI . '>' . htmlspecialchars($this->get('license')) . '</rights></rightsList>';
 		}
+		if ($this->get('grantInfo'))
+		{
+			$grantInfo = $this->get('grantInfo');
+			if (array_key_exists('grant_agency', $grantInfo))
+			{
+				$xmlfile .= '<fundingReferences>
+				<fundingReference>';
+				
+				$xmlfile .= '	<funderName>' . $grantInfo['grant_agency'] . '</funderName>';
+				
+				if (array_key_exists('grant_agency_id', $grantInfo))
+				{
+					$xmlfile .= '	<funderIdentifier funderIdentifierType="ROR">' . $grantInfo['grant_agency_id'] . '</funderIdentifier>';
+				}
+				
+				if (array_key_exists('award_number', $grantInfo))
+				{
+					$xmlfile .= '	<awardNumber>' . $grantInfo['award_number'] . '</awardNumber>';
+				}
+				
+				if (array_key_exists('grant_title', $grantInfo))
+				{
+					$xmlfile .= '	<awardTitle>' . $grantInfo['grant_title'] . '</awardTitle>';
+				}
+				
+				$xmlfile .= '	</fundingReference>
+				</fundingReferences>';
+			}
+		}
+		// Format
+		if ($this->get('pubType') && $this->get('mimeTypes'))
+		{
+			$xmlfile .= '<formats>';
+			$mimeTypes = $this->get('mimeTypes');
+			foreach ($mimeTypes as $mimeType)
+			{
+				$xmlfile .= '	<format>' . $mimeType . '</format>';
+			}
+			$xmlfile .= '</formats>';
+		}
+		//Size
+		if ($this->get('size'))
+		{
+			$xmlfile .= '<sizes>';
+			$pubType = $this->get('pubType');
+			if ($this->get('fileCount'))
+			{
+				$xmlfile .= '	<size>' . $this->get('fileCount') . ($pubType == 5 ? ($this->get('fileCount') == 1 ? " publication" : " publications") : ($this->get('fileCount') == 1 ? " file" : " files")). '</size>';
+			}
+			if ($this->get('size'))
+			{
+				$xmlfile .= '	<size>' . $this->get('size') . '</size>';
+			}
+			$xmlfile .= '</sizes>';
+		}
+		// Subject
+		$xmlfile .= '<subjects>';
+		if ($this->get('regTags'))
+		{
+			foreach ($this->get('regTags') as $regTag)
+			{
+				if (!empty($regTag->description) && preg_match("/^lcsh::/i", trim($regTag->description)))
+				{
+					$url = substr(trim(strip_tags($regTag->description)), 6);
+					$xmlfile .= '<subject subjectScheme="Library of Congress Subject Headings (LCSH)" schemeURI="https://id.loc.gov/authorities/" valueURI="' . $url . '">' . $regTag->raw_tag . '</subject>';
+				}
+				else
+				{
+					$xmlfile .= '	<subject>' . $regTag->raw_tag . '</subject>';
+				}
+			}
+		}
+		
+		$fosTagObj = $this->get('fosTag');
+		if (!empty($fosTagObj))
+		{
+			$result = explode(PHP_EOL, $fosTagObj->description);
+			$valArr = explode(" | ", strip_tags($result[0]));
+			
+			if (!empty($valArr) && preg_match("/^fos::/i", trim($valArr[0])) && !empty($valArr[1]))
+			{
+				$classificationCode = substr(trim($valArr[0]), 5);
+				$fosTagVal = trim($valArr[1]);
+				$xmlfile .= '<subject subjectScheme="Fields of Science and Technology (FOS)" schemeURI="https://web-archive.oecd.org/2012-06-15/138575-38235147.pdf" classificationCode="' . $classificationCode . '">' . $fosTagVal . '</subject>';
+			}
+		}
+		$xmlfile .= '</subjects>';
+		
 		$xmlfile .='<descriptions>
 			<description descriptionType="Abstract">';
 		$xmlfile.= stripslashes(htmlspecialchars($this->get('abstract')));
-		$xmlfile.= '</description>
+		$xmlfile.= '</description>';
+		
+		if ($this->get('synopsis'))
+		{
+			$xmlfile .= '<description descriptionType="Other">' . stripslashes($this->get('synopsis')) . '</description>';
+		}
+		$xmlfile .= '
 			</descriptions>
 		</resource>';
-
 		return $xmlfile;
 	}
 
 	/**
-	 * Run cURL to register metadata. When input $doi is null, it is going to create DOI on DataCite.
+	 * Run cURL to register metadata. When input $doi is null as well as only DOI shoulder is set in $url, 
+	 * it is going to create DOI on DataCite.
 	 *
 	 * @param	string	$url
 	 * @param	array	$postVals
@@ -467,9 +890,9 @@ class Doi extends Obj
 		curl_setopt($ch, CURLOPT_USERPWD, $this->_configs->dataciteUserPW);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $postvals);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:text/plain;charset=UTF-8', 'Content-Length: ' . strlen($postvals)));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml;charset=UTF-8'));
 		curl_setopt($ch, CURLOPT_FAILONERROR, true);
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
 
 		$response = curl_exec($ch);
 
@@ -518,7 +941,7 @@ class Doi extends Obj
 		curl_setopt($ch, CURLOPT_USERPWD, $this->_configs->dataciteUserPW);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $postvals);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:text/plain;charset=UTF-8', 'Content-Length: ' . strlen($postvals)));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:text/plain;charset=UTF-8'));
 		curl_setopt($ch, CURLOPT_FAILONERROR, true);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
 
@@ -546,7 +969,7 @@ class Doi extends Obj
 	/**
 	 * Register DOI metadata. This is the first step to create DOI name and register metadata on DataCite.
 	 *
-	 * @param  string  $doi  - It is null when the function is used for DOI registration. Otherwise, the function is used for updating DOI state on DataCite.
+	 * @param  string  $doi
 	 *
 	 * @return string $doi
 	 */
@@ -575,7 +998,7 @@ class Doi extends Obj
 	 *
 	 * @return boolean
 	 */
-	public function registerURL($doi)
+	public function registerURL($doi, $resURL = "")
 	{
 		if (!$this->on())
 		{
@@ -584,10 +1007,18 @@ class Doi extends Obj
 		}
 
 		// Register URL
-		$resURL = $this->get('url');
 		$url = $this->_configs->dataciteServiceURL . DS . 'doi' . DS . $doi;
-		$postvals = "doi=" . $doi . "\n" . "url=" . $resURL;
-
+		$postVals = "";
+		
+		if (empty($resURL))
+		{
+			$postvals = "doi=" . $doi . "\n" . "url=" . $this->get('url');
+		}
+		else
+		{
+			$postvals = "doi=" . $doi . "\n" . "url=" . $resURL;
+		}
+		
 		$regResult = $this->regURL($url, $postvals);
 
 		if (!$regResult)
@@ -601,7 +1032,7 @@ class Doi extends Obj
 	}
 
 	/**
-	 * Update DOI metadata
+	 * Update DOI metadata on DataCite
 	 *
 	 * @param   string   $doi
 	 *
@@ -623,16 +1054,16 @@ class Doi extends Obj
 			return false;
 		}
 
-		$metadataURL = $this->_configs->dataciteServiceURL . DS . 'metadata';
+		$metadataURL = $this->_configs->dataciteServiceURL . DS . 'metadata' . DS . $doi;
 		$xml = $this->buildXml($doi);
 
 		$ch = curl_init($metadataURL);
 		curl_setopt($ch, CURLOPT_USERPWD, $this->_configs->dataciteUserPW);
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:text/plain;charset=UTF-8', 'Content-Length: ' . strlen($xml)));
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/xml;charset=UTF-8'));
 		curl_setopt($ch, CURLOPT_FAILONERROR, true);
-		curl_setopt($ch, CURLOPT_POST, true);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
 
 		$response = curl_exec($ch);
 
@@ -642,6 +1073,7 @@ class Doi extends Obj
 		}
 
 		$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
 
 		curl_close($ch);
 
@@ -917,7 +1349,7 @@ class Doi extends Obj
 		}
 		else
 		{
-			throw new Exception(Lang::txt('COM_PUBLICATIONS_ERROR_UPDATE_STATUS'), 400);
+			throw new \Exception(Lang::txt('COM_PUBLICATIONS_ERROR_UPDATE_STATUS'), 400);
 		}
 	}
 
@@ -944,7 +1376,7 @@ class Doi extends Obj
 			$ch = curl_init($url);
 			curl_setopt($ch, CURLOPT_USERPWD, $this->_configs->dataciteUserPW);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type:text/plain;charset=UTF-8'));
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/plain;charset=UTF-8'));
 			curl_setopt($ch, CURLOPT_FAILONERROR, true);
 			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
 
@@ -963,10 +1395,8 @@ class Doi extends Obj
 				return false;
 			}
 		}
-		elseif ($stateSwitch == self::STATE_FROM_DRAFTREADY_TO_PUBLISHED)
-		{
-			return $this->registerMetadata($doi);
-		}
+		
+		return true;
 	}
 
 	/**

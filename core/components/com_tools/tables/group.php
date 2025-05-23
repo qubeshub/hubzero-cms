@@ -73,7 +73,7 @@ class Group extends Table
 	 * @param   boolean  $exist     Group exists?
 	 * @return  boolean  True if no errors
 	 */
-	public function saveGroup($toolid=null, $devgroup, $members, $exist)
+	public function saveGroup($toolid, $devgroup, $members, $exist)
 	{
 		if (!$toolid or !$devgroup)
 		{
@@ -121,7 +121,7 @@ class Group extends Table
 	 * @param   array   $membergroups
 	 * @return  boolean
 	 */
-	public function saveMemberGroups($toolid=null, $newgroups, $editversion='dev', $membergroups=array())
+	public function saveMemberGroups($toolid, $newgroups, $editversion='dev', $membergroups=array())
 	{
 		if (!$toolid)
 		{

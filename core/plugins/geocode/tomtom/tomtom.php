@@ -38,7 +38,7 @@ class plgGeocodeTomTom extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		return new \Geocoder\Provider\TomTomProvider(
+		return new \Geocoder\Provider\TomTom\TomTom(
 			$adapter,
 			$this->params->get('apiKey')
 		);

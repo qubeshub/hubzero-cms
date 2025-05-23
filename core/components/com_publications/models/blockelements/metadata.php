@@ -35,13 +35,17 @@ class Metadata extends Base
 		$required = $manifest->params->required;
 		$key 	  = $manifest->params->aliasmap;
 		$default  = isset($manifest->params->default) ? $manifest->params->default : null;
+		if (isset($pub->curation()->_manifest->params->default_title))
+		{
+			$default = $pub->curation()->_manifest->params->default_title;
+		}
 		$value	  = isset($pub->$key) ? $pub->$key : null;
 
 		$incomplete = 0;
 
 		// Parse data in metadata field
 		$data = array();
-		preg_match_all("#<nb:(.*?)>(.*?)</nb:(.*?)>#s", $pub->metadata, $matches, PREG_SET_ORDER);
+		preg_match_all("#<nb:(.*?)>(.*?)</nb:(.*?)>#s", $pub->metadata == null ? '' : $pub->metadata , $matches, PREG_SET_ORDER);
 		if (count($matches) > 0)
 		{
 			foreach ($matches as $match)

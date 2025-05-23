@@ -105,7 +105,7 @@ class Publication extends Table
 
 		if (!isset($filters['all_versions']) || !$filters['all_versions'])
 		{
-			$groupby = ' GROUP BY C.id ';
+			$groupby = ' GROUP BY C.id, V.id ';
 		}
 
 		$project  = isset($filters['project']) && intval($filters['project']) ? $filters['project'] : "";
@@ -292,20 +292,19 @@ class Publication extends Table
 					$w = trim($w);
 					if (strlen($w) > 2)
 					{
-						$words[] = $w;
+						$words[] = $w . '*';
 					}
 				}
-				$text = implode(' +', $words);
-				$text = addslashes($text);
-				$text2 = str_replace('+', '', $text);
+				$text = implode(' ', $words);
+				$escapedtext = $this->_db->escape($text);
 
-				$query .= " AND ((MATCH(V.title) AGAINST ('+$text -\"$text2\"') > 0) OR"
-						 . " (MATCH(V.abstract,V.description) AGAINST ('+$text -\"$text2\"') > 0)) ";
+				$query .= " AND ((MATCH(V.title) AGAINST ('$escapedtext' IN BOOLEAN MODE)) OR" 
+				. " (MATCH(V.abstract,V.description) AGAINST ('$escapedtext' IN BOOLEAN MODE))) ";
 
 				if ($componentParams->get('include_author_name_in_search'))
 				{
 					$query .= " OR (V.id in (SELECT publication_version_id"
-						.	" from jos_publication_authors as A where lower(A.name) like '%$text%'))";
+						.	" from jos_publication_authors as A where lower(A.name) like '%$escapedtext%'))";
 				}
 		}
 
@@ -531,7 +530,7 @@ class Publication extends Table
 		}
 
 		$now = Date::toSql();
-		$alias = str_replace(':', '-', $alias);
+		$alias = $alias ? str_replace(':', '-', $alias) : '';
 
 		$sql  = "SELECT V.*, C.id as id, C.category, C.master_type,
 				C.project_id, C.access as master_access, C.master_doi,
@@ -637,13 +636,6 @@ class Publication extends Table
 			$id = $this->id;
 		}
 
-		// Delete tag associations
-		$this->_db->setQuery("DELETE FROM `#__tags_object` WHERE tbl='publications' AND objectid=". $this->_db->quote($id));
-		if (!$this->_db->query())
-		{
-			echo $this->_db->getErrorMsg();
-			exit;
-		}
 		// Delete ratings
 		$this->_db->setQuery("DELETE FROM `#__publication_ratings` WHERE publication_id=" . $this->_db->quote($id));
 		if (!$this->_db->query())

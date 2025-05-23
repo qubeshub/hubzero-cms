@@ -71,7 +71,7 @@ class plgPublicationsDublincore extends \Hubzero\Plugin\Plugin
 
 		foreach ($publication->_authors as $contributor)
 		{
-			if (strtolower($contributor->role) == 'submitter')
+			if ($contributor->role && strtolower($contributor->role) == 'submitter')
 			{
 				continue;
 			}
@@ -89,7 +89,7 @@ class plgPublicationsDublincore extends \Hubzero\Plugin\Plugin
 			{
 				$contributor->organization = $contributor->p_organization;
 			}
-			$contributor->organization = stripslashes(trim($contributor->organization));
+			$contributor->organization = stripslashes(trim($contributor->organization ? $contributor->organization : ''));
 
 			Document::setMetaData('dcterms.creator', $view->escape($name . ($contributor->organization ? ', ' . $contributor->organization : '')));
 		}

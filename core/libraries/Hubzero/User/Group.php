@@ -855,7 +855,9 @@ class Group extends Obj
 	 */
 	private function _error($message, $level = E_USER_NOTICE)
 	{
-		$caller = next(debug_backtrace());
+		$backtrace = debug_backtrace();
+
+		$caller = next($backtrace);
 
 		switch ($level)
 		{
@@ -936,7 +938,7 @@ class Group extends Obj
 			return $userids;
 		}
 
-		$set = implode($usernames, ",");
+		$set = implode(",", $usernames);
 
 		$sql = "SELECT id FROM `#__users` WHERE username IN ($set);";
 

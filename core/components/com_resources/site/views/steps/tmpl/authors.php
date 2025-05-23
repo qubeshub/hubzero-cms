@@ -36,7 +36,7 @@ $this->css('create.css')
 	?>
 
 	<?php if ($this->getError()) { ?>
-		<p class="warning"><?php echo $this->getError(); ?></p>
+		<p class="error"><?php echo $this->getError(); ?></p>
 	<?php } ?>
 
 	<form action="<?php echo Route::url('index.php?option=' . $this->option . '&task=draft&step=' . $this->next_step . '&id=' . $this->id); ?>" method="post" id="hubForm">
@@ -60,7 +60,7 @@ $this->css('create.css')
 								foreach ($this->groups as $group)
 								{
 								?>
-								<option value="<?php echo $this->escape($group->cn); ?>"<?php if ($this->row->group_owner == $group->cn) { echo ' selected="selected"'; } ?>><?php echo $this->escape(stripslashes($group->description)); ?></option>
+								<option value="<?php echo $this->escape($group->cn); ?>"<?php if ($this->row->group_owner->get('cn') == $group->cn) { echo ' selected="selected"'; } ?>><?php echo $this->escape(stripslashes($group->description)); ?></option>
 								<?php
 								}
 							}

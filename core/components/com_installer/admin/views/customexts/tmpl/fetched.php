@@ -33,12 +33,17 @@ Html::behavior('tooltip');
 						<td class="merge-success">
 							<?php
 								echo '<strong>Extension: ' . $success['extension'] . '</strong>';
-								echo '<p>' . Lang::txt('COM_INSTALLER_CUSTOMEXTS_FETCH_SUCCESS_DESC') . '</p>';
 							?>
+							<?php if ($success['message'][0] != Lang::txt('COM_INSTALLER_CUSTOMEXTS_CLONE_SUCCESSFUL')
+										&& $success['message'][0] != Lang::txt('COM_INSTALLER_CUSTOMEXTS_FETCH_CODE_UP_TO_DATE')
+										&& !preg_match('/ineligible/', $success['message'][0])) : ?>
+									<?php echo '<p>' . Lang::txt('COM_INSTALLER_CUSTOMEXTS_FETCH_SUCCESS_DESC') . '</p>'; ?>
+							<?php endif; ?>
 							<hr />
 							<code><?php echo implode('<br>', $success['message']); ?></code>
 
-							<?php if ($success['message'][0] != Lang::txt('COM_INSTALLER_CUSTOMEXTS_FETCH_CODE_UP_TO_DATE')
+							<?php if ($success['message'][0] != Lang::txt('COM_INSTALLER_CUSTOMEXTS_CLONE_SUCCESSFUL')
+										&& $success['message'][0] != Lang::txt('COM_INSTALLER_CUSTOMEXTS_FETCH_CODE_UP_TO_DATE')
 										&& !preg_match('/ineligible/', $success['message'][0])) : ?>
 								<label class="merge">
 									<?php echo Lang::txt('COM_INSTALLER_CUSTOMEXTS_MERGE'); ?>
@@ -63,13 +68,12 @@ Html::behavior('tooltip');
 			<tbody>
 				<?php foreach ($this->failed as $failed) : ?>
 					<tr>
-						<td>
+					<td class="merge-fail">
 							<?php
-								echo '<strong>Extension: ' . $success['extension'] . '</strong>';
+								echo '<strong>Extension: ' . $failed['extension'] . '</strong>';
 							?>
-							<br />
-							<br />
-							<pre><?php echo $failed['message']; ?></pre>
+							<hr />
+							<pre><?php echo implode('<br>', is_array($failed['message']) ? $failed['message'] : array($failed['message'])); ?></pre>
 						</td>
 					</tr>
 				<?php endforeach; ?>

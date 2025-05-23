@@ -320,7 +320,7 @@ $this->css('pipeline.css')
 				</form>
 				<?php
 				$sitename = Config::get('sitename');
-				$hubShortURL = str_replace('https://', '', Request::base()); //$hubShortURL;
+				$hubShortURL = rtrim(str_replace('https://', '', Request::base()), '/'); //$hubShortURL;
 
 				// get tool access text
 				$toolaccess = \Components\Tools\Helpers\Html::getToolAccess($this->status['exec'], $this->status['membergroups']);
@@ -384,8 +384,10 @@ $this->css('pipeline.css')
 					case 2:
 				?>
 					<p>
-						<?php echo ucfirst(Lang::txt('COM_TOOLS_THE')); ?> <?php echo $sitename; ?>  <?php echo Lang::txt('COM_TOOLS_WHATSNEXT_AREA_CREATED'); ?> <a href="<?php echo $developer_url; ?>"><?php echo $developer_site; ?></a>:<br />
-						<a class="developer-wiki" href="<?php echo $developer_url . $project_path . $this->status['toolname']; ?>/wiki"><?php echo $developer_url . $project_path . $this->status['toolname']; ?>/wiki</a>
+						<?php echo ucfirst(Lang::txt('COM_TOOLS_THE')); ?> <?php echo $sitename; ?>  <?php echo Lang::txt('COM_TOOLS_WHATSNEXT_AREA_CREATED1'); ?>
+						<a href="<?php echo $developer_url . $project_path . $this->status['toolname']; ?>/wiki"><?php echo Lang::txt('COM_TOOLS_PROJECT_AREA'); ?></a>
+						<?php echo Lang::txt('COM_TOOLS_WHATSNEXT_AREA_CREATED2'); ?>
+						<a href="<?php echo $developer_url . '/tools'; ?>"><?php echo $developer_site; ?></a>.
 					</p>
 					<p>
 						<?php echo Lang::txt('COM_TOOLS_WHATSNEXT_FOLLOW_STEPS'); ?>:
@@ -397,7 +399,8 @@ $this->css('pipeline.css')
 					<?php if (!empty($rappture_url)) { ?>
 						<li><?php echo Lang::txt('COM_TOOLS_LEARN_MORE'); ?> <?php echo Lang::txt('COM_TOOLS_ABOUT'); ?> <?php echo Lang::txt('COM_TOOLS_THE'); ?> <a href="<?php echo $rappture_url; ?>">Rappture toolkit</a>.</li>
 					<?php } ?>
-						<li><?php echo Lang::txt('COM_TOOLS_WHATSNEXT_WHEN_READY'); ?>, <a class="developer-wiki" href="<?php echo $developer_url . $project_path . $this->status['toolname']; ?>/wiki/GettingStarted"><?php echo Lang::txt('COM_TOOLS_WHATSNEXT_FOLLOW_THESE_INSTRUCTIONS'); ?></a> <?php echo Lang::txt('COM_TOOLS_WHATSNEXT_TO_ACCESS_CODE'); ?>.</li>
+					<li><?php echo Lang::txt('COM_TOOLS_WHATSNEXT_GIT_INSTRUCTIONS'); ?></li>
+					<li><a class="developer-wiki" href="<?php echo $developer_url . $project_path . $this->status['toolname']; ?>/wiki/GettingStarted"><?php echo Lang::txt('COM_TOOLS_WHATSNEXT_FOLLOW_THESE_INSTRUCTIONS'); ?></a> <?php echo Lang::txt('COM_TOOLS_WHATSNEXT_TO_ACCESS_CODE'); ?>.</li>
 					</ul>
 					<h2><?php echo Lang::txt('COM_TOOLS_WHATSNEXT_WE_ARE_WAITING'); ?></h2>
 					<p><?php echo Lang::txt('COM_TOOLS_WHATSNEXT_CREATED_LET_US_KNOW'); ?>:</p>

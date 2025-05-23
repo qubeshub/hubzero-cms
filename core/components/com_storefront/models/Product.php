@@ -23,6 +23,8 @@ class Product
 {
 	// Product data container
 	var $data;
+	// SKUs container
+	var $skus;
 
 	/**
 	 * Constructor
@@ -732,7 +734,7 @@ class Product
 	{
 		if (empty($this->data->tagline))
 		{
-			return null;
+			return '';
 		}
 		return $this->data->tagline;
 	}

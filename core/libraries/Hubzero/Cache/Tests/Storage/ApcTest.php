@@ -10,14 +10,14 @@ namespace Hubzero\Cache\Tests\Storage;
 /**
  * ApcTest
  */
-class ApcTest extends AbstractCacheTest
+class ApcTest extends AbstractCache
 {
 	/**
 	 * Test setup
 	 *
 	 * @return  void
 	 */
-	public function setUp()
+	public function setUp(): void
 	{
 		if (!extension_loaded('apcu'))
 		{

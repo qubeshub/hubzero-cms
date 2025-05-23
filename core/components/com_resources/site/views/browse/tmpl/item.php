@@ -106,14 +106,15 @@ $extras = Event::trigger('resources.onResourcesList', array($this->line));
 	<p class="details">
 		<?php
 		$info = array();
+		
+		if ($params->get('show_type'))
+		{
+			$info[] = '<strong class="type">' . stripslashes($this->line->type->get('type')) . '</strong>';
+		}
+
 		if ($thedate = $this->line->date)
 		{
 			$info[] = $thedate;
-		}
-
-		if ($params->get('show_type'))
-		{
-			$info[] = stripslashes($this->line->type->get('type'));
 		}
 
 		if ($this->line->authors->count() && $params->get('show_authors'))
@@ -146,5 +147,10 @@ $extras = Event::trigger('resources.onResourcesList', array($this->line));
 
 		echo \Hubzero\Utility\Str::truncate(strip_tags(\Hubzero\Utility\Sanitize::stripAll(stripslashes($content))), 300);
 		?>
+                <?php
+			$tc = $this->line->tags('cloud');
+			echo $tc->render();
+                ?>
 	</p>
 </li>
+

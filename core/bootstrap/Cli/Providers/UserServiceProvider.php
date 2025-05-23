@@ -52,6 +52,10 @@ class UserServiceProvider extends ServiceProvider
 			{
 				$params = new \Hubzero\Config\Registry;
 			}
+			catch (\Hubzero\Database\Exception\ConnectionFailedException $e)
+			{
+				$params = new \Hubzero\Config\Registry;
+			}
 
 			$config = [
 				'path'          => PATH_APP . DS . 'site' . DS . 'members',
@@ -62,14 +66,15 @@ class UserServiceProvider extends ServiceProvider
 
 			User::$pictureResolvers[] = new File($config);
 
-			$resolver = $params->get('picture');
-
-			// Build the class name
-			$cls = 'Hubzero\\User\\Picture\\' . ucfirst($resolver);
-
-			if (class_exists($cls))
+			if ($resolver = $params->get('picture', ''))
 			{
-				User::$pictureResolvers[] = new $cls($config);
+				// Build the class name
+				$cls = 'Hubzero\\User\\Picture\\' . ucfirst($resolver);
+
+				if (class_exists($cls))
+				{
+					User::$pictureResolvers[] = new $cls($config);
+				}
 			}
 		}
 	}

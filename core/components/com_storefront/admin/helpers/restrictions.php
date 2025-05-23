@@ -25,7 +25,7 @@ class RestrictionsHelper
 	 * @param   int    $sId      SKU id
 	 * @return  mixed
 	 */
-	public static function getPermittedSkuUsers($filters = array(), $sId)
+	public static function getPermittedSkuUsers($filters, $sId)
 	{
 		return self::getSkuUsers($filters = array(), $sId);
 	}
@@ -37,7 +37,7 @@ class RestrictionsHelper
 	 * @param   int    $sId      SKU id
 	 * @return  mixed
 	 */
-	public static function getWhitelistedSkuUsers($filters = array(), $sId)
+	public static function getWhitelistedSkuUsers($filters, $sId)
 	{
 		return self::getSkuUsers($filters = array(), $sId, array('usersType' => 'skuWhitelist'));
 	}
@@ -93,7 +93,7 @@ class RestrictionsHelper
 	 * @param   array  $options  Options
 	 * @return  mixed
 	 */
-	private static function getSkuUsers($filters = array(), $sId, $options = array())
+	private static function getSkuUsers($filters, $sId, $options = array())
 	{
 		if (!isset($filters['sort']))
 		{

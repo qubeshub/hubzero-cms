@@ -196,7 +196,7 @@ class Cli
 	 * @param   array   $args  the command arguments
 	 * @return  string
 	 **/
-	private static function call($cmd, $task='repository', $args=array())
+	public static function call($cmd, $task='repository', $args=array())
 	{
 		static $user = null;
 		static $processUser = null;
@@ -204,6 +204,11 @@ class Cli
 		if (!isset($user))
 		{
 			$user = \Component::params('com_installer')->get('system_user', 'hubadmin');
+			// Check this user exists on host, if not set user to apache
+			if (shell_exec('getent passwd ' . $user . ' | wc -l') == 0)
+			{
+				$user = 'apache';
+			}
 		}
 
 		if (!isset($processUser))
@@ -213,9 +218,15 @@ class Cli
 			$processUser = $processUser['name'];
 		}
 
-		$sudo = ($processUser != $user) ? '/usr/bin/sudo -u ' . $user . ' ' : '';
-
-		$cmd = $sudo . PATH_ROOT . DS . 'muse' . ' ' . $task . ' ' . $cmd . ' ' . ((!empty($args)) ? implode(' ', $args) : '') . ' --format=json';
+		if ($user == 'apache')
+		{
+			$cmd = PATH_CORE . '/bin/muse' . ' ' . $task . ' ' . $cmd . ' ' . ((!empty($args)) ? implode(' ', $args) : '') . ' --format=json';
+		}
+		else
+		{
+			$sudo = ($processUser != $user) ? '/usr/bin/sudo -u ' . $user . ' ' : '';
+			$cmd = $sudo . PATH_CORE . '/bin/muse' . ' ' . $task . ' ' . $cmd . ' ' . ((!empty($args)) ? implode(' ', $args) : '') . ' --format=json';
+		}
 
 		return shell_exec($cmd);
 	}

@@ -244,7 +244,7 @@ class plgUsageOverview extends \Hubzero\Plugin\Plugin
 
 		$data = new stdClass;
 		$data->visits = new stdClass;
-		$data->visits->total        = number_format($result);
+		$data->visits->total        = number_format($result == null ? '' : $result);
 		$data->visits->residence    = $residence;
 		$data->visits->organization = $organization;
 
@@ -356,8 +356,8 @@ class plgUsageOverview extends \Hubzero\Plugin\Plugin
 
 		$data->downloads = new stdClass;
 		$data->downloads->total        = number_format($result);
-		$data->downloads->residence    = $residence;
-		$data->downloads->organization = $organization;
+		$data->downloads->residence    = !isset($residence) ? '' : $residence;
+		$data->downloads->organization = !isset($organization) ? '' : $organization;;
 
 		$db->setQuery(
 			"SELECT value

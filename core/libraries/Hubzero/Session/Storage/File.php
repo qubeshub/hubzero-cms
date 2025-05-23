@@ -8,6 +8,7 @@
 namespace Hubzero\Session\Storage;
 
 use Hubzero\Filesystem\Filesystem;
+use Hubzero\Filesystem\Adapter\Local;
 use Hubzero\Session\Store;
 use Exception;
 
@@ -47,7 +48,8 @@ class File extends Store
 
 		if (!isset($options['filesystem']) || !($options['filesystem'] instanceof Filesystem))
 		{
-			$options['filesystem'] = new Filesystem;
+			$adapter = new Local($app['config']->get('virus_scanner', "clamscan -i --no-summary --block-encrypted"));
+			$options['filesystem'] = new Filesystem($adapter);
 		}
 
 		$this->path  = $this->cleanPath($options['session_path']);
@@ -68,11 +70,12 @@ class File extends Store
 	 * @param   string  $id  The session identifier.
 	 * @return  string  The session data.
 	 */
-	public function read($session_id)
+	#[\ReturnTypeWillChange]
+	public function read($id)
 	{
-		if ($this->files->exists($path = $this->path . DS . $session_id))
+		if ($this->files->exists($path = $this->path . DS . $id))
 		{
-			return $this->files->get($path);
+			return $this->files->read($path);
 		}
 
 		return '';
@@ -81,13 +84,14 @@ class File extends Store
 	/**
 	 * Write session data to the SessionHandler backend.
 	 *
-	 * @param   string   $session_id    The session identifier.
-	 * @param   string   $session_data  The session data.
+	 * @param   string   $id    The session identifier.
+	 * @param   string   $data  The session data.
 	 * @return  boolean  True on success, false otherwise.
 	 */
-	public function write($session_id, $session_data)
+	#[\ReturnTypeWillChange]
+	public function write($id, $data)
 	{
-		$this->files->put($this->path . DS . $session_id, $session_data, true);
+		$this->files->write($this->path . DS . $id, $data, true);
 	}
 
 	/**
@@ -97,20 +101,22 @@ class File extends Store
 	 * @param   string   $id  The session identifier.
 	 * @return  boolean  True on success, false otherwise.
 	 */
-	public function destroy($session_id)
+	#[\ReturnTypeWillChange]
+	public function destroy($id)
 	{
-		$this->files->delete($this->path . DS . $session_id);
+		$this->files->delete($this->path . DS . $id);
 	}
 
 	/**
 	 * Garbage collect stale sessions from the SessionHandler backend.
 	 *
-	 * @param   integer  $maxlifetime  The maximum age of a session.
+	 * @param   int  $maxlifetime  The maximum age of a session.
 	 * @return  boolean  True on success, false otherwise.
 	 */
+	#[\ReturnTypeWillChange]
 	public function gc($maxlifetime = null)
 	{
-		$files = $this->files->files($this->path);
+		$files = $this->files->listContents($this->path);
 
 		$tm = time() - $maxlifetime;
 
@@ -131,14 +137,14 @@ class File extends Store
 	/**
 	 * Get single session data as an object
 	 *
-	 * @param   integer  $session_id  Session Id
+	 * @param   int  $id  Session Id
 	 * @return  object
 	 */
-	public function session($session_id)
+	public function session($id)
 	{
 		$session = new Object;
-		$session->session_id = $session_id;
-		$session->data       = $this->read($session_id);
+		$session->session_id = $id;
+		$session->data       = $this->read($id);
 
 		return $session;
 	}
@@ -151,7 +157,7 @@ class File extends Store
 	 */
 	public function all($filters = array())
 	{
-		$files = $this->files->files($this->path);
+		$files = $this->files->listContents($this->path);
 
 		$sessions = array();
 
@@ -164,7 +170,7 @@ class File extends Store
 
 			$session = new Object;
 			$session->session_id = $file->getName();
-			$session->data       = $this->files->get($file->getPathname());
+			$session->data       = $this->files->read($file->getPathname());
 
 			$sessions[] = $session;
 		}

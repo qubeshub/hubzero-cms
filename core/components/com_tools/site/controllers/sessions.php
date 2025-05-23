@@ -820,6 +820,7 @@ class Sessions extends SiteController
 		$sess     = Request::getString('sess', '');
 		$username = trim(Request::getString('username', ''));
 		$group    = Request::getInt('group', 0);
+		$confirm = Request::getString('confirm', '');
 		$readonly = Request::getString('readonly', '');
 		$no_html  = Request::getInt('no_html', 0);
 
@@ -883,6 +884,12 @@ class Sessions extends SiteController
 		if (count($rows) != 1)
 		{
 			App::abort(404, Lang::txt('COM_TOOLS_ERROR_UNABLE_TO_GET_ENTRY_FOR', $sess, $owner));
+			return;
+		}
+
+		if ($confirm != 'Yes')
+		{
+			App::abort(404, Lang::txt('COM_TOOLS_ERROR_SHARE_NO_CONFIRM'));
 			return;
 		}
 
@@ -1281,12 +1288,12 @@ class Sessions extends SiteController
 
 		if (!isset($output->code))
 		{
-			$output->code = 'VncViewer.class';
+			$output->code = '';
 		}
 
 		if (!isset($output->archive))
 		{
-			$output->archive =  rtrim(Request::base(true), '/') . '/core/components/com_tools/scripts/VncViewer-20150319-01.jar';
+			$output->archive =  '';
 		}
 
 		if (!isset($output->id))
@@ -1693,8 +1700,9 @@ class Sessions extends SiteController
 		$retval = true; // Assume success.
 
 		$comm = escapeshellcmd($comm);
+		$dbname = \App::get('config')->get('database.db');
 
-		$cmd = "/bin/sh " . dirname(dirname(__DIR__)) . "/scripts/mw $comm 2>&1 </dev/null";
+		$cmd = "/bin/sh " . dirname(dirname(__DIR__)) . "/scripts/mw $comm dbname=$dbname 2>&1 </dev/null";
 
 		exec($cmd, $results, $status);
 
@@ -1703,7 +1711,10 @@ class Sessions extends SiteController
 		{
 			// Uh-oh. Something went wrong...
 			$retval = false;
-			$this->setError($results[0]);
+			if (isset($results[0]))
+			{
+				$this->setError($results[0]);
+			}
 		}
 
 		if (is_array($results))
@@ -1820,7 +1831,7 @@ class Sessions extends SiteController
 	 */
 	private function _getToolExportControl($exportcontrol)
 	{
-		$exportcontrol = strtolower($exportcontrol);
+		$exportcontrol = strtolower($exportcontrol == null ? '' : $exportcontrol);
 
 		$ip = Request::ip();
 
@@ -1833,7 +1844,7 @@ class Sessions extends SiteController
 			return false;
 		}
 
-		if (\Hubzero\Geocode\Geocode::is_e1nation(\Hubzero\Geocode\Geocode::ipcountry($ip)))
+		if (\Hubzero\Geocode\Geocode::is_e1nation($country))
 		{
 			$this->setError(Lang::txt('COM_TOOLS_ERROR_ACCESS_DENIED_EXPORT_E1'));
 			Log::debug("mw::_getToolExportControl($exportcontrol) FAILED E1 export control check");
@@ -1843,7 +1854,7 @@ class Sessions extends SiteController
 		switch ($exportcontrol)
 		{
 			case 'us':
-				if (\Hubzero\Geocode\Geocode::ipcountry($ip) != 'us')
+				if ($country != 'us')
 				{
 					$this->setError(Lang::txt('COM_TOOLS_ERROR_ACCESS_DENIED_EXPORT_USA_ONLY'));
 					Log::debug("mw::_getToolExportControl($exportcontrol) FAILED US export control check");
@@ -1852,7 +1863,7 @@ class Sessions extends SiteController
 			break;
 
 			case 'd1':
-				if (\Hubzero\Geocode\Geocode::is_d1nation(\Hubzero\Geocode\Geocode::ipcountry($ip)))
+				if (\Hubzero\Geocode\Geocode::is_d1nation($country))
 				{
 					$this->setError(Lang::txt('COM_TOOLS_ERROR_ACCESS_DENIED_EXPORT_LICENSE'));
 					Log::debug("mw::_getToolExportControl($exportcontrol) FAILED D1 export control check");
@@ -1962,7 +1973,6 @@ class Sessions extends SiteController
 			$admin = true;
 		}
 
-		$exportAllowed = $this->_getToolExportControl($tv->exportControl);
 		$tisPublished = ($tv->state == 1);
 		$tisDev = ($tv->state == 3);
 		$tisGroupControlled = ($tv->toolaccess == '@GROUP');
@@ -1988,6 +1998,7 @@ class Sessions extends SiteController
 		}
 		else if ($tisPublished)
 		{
+			$exportAllowed = $this->_getToolExportControl($tv->exportControl);
 			if ($tisGroupControlled)
 			{
 				if ($ingroup)

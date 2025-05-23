@@ -125,18 +125,6 @@ $this->js('zones.js');
 							<label for="field-zone-params-vnc-secure-server" class="vnc<?php if (!$vncEnabled) { echo ' opaque';} ?>"><?php echo Lang::txt('COM_TOOLS_FIELD_ZONE_VNC_PROXY_SECURE_SERVER'); ?>:</label>
 							<input type="text" name="zoneparams[vnc_secure_server]" class="vnc<?php if (!$vncEnabled) { echo ' opaque';} ?>" id="field-zone-params-vnc-secure-server" maxlength="255" value="<?php echo $this->escape(stripslashes($this->row->params->get('vnc_secure_server', 'https://' . $hn . ':80'))); ?>"<?php if (!$vncEnabled) { echo ' disabled="disabled"';} ?> />
 						</div>
-						<div class="input-wrap">
-							<label for="field-zone-params-vnc-applet" class="vnc<?php if (!$vncEnabled) { echo ' opaque';} ?>"><?php echo Lang::txt('COM_TOOLS_FIELD_ZONE_VNC_PROXY_APPLET'); ?>:</label>
-							<input type="text" name="zoneparams[vnc_applet]" class="vnc<?php if (!$vncEnabled) { echo ' opaque';} ?>" id="field-zone-params-vnc-applet" maxlength="255" value="<?php echo $this->escape(stripslashes($this->row->params->get('vnc_applet', '/core/components/com_tools/scripts/VncViewer-20150319-01.jar'))); ?>"<?php if (!$vncEnabled) { echo ' disabled="disabled"';} ?> />
-						</div>
-						<div class="input-wrap">
-							<label for="field-zone-params-vnc-applet-secure" class="vnc<?php if (!$vncEnabled) { echo ' opaque';} ?>"><?php echo Lang::txt('COM_TOOLS_FIELD_ZONE_VNC_PROXY_APPLET_SECURE'); ?>:</label>
-							<input type="text" name="zoneparams[vnc_applet_secure]" class="vnc<?php if (!$vncEnabled) { echo ' opaque';} ?>" id="field-zone-params-vnc-applet-secure" maxlength="255" value="<?php echo $this->escape(stripslashes($this->row->params->get('vnc_applet_secure', ' /core/components/com_tools/scripts/VncViewer-20150319-01.jar'))); ?>"<?php if (!$vncEnabled) { echo ' disabled="disabled"';} ?> />
-						</div>
-						<div class="input-wrap">
-							<label for="field-zone-params-vnc-viewer-class" class="vnc<?php if (!$vncEnabled) { echo ' opaque';} ?>"><?php echo Lang::txt('COM_TOOLS_FIELD_ZONE_VNC_PROXY_VIEWER_CLASS'); ?>:</label>
-							<input type="text" name="zoneparams[vnc_viewer_class]" class="vnc<?php if (!$vncEnabled) { echo ' opaque';} ?>" id="field-zone-params-vnc-viewer-class" maxlength="255" value="<?php echo $this->escape(stripslashes($this->row->params->get('vnc_viewer_class', 'VncViewer.class'))); ?>"<?php if (!$vncEnabled) { echo ' disabled="disabled"';} ?> />
-						</div>
 					</fieldset>
 				</div>
 				<div class="col span5">

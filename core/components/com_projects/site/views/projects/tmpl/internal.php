@@ -76,9 +76,20 @@ $sideContent 	= $sideContent && !empty($sideContent)
 		     ->display();
 	?>
 	<div class="project-inner-wrap">
-	<?php
-	} else { ?>
-	<div id="project-innerwrap">
+	<?php } else { ?>
+		<?php
+		// Draw traditional header
+		$this->view('_header')
+		     ->set('model', $this->model)
+		     ->set('showPic', 0)
+		     ->set('showPrivacy', 2)
+		     ->set('showOptions', 1)
+		     ->set('goBack', 0)
+		     ->set('showUnderline', 1)
+		     ->set('option', $this->option)
+		     ->display();
+		?>
+	<div class="project-inner-wrap" id="project-innerwrap">
 		<div class="main-menu">
 			<?php
 			// Draw image
@@ -97,19 +108,7 @@ $sideContent 	= $sideContent && !empty($sideContent)
 			?>
 		</div><!-- / .main-menu -->
 		<div class="main-content">
-	<?php
-		// Draw traditional header
-		$this->view('_header')
-		     ->set('model', $this->model)
-		     ->set('showPic', 0)
-		     ->set('showPrivacy', 2)
-		     ->set('showOptions', 1)
-		     ->set('goBack', 0)
-		     ->set('showUnderline', 1)
-		     ->set('option', $this->option)
-		     ->display();
-
-	} ?>
+	<?php } ?>
 			<?php
 				// Display status message
 				$this->view('_statusmsg', 'projects')

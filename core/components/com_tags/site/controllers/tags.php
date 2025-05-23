@@ -154,12 +154,15 @@ class Tags extends SiteController
 		$this->view->filters = array(
 			'limit' => Request::getInt('limit', Config::get('list_limit')),
 			'start' => Request::getInt('limitstart', 0),
-			'sort'  => Request::getString('sort', 'date')
+			'sort'  => Request::getCmd('sort', 'date')
 		);
 		if (!in_array($this->view->filters['sort'], array('date', 'title')))
 		{
-			App::abort(404, Lang::txt('Invalid sort value of "%s".', $this->view->filters));
+			App::abort(404, Lang::txt('Invalid sort value of "%s".', $this->view->filters['sort']));
 		}
+
+		$parent = Request::getString('parent', '');
+		$this->view->parent = $parent;
 
 		// Get the active category
 		$area = Request::getString('area', '');
@@ -178,7 +181,7 @@ class Tags extends SiteController
 				$this->view->filters['sort'],
 				$area
 			));
-
+			
 			if (!$area)
 			{
 				$query = '';
@@ -251,19 +254,19 @@ class Tags extends SiteController
 					{
 						//$this->view->total += $response['total'];
 
-						if (is_array($response['results']) && !empty($response['results']))
+						if (is_array($response['results']) && !empty($response['results']) && !$parent)
 						{
 							$this->view->results = $response['results'];
 							break;
 						}
 
-						if (isset($response['children']))
+						if (isset($response['children']) && $parent)
 						{
 							foreach ($response['children'] as $sresponse)
 							{
 								//$this->view->total += $sresponse['total'];
 
-								if (is_array($sresponse['results']) && !empty($sresponse['results']))
+								if (is_array($sresponse['results']) && !empty($sresponse['results']) && ($parent == $response['name']))
 								{
 									$this->view->results = $sresponse['results'];
 									break 2;
@@ -319,7 +322,6 @@ class Tags extends SiteController
 	public function autocompleteTask()
 	{
 		$filters = array(
-			'limit'  => 20,
 			'start'  => 0,
 			'search' => trim(Request::getString('value', ''))
 		);
@@ -337,6 +339,10 @@ class Tags extends SiteController
 
 		// Output search results in JSON format
 		$json = array();
+		$exactMatches = array();
+		$beginsWithWord =array();
+		$beginWith = array();
+
 		if (count($rows) > 0)
 		{
 			foreach ($rows as $row)
@@ -349,10 +355,19 @@ class Tags extends SiteController
 					'name' => $name
 				);
 
-				// Push exact matches to the front
-				if ($row->get('tag') == $filters['search'])
+				// Find the exact match
+				if (strtolower($row->get('tag')) == strtolower($filters['search']) || strtolower($name) == strtolower($filters['search']))
 				{
-					array_unshift($json, $item);
+					$exactMatches[] = $item;
+				}
+				elseif (stripos($row->get('tag'), $filters['search'] . ' ') === 0 || stripos($name, $filters['search'] . ' ') === 0)
+				{
+					$beginsWithWord[] = $item;
+				}
+				// Prioritize beginning of the string
+				elseif (stripos($row->get('tag'), $filters['search']) === 0 || stripos($name, $filters['search']) === 0)
+				{
+					$beginWith[] = $item;
 				}
 				else
 				{
@@ -360,6 +375,43 @@ class Tags extends SiteController
 				}
 			}
 		}
+
+		// Push matches that start with the search to the front
+		if (sizeof($beginWith))
+		{
+			// Sort the array
+			$name = array_column($beginWith, 'name');
+			array_multisort($name, SORT_DESC, SORT_NATURAL|SORT_FLAG_CASE , $beginWith);
+
+			foreach ($beginWith as $match)
+			{
+				array_unshift($json, $match);
+			}
+		}
+
+		// Push matches that begin with a word to the front
+		if (sizeof($beginsWithWord))
+		{
+			// Sort the array
+			$name = array_column($beginsWithWord, 'name');
+			array_multisort($name, SORT_DESC, SORT_NATURAL|SORT_FLAG_CASE, $beginsWithWord);
+
+			foreach ($beginsWithWord as $match)
+			{
+				array_unshift($json, $match);
+			}
+		}
+
+		// Push exact matches to the front
+		if (sizeof($exactMatches))
+		{
+			foreach ($exactMatches as $exactMatch)
+			{
+				array_unshift($json, $exactMatch);
+			}
+		}
+
+		$json = array_slice($json, 0, 20);
 
 		echo json_encode($json);
 	}

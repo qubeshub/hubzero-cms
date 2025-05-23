@@ -6,6 +6,7 @@
  */
 
 require_once PATH_CORE . '/plugins/filesystem/dropbox/helpers/dropboxOauthClient.php';
+require_once Component::path('projects') . '/models/orm/connection.php';
 
 use Plugins\Filesystem\Dropbox\DropboxOauthClient;
 use Srmklive\Dropbox\Adapter\DropboxAdapter;
@@ -73,7 +74,9 @@ class plgFilesystemDropbox extends \Hubzero\Plugin\Plugin
 	protected static function _setLocalOauthData($state)
 	{
 		$connectionId = Request::getInt('connection', 0);
-		$projectsFilesUrl = Request::current();
+		$connection = \Components\Projects\Models\Orm\Connection::one($connectionId);
+		$project = $connection->project;
+		$projectsFilesUrl = \Route::url($project->link('files') . '/browse?connection=' . $connectionId);
 
 		Session::set('dropbox.connection_to_set_up', $connectionId);
 		Session::set('dropbox.local_origin_url', $projectsFilesUrl);

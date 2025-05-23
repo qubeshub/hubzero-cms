@@ -125,9 +125,9 @@ class Citations extends SiteController
 			'year_end'        => Request::getInt('year_end', gmdate("Y")),
 			'filter'          => Request::getString('filter', ''),
 			'sort'            => Request::getString('sort', 'created DESC'),
-			'reftype'         => Request::getArray('reftype', array('research' => 1, 'education' => 1, 'eduresearch' => 1, 'cyberinfrastructure' => 1)),
-			'geo'             => Request::getArray('geo', array('us' => 1, 'na' => 1,'eu' => 1, 'as' => 1)),
-			'aff'             => Request::getArray('aff', array('university' => 1, 'industry' => 1, 'government' => 1)),
+			'reftype'         => Request::getSimpleArray('reftype', array('research' => 1, 'education' => 1, 'eduresearch' => 1, 'cyberinfrastructure' => 1)),
+			'geo'             => Request::getSimpleArray('geo', array('us' => 1, 'na' => 1,'eu' => 1, 'as' => 1)),
+			'aff'             => Request::getSimpleArray('aff', array('university' => 1, 'industry' => 1, 'government' => 1)),
 			'startuploaddate' => Request::getString('startuploaddate', '0000-00-00'),
 			'enduploaddate'   => Request::getString('enduploaddate', '0000-00-00'),
 			'scope'           => 'hub'
@@ -233,13 +233,12 @@ class Citations extends SiteController
 		}
 
 		// Clean up filters a little
-		array_walk($this->view->filters, function(&$val, &$key)
+		array_walk($this->view->filters, function(&$val, $key)
 		{
 			if (!is_array($val))
 			{
 				$val = trim($val);
 				$val = str_replace('"', '', $val);
-				$key = $val;
 			}
 		});
 		$citations = Citation::getFilteredRecords($this->view->filters);
@@ -254,66 +253,11 @@ class Citations extends SiteController
 		// Add some data to our view for form filtering/sorting
 		$this->view->types = Type::all()->rows();
 
-		// Get the users id to make lookup
-		$users_ip = Request::ip();
-
-		// Get the param for ip regex to use machine ip
-		$ip_regex = array('10.\d{2,5}.\d{2,5}.\d{2,5}');
-
-		$use_machine_ip = false;
-		foreach ($ip_regex as $ipr)
-		{
-			$match = preg_match('/' . $ipr . '/i', $users_ip);
-			if ($match)
-			{
-				$use_machine_ip = true;
-			}
-		}
-
-		// Make url based on if were using machine ip or users
-		if ($use_machine_ip)
-		{
-			$url = 'http://worldcatlibraries.org/registry/lookup?IP=' . $_SERVER['SERVER_ADDR'];
-		}
-		else
-		{
-			$url = 'http://worldcatlibraries.org/registry/lookup?IP=' . $users_ip;
-		}
-
-		// Get the resolver
-		$r = null;
-		if (function_exists('curl_init'))
-		{
-			$cURL = curl_init();
-			curl_setopt($cURL, CURLOPT_URL, $url);
-			curl_setopt($cURL, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($cURL, CURLOPT_TIMEOUT, 10);
-			$r = curl_exec($cURL);
-			curl_close($cURL);
-		}
-
-		// Parse the returned xml
 		$this->view->openurl = array(
 			'link' => '',
 			'text' => '',
 			'icon' => ''
 		);
-
-		// Parse the return from resolver lookup
-		$resolver = null;
-		$xml = simplexml_load_string($r);
-		if (isset($xml->resolverRegistryEntry))
-		{
-			$resolver = $xml->resolverRegistryEntry->resolver;
-		}
-
-		// If we have resolver set vars for creating open urls
-		if ($resolver != null)
-		{
-			$this->view->openurl['link'] = $resolver->baseURL;
-			$this->view->openurl['text'] = $resolver->linkText;
-			$this->view->openurl['icon'] = $resolver->linkIcon;
-		}
 
 		// Set the page title
 		$this->_buildTitle();
@@ -981,13 +925,10 @@ class Citations extends SiteController
 	 * @param   string   $mime    Mime type
 	 * @return  void
 	 */
-	private function _serveup($inline = false, $p, $f, $mime)
+	private function _serveup($inline, $p, $f, $mime)
 	{
-		// Clean all output buffers (needs PHP > 4.2.0)
-		while (@ob_end_clean())
-		{
-			continue;
-		}
+		while(ob_get_level())
+			ob_end_clean();
 
 		$fsize = filesize($p . DS. $f);
 		$mod_date = date('r', filemtime($p . DS . $f));

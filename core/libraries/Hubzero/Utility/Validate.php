@@ -40,7 +40,9 @@ class Validate
 	{
 		if (is_array($check))
 		{
-			extract(self::_defaults($check));
+			$vars = self::_defaults($check);
+
+			extract($vars);
 		}
 
 		if (empty($check) && $check != '0')
@@ -65,7 +67,9 @@ class Validate
 	{
 		if (is_array($check))
 		{
-			extract(self::_defaults($check));
+			$vars = self::_defaults($check);
+
+			extract($vars);
 		}
 
 		if (empty($check) && $check != '0')
@@ -105,8 +109,11 @@ class Validate
 	{
 		if (is_array($check))
 		{
-			extract(self::_defaults($check));
+			$vars = self::_defaults($check);
+
+			extract($vars);
 		}
+
 		return !self::_check($check, '/[^\\s]/');
 	}
 
@@ -533,7 +540,9 @@ class Validate
 	{
 		if (is_array($check))
 		{
-			extract(self::_defaults($check));
+			$vars = self::_defaults($check);
+
+			extract($vars);
 		}
 
 		if ($regex === null)
@@ -617,7 +626,9 @@ class Validate
 	{
 		if (is_array($check))
 		{
-			extract(self::_defaults($check));
+			$vars = self::_defaults($check);
+
+			extract($vars);
 		}
 
 		if ($regex === null)
@@ -690,6 +701,11 @@ class Validate
 	 */
 	protected static function _check($check, $regex)
 	{
+		if ($check === null)
+		{
+			$check = '';
+		}
+
 		if (is_string($regex) && preg_match($regex, $check))
 		{
 			return true;
@@ -754,5 +770,41 @@ class Validate
 			$pattern = '(?:(?:25[0-5]|2[0-4][0-9]|(?:(?:1[0-9])?|[1-9]?)[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|(?:(?:1[0-9])?|[1-9]?)[0-9])';
 			self::$_pattern['IPv4'] = $pattern;
 		}
+	}
+
+	/**
+	 * Validate a string is a valid proper name. It may not contain:
+	 *
+	 * - nothing (or be null)
+	 * - only whitespace
+	 * - Less than sign (<)
+	 * - Greater than sign (>)
+	 * - Colon (:)
+	 * - Ampersand (&) next to a letter or symbol
+	 * - (Unicode) invisible control characters and unused code points.
+	 * - (Unicode) an ASCII or Latin-1 control character: 0x00–0x1F and 0x7F–0x9F.
+	 * - (Unicode) invisible formatting indicator.
+	 * - (Unicode) any code point reserved for private use.
+	 * - (Unicode) one half of a surrogate pair in UTF-16 encoding.
+	 * - (Unicode) any code point to which no character has been assigned.
+	 *
+	 * @param   string  $source  The source string.
+	 * @return  boolean
+	 */
+	public static function properName($source)
+	{
+		if ($source === null)
+		{
+			return false;
+		}
+
+		if (preg_match('/^\s*$/', $source)) // all white space or empty
+		{
+			return false;
+		}
+
+		return !preg_match(
+			'/(<|>|:|&\w|\w&|\p{C})/u',
+			$source);
 	}
 }

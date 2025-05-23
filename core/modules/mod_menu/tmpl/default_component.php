@@ -8,6 +8,11 @@
 // No direct access.
 defined('_HZEXEC_') or die;
 
+if ($rootLink)
+{
+	$item->anchor_css = $item->anchor_css ? $item->anchor_css . ' main-link' : 'main-link';
+}
+
 // Note. It is important to remove spaces between elements.
 $class = $item->anchor_css   ? 'class="' . $item->anchor_css . '" '   : '';
 $title = $item->anchor_title ? 'title="' . $item->anchor_title . '" ' : '';
@@ -20,6 +25,11 @@ if ($item->menu_image)
 else
 {
 	$linktype = $item->title;
+}
+
+if ($disclosureMenu)
+{
+echo '<div class="inner">';
 }
 
 switch ($item->browserNav) :
@@ -36,3 +46,14 @@ switch ($item->browserNav) :
 		?><a <?php echo $class; ?>href="<?php echo $item->flink; ?>" onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes');return false;" <?php echo $title; ?>><?php echo $linktype; ?></a><?php
 		break;
 endswitch;
+
+if ($parentLink && $disclosureMenu)
+{
+	?><button type="button" aria-expanded="false" aria-controls="<?php echo $ariaControlTarget; ?>" aria-label="More pages for: <?php echo $linktype; ?>"> </button><?php
+}
+
+if ($disclosureMenu)
+{
+echo '</div>';
+}
+

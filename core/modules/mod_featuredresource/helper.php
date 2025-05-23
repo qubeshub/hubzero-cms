@@ -39,10 +39,10 @@ class Helper extends Module
 		$filters = array(
 			'limit'      => 1,
 			'start'      => 0,
-			'type'       => trim($this->params->get('type')),
+			'type'       => $this->params->get('type', ''),
 			'sortby'     => 'random',
-			'minranking' => trim($this->params->get('minranking')),
-			'tag'        => trim($this->params->get('tag')),
+			'minranking' => trim((string)$this->params->get('minranking', '6.0')),
+			'tag'        => trim((string)$this->params->get('tag', '')),
 			'access'     => 'public',
 			'published'  => 1,
 			'standalone' => 1,
@@ -55,16 +55,19 @@ class Helper extends Module
 			->rows()
 			->fieldsByKey('id');
 
-		$id = array_rand($rows);
+		if (!empty($rows))
+		{
+			$id = array_rand($rows);
 
-		$row = Entry::oneOrNew((isset($rows[$id]) ? $rows[$id] : 0));
+			$row = Entry::oneOrNew((isset($rows[$id]) ? $rows[$id] : 0));
+		}
 
-		$this->cls = trim($this->params->get('moduleclass_sfx'));
-		$this->txt_length = trim($this->params->get('txt_length'));
+		$this->cls = trim($this->params->get('moduleclass_sfx',''));
+		$this->txt_length = trim($this->params->get('txt_length',''));
 		$this->thumb = '';
 
 		// Did we get any results?
-		if ($row->get('id'))
+		if (isset($row) && $row->get('id'))
 		{
 			$config = Component::params('com_resources');
 
@@ -92,17 +95,24 @@ class Helper extends Module
 
 			if (!is_file(PATH_APP . $thumb))
 			{
-				$thumb = DS . trim($config->get('defaultpic'));
+				$thumb = DS . trim($config->get('defaultpic',''));
 			}
 
-			$row->typetitle = trim(stripslashes($row->typetitle));
-			if (substr($row->typetitle, -1, 1) == 's' && substr($row->typetitle, -3, 3) != 'ies')
+			if ($row->typetitle)
 			{
-				$row->typetitle = substr($row->typetitle, 0, strlen($row->typetitle) - 1);
+				$row->typetitle = trim($row->typetitle);
+				if (substr($row->typetitle, -1, 1) == 's' && substr($row->typetitle, -3, 3) != 'ies')
+				{
+					$row->typetitle = substr($row->typetitle, 0, strlen($row->typetitle) - 1);
+				}
 			}
 
 			$this->id    = $id;
 			$this->thumb = $thumb;
+		}
+		else
+		{
+			$row = '';
 		}
 
 		$this->row = $row;
@@ -134,7 +144,7 @@ class Helper extends Module
 	 */
 	private function getImage($path)
 	{
-		$d = @dir(PATH_APP . $path);
+		$d = (is_dir($path)) ? dir($path) : '';
 
 		$images = array();
 
@@ -143,7 +153,7 @@ class Helper extends Module
 			while (false !== ($entry = $d->read()))
 			{
 				$img_file = $entry;
-				if (is_file(PATH_APP . $path . DS . $img_file)
+				if (is_file($path . DS . $img_file)
 				 && substr($entry, 0, 1) != '.'
 				 && strtolower($entry) !== 'index.html')
 				{

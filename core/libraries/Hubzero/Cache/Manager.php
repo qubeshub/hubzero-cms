@@ -33,6 +33,14 @@ class Manager
 	protected $stores = array();
 
 	/**
+	 * The array of custom creators
+	 *
+	 * @var  array
+	 *
+	 */
+	public $customCreators = array();
+
+	/**
 	 * Create a new Cache manager instance.
 	 *
 	 * @param   object  $app

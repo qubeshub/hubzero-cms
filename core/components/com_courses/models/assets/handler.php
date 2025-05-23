@@ -13,6 +13,8 @@ use Components\Courses\Models\Asset;
 /**
  * Courses asset handler
  */
+
+/** @phpstan-consistent-constructor */
 class Handler
 {
 	/**
@@ -56,6 +58,19 @@ class Handler
 		'asset_id' => '',
 		'scope'    => '',
 		'scope_id' => '',
+	);
+
+	/**
+	 * Class info
+	 *
+	 * Action message - what the user will see if presented with multiple handlers for this extension
+	 * Responds to    - what extensions this handler responds to
+	 *
+	 * @var array
+	 **/
+	protected static $info = array(
+		'action_message' => '',
+		'responds_to'    => array(''),
 	);
 
 	/**
@@ -134,7 +149,7 @@ class Handler
 				{
 					$extensions = $class::getExtensions();
 
-					if (in_array(strtolower($fileType), $extensions))
+					if (in_array(strtolower($fileType == null ? '' : $fileType), $extensions))
 					{
 						$this->addHandler($class);
 					}

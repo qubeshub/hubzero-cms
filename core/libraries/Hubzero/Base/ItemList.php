@@ -15,6 +15,8 @@ use Closure;
 /**
  * Iterator class
  */
+
+/** @phpstan-consistent-constructor */
 class ItemList implements SeekableIterator, Countable, ArrayAccess
 {
 	/**
@@ -80,6 +82,8 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	 *
 	 * @return  void
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function rewind()
 	{
 		$this->_pos = 0;
@@ -90,6 +94,8 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	 *
 	 * @return  void
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function reset()
 	{
 		$this->_pos = 0;
@@ -119,15 +125,17 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	/**
 	 * Seek to an absolute position
 	 *
-	 * @param   integer               $index
-	 * @throws  OutOfBoundsException  When the seek position is invalid
+	 * @param   integer               $offset
+	 * @throws  \OutOfBoundsException  When the seek position is invalid
 	 * @return  void
 	 */
-	public function seek($index)
+
+	#[\ReturnTypeWillChange]
+	public function seek($offset)
 	{
 		$this->rewind();
 
-		while ($this->_pos < $index && $this->valid())
+		while ($this->_pos < $offset && $this->valid())
 		{
 			$this->next();
 		}
@@ -144,6 +152,8 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	 *
 	 * @return  mixed
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		if ($this->valid())
@@ -156,7 +166,7 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	/**
 	 * Return the array count
 	 *
-	 * @return  integer
+	 * @return  int
 	 */
 	public function total()
 	{
@@ -166,8 +176,10 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	/**
 	 * Return the array count
 	 *
-	 * @return  integer
+	 * @return  int
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function count()
 	{
 		return $this->_total;
@@ -200,6 +212,8 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	 *
 	 * @return  mixed
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return $this->_pos;
@@ -210,10 +224,11 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	 *
 	 * @return  mixed
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function prev()
 	{
 		--$this->_pos;
-		return $this->current();
 	}
 
 	/**
@@ -221,17 +236,20 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	 *
 	 * @return  mixed
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function next()
 	{
 		++$this->_pos;
-		return $this->current();
 	}
 
 	/**
 	 * Check if the current cursor position is valid
 	 *
-	 * @return  mixed
+	 * @return  bool
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function valid()
 	{
 		return isset($this->_data[$this->_pos]);
@@ -243,6 +261,8 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	 * @param   mixed  $offset
 	 * @return  bool
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function offsetExists($offset)
 	{
 		return array_key_exists($offset, $this->_data);
@@ -254,6 +274,8 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	 * @param   mixed  $offset
 	 * @return  mixed
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function offsetGet($offset)
 	{
 		return isset($this->_data[$offset]) ? $this->_data[$offset] : null;
@@ -266,6 +288,8 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	 * @param   mixed  $item
 	 * @return  void
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function offsetSet($offset, $item)
 	{
 		if ($offset === null)
@@ -285,6 +309,8 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	 * @param   mixed  $offset
 	 * @return  void
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function offsetUnset($offset)
 	{
 		unset($this->_data[$offset]);
@@ -294,7 +320,7 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	/**
 	 * Run a map over each of the items
 	 *
-	 * @param   object  $callback  Closure
+	 * @param   Closure  $callback
 	 * @return  array
 	 */
 	public function map(Closure $callback)
@@ -305,8 +331,8 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	/**
 	 * Run a filter over each of the items
 	 *
-	 * @param   object  $callback  Closure
-	 * @return  array
+	 * @param   Closure  $callback
+	 * @return  ItemList
 	 */
 	public function filter(Closure $callback)
 	{
@@ -317,7 +343,7 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	 * Merge Item Lists
 	 *
 	 * @param   object  $data  ItemList
-	 * @return  object  ItemList
+	 * @return  ItemList
 	 */
 	public function merge()
 	{
@@ -335,7 +361,7 @@ class ItemList implements SeekableIterator, Countable, ArrayAccess
 	/**
 	 * Reverse data order.
 	 *
-	 * @return  object  ItemList
+	 * @return  ItemList
 	 */
 	public function reverse()
 	{

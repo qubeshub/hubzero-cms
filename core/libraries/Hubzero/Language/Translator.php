@@ -222,8 +222,13 @@ class Translator extends Obj
 				$this->transliterator = array($class, 'transliterate');
 			}
 
-			foreach ($this->callbacks as $callback)
+			foreach ($this->callbacks as $callback => $value)
 			{
+				if (!$callback)
+				{
+					continue;
+				}
+
 				$method = 'get' . ucfirst($callback);
 
 				if (method_exists($class, $method))
@@ -722,76 +727,165 @@ class Translator extends Obj
 	}
 
 	/**
+	 * Debugs a language file
+	 *
+	 * @param   string  $filename  Absolute path to the file to debug
+	 * @return  integer  A count of the number of parsing errors
+	 * @throws  \InvalidArgumentException
+	 */
+	public function debugFile(string $filename)
+	{
+		// Make sure our file actually exists
+		if (!is_file($filename))
+		{
+			throw new \InvalidArgumentException( sprintf('Unable to locate file "%s" for debugging', $filename) );
+		}
+
+		// Initialise variables for manually parsing the file for common errors.
+		$reservedWord = array('YES', 'NO', 'NULL', 'FALSE', 'ON', 'OFF', 'NONE', 'TRUE');
+		$errors       = array();
+
+		// Open the file as a stream.
+		$file = new SplFileObject($filename);
+
+		foreach ($file as $lineNumber => $line)
+		{
+			// Avoid BOM error as BOM is OK when using parse_ini.
+			if ($lineNumber == 0)
+			{
+				$line = str_replace("\xEF\xBB\xBF", '', $line);
+			}
+
+			$line = trim($line);
+
+			// Ignore comment lines.
+			if (!strlen($line) || $line['0'] == ';')
+			{
+				continue;
+			}
+
+			// Ignore grouping tag lines, like: [group]
+			if (preg_match('#^\[[^\]]*\](\s*;.*)?$#', $line))
+			{
+				continue;
+			}
+
+			// Remove any escaped double quotes \" from the equation
+			$line = str_replace('\"', '', $line);
+
+			$realNumber = $lineNumber + 1;
+
+			// Check for odd number of double quotes.
+			if (substr_count($line, '"') % 2 != 0)
+			{
+				$errors[] = $realNumber;
+				continue;
+			}
+
+			// Check that the line passes the necessary format.
+			if (!preg_match('#^[A-Z][A-Z0-9_:\*\-\.]*\s*=\s*".*"(\s*;.*)?$#', $line))
+			{
+				$errors[] = $realNumber;
+				continue;
+			}
+
+			// Check that the key is not in the reserved constants list.
+			$key = strtoupper(trim(substr($line, 0, strpos($line, '='))));
+
+			if (in_array($key, $reservedWord))
+			{
+				$errors[] = $realNumber;
+			}
+		}
+
+		// Check if we encountered any errors.
+		if (count($errors))
+		{
+			$this->errorfiles[$filename] = $errors;
+		}
+
+		return count($errors);
+	}
+
+	/**
+	 * Parse strings from a language file.
+	 *
+	 * @param   string   $fileName  The language ini file path.
+	 * @param   boolean  $debug     If set to true debug language ini file.
+	 * @return  array  The strings parsed.
+	 * @throws  \RuntimeException On debug
+	 */
+	public static function parseIniFile($fileName, $debug = false)
+	{
+		// Check if file exists.
+		if (!is_file($fileName))
+		{
+			return array();
+		}
+
+		$disabledFunctions      = explode(',', ini_get('disable_functions'));
+		$isParseIniFileDisabled = in_array('parse_ini_file', array_map('trim', $disabledFunctions));
+
+		// Capture hidden PHP errors from the parsing.
+		set_error_handler(static function ($errno, $err) { throw new \Exception($err); }, E_WARNING);
+
+		try
+		{
+			if (!function_exists('parse_ini_file') || $isParseIniFileDisabled)
+			{
+				$contents = file_get_contents($fileName);
+				$strings  = parse_ini_string($contents, false, INI_SCANNER_RAW);
+			}
+			else
+			{
+				$strings = parse_ini_file($fileName, false, INI_SCANNER_RAW);
+			}
+		}
+		catch (\Exception $e)
+		{
+			if ($debug)
+			{
+				throw new \RuntimeException($e->getMessage());
+			}
+
+			return array();
+		}
+		finally
+		{
+			restore_error_handler();
+		}
+
+		// Ini files are processed in the "RAW" mode of parse_ini_string, leaving escaped quotes untouched - lets postprocess them
+		$strings = str_replace('\"', '"', $strings);
+
+		return is_array($strings) ? $strings : array();
+	}
+
+	/**
 	 * Parses a language file.
 	 *
-	 * @param   string  $filename  The name of the file.
-	 * @return  array   The array of parsed strings.
+	 * @param   string  $fileName  The name of the file.
+	 * @return  array  The array of parsed strings.
 	 */
-	protected function parse($filename)
+	protected function parse($fileName)
 	{
-		if ($this->debug)
+		try
 		{
-			// Capture hidden PHP errors from the parsing.
-			$php_errormsg = null;
-			$track_errors = ini_get('track_errors');
-			ini_set('track_errors', true);
+			$strings = $this->parseIniFile($fileName, $this->debug);
 		}
-
-		$contents = file_get_contents($filename);
-		$contents = str_replace('_QQ_', '"\""', $contents);
-		$strings = @parse_ini_string($contents);
-
-		if (!is_array($strings))
+		catch (\RuntimeException $e)
 		{
 			$strings = array();
-		}
 
-		if ($this->debug)
-		{
-			// Restore error tracking to what it was before.
-			ini_set('track_errors', $track_errors);
-
-			// Initialise variables for manually parsing the file for common errors.
-			$blacklist = array('YES', 'NO', 'NULL', 'FALSE', 'ON', 'OFF', 'NONE', 'TRUE');
-			$regex = '/^(|(\[[^\]]*\])|([A-Z][A-Z0-9_\-\.]*\s*=(\s*(("[^"]*")|(_QQ_)))+))\s*(;.*)?$/';
-			$this->debug = false;
-			$errors = array();
-
-			// Open the file as a stream.
-			$file = new \SplFileObject($filename);
-
-			foreach ($file as $lineNumber => $line)
+			// Debug the ini file if needed.
+			if ($this->debug && is_file($fileName))
 			{
-				// Avoid BOM error as BOM is OK when using parse_ini
-				if ($lineNumber == 0)
+				if (!$this->debugFile($fileName))
 				{
-					$line = str_replace("\xEF\xBB\xBF", '', $line);
-				}
-
-				// Check that the key is not in the blacklist and that the line format passes the regex.
-				$key = strtoupper(trim(substr($line, 0, strpos($line, '='))));
-
-				// Workaround to reduce regex complexity when matching escaped quotes
-				$line = str_replace('\"', '_QQ_', $line);
-
-				if (!preg_match($regex, $line) || in_array($key, $blacklist))
-				{
-					$errors[] = $lineNumber;
+					// We didn't find any errors but there's a parser warning.
+					$this->errorfiles[$fileName] = 'PHP parser errors :' . $e->getMessage();
 				}
 			}
-
-			// Check if we encountered any errors.
-			if (count($errors))
-			{
-				$this->errorfiles[$filename] = $filename . '&#160;: error(s) in line(s) ' . implode(', ', $errors);
-			}
-			elseif ($php_errormsg)
-			{
-				// We didn't find any errors but there's probably a parse notice.
-				$this->errorfiles['PHP' . $filename] = 'PHP parser errors :' . $php_errormsg;
-			}
-
-			$this->debug = true;
 		}
 
 		return $strings;
@@ -992,6 +1086,11 @@ class Translator extends Obj
 	 */
 	public function hasKey($string)
 	{
+		if (!$string)
+		{
+			return false;
+		}
+
 		$key = strtoupper($string);
 
 		return isset($this->strings[$key]);

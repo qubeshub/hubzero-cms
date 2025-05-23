@@ -23,7 +23,7 @@ class Str
 	 * Available $options are:
 	 *
 	 * - before: The character or string in front of the name of the variable placeholder (Defaults to `:`)
-	 * - after: The character or string after the name of the variable placeholder (Defaults to null)
+	 * - after: The character or string after the name of the variable placeholder (Defaults to '')
 	 * - escape: The character or string used to escape the before character / string (Defaults to `\`)
 	 * - format: A regex to use for matching variable placeholders. Default is: `/(?<!\\)\:%s/`
 	 *   (Overwrites before, after, breaks escape / clean)
@@ -38,7 +38,7 @@ class Str
 	{
 		$defaults = array(
 			'before' => ':',
-			'after'  => null,
+			'after'  => '',
 			'escape' => '\\',
 			'format' => null,
 			'clean'  => false
@@ -199,7 +199,6 @@ class Str
 			'regex'  => "|%s|iu"
 		);
 		$options = array_merge($default, $options);
-		extract($options);
 
 		if (is_array($phrase))
 		{
@@ -209,12 +208,12 @@ class Str
 			foreach ($phrase as $key => $segment)
 			{
 				$segment = '(' . preg_quote($segment, '|') . ')';
-				if ($html)
+				if ($options['html'])
 				{
 					$segment = "(?![^<]+>)$segment(?![^<]+>)";
 				}
 
-				$with[]    = (is_array($format)) ? $format[$key] : $format;
+				$with[]    = (is_array($options['format'])) ? $options['format'][$key] : $options['format'];
 				$replace[] = sprintf($options['regex'], $segment);
 			}
 
@@ -222,12 +221,12 @@ class Str
 		}
 
 		$phrase = '(' . preg_quote($phrase, '|') . ')';
-		if ($html)
+		if ($options['html'])
 		{
 			$phrase = "(?![^<]+>)$phrase(?![^<]+>)";
 		}
 
-		return preg_replace(sprintf($options['regex'], $phrase), $format, $text);
+		return preg_replace(sprintf($options['regex'], $phrase), $options['format'], $text);
 	}
 
 	/**
@@ -368,7 +367,7 @@ class Str
 		}
 		else
 		{
-			if (mb_strlen($text) <= $length)
+			if (mb_strlen($text ? $text : "") <= $length)
 			{
 				return $text;
 			}
@@ -653,7 +652,7 @@ class Str
 	{
 		foreach ((array) $needles as $needle)
 		{
-			if ($needle != '' && strpos($haystack, $needle) !== false)
+			if ($needle != '' && strpos($haystack ? $haystack != null : "", $needle) !== false)
 			{
 				return true;
 			}
@@ -704,15 +703,15 @@ class Str
 		return false;
 	}
 
-		/**
-   * Replaces &amp; with & for XHTML compliance
-   *
-   * @param   string  $text  Text to process
-   * @return  string  Processed string.
-   */
+	/**
+	 * Replaces &amp; with & for XHTML compliance
+	 *
+	 * @param   string  $text  Text to process
+	 * @return  string  Processed string.
+	 */
 	public static function ampReplace($text)
 	{
-		$text = str_replace('&&', '*--*', $text);
+		$text = str_replace('&&', '*--*', $text ? $text : '');
 		$text = str_replace('&#', '*-*', $text);
 		$text = str_replace('&amp;', '&', $text);
 		$text = preg_replace('|&(?![\w]+;)|', '&amp;', $text);
@@ -748,4 +747,34 @@ class Str
 
 		return $ret;
 	}
+
+        /**
+         * Make a string's first character uppercase or all words' first character uppercase
+         *
+         * @param   string  $str           String to be processed
+         * @param   string  $delimiter     The words delimiter (null means do not split the string)
+         * @param   string  $newDelimiter  The new words delimiter (null means equal to $delimiter)
+         *
+         * @return  string  If $delimiter is null, return the string with first character as upper case (if applicable)
+         *                  else consider the string of words separated by the delimiter, apply the ucfirst to each words
+         *                  and return the string with the new delimiter
+         *
+         * @see     http://www.php.net/ucfirst
+         */
+        public static function ucfirst($str, $delimiter = null, $newDelimiter = null)
+        {
+                if ($delimiter === null)
+                {
+                        return ucfirst($str);
+                }
+                else
+                {
+                        if ($newDelimiter === null)
+                        {
+                                $newDelimiter = $delimiter;
+                        }
+                        return implode($newDelimiter, array_map('ucfirst', explode($delimiter, $str)));
+                }
+        }
+
 }

@@ -129,6 +129,34 @@ class Handler
 		register_shutdown_function(array($this, 'handleShutdown'));
 	}
 
+	private function _loglevel($error_level)
+	{
+
+		switch($error_level)
+		{
+			case E_ERROR:
+			case E_PARSE:
+			case E_CORE_ERROR:
+			case E_COMPILE_ERROR:
+			case E_USER_ERROR:
+			case E_RECOVERABLE_ERROR:
+				return("error");
+
+			case E_WARNING:
+			case E_CORE_WARNING:
+			case E_COMPILE_WARNING:
+			case E_DEPRECATED:
+			case E_USER_WARNING:
+			case E_USER_DEPRECATED:
+			case E_STRICT:
+				return("warning");
+
+			case E_NOTICE:
+				return("notice");
+
+		}
+	}
+
 	/**
 	 * Handle a PHP error for the application.
 	 *
@@ -141,10 +169,38 @@ class Handler
 	 */
 	public function handleError($level, $message, $file = '', $line = 0, $context = array())
 	{
+		$trace = (new \Exception())->getTraceAsString();
+		$trace = "    " . str_replace("\n","\n    ",$trace);
+
+		$loglevel = $this->_loglevel($level);
+
+		$url = "    [";
+		$url .=  isset($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] . "://" : '<null>://';
+		$url .=  isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '<null>';
+		$url .=  isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/<null>';
+		$url .= "]";
+
+		$logmsg = "$message in $file on line $line\n" . $url . "\n" . $trace;
+
+		if (is_object($this->logger))
+		{
+			$this->logger->log($loglevel, $logmsg);
+		}
+		else
+		{
+			error_log(" cms.$loglevel " . $logmsg);
+		}
+
 		if (error_reporting() & $level)
 		{
-			throw new ErrorException($message, 0, $level, $file, $line);
+			$exception = new ErrorException($message, 0, $level, $file, $line);
+
+			$this->renderer->render($exception);
+
+			exit; // failsafe, render() should exit
 		}
+
+		return true;
 	}
 
 	/**
@@ -155,17 +211,30 @@ class Handler
 	 */
 	public function handleException($exception)
 	{
-		if (is_object($this->logger) && !in_array($exception->getCode(), [403, 404]))
+		
+		if ($exception->getCode() < 400 || $exception->getCode() > 499)
 		{
-			$this->logger->log(
-				'error',
-				$exception->getMessage(),
-				array(
-					'code' => $exception->getCode(),
-					'file' => $exception->getFile(),
-					'line' => $exception->getLine()
-				)
-			);
+			$trace = $exception->getTraceAsString();
+			$trace = "    " . str_replace("\n","\n    ",$trace);
+
+			$loglevel = 'error';
+
+			$url = "    [";
+			$url .=  isset($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] . "://" : '<null>://';
+			$url .=  isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '<null>';
+			$url .=  isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/<null>';
+			$url .= "]";
+
+			$logmsg = "Uncaught " . get_class($exception) . ": " . $exception->getMessage() . " in " . $exception->getFile() . " on line " . $exception->getLine() . "\n" . $url . "\n" . $trace;
+
+			if (is_object($this->logger))
+			{
+				$this->logger->log($loglevel, $logmsg);
+			}
+			else
+			{
+				error_log(" cms.$loglevel " . $logmsg);
+			}
 		}
 
 		return $this->renderer->render($exception);

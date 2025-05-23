@@ -87,7 +87,7 @@ class Test extends Base implements CommandInterface
 		}
 
 		// Build the command
-		$cmd = 'php ' . PATH_CORE . DS . 'bin' . DS . 'phpunit --no-globals-backup --bootstrap ' . PATH_CORE . DS . 'bootstrap' . DS . 'test' . DS . 'start.php ' . escapeshellarg($path) . ' 2>&1';
+		$cmd = 'php ' . PATH_CORE . '/vendor/bin/phpunit --display-deprecations --bootstrap ' . PATH_CORE . '/bootstrap/phpunit-bootstrap.php ' . escapeshellarg($path) . ' 2>&1';
 
 		// We want to stream the output, so set up what we need to do that
 		$descriptorspec = [
@@ -137,6 +137,11 @@ class Test extends Base implements CommandInterface
 
 		foreach ($nodes as $node)
 		{
+			if (!file_exists($node[1]))
+			{
+				continue;
+			}
+
 			$key  = $node[0];
 			$base = $node[1];
 

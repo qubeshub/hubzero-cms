@@ -76,3 +76,28 @@ jQuery(document).ready(function($){
 		});
 	});
 });
+
+// Organization Dropdown
+$(function(){
+	if ($(".rorApiAvailable")[0]){
+		$("#profile_organization").autocomplete({
+			source: function(req, resp){
+				var rorURL = "index.php?option=com_members&controller=members&task=getOrganizations&term=" + $("#profile_organization").val();
+				
+				$.ajax({
+					url: rorURL,
+					data: null,
+					dataType: "json",
+					success:function(result){
+						resp(result);
+					},
+					error:function(jqXHR, textStatus, errorThrown){
+						console.log(textStatus);
+						console.log(errorThrown);
+						console.log(jqXHR.responseText);
+					}
+				});
+			}
+		});
+	}
+});

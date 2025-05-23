@@ -71,7 +71,7 @@ class plgContentExternalhref extends \Hubzero\Plugin\Plugin
 			$content = $article->$key;
 		}
 
-		$content = ltrim($content);
+		$content = ltrim($content ?: "");
 
 		if (!$content)
 		{
@@ -102,7 +102,7 @@ class plgContentExternalhref extends \Hubzero\Plugin\Plugin
 			foreach ($links as $link)
 			{
 				// Get attributes
-				$pattern = "/(\w+)(\s*=\s*(?:\".*?\"|'.*?'|[^'\">\s]+))?/i";
+				$pattern = "/([a-zA-Z_-]+)(\s*=\s*(?:\".*?\"|'.*?'|[^'\">\s]+))?/i";
 				$attribs = array();
 				preg_match_all($pattern, $link[1], $attribs, PREG_SET_ORDER);
 

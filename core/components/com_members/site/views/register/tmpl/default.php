@@ -84,7 +84,7 @@ if (!$form_redirect && !in_array($current, array('/register/update', '/members/u
 	}
 	?>
 
-	<form action="<?php echo Route::url('index.php?option='.$this->option.'&' . ($this->task == 'create' ? 'return=' . $form_redirect : 'task=' . $this->task)); ?>" method="post" id="hubForm">
+	<form method="post" id="hubForm">
 
 		<?php
 		if ($this->task == 'create' && empty($this->xregistration->_invalid) && empty($this->xregistration->_missing))
@@ -273,7 +273,7 @@ if (!$form_redirect && !in_array($current, array('/register/update', '/members/u
 			<div class="clear"></div>
 		<?php } ?>
 
-		<?php if ($this->registrationFullname != Field::STATE_HIDDEN) { ?>
+		<?php if ($this->registrationFullname != Field::STATE_HIDDEN || $this->registrationEmail != Field::STATE_HIDDEN) { ?>
 			<div class="explaination">
 				<?php if ($this->task == 'create') { ?>
 					<p><?php echo Lang::txt('COM_MEMBERS_REGISTER_ACTIVATION_EMAIL_HINT'); ?></p>
@@ -294,7 +294,7 @@ if (!$form_redirect && !in_array($current, array('/register/update', '/members/u
 					$middleName = '';
 					$surname    = '';
 
-					$bits = explode(' ', $this->registration['name']);
+					$bits = explode(' ', $this->registration['name'] == null ? '' : $this->registration['name']);
 					$surname = array_pop($bits);
 					if (count($bits) >= 1)
 					{
@@ -310,7 +310,7 @@ if (!$form_redirect && !in_array($current, array('/register/update', '/members/u
 							<div class="form-group">
 								<label for="first-name"<?php echo $fieldclass; ?>>
 									<?php echo Lang::txt('COM_MEMBERS_REGISTER_FIRST_NAME'); ?> <?php echo $required; ?>
-									<input type="text" class="form-control" name="name[first]" id="first-name" value="<?php echo $this->escape(trim($givenName)); ?>" />
+									<input type="text" class="form-control" name="name[first]" id="first-name" value="<?php echo $this->escape(\Hubzero\Utility\Sanitize::cleanProperName($givenName)); ?>" />
 								</label>
 							</div>
 						</div>
@@ -318,7 +318,7 @@ if (!$form_redirect && !in_array($current, array('/register/update', '/members/u
 							<div class="form-group">
 								<label for="middle-name">
 									<?php echo Lang::txt('COM_MEMBERS_REGISTER_MIDDLE_NAME'); ?>
-									<input type="text" class="form-control" name="name[middle]" id="middle-name" value="<?php echo $this->escape(trim($middleName)); ?>" />
+									<input type="text" class="form-control" name="name[middle]" id="middle-name" value="<?php echo $this->escape(\Hubzero\Utility\Sanitize::cleanProperName($middleName)); ?>" />
 								</label>
 							</div>
 						</div>
@@ -326,7 +326,7 @@ if (!$form_redirect && !in_array($current, array('/register/update', '/members/u
 							<div class="form-group">
 								<label for="last-name"<?php echo $fieldclass; ?>>
 									<?php echo Lang::txt('COM_MEMBERS_REGISTER_LAST_NAME'); ?> <?php echo $required; ?>
-									<input type="text" class="form-control" name="name[last]" id="last-name" value="<?php echo $this->escape(trim($surname)); ?>" />
+									<input type="text" class="form-control" name="name[last]" id="last-name" value="<?php echo $this->escape(\Hubzero\Utility\Sanitize::cleanProperName($surname)); ?>" />
 								</label>
 							</div>
 						</div>
@@ -408,6 +408,13 @@ if (!$form_redirect && !in_array($current, array('/register/update', '/members/u
 
 				<?php foreach ($this->fields as $field): ?>
 					<?php
+
+					// Add in class for JS selector to conditionally retrieve data from RoR Api based on members option 'rorApi'
+					$rorApiBoolean = \Component::params('com_members')->get('rorApi');
+					if (strtolower($field->get('name')) == "profile[organization]" && strtolower($field->get('type')) == "text" && $rorApiBoolean) {
+						echo "<span class='hidden rorApiAvailable'></span>";
+					}
+
 					$formfield = $form->getField($field->get('name'));
 
 					if ($field->options->count())

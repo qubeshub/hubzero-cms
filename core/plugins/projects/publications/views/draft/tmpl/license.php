@@ -19,7 +19,7 @@ $selectUrl = Route::url( $this->pub->link('editversionid') . '&active=publicatio
 $elName = "licensePick";
 
 // Get version params and extract agreement
-$versionParams = array_filter(explode(PHP_EOL, $this->pub->version->params));
+$versionParams = array_filter(explode(PHP_EOL, $this->pub->version->params == null ? '' : $this->pub->version->params));
 $versionParams = array_reduce($versionParams, function($carry, $item){
 	$keyValueSplit = explode('=', $item);
 	$key = trim(array_shift($keyValueSplit));
@@ -99,8 +99,8 @@ $text = $this->pub->get('license_text', $defaultText);
 						</div>
 					<?php } else {
 						// Word replacements required?
-						preg_match_all('/\[([^\]]*)\]/', $this->license->text, $substitutes);
-						preg_match_all('/\[([^]]+)\]/', $this->pub->license_text, $matches);
+						preg_match_all('/\[([^\]]*)\]/', $this->license->text ? $this->license->text : "", $substitutes);
+						preg_match_all('/\[([^]]+)\]/', $this->pub->license_text ? $this->pub->license_text : "", $matches);
 						$i = 0;
 
 						if ($this->license->text && isset($substitutes[1]) && !empty($substitutes[1])) { ?>

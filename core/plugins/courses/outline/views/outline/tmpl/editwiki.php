@@ -31,7 +31,7 @@ $assets = array();
 
 		<label for="content">Content: </label>
 		<?php
-		$content = preg_replace('/^(<!-- \{FORMAT:.*\} -->)/i', '', $asset->get('content'));
+		$content = preg_replace('/^(<!-- \{FORMAT:.*\} -->)/i', '', $asset->get('content',''));
 		echo $this->editor('content', $content, 35, 10, 'content'); //, null, null, array('class' => 'minimal no-footer images'));
 		?>
 

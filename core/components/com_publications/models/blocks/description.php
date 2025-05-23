@@ -153,7 +153,7 @@ class Description extends Base
 
 		// Parse metadata
 		$data = array();
-		preg_match_all("#<nb:(.*?)>(.*?)</nb:(.*?)>#s", $pub->metadata, $matches, PREG_SET_ORDER);
+		preg_match_all("#<nb:(.*?)>(.*?)</nb:(.*?)>#s", $pub->metadata ? $pub->metadata : '', $matches, PREG_SET_ORDER);
 		if (count($matches) > 0)
 		{
 			foreach ($matches as $match)
@@ -274,7 +274,7 @@ class Description extends Base
 	 *
 	 * @return  string  HTML
 	 */
-	public function buildContent($pub = null, $viewname = 'edit', $status, $master)
+	public function buildContent($pub, $viewname, $status, $master)
 	{
 		// Get block element model
 		$elModel = new \Components\Publications\Models\BlockElements($this->_parent->_db);

@@ -151,6 +151,13 @@ abstract class Field
 	protected $value;
 
 	/**
+	 * The input placeholder
+	 *
+	 * @var  string
+	 */
+	protected $placeholder;
+
+	/**
 	 * The label's CSS class of the form field
 	 *
 	 * @var  mixed
@@ -206,11 +213,11 @@ abstract class Field
 
 				if ($parts[0] == 'J')
 				{
-					$this->type = ucfirst($parts[count($parts) - 1], '_');
+					$this->type = Str::ucfirst($parts[count($parts) - 1], '_');
 				}
 				else
 				{
-					$this->type = ucfirst($parts[0], '_') . ucfirst($parts[count($parts) - 1], '_');
+					$this->type = Str::ucfirst($parts[0], '_') . Str::ucfirst($parts[count($parts) - 1], '_');
 				}
 			}
 		}
@@ -367,7 +374,7 @@ abstract class Field
 		$this->value = $value;
 
 		// Set the field placeholder
-		$this->placeholder = (string) $element['placeholder'];
+		$this->placeholder = isset($element['placeholder']) ? (string) $element['placeholder'] : '';
 
 		// Set the CSS class of field label
 		$this->labelClass = (string) $element['labelclass'];

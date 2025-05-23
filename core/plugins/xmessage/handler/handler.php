@@ -144,7 +144,7 @@ class plgXMessageHandler extends \Hubzero\Plugin\Plugin
 
 		// Outlook 2016 Windows 10 Desktop client fails to parse some
 		// encoded multi-line subject fields. In particular with the
-		// line ending of CRLF (or its a bug in Swiftmailer's encoding,
+		// line ending of CRLF (or its a bug in  our mailer's encoding,
 		// not actually certain). To address this and other potential
 		// problems with the subject field we add additional logic
 		// here to ensure a valid subject field.

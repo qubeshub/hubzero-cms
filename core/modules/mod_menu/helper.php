@@ -35,7 +35,9 @@ class Helper extends Module
 		$active_id = isset($active) ? $active->id : $menu->getDefault()->id;
 		$path      = isset($active) ? $active->tree : array();
 		$showAll   = $params->get('showAllChildren');
-		$class_sfx = htmlspecialchars($params->get('class_sfx'));
+		$class_sfx = htmlspecialchars($params->get('class_sfx',''));
+		$disclosureMenu = $params->get('disclosureMenu', false);
+		$toplevelLinks  = $params->get('toplevelLinks', false);
 
 		if (count($list))
 		{

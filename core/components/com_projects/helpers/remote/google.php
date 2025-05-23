@@ -82,7 +82,7 @@ class Google extends Obj
 	 * @param   string   $itemId
 	 * @return  boolean
 	 */
-	public static function clearPermissions($apiService, $shared = array(), $itemId)
+	public static function clearPermissions($apiService, $shared, $itemId)
 	{
 		if (!$itemId || empty($shared))
 		{
@@ -133,7 +133,7 @@ class Google extends Obj
 	 * @param   array   &$metadata   Collector array
 	 * @return  mixed   (id) or false
 	 */
-	public static function patchFile($apiService, $id = '', $title = '', $parentId = '', &$metadata)
+	public static function patchFile($apiService, $id, $title, $parentId, &$metadata)
 	{
 		// Check for what we need
 		if (!$apiService || !$id || (!$title && !$parentId && !$convert))
@@ -179,7 +179,7 @@ class Google extends Obj
 	 * @param   boolean  $convert     Convert for remote editing?
 	 * @return  string   (id) or false
 	 */
-	public static function insertFile($apiService, $client, $title = '', $localPath = null, $mimeType = null, $parentId = 0, &$metadata, $convert = false)
+	public static function insertFile($apiService, $client, $title, $localPath, $mimeType, $parentId, &$metadata, $convert = false)
 	{
 		// Check for what we need
 		if (!$apiService || !$title || !$parentId || !file_exists($localPath) || !$mimeType)
@@ -297,7 +297,7 @@ class Google extends Obj
 	 * @param   boolean  $convert     Convert for remote editing?
 	 * @return  mixed  string (id) or false
 	 */
-	public static function updateFile($apiService, $client, $id = 0, $title = '', $localPath = null, $mimeType = null, $parentId = 0, &$metadata, $convert = false)
+	public static function updateFile($apiService, $client, $id, $title, $localPath, $mimeType, $parentId, &$metadata, $convert = false)
 	{
 		// Check for what we need
 		if (!$apiService || !$id)
@@ -538,7 +538,7 @@ class Google extends Obj
 	 * @param   array   &$metadata   Collector array
 	 * @return  mixed   string (new folder id) or false
 	 */
-	public static function createFolder($apiService, $title = '', $parentId = 0, &$metadata)
+	public static function createFolder($apiService, $title, $parentId, &$metadata)
 	{
 		// Check for what we need
 		if (!$apiService || !$title || !$parentId)
@@ -583,7 +583,7 @@ class Google extends Obj
 	 * @param   array   $connections    Array of local-remote connections
 	 * @return  mixed   int (new change ID) or false
 	 */
-	public static function collectChanges($apiService, $folderID = 0, &$remotes, &$deletes, $path = '', $startChangeId = null, $connections = array())
+	public static function collectChanges($apiService, $folderID, &$remotes, &$deletes, $path = '', $startChangeId = null, $connections = array())
 	{
 		// Check for what we need
 		if (!$apiService || !$folderID)
@@ -635,7 +635,7 @@ class Google extends Obj
 	 * @param   array   &$duplicates  Collector array for duplicates
 	 * @return  void
 	 */
-	public static function getFolderChange($items, $folderID = 0, &$remotes, &$deletes, $path = '', $connections, &$duplicates)
+	public static function getFolderChange($items, $folderID, &$remotes, &$deletes, $path, $connections, &$duplicates)
 	{
 		$lpath = $path ? $path : '';
 
@@ -678,8 +678,12 @@ class Google extends Obj
 					$thumb     = isset($doc['thumbnailLink']) ? $doc['thumbnailLink'] : null;
 
 					$author    = isset($doc['lastModifyingUserName'])
-								? utf8_encode($doc['lastModifyingUserName'])
-								: utf8_encode($doc['ownerNames'][0]);
+								? $doc['lastModifyingUserName']
+								: $doc['ownerNames'][0];
+					if (function_exists('mbstring'))
+					{
+						$author = (!preg_match('!\S!u', $author)) ? mbstring($author) : $author;
+					}
 
 					if (!preg_match("/.folder/", $doc['mimeType']))
 					{
@@ -810,7 +814,7 @@ class Google extends Obj
 	 * @param   array   &$duplicates  Collector array for duplicates
 	 * @return  string
 	 */
-	public static function buildDuplicatePath($id = 0, $fpath, $format = '', $connections, &$remotes, &$duplicates)
+	public static function buildDuplicatePath($id, $fpath, $format, $connections, &$remotes, &$duplicates)
 	{
 		// Do we have a record with another ID linked to the same path?
 		$pathTaken = isset($connections['paths'][$fpath])
@@ -858,7 +862,7 @@ class Google extends Obj
 	 * @param   string  $path            Path
 	 * @return  mixed
 	 */
-	public static function getFolders($apiService, $folderID = 0, &$remoteFolders, $path = '')
+	public static function getFolders($apiService, $folderID, &$remoteFolders, $path = '')
 	{
 		// Check for what we need
 		if (!$apiService || !$folderID)
@@ -976,7 +980,7 @@ class Google extends Obj
 	 * @param   array   &$duplicates  Collector array for duplicates
 	 * @return  mixed
 	 */
-	public static function getFolderContent($apiService, $folderID = 0, $remotes, $path = '', $since, $connections, &$duplicates)
+	public static function getFolderContent($apiService, $folderID, $remotes, $path, $since, $connections, &$duplicates)
 	{
 		// Check for what we need
 		if (!$apiService || !$folderID)
@@ -1023,8 +1027,8 @@ class Google extends Obj
 					$thumb     = $item->getThumbnailLink();
 
 					$author    = null; /*isset($item['lastModifyingUserName'])
-											? utf8_encode($item['lastModifyingUserName'])
-											: utf8_encode($item['ownerNames'][0]);*/
+											? $item['lastModifyingUserName']
+											: $item['ownerNames'][0];*/
 
 					if (!preg_match("/.folder/", $item->getMimeType()))
 					{
@@ -1148,8 +1152,8 @@ class Google extends Obj
 					$thumb     = isset($item['thumbnailLink']) ? $item['thumbnailLink'] : null;
 
 					$author    = isset($item['lastModifyingUserName'])
-											? utf8_encode($item['lastModifyingUserName'])
-											: utf8_encode($item['ownerNames'][0]);
+											? $item['lastModifyingUserName']
+											: $item['ownerNames'][0];
 
 					if (!preg_match("/.folder/", $item['mimeType']))
 					{

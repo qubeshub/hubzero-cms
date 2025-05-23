@@ -48,6 +48,10 @@ class plgSystemRedirect extends \Hubzero\Plugin\Plugin
 		// Make sure the error is a 404 and we are not in the administrator.
 		if (!App::isSite() || $error->getCode() != 404)
 		{
+			// Call Hubzero global exception handler instead of trying to render an error page
+			App::get('error')->handleException($error);
+			exit();
+
 			// Render the error page.
 			return $renderer->render($error);
 		}
@@ -124,7 +128,7 @@ class plgSystemRedirect extends \Hubzero\Plugin\Plugin
 			{
 				$row->save();
 			}
-			catch (Exception $e)
+			catch (\Throwable $e)
 			{
 				// Do nothing for now.
 				// @TODO  Log this?

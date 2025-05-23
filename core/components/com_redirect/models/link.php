@@ -130,7 +130,8 @@ class Link extends Relational
 		{
 			$data['status_code'] = 301;
 		}
-		return $data['status_code'];
+
+		return isset($data['status_code']) ? $data['status_code'] : '';
 	}
 
 	/**

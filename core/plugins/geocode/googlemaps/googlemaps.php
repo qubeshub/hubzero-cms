@@ -31,7 +31,7 @@ class plgGeocodeGooglemaps extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		return new \Geocoder\Provider\GoogleMapsProvider(
+		return new \Geocoder\Provider\GoogleMaps\GoogleMaps(
 			$adapter
 		);
 	}

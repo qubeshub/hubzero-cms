@@ -84,7 +84,7 @@ $this->css();
 					?>
 					<div class="input-wrap">
 						<label for="field-title"><?php echo Lang::txt('COM_STOREFRONT_WEIGHT'); ?>:</label><br/>
-						<input type="text" name="fields[pWeight]" id="field-title" size="30" maxlength="100"
+						<input type="text" name="fields[sWeight]" id="field-title" size="30" maxlength="100"
 							   value="<?php echo $this->escape(stripslashes($this->row->getWeight())); ?>"/>
 					</div>
 					<?php

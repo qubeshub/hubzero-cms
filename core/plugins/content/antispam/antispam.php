@@ -62,7 +62,7 @@ class plgContentAntispam extends \Hubzero\Plugin\Plugin
 		{
 			$key = $this->_key($context);
 
-			$content = ltrim($article->get($key));
+			$content = ltrim($article->get($key) == null ? '' : $article->get($key));
 		}
 		else if (is_object($article) || is_array($article))
 		{
@@ -187,13 +187,11 @@ class plgContentAntispam extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		$request = App::get('request');
+		$fallback  = 'option=' . Request::getCmd('option');
+		$fallback .= '&controller=' . Request::getCmd('controller');
+		$fallback .= '&task=' . Request::getCmd('task');
 
-		$fallback  = 'option=' . $request->getCmd('option');
-		$fallback .= '&controller=' . $request->getCmd('controller');
-		$fallback .= '&task=' . $request->getCmd('task');
-
-		$from = $request->getVar('REQUEST_URI', $fallback, 'server');
+		$from = Request::getVar('REQUEST_URI', $fallback, 'server');
 		$from = $from ?: $fallback;
 
 		$info = array(

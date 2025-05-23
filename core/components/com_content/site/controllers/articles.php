@@ -218,7 +218,7 @@ class Articles extends SiteController
 		}
 
 		// Escape strings for HTML output
-		$pageclass_sfx = htmlspecialchars($item->params->get('pageclass_sfx'));
+		$pageclass_sfx = htmlspecialchars($item->params->get('pageclass_sfx',''));
 		$print = Request::getBool('print');
 
 		$title = null;
@@ -229,15 +229,15 @@ class Articles extends SiteController
 		if ($menu)
 		{
 			$params->def('page_heading', $params->get('page_title', $menu->title));
+			$id = (int) $menu->query['id'];
 		}
 		else
 		{
 			$params->def('page_heading', Lang::txt('JGLOBAL_ARTICLES'));
+			$id = 0;
 		}
 
 		$title = $params->get('page_title', $item->title);
-
-		$id = (int) @$menu->query['id'];
 
 		// if the menu item does not concern this article
 		if ($menu && ($menu->query['option'] != 'com_content' || $menu->query['view'] != 'article' || $id != $item->id))
@@ -586,6 +586,8 @@ class Articles extends SiteController
 			else
 			{
 				// If no access filter is set, the layout takes some responsibility for display of limited information.
+				$groups = User::getAuthorisedViewLevels();
+
 				if ($item->catid == 0 || $item->category_access === null)
 				{
 					$item->params->set('access-view', in_array($item->access, $groups));
@@ -649,7 +651,7 @@ class Articles extends SiteController
 		$form->limitField = ''; //$pagination->getLimitBox();
 
 		//Escape strings for HTML output
-		$pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
+		$pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx',''));
 
 		// Because the application sets a default page title,
 		// we need to get it from the menu item itself
@@ -873,7 +875,7 @@ class Articles extends SiteController
 		}
 
 		//Escape strings for HTML output
-		$pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
+		$pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx',''));
 
 		// Because the application sets a default page title,
 		// we need to get it from the menu item itself
@@ -990,7 +992,7 @@ class Articles extends SiteController
 		$items = array($parent->id => $items);
 
 		//Escape strings for HTML output
-		$pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
+		$pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx',''));
 
 		$maxLevelcat = $params->get('maxLevelcat', -1);
 
@@ -1326,13 +1328,14 @@ class Articles extends SiteController
 		if ($menu)
 		{
 			$params->def('page_heading', $params->get('page_title', $menu->title));
+			$id = (int) $menu->query['id'];
 		}
 		else
 		{
 			$params->def('page_heading', Lang::txt('JGLOBAL_ARTICLES'));
+			$id = 0;
 		}
 
-		$id = (int) @$menu->query['id'];
 
 		if ($menu && ($menu->query['option'] != 'com_content' || $menu->query['view'] == 'article' || $id != $category->id))
 		{
@@ -1406,7 +1409,7 @@ class Articles extends SiteController
 		$children = array($category->id => $children);
 
 		// Escape strings for HTML output
-		$pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
+		$pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx',''));
 
 		$maxLevel = $params->get('maxLevel', -1);
 
@@ -1639,7 +1642,7 @@ class Articles extends SiteController
 		}
 
 		// Escape strings for HTML output
-		$pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
+		$pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx',''));
 		$return_page = base64_encode(urlencode($return_page));
 
 		$this->view

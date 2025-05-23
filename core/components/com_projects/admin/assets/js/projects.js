@@ -26,7 +26,7 @@ Hubzero.submitbutton = function(task) {
 		}
 
 		if (task == 'reinstate') {
-			form.admin_action.value = 'reinstate';
+			frm.admin_action.value = 'reinstate';
 			Hubzero.submitform('save', frm);
 			return;
 		}
@@ -92,5 +92,31 @@ jQuery(document).ready(function($){
 		e.preventDefault();
 
 		Hubzero.submitbutton('suspend');
+	});
+});
+
+$(function(){
+	$("#param-grant_agency").autocomplete({	
+		open: function() {
+			$("ul.ui-menu").width( $(this).innerWidth() );
+		},
+		
+		source: function(req, resp){
+			var rorURL = "index.php?option=com_projects&controller=projects&task=getGrantAgency&term=" + $("#param-grant_agency").val();
+			
+			$.ajax({
+				url: rorURL,
+				data: null,
+				dataType: "json",
+				success:function(result){
+					resp(result);
+				},
+				error:function(jqXHR, textStatus, errorThrown){
+					console.log(textStatus);
+					console.log(errorThrown);
+					console.log(jqXHR.responseText);
+				}
+			});
+		}
 	});
 });

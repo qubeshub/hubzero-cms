@@ -304,7 +304,7 @@ $config  = isset($config) ?: App::get('config');
 
 						<div class="input-wrap">
 							<label for="db-pass">Password</label>
-							<input type="password" name="database[password]" id="db-pass" value="<?php echo htmlentities($config->get('password')); ?>" placeholder="" />
+							<input type="password" name="database[password]" id="db-pass" value="<?php echo htmlentities($config->get('password','')); ?>" placeholder="" />
 						</div>
 					</fieldset>
 

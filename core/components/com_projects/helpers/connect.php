@@ -737,7 +737,11 @@ class Connect extends Obj
 			{
 				$user = $oauth2->userinfo->get();
 				$email = filter_var($user['email'], FILTER_SANITIZE_EMAIL);
-				$name = utf8_encode($user['name']);
+				$name = $user['name'];
+				if (function_exists('mbstring'))
+				{
+					$name = mbstring($name);
+				}
 
 				// Save params for project team member
 				$this->storeParam($service . '_email', $email, $uid);
@@ -1451,7 +1455,7 @@ class Connect extends Obj
 	 * @param   integer  $original        Source file?
 	 * @return  array
 	 */
-	public function sortRemoteRevisions($id, $converted = 0, $lastModifiedBy = '', $uid , $service, $file, &$versions = array(), &$timestamps = array(), $original = 0)
+	public function sortRemoteRevisions($id, $converted, $lastModifiedBy, $uid , $service, $file, &$versions = array(), &$timestamps = array(), $original = 0)
 	{
 		// Get remote revisions
 		$revisions = $this->getFileHistory($id, $uid, $service);
@@ -1623,7 +1627,7 @@ class Connect extends Obj
 	 * @param   string   $path           Path
 	 * @return  integer  change ID
 	 */
-	public function getChangedItems($service = 'google', $uid = 0, $startChangeId = null, &$remotes, &$deletes, $connections = array(), $path = '')
+	public function getChangedItems($service, $uid, $startChangeId, &$remotes, &$deletes, $connections = array(), $path = '')
 	{
 		// Get api
 		$apiService = $this->getAPI($service, $uid);
@@ -1730,7 +1734,7 @@ class Connect extends Obj
 	 * @param   string   $path
 	 * @return  bool
 	 */
-	public function getFolderStructure($service = 'google', $uid = 0, &$remoteFolders, $path = '')
+	public function getFolderStructure($service, $uid, &$remoteFolders, $path = '')
 	{
 		// Get api
 		$apiService = $this->getAPI($service, $uid);

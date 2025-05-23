@@ -102,7 +102,7 @@ class Sku
 	{
 		if (empty($this->data->price))
 		{
-			return null;
+			return 0;
 		}
 		return $this->data->price;
 	}
@@ -117,7 +117,7 @@ class Sku
 	{
 		if (empty($this->data->name))
 		{
-			return null;
+			return '';
 		}
 		return $this->data->name;
 	}
@@ -137,7 +137,7 @@ class Sku
 	{
 		if (empty($this->data->weight))
 		{
-			return null;
+			return 0;
 		}
 		return $this->data->weight;
 	}
@@ -191,7 +191,7 @@ class Sku
 	{
 		if (empty($this->data->checkoutNotes))
 		{
-			return null;
+			return '';
 		}
 		return $this->data->checkoutNotes;
 	}
@@ -424,6 +424,7 @@ class Sku
 		$sql .= "	`pId` = " . $this->getProductId() . ",
 					`sSku` = " . $db->quote($this->getName()) . ",
 					`sPrice` = " . $db->quote($this->getPrice()) . ",
+					`sWeight` = " . $db->quote($this->getWeight()) . ",
 					`sAllowMultiple` = " . $this->getAllowMultiple() . ",
 					`sTrackInventory` = " . $this->getTrackInventory() . ",
 					`sInventory` = " . $this->getInventoryLevel() . ",

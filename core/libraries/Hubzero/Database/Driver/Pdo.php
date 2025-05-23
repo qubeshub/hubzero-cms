@@ -679,7 +679,7 @@ class Pdo extends Driver
 	 */
 	public function escape($text, $extra = false)
 	{
-		$result = substr($this->connection->quote($text), 1, -1);
+		$result = substr($this->connection->quote($text ? $text : ''), 1, -1);
 
 		if ($extra)
 		{
@@ -730,17 +730,11 @@ class Pdo extends Driver
 	/**
 	 * Gets a new query for the current driver
 	 *
-	 * @param   bool   $legacy  Whether or not to return new query builder or legacy builder
 	 * @return  Query
 	 * @since   2.0.0
 	 */
-	public function getQuery($legacy = false)
+	public function getQuery()
 	{
-		if ($legacy)
-		{
-			return new \JDatabaseQueryPDOMySQL($this);
-		}
-
 		return new Query($this);
 	}
 

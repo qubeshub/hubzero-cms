@@ -218,7 +218,7 @@ class Results extends SiteController
 		$periodlist[] = Html::select('option', 'quarter', Lang::txt('COM_WHATSNEW_OPT_QUARTER'));
 		$periodlist[] = Html::select('option', 'year', Lang::txt('COM_WHATSNEW_OPT_YEAR'));
 
-		$thisyear = strftime("%Y", time());
+		$thisyear = date("Y", time());
 		for ($y = $thisyear; $y >= 2002; $y--)
 		{
 			if (time() >= strtotime('10/1/' . $y))
@@ -394,7 +394,7 @@ class Results extends SiteController
 				$description = preg_replace("'<script[^>]*>.*?</script>'si", '', stripslashes($row->text));
 				$description = \Hubzero\Utility\Str::truncate($description, 300);
 				$author = '';
-				@$date = ($row->publish_up ? date('r', strtotime($row->publish_up)) : '');
+				$date = (isset($row->publish_up) ? date('r', strtotime($row->publish_up)) : '');
 
 				// Load individual item creator class
 				$item = new \Hubzero\Document\Type\Feed\Item();
@@ -437,7 +437,7 @@ class Results extends SiteController
 				return Lang::txt('COM_WHATSNEW_OPT_YEAR');
 				break;
 			default:
-				$thisyear = strftime("%Y", time());
+				$thisyear = date("Y", time());
 				for ($y = $thisyear; $y >= 2002; $y--)
 				{
 					if (time() >= strtotime('10/1/' . $y))

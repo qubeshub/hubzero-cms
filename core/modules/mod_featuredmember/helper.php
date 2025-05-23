@@ -32,7 +32,7 @@ class Helper extends Module
 		// Randomly choose one
 		$filters = array(
 			'limit'      => 1,
-			'show'       => trim($this->params->get('show')),
+			'show'       => trim($this->params->get('show','')),
 			'start'      => 0,
 			'sortby'     => "RAND()",
 			'search'     => '',
@@ -57,8 +57,8 @@ class Helper extends Module
 		// Did we have a result to display?
 		if ($this->row)
 		{
-			$this->cls = trim($this->params->get('moduleclass_sfx'));
-			$this->txt_length = trim($this->params->get('txt_length'));
+			$this->cls = trim($this->params->get('moduleclass_sfx',''));
+			$this->txt_length = trim($this->params->get('txt_length',''));
 
 			$config = Component::params('com_members');
 

@@ -20,6 +20,10 @@ $canDo = \Components\Courses\Helpers\Permissions::getActions();
 Toolbar::title(Lang::txt('COM_COURSES') . ': ' . Lang::txt('COM_COURSES_ASSET_GROUPS'), 'courses');
 if ($canDo->get('core.create'))
 {
+	// NEW FEATURE - [Asset Duplicate] - Pop open a modal window with form
+	Toolbar::custom('assetdup', 'star', '', 'COM_COURSES_ASSET_DUPLICATE', true);
+	Toolbar::spacer();
+
 	Toolbar::custom('copy', 'copy.png', 'copy_f2.png', 'JTOOLBAR_DUPLICATE', true);
 	Toolbar::spacer();
 	Toolbar::addNew();
@@ -35,7 +39,8 @@ if ($canDo->get('core.delete'))
 Toolbar::spacer();
 Toolbar::help('assetgroups');
 
-$this->css();
+$this->css()
+	->css('duplicateAssets');
 
 Html::behavior('tooltip');
 ?>
@@ -63,7 +68,7 @@ Html::behavior('tooltip');
 		</div>
 	</fieldset>
 
-	<table class="adminlist">
+	<table class="adminlist" id="assetgroups">
 		<caption>
 			(<a href="<?php echo Route::url('index.php?option=' . $this->option  . '&controller=offerings&course=' . $this->course->get('id')); ?>">
 				<?php echo $this->escape(stripslashes($this->course->get('alias'))); ?>
@@ -78,7 +83,10 @@ Html::behavior('tooltip');
 		</caption>
 		<thead>
 			<tr>
-				<th scope="col"><input type="checkbox" name="toggle" value="" class="checkbox-toggle toggle-all" /></th>
+				<th scope="col">
+					<input type="checkbox" name="checkall-toggle" id="checkall-toggle" value="" class="checkbox-toggle toggle-all" />
+					<label for="checkall-toggle" class="sr-only visually-hidden"><?php echo Lang::txt('JGLOBAL_CHECK_ALL'); ?></label>
+				</th>
 				<th scope="col" class="priority-5"><?php echo Lang::txt('COM_COURSES_COL_ID'); ?></th>
 				<th scope="col"><?php echo Lang::txt('COM_COURSES_COL_TITLE'); ?></th>
 				<th scope="col" class="priority-4"><?php echo Lang::txt('COM_COURSES_COL_ALIAS'); ?></th>
@@ -136,6 +144,7 @@ Html::behavior('tooltip');
 			<tr class="<?php echo "row$k" . ($row->get('state') == 2 ? ' archived' : ''); ?>">
 				<td>
 					<input type="checkbox" name="id[]" id="cb<?php echo $i; ?>" value="<?php echo $row->get('id'); ?>" class="checkbox-toggle" />
+					<label for="cb<?php echo $i; ?>" class="sr-only visually-hidden"><?php echo $row->get('id'); ?></label>
 				</td>
 				<td class="priority-5">
 					<?php echo $this->escape($row->get('id')); ?>

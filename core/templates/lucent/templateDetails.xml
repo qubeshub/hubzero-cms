@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<install type="template">
+	<name>Lucent</name>
+	<author>HUBzero</author>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GPLv2</license>
+	<description>Lucent, the template that inspires</description>
+	<files>
+
+	</files>
+	<languages>
+		<language tag="en-GB">en-GB.tpl_lucent.ini</language>
+	</languages>
+	<administration>
+		<languages folder="admin">
+			<language tag="en-GB">en-GB.tpl_lucent.ini</language>
+		</languages>
+	</administration>
+	<positions>
+		<position>footer</position>
+		<position>banner</position>
+		<position>welcome</position>
+		<position>left</position>
+		<position>right</position>
+		<position>helppane</position>
+		<position>user3</position>
+		<position>introblock</position>
+		<position>notices</position>
+		<position>search</position>
+	</positions>
+	<params>
+	</params>
+</install>

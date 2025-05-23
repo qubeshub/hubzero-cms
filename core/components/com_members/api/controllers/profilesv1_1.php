@@ -75,6 +75,8 @@ class Profilesv1_1 extends ApiController
 	 */
 	public function listTask()
 	{
+		$this->requiresAuthentication();
+
 		$filters = array(
 			'limit'      => Request::getInt('limit', 25),
 			'start'      => Request::getInt('limitstart', 0),
@@ -366,7 +368,25 @@ class Profilesv1_1 extends ApiController
 	 */
 	public function readTask()
 	{
-		$userid = Request::getInt('id', 0);
+		$this->requiresAuthentication();
+
+		$id = Request::getCmd('id', '');
+
+		if (($id == 'currentuser'))
+		{
+			$user = User::getInstance();
+
+			if ($user->isGuest())
+			{
+	                        throw new Exception(Lang::txt('Not authorized'), 403);
+			}
+
+			$userid = $user->get('id');
+		}
+		else
+		{
+			$userid = Request::getInt('id', 0);
+		}
 
 		$result = Member::oneOrFail($userid);
 
@@ -447,6 +467,75 @@ class Profilesv1_1 extends ApiController
 		$object->profile = $profile;
 
 		$this->send($object);
+	}
+
+	/**
+	 * Get a member's accessgroups
+	 *
+	 * @apiMethod GET
+	 * @apiUri    /members/{id}/accessgroups
+	 * @apiParameter {
+	 *		"name":        "id",
+	 *		"description": "Member identifier",
+	 *		"type":        "integer",
+	 *		"required":    true,
+	 *		"default":     null
+	 * }
+	 * @apiParameter {
+	 *		"name":        "inherited",
+	 *		"description": "include inherited user accessgroups",
+	 *		"type":        "boolean",
+	 *		"required":    false,
+	 *		"default":     false
+	 * }
+	 * @apiParameter {
+	 *		"name":        "titles",
+	 *		"description": "return accessgroup titles",
+	 *		"type":        "boolean",
+	 *		"required":    false,
+	 *		"default":     false
+	 * }
+	 * @apiParameter {
+	 *		"name":        "all",
+	 *		"description": "return accessgroup titles and ids as an associative array",
+	 *		"type":        "boolean",
+	 *		"required":    false,
+	 *		"default":     false
+	 * }
+	 * @return array of accessgroups member belongs to
+	 */
+
+	public function accessgroupsTask()
+	{
+		 $this->requiresAuthentication();
+
+		 $user = User::getInstance();
+
+		 $userid = Request::getInt('id', 0);
+
+		 if ($user->get('id') != $userid && !User::authorise('core.admin'))
+		 {
+			throw new Exception(Lang::txt('Access denied'), 400);
+		 }
+
+		 $titles = Request::getBool('titles',false);
+		 $inherited = Request::getBool('inherited',false);
+		 $all = Request::getBool('all',false);
+
+		 $result = User::getInstance($userid);
+
+		 if (!$result || !$result->get('id'))
+		 {
+			throw new Exception(Lang::txt('No such user'), 404);
+		 }
+
+		 $groups = \Hubzero\Access\Access::getGroupsByUser($userid, $inherited, $titles, $all);
+
+		 // Encode and return result
+		 $obj = new stdClass();
+		 $obj->accessgroups = $groups;
+
+		 $this->send($obj);
 	}
 
 	/**

@@ -69,9 +69,8 @@ endif;
 	     ->display();
 	?>
 
-	<div id="edit-project-content">
+	<section class="main section" id="edit-project-content">
 		<h3 class="edit-title"><?php echo ucwords(Lang::txt('COM_PROJECTS_EDIT_PROJECT')); ?></h3>
-		<section class="main section">
 			<div class="grid">
 				<div class="col span3">
 					<?php
@@ -164,7 +163,6 @@ endif;
 				</div><!-- / .col span9 omega -->
 			</div><!-- / .grid -->
 		</section><!-- / .main section -->
-	</div><!-- / #edit-project-content -->
 <?php if ($layout == 'extended'): ?>
 </div><!-- / .project-inner-wrap -->
 <?php endif; ?>

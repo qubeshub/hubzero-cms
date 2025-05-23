@@ -23,7 +23,7 @@ if ($this->wishlist->get('id'))
 		$login = $this->wish->proposer->get('username');
 	}
 
-	$this->wish->set('about', preg_replace('/<br\\s*?\/??>/i', '', $this->wish->get('about')));
+	$this->wish->set('about', preg_replace('/<br\\s*?\/??>/i', '', $this->wish->get('about','')));
 ?>
 	<header id="content-header">
 		<h2><?php echo $this->escape($this->title); ?></h2>
@@ -95,7 +95,7 @@ if ($this->wishlist->get('id'))
 				<div class="form-group">
 					<label for="subject">
 						<?php echo Lang::txt('COM_WISHLIST_SUMMARY_OF_WISH'); ?> <span class="required"><?php echo Lang::txt('COM_WISHLIST_REQUIRED'); ?></span>
-						<input name="fields[subject]" maxlength="200" id="subject" type="text" class="form-control" value="<?php echo $this->escape(stripslashes($this->wish->get('subject'))); ?>" />
+						<input name="fields[subject]" maxlength="200" id="subject" type="text" class="form-control" value="<?php echo $this->escape(stripslashes($this->wish->get('subject',''))); ?>" />
 					</label>
 				</div>
 

@@ -21,6 +21,8 @@ use stdClass;
 require_once __DIR__ . DS . 'association.php';
 require_once __DIR__ . DS . 'type.php';
 require_once __DIR__ . DS . 'author.php';
+require_once __DIR__ . DS . 'acluser.php';
+require_once __DIR__ . DS . 'aclgroup.php';
 require_once __DIR__ . DS . 'license.php';
 require_once __DIR__ . DS . 'screenshot.php';
 require_once __DIR__ . DS . 'elements.php';
@@ -271,23 +273,46 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 	 */
 	public function transformGroups()
 	{
-		$allowedgroups = array();
+		$db = App::get('db');
 
-		if ($group_access = $this->get('group_access'))
+		$sql = "SELECT g.cn FROM #__resource_acl_group AS a, #__xgroups AS g WHERE resource_id = ? AND a.group_id = g.gidNumber";
+		$db->prepare($sql)->bind( array( $this->get('id')));
+		$result = $db->loadColumn();
+
+		if ($result)
+			$allowedgroups = $result;
+		else
+			$allowedgroups = array();
+
+		$groupOwner = $this->get('group_owner', '');
+
+		if (!empty($groupOwner))
 		{
-			$group_access = trim($group_access);
-			$group_access = trim($group_access, ';');
-			$group_access = explode(';', $group_access);
-
-			$allowedgroups += $group_access;
-		}
-
-		if ($this->get('group_owner'))
-		{
-			$allowedgroups[] = $this->get('group_owner');
+			$allowedgroups[] = $groupOwner;
 		}
 
 		return $allowedgroups;
+	}
+
+	/**
+	 * Get all the users allowed to access a resource
+	 *
+	 * @return  array
+	 */
+	public function transformUsers()
+	{
+		$db = App::get('db');
+
+		$sql = "SELECT user_id FROM #__resource_acl_user WHERE resource_id = ?;";
+		$db->prepare($sql)->bind( array( $this->get('id')));
+		$result = $db->loadColumn();
+
+		if ($result)
+			$allowedusers = $result;
+		else
+			$allowedusers = array();
+
+		return $allowedusers;
 	}
 
 	/**
@@ -298,6 +323,30 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 	public function screenshots()
 	{
 		return $this->oneToMany(__NAMESPACE__ . '\\Screenshot', 'resourceid');
+	}
+
+	/**
+	 * Generates a list of aclusers
+	 *
+	 * @return  object
+	 */
+	public function aclusers()
+	{
+		$result = AclUser::listUsers($this->get('id'));
+
+		return $result;	
+	}
+
+	/**
+	 * Generates a list of aclgroups
+	 *
+	 * @return  object
+	 */
+	public function aclgroups()
+	{
+		$result = AclGroup::listGroups($this->get('id'));
+
+		return $result;	
 	}
 
 	/**
@@ -315,13 +364,13 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 	 *
 	 * @return  string
 	 */
-	public function authorsList()
+	public function authorsList($solr=false)
 	{
 		$names = array();
 
 		foreach ($this->authors()->order('ordering', 'asc')->rows() as $contributor)
 		{
-			if (strtolower($contributor->get('role')) == 'submitter')
+			if (strtolower($contributor->get('role','')) == 'submitter')
 			{
 				continue;
 			}
@@ -330,7 +379,10 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 			$name = htmlentities($contributor->name);
 			if ($contributor->get('authorid') > 0)
 			{
-				$name = '<a href="' . Route::url('index.php?option=com_members&id=' . $contributor->get('authorid')) . '" data-rel="contributor" class="resource-contributor" title="View the profile of ' . $name . '">' . $name . '</a>';
+				if (!$solr)
+				{
+					$name = '<a href="' . Route::url('index.php?option=com_members&id=' . $contributor->get('authorid')) . '" data-rel="contributor" class="resource-contributor" title="View the profile of ' . $name . '">' . $name . '</a>';
+				}
 			}
 			if ($contributor->get('role'))
 			{
@@ -357,7 +409,7 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 		{
 			if ($this->isTool() && $this->revision == 'dev')
 			{
-				$contributors = $this->authors()->rows();
+				$contributors = $this->authors()->ordered()->rows();
 			}
 			else if ($this->isTool())
 			{
@@ -568,7 +620,7 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 		}
 
 		// Make sure the resource is published and standalone
-		if (in_array($this->get('published'), array(self::STATE_UNPUBLISHED, self::STATE_DRAFT, self::STATE_TRASHED, self::STATE_DRAFT_INTERNAL)))
+		if (in_array($this->get('published'), array(self::STATE_UNPUBLISHED, self::STATE_PENDING, self::STATE_DRAFT, self::STATE_TRASHED, self::STATE_DRAFT_INTERNAL)))
 		{
 			return false;
 		}
@@ -630,16 +682,6 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 	{
 		$path = stripslashes($this->get('path'));
 
-		if (!preg_match("/(?:https?:|mailto:|ftp:|gopher:|news:|file:)/", $path))
-		{
-			$path = DS . ltrim($path, DS);
-
-			/*if (substr($path, 0, strlen($this->params->get('uploadpath'))) != $this->params->get('uploadpath'))
-			{
-				$path = DS . trim($this->params->get('uploadpath'), DS) . $path;
-			}*/
-		}
-
 		return $path;
 	}
 
@@ -669,7 +711,7 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 		{
 			$params = new Registry($this->get('params'));
 
-			$p = Component::params('com_resources');
+			$p = clone Component::params('com_resources');
 			$p->merge($params);
 
 			$this->paramsRegistry = $p;
@@ -680,6 +722,9 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 
 	/**
 	 * Transform display date
+	 *
+	 * Return entry date according to component show_date preference
+	 * Result is in Local timezone (unlike the datetime transform below)
 	 *
 	 * @return  string
 	 */
@@ -706,6 +751,47 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 				break;
 			case 3:
 				$thedate = Date::of($this->get('publish_up'))->toLocal(Lang::txt('DATE_FORMAT_HZ1'));
+				break;
+			case 0:
+			default:
+				$thedate = '';
+				break;
+		}
+
+		return $thedate;
+	}
+
+	/**
+	 * Transform display datetime
+	 *
+	 * Return entry date and time according to component show_date preference
+	 * Result is in UTC (unlike the date transform above)
+	 *
+	 * @return  string
+	 */
+	public function transformDatetime()
+	{
+		if (!$this->get('modified') || $this->get('modified') == '0000-00-00 00:00:00')
+		{
+			$this->set('modified', $this->get('created'));
+		}
+
+		if (!$this->get('publish_up') || $this->get('publish_up') == '0000-00-00 00:00:00')
+		{
+			$this->set('publish_up', $this->get('created'));
+		}
+
+		// Set the display date
+		switch ($this->params->get('show_date'))
+		{
+			case 1:
+				$thedate = Date::of($this->get('created'));
+				break;
+			case 2:
+				$thedate = Date::of($this->get('modified'));
+				break;
+			case 3:
+				$thedate = Date::of($this->get('publish_up'));
 				break;
 			case 0:
 			default:
@@ -773,7 +859,7 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 	{
 		$content = stripslashes($this->get('fulltxt'));
 		$content = preg_replace("#<nb:(.*?)>(.*?)</nb:(.*?)>#s", '', $content);
-		$content = str_replace(array('="/site/', '="site/'), '="' . str_replace(PATH_ROOT, '', PATH_APP) . '/site/', $content);
+		$content = str_replace(array('="/site/', '="site/'), '="/app/site/', $content);
 
 		$content = \Html::content('prepare', $content);
 
@@ -876,6 +962,46 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 	}
 
 	/**
+	 * Build and return the base path to resource url
+	 *
+	 * @return  string
+	 */
+	public function baseurl()
+	{
+		if ($this->path == '')
+		{
+			return '';
+		}
+
+		if (preg_match('/^\/*([1|2]\d{3})\/+(0\d|1[012])\/(\d{5})\/*(.*?)\/*$/', $this->path, $matches))
+		{
+			return $matches[1] . '/' . $matches[2] . '/' . $matches[3];
+		}
+
+		return dirname($this->path);
+	}
+
+	/**
+	 * Build and return the relative path to resource url
+	 *
+	 * @return  string
+	 */
+	public function relativeurl()
+	{
+		if ($this->path == '')
+		{
+			return '';
+		}
+
+		if (preg_match('/^\/*([1|2]\d{3})\/+(0\d|1[012])\/(\d{5})\/*(.*?)\/*$/', $this->path, $matches))
+		{
+			return $matches[4];
+		}
+
+		return basename($this->path);
+	}
+
+	/**
 	 * Build and return the base path to resource file storage
 	 *
 	 * @return  string
@@ -973,6 +1099,11 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 			return $tags;
 		}
 
+		if ($as == 'cloud')
+		{
+			return $cloud;
+		}
+
 		return $cloud->tags();
 	}
 
@@ -1024,7 +1155,18 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 	 */
 	private function _authorize()
 	{
-		// NOT logged in
+		// public = 0
+		// registered = 1
+		// special = 2
+		// protected = 3
+		// private =4
+		//
+		// Access checks are a little convoluted so rather than using nested
+		// if-else we return inline as we determine access. We check for
+
+		$this->_authorized = true;
+
+		// Check if they are guest
 		if (User::isGuest())
 		{
 			// If the resource is published and public
@@ -1032,12 +1174,30 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 			{
 				// Allow view access
 				$this->params->set('access-view-resource', true);
+
 				if ($this->get('access') == 0)
 				{
 					$this->params->set('access-view-all-resource', true);
 				}
 			}
-			$this->_authorized = true;
+
+			return;
+		}
+
+		// Check if they're a site admin
+		$this->params->set('access-admin-resource', User::authorise('core.admin', null));
+		$this->params->set('access-manage-resource', User::authorise('core.manage', null));
+
+		if ($this->params->get('access-admin-resource')	|| $this->params->get('access-manage-resource'))
+		{
+			$this->params->set('access-view-resource', true);
+			$this->params->set('access-view-all-resource', true);
+			$this->params->set('access-create-resource', true);
+			$this->params->set('access-delete-resource', true);
+			$this->params->set('access-edit-resource', true);
+			$this->params->set('access-edit-state-resource', true);
+			$this->params->set('access-edit-own-resource', true);
+
 			return;
 		}
 
@@ -1045,9 +1205,9 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 		{
 			$tconfig = Component::params('com_tools');
 
+			// Check if they are in tool admin group
 			if ($admingroup = trim($tconfig->get('admingroup', '')))
 			{
-				// Check if they're a member of admin group
 				$ugs = \Hubzero\User\Helper::getGroups(User::get('id'));
 				if ($ugs && count($ugs) > 0)
 				{
@@ -1067,207 +1227,144 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 							$this->params->set('access-edit-resource', true);
 							$this->params->set('access-edit-state-resource', true);
 							$this->params->set('access-edit-own-resource', true);
-							break;
+							return;
 						}
 					}
 				}
 			}
 
-			if (!$this->params->get('access-admin-resource')
-			 && !$this->params->get('access-manage-resource'))
+			require_once Component::path('com_tools') . '/tables/tool.php';
+
+			$db = App::get('db');
+			$obj = new \Components\Tools\Tables\Tool($db);
+			$obj->loadFromName($this->get('alias'));
+
+			// check if user in tool dev team
+			if ($developers = $obj->getToolDevelopers($obj->id))
 			{
-				// If logged in and resource is published and public or registered
-				if ($this->isPublished() && ($this->get('access') == 0 || $this->get('access') == 1))
+				foreach ($developers as $dv)
 				{
-					// Allow view access
-					$this->params->set('access-view-resource', true);
-					$this->params->set('access-view-all-resource', true);
-				}
-
-				if ($this->get('group_owner'))
-				{
-					// For protected resources, make sure users can see abstract
-					if ($this->get('access') < 3)
+					if ($dv->uidNumber == User::get('id'))
 					{
 						$this->params->set('access-view-resource', true);
 						$this->params->set('access-view-all-resource', true);
-					}
-					else if ($this->get('access') == 3)
-					{
-						$this->params->set('access-view-resource', true);
-					}
-
-					// Get the groups the user has access to
-					$xgroups = \Hubzero\User\Helper::getGroups(User::get('id'), 'all');
-					$usersgroups = array();
-					if (!empty($xgroups))
-					{
-						foreach ($xgroups as $group)
-						{
-							if ($group->regconfirmed)
-							{
-								$usersgroups[] = $group->cn;
-							}
-						}
-					}
-
-					// Get the groups that can access this resource
-					$allowedgroups = $this->groups;
-
-					// Find what groups the user has in common with the resource, if any
-					$common = array_intersect($usersgroups, $allowedgroups);
-
-					// Check if the user is apart of the group that owns the resource
-					// or if they have any groups in common
-					if (in_array($this->get('group_owner'), $usersgroups) || count($common) > 0)
-					{
-						$this->params->set('access-view-resource', true);
-						$this->params->set('access-view-all-resource', true);
-					}
-				}
-
-				require_once Component::path('com_tools') . '/tables/tool.php';
-
-				$db = App::get('db');
-				$obj = new \Components\Tools\Tables\Tool($db);
-				$obj->loadFromName($this->get('alias'));
-
-				// check if user in tool dev team
-				if ($developers = $obj->getToolDevelopers($obj->id))
-				{
-					foreach ($developers as $dv)
-					{
-						if ($dv->uidNumber == User::get('id'))
-						{
-							$this->params->set('access-view-resource', true);
-							$this->params->set('access-view-all-resource', true);
-							$this->params->set('access-create-resource', true);
-							$this->params->set('access-delete-resource', true);
-							$this->params->set('access-edit-resource', true);
-							$this->params->set('access-edit-state-resource', true);
-							$this->params->set('access-edit-own-resource', true);
-						}
+						$this->params->set('access-create-resource', true);
+						$this->params->set('access-delete-resource', true);
+						$this->params->set('access-edit-resource', true);
+						$this->params->set('access-edit-state-resource', true);
+						$this->params->set('access-edit-own-resource', true);
+						return;
 					}
 				}
 			}
-
-			$this->_authorized = true;
-			return;
 		}
-		else
+
+		if (!$this->isTool())
 		{
-			// Check if they're a site admin
-			$this->params->set('access-admin-resource', User::authorise('core.admin', null));
-			$this->params->set('access-manage-resource', User::authorise('core.manage', null));
-			if ($this->params->get('access-admin-resource')
-			 || $this->params->get('access-manage-resource'))
-			{
-				$this->params->set('access-view-resource', true);
-				$this->params->set('access-view-all-resource', true);
-
-				$this->params->set('access-create-resource', true);
-				$this->params->set('access-delete-resource', true);
-				$this->params->set('access-edit-resource', true);
-				$this->params->set('access-edit-state-resource', true);
-				$this->params->set('access-edit-own-resource', true);
-
-				$this->_authorized = true;
-				return;
-			}
-
 			$author_ids = array();
 			foreach ($this->authors as $author)
 			{
 				$author_ids[] = $author->get('authorid');
 			}
-
-			// If they're not an admin
-
-			// If logged in and resource is published and public or registered
-			if ($this->isPublished() && ($this->get('access') == 0 || $this->get('access') == 1))
+	
+			if (in_array(User::get('id'), $author_ids))
 			{
-				// Allow view access
+				// Give full access
 				$this->params->set('access-view-resource', true);
 				$this->params->set('access-view-all-resource', true);
+				$this->params->set('access-create-resource', true);
+				$this->params->set('access-delete-resource', true);
+				$this->params->set('access-edit-resource', true);
+				$this->params->set('access-edit-state-resource', true);
+				$this->params->set('access-edit-own-resource', true);
+				return;
 			}
-
+	
 			// Check if they're the resource creator
 			if ($this->get('created_by') == User::get('id'))
 			{
 				// Give full access
 				$this->params->set('access-view-resource', true);
 				$this->params->set('access-view-all-resource', true);
-
 				$this->params->set('access-create-resource', true);
 				$this->params->set('access-delete-resource', true);
 				$this->params->set('access-edit-resource', true);
 				$this->params->set('access-edit-state-resource', true);
 				$this->params->set('access-edit-own-resource', true);
+				return;
 			}
-			// Listed as a contributor
-			else if (in_array(User::get('id'), $author_ids))
+		}
+
+		if (!$this->isPublished())
+		{
+			return;
+		}
+
+		// If logged in and resource is published and public or registered
+		if (in_array($this->get('access'), array(0,1)))
+		{
+			// Allow view access
+			$this->params->set('access-view-resource', true);
+			$this->params->set('access-view-all-resource', true);
+			return;
+		}
+
+		if ($this->get('access') == 2) // access = special is not used so bail if we see it
+		{
+			return;
+		}
+
+		if (in_array($this->get('access'), array(3,4)))
+		{
+			if ($this->get('access') == 3)
 			{
-				// Give full access
 				$this->params->set('access-view-resource', true);
-				$this->params->set('access-view-all-resource', true);
-
-				$this->params->set('access-create-resource', true);
-				$this->params->set('access-delete-resource', true);
-				$this->params->set('access-edit-resource', true);
-				$this->params->set('access-edit-state-resource', true);
-				$this->params->set('access-edit-own-resource', true);
 			}
-			// Check group access
-			else if ($this->get('group_owner')) // && ($this->get('access') == 3 || $this->get('access') == 4))
+
+			// Get the groups the user has access to
+			
+			$xgroups = \Hubzero\User\Helper::getGroups(User::get('id'), 'all');
+
+			$usersgroups = array();
+
+			if (!empty($xgroups))
 			{
-				// For protected resources, make sure users can see abstract
-				if ($this->get('access') < 3)
+				foreach ($xgroups as $group)
 				{
-					$this->params->set('access-view-resource', true);
-					$this->params->set('access-view-all-resource', true);
-				}
-				else if ($this->get('access') == 3)
-				{
-					$this->params->set('access-view-resource', true);
-				}
-
-				// Get the groups the user has access to
-				$xgroups = \Hubzero\User\Helper::getGroups(User::get('id'), 'all');
-
-				$usersgroups = array();
-				if (!empty($xgroups))
-				{
-					foreach ($xgroups as $group)
+					if ($group->regconfirmed)
 					{
-						if ($group->regconfirmed)
-						{
-							$usersgroups[] = $group->cn;
-						}
+						$usersgroups[] = $group->cn;
 					}
 				}
-
-				// Get the groups that can access this resource
-				$allowedgroups = $this->groups;
-
-				// Find what groups the user has in common with the resource, if any
-				$common = array_intersect($usersgroups, $allowedgroups);
-
-				// Check if the user is apart of the group that owns the resource
-				// or if they have any groups in common
-				if (in_array($this->get('group_owner'), $usersgroups) || count($common) > 0)
-				{
-					$this->params->set('access-view-resource', true);
-					$this->params->set('access-view-all-resource', true);
-				}
 			}
-			else
+
+			// Get the groups that can access this resource
+			
+			$allowedgroups = $this->groups;
+
+			// Find what groups the user has in common with the resource, if any
+
+			$common = array_intersect($usersgroups, $allowedgroups);
+
+			// Check if the user is apart of the group that owns the resource
+			// or if they have a group in common with resource group acl
+
+			if (in_array($this->get('group_owner'), $usersgroups) || count($common) > 0)
+			{
+				$this->params->set('access-view-resource', true);
+				$this->params->set('access-view-all-resource', true);
+			}
+
+			// Check if user is in resource user acl
+			$allowedusers = $this->users;
+
+			if (in_array(User::get('id'), $allowedusers))
 			{
 				$this->params->set('access-view-resource', true);
 				$this->params->set('access-view-all-resource', true);
 			}
 		}
 
-		$this->_authorized = true;
 	}
 
 	/**
@@ -1589,7 +1686,7 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 
 		if ($this->standalone == 1 && $this->isPublished())
 		{
-			switch ($this->access)
+			switch ($this->get('access'))
 			{
 				case 0:
 					$accessLevel = 'public';
@@ -1615,17 +1712,25 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 	 */
 	public function getGroups()
 	{
-		if ($this->group_access != '')
-		{
-			$this->group_access = trim($this->group_access);
-			$this->group_access = substr($this->group_access, 1, (strlen($this->group_access)-2));
-			$allowedgroups = explode(';', $this->group_access);
-		}
+		/*
+			@TODO This function is used in the kimera template com_resources view override
+			If possible this should be changed to use the ->groups transform mechanism,
+			or the override removed entirely if appropriate.
+		*/
+
+		$db = App::get('db');
+
+		$sql = "SELECT g.cn FROM #__resource_acl_group AS a, #__xgroups AS g WHERE resource_id = ? AND a.group_id = g.gidNumber";
+		$db->prepare($sql)->bind( array( $this->get('id')));
+		$result = $db->loadArray();
+
+		if ($result)
+			$allowedgroups = $result;
 		else
-		{
 			$allowedgroups = array();
-		}
+
 		$groupOwner = $this->get('group_owner', '');
+
 		if (!empty($groupOwner))
 		{
 			$allowedgroups[] = $groupOwner;
@@ -1685,12 +1790,9 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 		$obj->publish_up = Date::of($this->get('publish_up'))->format($solrDateFormat);
 		$obj->description = $this->searchableDescription();
 		$obj->author = $this
-			->authors()
-			->select('name')
-			->rows()
-			->fieldsbyKey('name');
+			->authorsList(true);
 
-		$obj->access_level = $this->access_level;
+		$obj->access_level = $this->transformAccessLevel();
 		$groups = $this->getGroups();
 		$tags = $this->tags(false);
 

@@ -89,6 +89,7 @@ class Registry implements \JsonSerializable, \ArrayAccess, \IteratorAggregate, \
 	 * @return  object  This object represented as an ArrayIterator.
 	 * @see     IteratorAggregate::getIterator()
 	 */
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
 		return new \ArrayIterator($this->data);
@@ -99,6 +100,7 @@ class Registry implements \JsonSerializable, \ArrayAccess, \IteratorAggregate, \
 	 *
 	 * @return  integer  The custom count as an integer.
 	 */
+	#[\ReturnTypeWillChange]
 	public function count()
 	{
 		return count(get_object_vars($this->data));
@@ -108,8 +110,9 @@ class Registry implements \JsonSerializable, \ArrayAccess, \IteratorAggregate, \
 	 * Implementation for the JsonSerializable interface.
 	 * Allows us to pass Registry objects to json_encode.
 	 *
-	 * @return  object
+	 * @return  mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function jsonSerialize()
 	{
 		return $this->data;
@@ -358,13 +361,18 @@ class Registry implements \JsonSerializable, \ArrayAccess, \IteratorAggregate, \
 
 		// If the source isn't already a Registry
 		// we'll turn it into one
-		if (!($source instanceof Registry) && !method_exists($source, 'toArray'))
+		if (!is_array($source))
 		{
-			$source = new self($source);
+			if (!($source instanceof Registry) && !method_exists($source, 'toArray'))
+			{
+				$source = new self($source);
+			}
+
+			$source = $source->toArray();
 		}
 
 		// Load the variables into the registry's default namespace.
-		$this->bind($this->data, $source->toArray(), $recursive, false);
+		$this->bind($this->data, $source, $recursive, false);
 
 		return true;
 	}
@@ -556,45 +564,49 @@ class Registry implements \JsonSerializable, \ArrayAccess, \IteratorAggregate, \
 	/**
 	 * Determine if the given configuration option exists.
 	 *
-	 * @param   string  $key
+	 * @param   mixed $offset
 	 * @return  bool
 	 */
-	public function offsetExists($key)
+	#[\ReturnTypeWillChange]
+	public function offsetExists($offset)
 	{
-		return $this->has($key);
+		return $this->has($offset);
 	}
 
 	/**
 	 * Get a configuration option.
 	 *
-	 * @param   string  $key
+	 * @param   mixed $offset
 	 * @return  mixed
 	 */
-	public function offsetGet($key)
+	#[\ReturnTypeWillChange]
+	public function offsetGet($offset)
 	{
-		return $this->get($key);
+		return $this->get($offset);
 	}
 
 	/**
 	 * Set a configuration option.
 	 *
-	 * @param   string  $key
+	 * @param   mixed   $offset
 	 * @param   mixed   $value
 	 * @return  void
 	 */
-	public function offsetSet($key, $value)
+	#[\ReturnTypeWillChange]
+	public function offsetSet($offset, $value)
 	{
-		$this->set($key, $value);
+		$this->set($offset, $value);
 	}
 
 	/**
 	 * Unset a configuration option.
 	 *
-	 * @param   string  $key
+	 * @param   mixed $offset
 	 * @return  void
 	 */
-	public function offsetUnset($key)
+	#[\ReturnTypeWillChange]
+	public function offsetUnset($offset)
 	{
-		$this->set($key, null);
+		$this->set($offset, null);
 	}
 }

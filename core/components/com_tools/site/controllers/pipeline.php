@@ -563,7 +563,7 @@ class Pipeline extends SiteController
 		}
 
 		$this->license_choice = array(
-			'text'      => Request::getString('license', ''),
+			'text'      => $license,
 			'template'  => Request::getString('templates', 'c1'),
 			'authorize' => Request::getInt('authorize', 0)
 		);
@@ -700,13 +700,13 @@ class Pipeline extends SiteController
 			'vncGeometryY' => $vncGeometryY,
 			'team'         => User::get('username'),
 			'hostreq'      => $this->config->get('default_hostreq', 'sessions'),
-			'repohost'     => 'svnLocal',
+			'repohost'     => $this->config->get('github', 1) ? "gitExternal" : "svnLocal",
 			'github'       => '',
 			'publishType'  => 'standard'
 		);
 
 		// Set the page title
-		$this->view->title = Lang::txt(strtoupper($this->_option)) . ': ' .  Lang::txt('COM_TOOLS_TASK_CREATE_NEW_TOOL');
+		$this->view->title = Lang::txt(strtoupper($this->_option)) . ': ' .  Lang::txt('COM_TOOLS_TASK_REGISTER_TOOL');
 		Document::setTitle($this->view->title);
 
 		if (Pathway::count() <= 0)
@@ -719,7 +719,7 @@ class Pipeline extends SiteController
 		if (Pathway::count() <= 1)
 		{
 			Pathway::append(
-				Lang::txt('COM_TOOLS_TASK_CREATE_NEW_TOOL'),
+				Lang::txt('COM_TOOLS_TASK_REGISTER_TOOL'),
 				'index.php?option=' . $this->_option . '&controller=' . $this->_controller . '&task=create'
 			);
 		}

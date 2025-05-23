@@ -35,23 +35,23 @@ $this->js();
 
 				<div class="input-wrap">
 					<label for="field-category"><?php echo Lang::txt('COM_SERVICES_FIELD_CATEGORY'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span></label><br />
-					<input type="text" name="fields[category]" id="field-category" class="required" maxlength="250" value="<?php echo $this->escape(stripslashes($this->row->category)); ?>" />
+					<input type="text" name="fields[category]" id="field-category" class="required" maxlength="250" value="<?php echo $this->escape(stripslashes($this->row->category == null ? '' : $this->row->category)); ?>" />
 				</div>
 
 				<div class="input-wrap">
 					<label for="field-title"><?php echo Lang::txt('COM_SERVICES_FIELD_TITLE'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span></label><br />
-					<input type="text" name="fields[title]" id="field-title" class="required" maxlength="250" value="<?php echo $this->escape(stripslashes($this->row->title)); ?>" />
+					<input type="text" name="fields[title]" id="field-title" class="required" maxlength="250" value="<?php echo $this->escape(stripslashes($this->row->title == null ? '' : $this->row->title)); ?>" />
 				</div>
 
 				<div class="input-wrap" data-hint="<?php echo Lang::txt('COM_SERVICES_FIELD_ALIAS_HINT'); ?>">
 					<label for="field-alias"><?php echo Lang::txt('COM_SERVICES_FIELD_ALIAS'); ?>:</label><br />
-					<input type="text" name="fields[alias]" id="field-alias" maxlength="250" value="<?php echo $this->escape(stripslashes($this->row->alias)); ?>" />
+					<input type="text" name="fields[alias]" id="field-alias" maxlength="250" value="<?php echo $this->escape(stripslashes($this->row->alias == null ? '' : $this->row->alias)); ?>" />
 					<span class="hint"><?php echo Lang::txt('COM_SERVICES_FIELD_ALIAS_HINT'); ?></span>
 				</div>
 
 				<div class="input-wrap">
 					<label for="field-description"><?php echo Lang::txt('COM_SERVICES_FIELD_DESCRIPTION'); ?>:</label><br />
-					<textarea name="fields[description]" id="field-description" rows="5" cols="35"><?php echo $this->escape(stripslashes($this->row->description)); ?></textarea>
+					<textarea name="fields[description]" id="field-description" rows="5" cols="35"><?php echo $this->escape(stripslashes($this->row->description == null ? '' : $this->row->description)); ?></textarea>
 				</div>
 			</fieldset>
 
@@ -60,36 +60,36 @@ $this->js();
 
 				<div class="input-wrap">
 					<label for="field-currency"><?php echo Lang::txt('COM_SERVICES_FIELD_CURRENCY'); ?>:</label><br />
-					<input type="text" name="fields[currency]" id="field-currency" maxlength="10" value="<?php echo $this->escape(stripslashes($this->row->currency)); ?>" />
+					<input type="text" name="fields[currency]" id="field-currency" maxlength="10" value="<?php echo $this->escape(stripslashes($this->row->currency == null ? '' : $this->row->currency)); ?>" />
 				</div>
 
 					<div class="input-wrap">
 						<label for="field-unitprice"><?php echo Lang::txt('COM_SERVICES_FIELD_UNITPRICE'); ?>:</label><br />
-						<input type="text" name="fields[unitprice]" id="field-unitprice" value="<?php echo $this->escape(stripslashes($this->row->unitprice)); ?>" />
+						<input type="text" name="fields[unitprice]" id="field-unitprice" value="<?php echo $this->escape(stripslashes($this->row->unitprice == null ? '' : $this->row->unitprice)); ?>" />
 					</div>
 					<div class="input-wrap">
 						<label for="field-pointsprice"><?php echo Lang::txt('COM_SERVICES_FIELD_POINTSPRICE'); ?>:</label><br />
-						<input type="text" name="fields[pointsprice]" id="field-pointsprice" maxlength="11" value="<?php echo $this->escape(stripslashes($this->row->pointsprice)); ?>" />
+						<input type="text" name="fields[pointsprice]" id="field-pointsprice" maxlength="11" value="<?php echo $this->escape(stripslashes($this->row->pointsprice == null ? '' : $this->row->pointsprice)); ?>" />
 					</div>
 				<div class="clr"></div>
 
 					<div class="input-wrap">
 						<label for="field-minunits"><?php echo Lang::txt('COM_SERVICES_FIELD_MINUNITS'); ?>:</label><br />
-						<input type="text" name="fields[minunits]" id="field-minunits" maxlength="11" value="<?php echo $this->escape(stripslashes($this->row->minunits)); ?>" />
+						<input type="text" name="fields[minunits]" id="field-minunits" maxlength="11" value="<?php echo $this->escape(stripslashes($this->row->minunits == null ? '' : $this->row->minunits)); ?>" />
 					</div>
 					<div class="input-wrap">
 						<label for="field-maxunits"><?php echo Lang::txt('COM_SERVICES_FIELD_MAXUNITS'); ?>:</label><br />
-						<input type="text" name="fields[maxunits]" id="field-maxunits" value="<?php echo $this->escape(stripslashes($this->row->maxunits)); ?>" />
+						<input type="text" name="fields[maxunits]" id="field-maxunits" value="<?php echo $this->escape(stripslashes($this->row->maxunits == null ? '' : $this->row->maxunits)); ?>" />
 					</div>
 				<div class="clr"></div>
 
 					<div class="input-wrap">
 						<label for="field-unitsize"><?php echo Lang::txt('COM_SERVICES_FIELD_UNITSIZE'); ?>:</label><br />
-						<input type="text" name="fields[unitsize]" id="field-unitsize" maxlength="11" value="<?php echo $this->escape(stripslashes($this->row->unitsize)); ?>" />
+						<input type="text" name="fields[unitsize]" id="field-unitsize" maxlength="11" value="<?php echo $this->escape(stripslashes($this->row->unitsize == null ? '' : $this->row->unitsize)); ?>" />
 					</div>
 					<div class="input-wrap">
 						<label for="field-unitmeasure"><?php echo Lang::txt('COM_SERVICES_FIELD_UNITMEASURE'); ?>:</label><br />
-						<input type="text" name="fields[unitmeasure]" id="field-unitmeasure" value="<?php echo $this->escape(stripslashes($this->row->unitmeasure)); ?>" />
+						<input type="text" name="fields[unitmeasure]" id="field-unitmeasure" value="<?php echo $this->escape(stripslashes($this->row->unitmeasure == null ? '' : $this->row->unitmeasure)); ?>" />
 					</div>
 				<div class="clr"></div>
 

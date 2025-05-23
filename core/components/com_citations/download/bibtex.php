@@ -69,7 +69,7 @@ class Bibtex extends Downloadable
 		if (!$row->cite)
 		{
 			$author = $row->relatedAuthors()->order('ordering', 'asc')->limit(1)->row();
-			$row->cite .= strtolower($author->surname);
+			$row->cite .= strtolower($author->surname == null ? '' : $author->surname);
 			$row->cite .= $row->year;
 			$t = preg_replace('/[^a-zA-Z0-9]/', '', strtolower($row->title));
 			$row->cite .= (strlen($t) > 10 ? substr($t, 0, 10) : $t);
@@ -79,7 +79,7 @@ class Bibtex extends Downloadable
 		$addarray['cite']    = $row->cite;
 		$addarray['title']   = $row->title;
 		$addarray['address'] = $row->address;
-		$auths = explode(';', $row->author);
+		$auths = explode(';', $row->author == null ? '' : $row->author);
 		for ($i=0, $n=count($auths); $i < $n; $i++)
 		{
 			$author = trim($auths[$i]);
@@ -141,9 +141,9 @@ class Bibtex extends Downloadable
 
 		$addarray['language']         = $row->language;
 		$addarray['accession_number'] = $row->accession_number;
-		$addarray['short_title']      = html_entity_decode($row->short_title);
+		$addarray['short_title']      = html_entity_decode($row->short_title == null ? '' : $row->short_title);
 		$addarray['author_address']   = $row->author_address;
-		$addarray['keywords']         = str_replace("\r\n", ', ', $row->keywords);
+		$addarray['keywords']         = str_replace("\r\n", ', ', $row->keywords == null ? '' : $row->keywords);
 		$addarray['abstract']         = $row->abstract;
 		$addarray['call_number']      = $row->call_number;
 		$addarray['label']            = $row->label;

@@ -100,6 +100,13 @@ if ($this->getError()) {
 			</tr>
 			<tr>
 				<td>
+					<label><?php echo Lang::txt('COM_PROJECTS_SETUP_TERMS_AWARD_NUMBER'); ?>:
+					 <input name="award_number" maxlength="250" type="text" value="<?php echo $this->params->get('award_number'); ?>"  />
+					</label>
+				</td>
+			</tr>
+			<tr>
+				<td>
 					<label for "grant_approval" class="<?php if ($approved) { echo ' spsapproved';
 } else { echo 'spsapproval'; } ?>"><?php echo $approved
 						? ucfirst(Lang::txt('COM_PROJECTS_APPROVAL_CODE_APPROVED'))

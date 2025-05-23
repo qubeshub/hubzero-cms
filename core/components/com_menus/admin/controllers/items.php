@@ -515,8 +515,10 @@ class Items extends AdminController
 
 			case 'url':
 				$row->set('component_id', 0);
+				$args = array();
 
-				parse_str(parse_url($row->get('link'), PHP_URL_QUERY));
+				$url = parse_url($row->get('link',''), PHP_URL_QUERY);
+				parse_str($url == null ? '' : $url, $args);
 				break;
 
 			case 'component':
@@ -526,7 +528,8 @@ class Items extends AdminController
 
 				// Ensure the integrity of the component_id field is maintained, particularly when changing the menu item type.
 				$args = array();
-				parse_str(parse_url($row->get('link'), PHP_URL_QUERY), $args);
+				$url = parse_url($row->get('link',''), PHP_URL_QUERY);
+				parse_str($url == null ? '' : $url, $args);
 
 				if (isset($args['option']))
 				{
@@ -567,7 +570,8 @@ class Items extends AdminController
 		{
 			// Note that all request arguments become reserved parameter names.
 			$args = array();
-			parse_str(parse_url($row->get('link'), PHP_URL_QUERY), $args);
+			$url = parse_url($row->get('link',''), PHP_URL_QUERY);
+			parse_str($url == null ? '' : $url, $args);
 			$params = array_merge($params, $args);
 		}
 
@@ -915,8 +919,8 @@ class Items extends AdminController
 		$order = Request::getArray('order', array(), 'post');
 
 		// Sanitize the input
-		Arr::toInteger($pks);
-		Arr::toInteger($order);
+		\Hubzero\Utility\Arr::toInteger($pks);
+		\Hubzero\Utility\Arr::toInteger($order);
 
 		// Save the ordering
 		$return = Item::saveorder($pks, $order);

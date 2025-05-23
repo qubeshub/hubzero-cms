@@ -33,7 +33,7 @@ class File extends Obj
 	 * @param   string  $repoPath
 	 * @return  void
 	 */
-	public function __construct($localPath = null, $repoPath = null)
+	public function __construct($localPath = '', $repoPath = '')
 	{
 		$this->set('localPath', $localPath); // Path to item within repo
 
@@ -617,6 +617,11 @@ class File extends Obj
 	 */
 	public function getDirLevel($dirPath = '')
 	{
+		// Upgrade for PHP 8.2: Avoid passing null to trim, explode
+		if ($dirPath === null) {
+			$dirPath = '';
+		}
+
 		$dirPath = trim($dirPath);
 		$dirPath = trim($dirPath, '/');
 		if (!$dirPath)

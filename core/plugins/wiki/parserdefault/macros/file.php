@@ -645,7 +645,7 @@ class FileMacro extends WikiMacro
 						if (isset($attr['created_by']))
 						{
 							$user = User::getInstance($attr['created_by']);
-							$html .= ', ' . Lang::txt('uploaded by %s ', stripslashes($user->get('name')));
+							$html .= ', ' . Lang::txt('uploaded by %s ', stripslashes($user->get('name','')));
 						}
 						if (isset($attr['created']))
 						{

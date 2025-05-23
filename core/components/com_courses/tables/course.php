@@ -67,10 +67,10 @@ class Course extends Table
 		if ($assetId === null)
 		{
 			// Build the query to get the asset id for the parent category.
-			$query = $db->getQuery(true);
+			$query = $db->getQuery();
 			$query->select('id');
 			$query->from('#__assets');
-			$query->where('name = ' . $db->quote('com_courses'));
+			$query->where('name', '=', $db->quote('com_courses'));
 
 			// Get the asset id from the database.
 			$db->setQuery($query);

@@ -8,7 +8,7 @@
 // No direct access.
 defined('_HZEXEC_') or die();
 
-$this->row->fulltxt = ($this->row->fulltxt) ? stripslashes($this->row->fulltxt): stripslashes($this->row->introtext);
+$this->row->fulltxt = ($this->row->fulltxt) ? stripslashes($this->row->fulltxt ? $this->row->fulltxt : ""): stripslashes($this->row->introtext ? $this->row->introtext : "");
 
 $type = $this->row->type;
 
@@ -47,21 +47,23 @@ $this->css('create.css')
 
 <section class="main section">
 	<?php
+		$this->group_cn = Request::getString('group','');
 		$this->view('steps')
 		     ->set('option', $this->option)
 		     ->set('step', $this->step)
 		     ->set('steps', $this->steps)
 		     ->set('id', $this->id)
+			 ->set('group_cn', $this->group_cn)
 		     ->set('resource', $this->row)
 		     ->set('progress', $this->progress)
 		     ->display();
 	?>
 
 	<?php if ($this->getError()) { ?>
-		<p class="warning"><?php echo implode('<br />', $this->getErrors()); ?></p>
+		<p class="error"><?php echo implode('<br />', $this->getErrors()); ?></p>
 	<?php } ?>
 
-	<form action="<?php echo Route::url('index.php?option=' . $this->option . '&task=draft&step=' . $this->next_step . '&id=' . $this->id); ?>" method="post" id="hubForm" accept-charset="utf-8">
+	<form action="<?php echo Route::url('index.php?option=' . $this->option . '&task=draft&step=' . $this->next_step . '&group=' . $this->group_cn . '&id=' . $this->id); ?>" method="post" id="hubForm" accept-charset="utf-8">
 		<div class="explaination">
 			<p><?php echo Lang::txt('COM_CONTRIBUTE_COMPOSE_EXPLANATION'); ?></p>
 
@@ -72,7 +74,7 @@ $this->css('create.css')
 
 			<label for="field-title">
 				<?php echo Lang::txt('COM_CONTRIBUTE_COMPOSE_TITLE'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span>
-				<input type="text" name="fields[title]" id="field-title" maxlength="250" value="<?php echo $this->escape(stripslashes($this->row->title)); ?>" />
+				<input type="text" name="fields[title]" id="field-title" maxlength="250" value="<?php echo $this->escape(stripslashes($this->row->title ? $this->row->title : "")); ?>" />
 			</label>
 
 			<label for="field-fulltxt">

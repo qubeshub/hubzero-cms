@@ -30,8 +30,8 @@ class Batchcreate extends AdminController
 	 */
 	public function displayTask()
 	{
+		// Project info
 		$project = new \Components\Projects\Tables\Project($this->database);
-
 		// Get filters
 		$filters = array(
 			'sortby'     => 'title',
@@ -39,6 +39,17 @@ class Batchcreate extends AdminController
 			'authorized' => true
 		);
 		$this->view->projects  = $project->getRecords($filters, true, 0, 1);
+
+		// Master type info
+		$mt = new Tables\MasterType($this->database);
+		// Get filters
+		$filters = array(
+			'sortby'     => 'type',
+			'sortdir'    => 'DESC',
+			'contributable' => 1,
+			'authorized' => true
+		);
+		$this->view->mastertypes = $mt->getRecords($filters);
 
 		// Set any errors
 		if ($this->getError())
@@ -121,7 +132,7 @@ class Batchcreate extends AdminController
 	}
 
 	/**
-	 * Import, validate and parse data
+	 * Import, validate and parse data from XML
 	 *
 	 * @param   integer  $dryRun
 	 * @return  void
@@ -132,14 +143,16 @@ class Batchcreate extends AdminController
 		Request::checkToken();
 
 		// Incoming
-		$id     = Request::getInt('projectid', 0);
-		$file   = Request::getArray('file', array(), 'FILES');
+		$projectid = Request::getInt('projectid', 0);
+		$mtid = Request::getInt('mastertypeid', 0);
+		$file = Request::getArray('file', array(), 'FILES');
 		$dryRun = Request::getInt('dryrun', 1);
+		$api = Request::getInt('api', 0);
 
 		$this->data = null;
 
 		// Project ID must be supplied
-		$this->project = new \Components\Projects\Models\Project($id);
+		$this->project = new \Components\Projects\Models\Project($projectid);
 		if (!$this->project->exists())
 		{
 			echo json_encode(array(
@@ -147,8 +160,20 @@ class Batchcreate extends AdminController
 				'error'   => Lang::txt('COM_PUBLICATIONS_BATCH_ERROR_NO_PROJECT_ID'),
 				'records' => null
 			));
-			exit();
+			if (!$api) { exit(); } else { return; };
 		}
+
+		// Master type ID must be supplied
+		if (!$mtid) {
+			echo json_encode(array(
+				'result'  => 'error',
+				'error'   => Lang::txt('COM_PUBLICATIONS_BATCH_ERROR_NO_MASTER_TYPE_ID'),
+				'records' => null
+			));
+			if (!$api) { exit(); } else { return; };
+		}
+		$mt = new Tables\MasterType($this->database);
+		$this->mastertype = $mt->getType($mtid);
 
 		// Check for file
 		if (!is_array($file) || $file['size'] == 0 || $file['error'] != 0)
@@ -158,7 +183,7 @@ class Batchcreate extends AdminController
 				'error'   => Lang::txt('COM_PUBLICATIONS_BATCH_ERROR_NO_FILE'),
 				'records' => null
 			));
-			exit();
+			if (!$api) { exit(); } else { return; };
 		}
 
 		// Check for correct type
@@ -169,11 +194,11 @@ class Batchcreate extends AdminController
 				'error'   => Lang::txt('COM_PUBLICATIONS_BATCH_ERROR_WRONG_FORMAT'),
 				'records' => null
 			));
-			exit();
+			if (!$api) { exit(); } else { return; };
 		}
 
 		// Get data from XML file
-		if (is_uploaded_file($file['tmp_name']))
+		if ($api || is_uploaded_file($file['tmp_name']))
 		{
 			$this->data = file_get_contents($file['tmp_name']);
 		}
@@ -184,7 +209,7 @@ class Batchcreate extends AdminController
 				'error'   => Lang::txt('COM_PUBLICATIONS_BATCH_ERROR_NO_DATA'),
 				'records' => null
 			));
-			exit();
+			if (!$api) { exit(); } else { return; };
 		}
 		// Load reader
 		libxml_use_internal_errors(true);
@@ -198,7 +223,7 @@ class Batchcreate extends AdminController
 				'error'   => Lang::txt('COM_PUBLICATIONS_BATCH_ERROR_XML_VALIDATION_FAILED'),
 				'records' => null
 			));
-			exit();
+			if (!$api) { exit(); } else { return; };
 		}
 
 		// Set schema
@@ -213,7 +238,7 @@ class Batchcreate extends AdminController
 		// Parse data if passed validations
 		if (!$this->getError())
 		{
-			$outputData = $this->parse($dryRun);
+			$outputData = $this->parse($dryRun, $api);
 		}
 
 		// Parsing errors
@@ -225,7 +250,7 @@ class Batchcreate extends AdminController
 				'records' => $outputData,
 				'dryrun'  => $dryRun
 			));
-			exit();
+			if (!$api) { exit(); } else { return; };
 		}
 
 		// return results to user
@@ -235,7 +260,7 @@ class Batchcreate extends AdminController
 			'records' => $outputData,
 			'dryrun'  => $dryRun
 		));
-		exit();
+		if (!$api) { exit(); } else { return; };
 	}
 
 	/**
@@ -245,8 +270,11 @@ class Batchcreate extends AdminController
 	 * @param   string   $output
 	 * @return  string
 	 */
-	public function parse($dryRun = 1, $output = null)
+	public function parse($dryRun = 1, $api = 0)
 	{
+		// Initialize output
+		$output = null;
+		
 		// Set common props
 		$this->_uid = User::get('id');
 
@@ -258,19 +286,8 @@ class Batchcreate extends AdminController
 		$objCat = new Tables\Category($this->database);
 		$objL   = new Tables\License($this->database);
 
-		// Get base type
-		$base = Request::getString('base', 'files');
-
-		// Determine publication master type
-		$mt = new Tables\MasterType($this->database);
-		$choices    = $mt->getTypes('alias', 1);
-		$mastertype = in_array($base, $choices) ? $base : 'files';
-
-		// Get type params
-		$mType = $mt->getType($mastertype);
-
 		// Get curation model for the type
-		$curationModel = new \Components\Publications\Models\Curation($mType->curation);
+		$curationModel = new \Components\Publications\Models\Curation($this->mastertype->curation);
 
 		// Get defaults from manifest
 		$title = $curationModel && isset($curationModel->_manifest->params->default_title)
@@ -307,18 +324,19 @@ class Batchcreate extends AdminController
 			{
 				$node = new \SimpleXMLElement($this->reader->readOuterXML());
 				// Check that category exists
-				$category = isset($node->cat) ? $node->cat : 'dataset';
+				$category = isset($node->category) ? $node->category : 'dataset';
 				$catId = $objCat->getCatId($category);
 
 				$item['category'] = $category;
-				$item['type']     = $mastertype;
+				$item['type']     = $this->mastertype->alias;
 				$item['errors']   = array();
 				$item['tags']     = array();
 				$item['authors']  = array();
+				$item['metadata'] = array();
 
 				// Publication properties
 				$item['publication'] = new Tables\Publication($this->database);
-				$item['publication']->master_type = $mType->id;
+				$item['publication']->master_type = $this->mastertype->id;
 				$item['publication']->category    = $catId ? $catId : $cat;
 				$item['publication']->project_id  = $this->project->get('id');
 				$item['publication']->created_by  = $this->_uid;
@@ -332,6 +350,7 @@ class Batchcreate extends AdminController
 				$item['version']->description   = isset($node->abstract) ? trim($node->abstract) : '';
 				$item['version']->version_label = isset($node->version) ? trim($node->version) : '1.0';
 				$item['version']->release_notes = isset($node->notes) ? trim($node->notes) : '';
+				$item['version']->doi           = isset($node->doi) ? trim($node->doi) : null;
 
 				// Check license
 				$license = isset($node->license) ? $node->license : '';
@@ -404,6 +423,15 @@ class Batchcreate extends AdminController
 					}
 				}
 
+				// Metadata
+				if ($node->metadata)
+				{
+					foreach ($node->metadata->metadatum as $metadatum)
+					{
+						$item['metadata'][(string)$metadatum->alias] = $metadatum->text;
+					}
+				}
+
 				// Set general process error
 				if (count($item['errors']) > 0)
 				{
@@ -418,13 +446,15 @@ class Batchcreate extends AdminController
 		// Show what you'll get
 		if ($dryRun == 1)
 		{
-			$eview = new \Hubzero\Component\View(array(
-				'name'   =>'batchcreate',
-				'layout' => 'dryrun'
-			));
-			$eview->option = $this->_option;
-			$eview->items  = $items;
-			$output       .= $eview->loadTemplate();
+			if (!$api) {
+				$eview = new \Hubzero\Component\View(array(
+					'name'   =>'batchcreate',
+					'layout' => 'dryrun'
+				));
+				$eview->set('option', $this->_option);
+				$eview->items  = $items;
+				$output       .= $eview->loadTemplate();
+			}
 		}
 		elseif ($dryRun == 2)
 		{
@@ -485,6 +515,13 @@ class Batchcreate extends AdminController
 		$item['version']->main           = 1;
 		$item['version']->state          = 3;
 
+		// Metadata
+		$item['version']->metadata		 = '';
+		foreach ($item['metadata'] as $alias => $text)
+		{
+			$item['version']->metadata .= "\n".'<nb:' . $alias . '>' . $text . '</nb:' . $alias . '>' . "\n";
+		}
+
 		if (!$item['version']->store())
 		{
 			// Roll back
@@ -532,7 +569,7 @@ class Batchcreate extends AdminController
 
 			// Add tags
 			$tagsHelper = new \Components\Publications\Helpers\Tags($this->database);
-			$tagsHelper->tag_object($this->_uid, $pid, $tags, 1);
+			$tagsHelper->tag_object($this->_uid, $vid, $tags, 1);
 		}
 
 		// Display results
@@ -562,6 +599,10 @@ class Batchcreate extends AdminController
 		}
 
 		$error = null;
+
+		// Get attribute
+		$attributes = $file->attributes();
+		$subtype = $attributes['type'];
 
 		// Start new attachment record
 		$attach = new Tables\Attachment($this->database);
@@ -594,6 +635,7 @@ class Batchcreate extends AdminController
 		// Add file record
 		$fileRecord = array(
 			'type'        => $type,
+			'subtype'     => $subtype,
 			'attachment'  => $attach,
 			'projectPath' => $filePath,
 			'error'       => $error
@@ -617,14 +659,14 @@ class Batchcreate extends AdminController
 		$pid = $pub->id;
 
 		// Get latest Git hash
-		$vcs_hash = $this->_git->gitLog($attachment->path, '', 'hash');
+		// $vcs_hash = $this->_git->gitLog($attachment->path, '', 'hash');
 
 		// Create attachment record
 		if ($this->curationModel || $fileRecord['type'] != 'gallery')
 		{
 			$attachment->publication_id         = $pid;
 			$attachment->publication_version_id = $vid;
-			$attachment->vcs_hash               = $vcs_hash;
+			$attachment->vcs_hash               = null;
 			$attachment->created_by             = $this->_uid;
 			$attachment->created                = Date::toSql();
 			$attachment->store();
@@ -634,7 +676,7 @@ class Batchcreate extends AdminController
 		if ($this->curationModel)
 		{
 			// Get attachment type model
-			$attModel = new Models\Attachments($this->database);
+			$attModel = new \Components\Publications\Models\Attachments($this->database);
 			$fileAttach = $attModel->loadAttach('file');
 
 			// Get element manifest
@@ -645,11 +687,14 @@ class Batchcreate extends AdminController
 			}
 			$element = $elements[0];
 
+			$pubmodel = new \Components\Publications\Models\Publication($pid, $version, $vid);
+			$pubmodel->project();
+
 			// Set configs
 			$configs  = $fileAttach->getConfigs(
 				$element->manifest->params,
 				$element->id,
-				$pub,
+				$pubmodel,
 				$element->block
 			);
 
@@ -669,6 +714,14 @@ class Batchcreate extends AdminController
 
 			// Copy file into the right spot
 			$fileAttach->publishAttachment($attachment, $pub, $configs);
+
+			// Take care of thumbnail, if appropriate
+			if ($fileRecord['subtype'] == 'thumbnail' && 
+			    $configs->handler && 
+				$configs->handler->getName() == 'imageviewer' &&
+				!$attachment->getDefault($pub->version_id)) {
+					$configs->handler->makeDefault($attachment, $pub, $configs);
+			}
 		}
 	}
 
@@ -685,7 +738,7 @@ class Batchcreate extends AdminController
 		// Need to create project owner
 		if (!$author->project_owner_id)
 		{
-			$objO = new Tables\Owner($this->database);
+			$objO = new \Components\Projects\Tables\Owner($this->database);
 
 			$objO->projectid     = $this->project->get('id');
 			$objO->userid        = $author->user_id;

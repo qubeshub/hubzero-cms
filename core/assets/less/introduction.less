@@ -13,36 +13,8 @@
 		background: @heroUnitBackground;
 		color: @heroUnitColor;
 		position: relative;
-
-		small.intro-before,
-		small.intro-after,
-		&:before,
 		&:after {
-			content: "";
-			display: block;
-			margin: 0;
-			padding: 0;
-			position: absolute;
-			top: 30px;
-			left: 30px;
-			z-index: 100;
-		}
-		small.intro-before,
-		&:before {
-			width: 69px;
-			height: 69px;
-			background: @heroUnitIconBackground;
-			border: @heroUnitIconBorder;
-			.border-radius(0.5em);
-		}
-		small.intro-after,
-		&:after {
-			font-family: 'Fontcons';
-			font-size: 50px;
-			line-height: 1;
-			top: 43px;
-			left: 45px;
-			color: @heroUnitIconColor;
+			display: none;
 		}
 		.aside,
 		.subject {

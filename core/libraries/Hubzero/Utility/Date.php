@@ -74,12 +74,14 @@ class Date extends DateTime
 	/**
 	 * Constructor.
 	 *
-	 * @param   string  $date  String in a format accepted by strtotime(), defaults to "now".
-	 * @param   mixed   $tz    Time zone to be used for the date.
+	 * @param   string  $datetime  String in a format accepted by strtotime(), defaults to "now".
+	 * @param   mixed   $timezone  Time zone to be used for the date.
+	 * @param   bool    $ignoreDst
 	 * @return  void
 	 * @throws  Exception
 	 */
-	public function __construct($date = 'now', $tz = null, $ignoreDst = false)
+	#[\ReturnTypeWillChange]
+	public function __construct($datetime = 'now', $timezone = null, $ignoreDst = false)
 	{
 		// Create the base GMT and server time zone objects.
 		if (empty(self::$gmt) || empty(self::$stz))
@@ -88,21 +90,20 @@ class Date extends DateTime
 			self::$stz = new DateTimeZone(@date_default_timezone_get());
 		}
 
-		$tz = self::getTimeZoneObject($tz, $ignoreDst);
-
+		$timezone = self::getTimeZoneObject($timezone, $ignoreDst);
 
 		// If the date is numeric assume a unix timestamp and convert it.
 		date_default_timezone_set('UTC');
-		$date = is_numeric($date) ? date('c', $date) : $date;
+		$datetime = is_numeric($datetime) ? date('c', $datetime) : $datetime;
 
 		// Call the DateTime constructor.
-		parent::__construct($date, $tz);
+		parent::__construct($datetime == null ? '' : $datetime, $timezone);
 
 		// reset the timezone for 3rd party libraries/extension that does not use Date
 		date_default_timezone_set(self::$stz->getName());
 
 		// Set the timezone object for access later.
-		$this->_tz = $tz;
+		$this->_tz = $timezone;
 	}
 
 	/**
@@ -166,6 +167,7 @@ class Date extends DateTime
 				break;
 
 			default:
+				// phpcs:ignore PHPCompatibility.FunctionUse.ArgumentFunctionsReportCurrentValue.NeedsInspection
 				$trace = debug_backtrace();
 				trigger_error(
 					'Undefined property via __get(): ' . $name . ' in ' . $trace[0]['file'] . ' on line ' . $trace[0]['line'],
@@ -300,6 +302,8 @@ class Date extends DateTime
 	 * @param   boolean  $hours  True to return the value in hours.
 	 * @return  float    The time offset from GMT either in hours or in seconds.
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function getOffsetFromGMT($hours = false)
 	{
 		return (float) $hours ? ($this->_tz->getOffset($this) / 3600) : $this->_tz->getOffset($this);
@@ -350,6 +354,7 @@ class Date extends DateTime
 	 * @param   object  $tz  The new DateTimeZone object.
 	 * @return  object  The old DateTimeZone object.
 	 */
+	#[\ReturnTypeWillChange]
 	public function setTimezone($tz)
 	{
 		if (!($tz instanceof DateTimeZone))
@@ -367,7 +372,10 @@ class Date extends DateTime
 	 *
 	 * @param   string  $modifier
 	 * @return  object
+	 * @deprecated
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function add($modifier)
 	{
 		return $this->modify('+' . $modifier);
@@ -378,7 +386,10 @@ class Date extends DateTime
 	 *
 	 * @param   string  $modifier
 	 * @return  object
+	 * @deprecated
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function subtract($modifier)
 	{
 		return $this->modify('-' . $modifier);
@@ -464,7 +475,7 @@ class Date extends DateTime
 	 */
 	public function toTimeZone($timeZone, $format = null, $ignoreDst = false)
 	{
-		$format = $format ?: parent::$format;
+		$format = $format ?: self::$format;
 		$timeZone = self::getTimeZoneObject($timeZone, $ignoreDst);
 		$this->setTimezone($timeZone);
 		return $this->format($format, true);
@@ -625,6 +636,8 @@ class Date extends DateTime
 	 * @param   boolean  $translate  True to translate localised strings
 	 * @return  string   The date string in the specified format format.
 	 */
+
+	#[\ReturnTypeWillChange]
 	public function format($format, $local = false, $translate = true)
 	{
 		if ($format == 'relative')

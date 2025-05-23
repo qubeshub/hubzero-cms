@@ -506,6 +506,34 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 	}
 
 	/**
+	 * Return a formatted timestamp when created
+	 *
+	 * @param   string  $as  What format to return
+	 * @return  string
+	 */
+	 public function created($as='')
+	 {
+		$as = strtolower($as);
+
+		if ($as == 'date')
+		{
+			return Date::of($this->get('created'))->toLocal(Lang::txt('DATE_FORMAT_HZ1'));
+		}
+
+		if ($as == 'time')
+		{
+			return Date::of($this->get('created'))->toLocal(Lang::txt('TIME_FORMAT_HZ1'));
+		}
+
+		if ($as)
+		{
+			return Date::of($this->get('created'))->toLocal($as);
+		}
+
+		return $this->get('created');
+	}
+
+	/**
 	 * Return a formatted timestamp
 	 *
 	 * @param   string  $as  What format to return
@@ -572,7 +600,6 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 			$scope .= $published->toLocal('m');
 
 			$params = array(
-				'filepath' => $this->adapter()->filespace(),
 				'option'   => $this->adapter()->get('option'),
 				'scope'    => $this->adapter()->get('scope') . '/' . $scope,
 				'pagename' => $this->get('alias'),

@@ -55,7 +55,7 @@ if ($this->model->params->get('grant_PI')
 				<?php if ($approved):  ?>
 					<span class="prominent"><?php echo htmlentities(html_entity_decode($this->model->params->get('grant_title', 'N/A'))); ?></span>
 				<?php else: ?>
-					<input name="params[grant_title]" id="param-grant_title" class="form-control" maxlength="250" type="text" value="<?php echo htmlentities(html_entity_decode($this->model->params->get('grant_title'))); ?>" class="long" />
+					<input name="params[grant_title]" id="param-grant_title" class="form-control" maxlength="250" type="text" value="<?php echo htmlentities(html_entity_decode($this->model->params->get('grant_title') == null ? '' : $this->model->params->get('grant_title')   )); ?>" class="long" />
 				<?php endif ?>
 			</label>
 		</div>
@@ -66,8 +66,19 @@ if ($this->model->params->get('grant_PI')
 				<?php if ($approved): ?>
 					<span class="prominent"><?php echo htmlentities(html_entity_decode($this->model->params->get('grant_PI', 'N/A'))); ?></span>
 				<?php else: ?>
-					<input name="params[grant_PI]" id="param-grant_PI"class="form-control"  maxlength="250" type="text" value="<?php echo htmlentities(html_entity_decode($this->model->params->get('grant_PI'))); ?>" class="long"  />
+					<input name="params[grant_PI]" id="param-grant_PI"class="form-control"  maxlength="250" type="text" value="<?php echo htmlentities(html_entity_decode($this->model->params->get('grant_PI') == null ? '' : $this->model->params->get('grant_PI'))); ?>" class="long"  />
 				<?php endif; ?>
+			</label>
+		</div>
+		
+		<div class="form-group">
+			<label for="param-grant_agency" class="terms-label">
+				<?php echo Lang::txt('COM_PROJECTS_SETUP_TERMS_AWARD_NUMBER'); ?>:
+				<?php if ($approved): ?>
+					<span class="prominent"><?php echo htmlentities(html_entity_decode($this->model->params->get('award_number', 'N/A'))); ?></span>
+				<?php else: ?>
+					<input name="params[award_number]" id="param-award_number" class="form-control" maxlength="250" type="text" value="<?php echo htmlentities(html_entity_decode($this->model->params->get('award_number') == null ? '' : $this->model->params->get('award_number') )); ?>" class="long" />
+				<?php endif ?>
 			</label>
 		</div>
 
@@ -77,7 +88,7 @@ if ($this->model->params->get('grant_PI')
 				<?php if ($approved): ?>
 					<span class="prominent"><?php echo htmlentities(html_entity_decode($this->model->params->get('grant_agency', 'N/A'))); ?></span>
 				<?php else: ?>
-					<input name="params[grant_agency]" id="param-grant_agency" class="form-control" maxlength="250" type="text" value="<?php echo htmlentities(html_entity_decode($this->model->params->get('grant_agency'))); ?>" class="long" />
+					<input name="params[grant_agency]" id="param-grant_agency" class="form-control" maxlength="250" type="text" value="<?php echo htmlentities(html_entity_decode($this->model->params->get('grant_agency') == null ? '' : $this->model->params->get('grant_agency'))); ?>" class="long" />
 				<?php endif ?>
 			</label>
 		</div>
@@ -88,7 +99,7 @@ if ($this->model->params->get('grant_PI')
 				<?php if ($approved): ?>
 					<span class="prominent"><?php echo htmlentities(html_entity_decode($this->model->params->get('grant_budget', 'N/A'))); ?></span>
 				<?php else: ?>
-					<input name="params[grant_budget]" id="param-grant_budget" maxlength="250" type="text" value="<?php echo htmlentities(html_entity_decode($this->model->params->get('grant_budget'))); ?>" class="long"  />
+					<input name="params[grant_budget]" id="param-grant_budget" maxlength="250" type="text" value="<?php echo htmlentities(html_entity_decode($this->model->params->get('grant_budget') == null ? '' : $this->model->params->get('grant_budget'))); ?>" class="long"  />
 				<?php endif; ?>
 			</label>
 		</div>

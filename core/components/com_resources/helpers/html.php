@@ -100,7 +100,7 @@ class Html
 					}
 				}
 
-				$replacement = trim(implode($properties, '; '));
+				$replacement = trim(implode('; ', $properties));
 
 				return str_replace($match[1], $replacement, $match[0]);
 			},
@@ -268,6 +268,20 @@ class Html
 	}
 
 	/**
+	 * Build the url path to resources files from the resource id
+	 *
+	 * @param   integer  $id    Resource ID
+	 * @param   string   $base  Base path to prepend
+	 * @return  string
+	 */
+	public static function build_url($id, $base)
+	{
+		$dir_id = self::niceidformat($id);
+
+		return $base . DS . $dir_id . DS . "download";
+	}
+
+	/**
 	 * Build the path to resources files from the creating date
 	 *
 	 * @param   string   $date  Timestamp (YYYY-MM-DD hh:mm:ss)
@@ -275,7 +289,7 @@ class Html
 	 * @param   string   $base  Base path to prepend
 	 * @return  string
 	 */
-	public static function build_path($date='', $id, $base)
+	public static function build_path($date, $id, $base)
 	{
 		$dir_id = self::niceidformat($id);
 
@@ -449,7 +463,7 @@ class Html
 				$html = '<p class="' . $rl->name . ' license">Licensed';
 				if ($rl->url)
 				{
-					$html .= ' according to <a rel="license" href="' . $rl->url . '" title="' . $rl->title . '">this deed</a>';
+					$html .= ' under <a rel="license" href="' . $rl->url . '" title="' . $rl->title . '">' . $rl->title . '</a>';
 				}
 				else
 				{
@@ -459,7 +473,7 @@ class Html
 			}
 			else
 			{
-				$html = '<p class="' . $rl->name . ' license">Licensed according to <a rel="license" class="popup" href="' . Route::url('index.php?option=com_resources&task=license&resource=' . substr($rl->name, 6) . '&no_html=1') . '">this deed</a>.</p>';
+				$html = '<p class="' . $rl->name . ' license">Licensed under <a rel="license" class="popup" href="' . Route::url('index.php?option=com_resources&task=license&resource=' . substr($rl->name, 6) . '&no_html=1') . '">' . $rl->title . '</a>.</p>';
 			}
 		}
 		return $html;
@@ -475,7 +489,7 @@ class Html
 	 * @param   string  $c         Extra classes
 	 * @return  string  HTML
 	 */
-	public static function sections($sections, $cats, $active='about', $h, $c)
+	public static function sections($sections, $cats, $active, $h, $c)
 	{
 		$html = '';
 
@@ -669,7 +683,7 @@ class Html
 					}
 					else
 					{
-						if (strstr($item->path, 'http') || substr($item->path, 0, 3) == 'mms')
+						if (strstr($item->path, 'http') || substr($item->path, 0, 3) == 'mms' || substr($item->path,0,1) == '/')
 						{
 							$url = $item->path;
 						}
@@ -703,6 +717,7 @@ class Html
 
 		switch ($resource->get('type'))
 		{
+			# Tools
 			case 7:
 				$authorized = User::authorise('core.manage', 'com_tools.' . $resource->id);
 
@@ -817,24 +832,27 @@ class Html
 					$pop   = '<p class="warning">' . Lang::txt('COM_RESOURCES_TOOL_VERSION_UNPUBLISHED') . '</p>';
 					$html .= self::primaryButton('link_disabled', '', Lang::txt('COM_RESOURCES_LAUNCH_TOOL'), '', '', '', 1, $pop);
 				}
-			break;
+				break;
 
 			case 4:
 				// write primary button and downloads for a Learning Module
 				$html .= self::primaryButton('', Route::url($resource->link() . '&task=play'), 'Start learning module');
-			break;
+				break;
 
 			case 6:
-			case 8:
+				$mesg  = Lang::txt('COM_RESOURCES_VIEW') . ' Course Lectures';
+				$html .= self::primaryButton('download', Route::url($resource->link()) . '#courselecture', $mesg, '', $mesg, '');
+				break;
+
 			case 31:
-			case 2:
-				// do nothing
-				$mesg  = Lang::txt('COM_RESOURCES_VIEW') . ' ';
-				$mesg .= $resource->get('type') == 6 ? 'Course Lectures' : '';
-				$mesg .= $resource->get('type') == 2 ? 'Workshop ' : '';
-				$mesg .= $resource->get('type') == 6 ? '' : 'Series';
+				$mesg  = Lang::txt('COM_RESOURCES_VIEW') . ' Series';
 				$html .= self::primaryButton('download', Route::url($resource->link()) . '#series', $mesg, '', $mesg, '');
-			break;
+				break;
+
+			case 2:
+				$mesg  = Lang::txt('COM_RESOURCES_VIEW') . ' Workshop ';
+				$html .= self::primaryButton('download', Route::url($resource->link()) . '#workshop', $mesg, '', $mesg, '');
+				break;
 
 			default:
 				$firstChild->title = str_replace('"', '&quot;', $firstChild->title);
@@ -917,7 +935,11 @@ class Html
 							$class = ''; //'play';
 						}
 
-						if (substr($firstChild->path, 0, 7) == 'http://'
+						if (substr($firstChild->path, 0, 16) == 'https://doi.org/')
+						{
+							$mesg  = substr($firstChild->path,16);
+						}
+						else if (substr($firstChild->path, 0, 7) == 'http://'
 						 || substr($firstChild->path, 0, 8) == 'https://'
 						 || substr($firstChild->path, 0, 6) == 'ftp://'
 						 || substr($firstChild->path, 0, 9) == 'mainto://'
@@ -929,6 +951,10 @@ class Html
 						{
 							$mesg  = Lang::txt('COM_RESOURCES_VIEW_LINK');
 						}
+						else if (substr($firstChild->path, 0, 1) == '/')
+						{
+							$mesg  = Lang::txt('COM_RESOURCES_VIEW_LINK');
+						}
 					break;
 				}
 
@@ -937,7 +963,7 @@ class Html
 				{
 					// first child is for registered users only and the visitor is not logged in
 					$pop  = '<p class="warning">' . Lang::txt('COM_RESOURCES_LOGIN_REQUIRED_TO_DOWNLOAD') . '</p>' . "\n";
-					$html .= self::primaryButton($class . ' disabled', Route::url('index.php?option=com_login'), $mesg, '', '', '', '', $pop);
+					$html .= self::primaryButton($class . ' disabled', Route::url('index.php?option=com_login&return=') . base64_encode(Request::current()), $mesg, '', '', '', '', $pop);
 				}
 				else
 				{
@@ -1089,15 +1115,15 @@ class Html
 			'name'   => 'view',
 			'layout' => '_primary'
 		));
-		$view->option   = 'com_resources';
-		$view->disabled = $disabled;
-		$view->class    = $class;
-		$view->href     = $href;
-		$view->title    = $title;
-		$view->action   = $action;
-		$view->xtra     = $xtra;
-		$view->pop      = $pop;
-		$view->msg      = $msg;
+		$view->set('option', 'com_resources')
+			->set('disabled', $disabled)
+			->set('class', $class)
+			->set('href', $href)
+			->set('title', $title)
+			->set('action', $action)
+			->set('xtra', $xtra)
+			->set('pop', $pop)
+			->set('msg', $msg);
 
 		return $view->loadTemplate();
 	}
@@ -1123,7 +1149,22 @@ class Html
 			$base_path = DS . trim($base_path, DS);
 		}
 
-		if (preg_match("/(?:https?:|mailto:|ftp:|gopher:|news:|file:)/", $path))
+		if (substr($path, 0, 16) == 'https://doi.org/')
+		{
+			$type = 'DOI';
+			$fs = '';
+		}
+		else if ((substr($path, 0, 18) == 'https://vimeo.com/') ||  (substr($path, 0, 25) == 'https://player.vimeo.com/'))
+		{
+			$type = 'Vimeo';
+			$fs = '';
+		}
+		else if ((substr($path, 0, 20) == 'https://youtube.com/') ||  (substr($path, 0, 24) == 'https://www.youtube.com/') ||  (substr($path, 0, 17) == 'https://youtu.be/'))
+		{
+			$type = 'YouTube';
+			$fs = '';
+		}
+		else if (preg_match("/(?:https?:|mailto:|ftp:|gopher:|news:|file:)/", $path))
 		{
 			$type = 'HTM';
 			$fs = '';

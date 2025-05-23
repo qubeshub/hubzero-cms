@@ -21,14 +21,14 @@ class ErrorBagTraitTest extends Basic
 	 *
 	 * @var  object
 	 */
-	private $traitObject;
+	private $obj;
 
 	/**
 	 * Sets up the fixture.
 	 *
 	 * @return  void
 	 */
-	public function setUp()
+	public function setUp(): void
 	{
 		$this->obj = $this->getObjectForTrait('Hubzero\Base\Traits\ErrorBag');
 

@@ -20,6 +20,26 @@ use GuzzleHttp\Client;
  */
 class SolrQueryAdapter implements QueryInterface
 {
+	var $logPath = null;
+
+	var $connection = null;
+
+	var $config = null;
+
+	var $query = null;
+
+	var $adapter = null;
+
+	var $resultset = null;
+
+	var $numFound = null;
+
+	var $results = null;
+
+	var $resultsFacetSet = null;
+
+	var $debug = false;
+
 	/**
 	 * __construct
 	 *
@@ -30,26 +50,31 @@ class SolrQueryAdapter implements QueryInterface
 	public function __construct($config)
 	{
 		// Some setup information
-		$core = $config->get('solr_core');
-		$port = $config->get('solr_port');
-		$host = $config->get('solr_host');
-		$path = $config->get('solr_path');
+		$core = $config->get('solr_core','hubzero-solr-core');
+		$port = $config->get('solr_port','2090');
+		$host = $config->get('solr_host','localhost');
+		$path = $config->get('solr_path','/');
+		$context = $config->get('solr_context','solr');
 
 		$this->logPath = $config->get('solr_log_path');
 
 		// Build the Solr config object
 		$solrConfig = array( 'endpoint' =>
-			array( $core  =>
-				array('host' => $host,
-							'port' => $port,
-							'path' => $path,
-							'core' => $core,
-							)
-						)
-					);
+			array( $core =>
+				array(	'host' => $host,
+					'port' => $port,
+					'path' => $path,
+					'context' => $context,
+					'core' => $core
+				)
+			)
+		);
 
 		// Create the client
-		$this->connection = new Solarium\Client($solrConfig);
+		$adapter = new Solarium\Core\Client\Adapter\Curl();
+		$eventDispatcher = new \Symfony\Component\EventDispatcher\EventDispatcher();
+
+		$this->connection = new Solarium\Client($adapter, $eventDispatcher, $solrConfig);
 
 		// Add plugin to accept bigger requests
 		$this->connection->getPlugin('postbigrequest');
@@ -203,7 +228,23 @@ class SolrQueryAdapter implements QueryInterface
 		$this->numFound = $this->resultset->getNumFound();
 		$this->results = $this->getResults();
 		$this->resultsFacetSet = $this->resultset->getFacetSet();
+		$this->debug = $this->query->getDebug();
 		return $this;
+	}
+
+	/**
+	 * getDebug
+	 *
+	 * returns Solarium query debug object
+	 *
+	 * @access public
+	 * @return Solarium\QueryType\Select\Query\Component\Debug
+	 */
+	public function getDebug()
+	{
+		if (isset($this->debug)) {
+			return $this->debug;
+		}
 	}
 
 	/**

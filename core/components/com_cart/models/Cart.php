@@ -28,7 +28,7 @@ abstract class Cart
 	 *
 	 * @var  object
 	 */
-	var $db = null;
+	var $_db = null;
 
 	/**
 	 * Cart ID
@@ -43,6 +43,13 @@ abstract class Cart
 	 * @var  bool
 	 */
 	var $debug = false;
+
+	/**
+ 	 * Warehouse Model
+	 *
+	 * @var warehouse
+	 */
+	var $warehouse = null;
 
 	/**
 	 * Salt
@@ -780,7 +787,7 @@ abstract class Cart
 			$transactionInfo = new \stdClass();
 			$transactionInfo->qty = $allSkuInfo[$sId]->tiQty;
 			$transactionInfo->tiPrice = $allSkuInfo[$sId]->tiPrice;
-			$transactionInfo->tiMeta = json_decode($allSkuInfo[$sId]->tiMeta);
+			$transactionInfo->tiMeta = json_decode($allSkuInfo[$sId]->tiMeta == null ? '' : $allSkuInfo[$sId]->tiMeta);
 			$skuInfo[$sId]['transactionInfo'] = $transactionInfo;
 			unset($transactionInfo);
 		}

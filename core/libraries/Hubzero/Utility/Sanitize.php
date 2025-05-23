@@ -56,7 +56,7 @@ class Sanitize
 	 */
 	public static function stripWhitespace($str)
 	{
-		return preg_replace('/\s{2,}/u', ' ', preg_replace('/[\n\r\t]+/', '', $str));
+		return preg_replace('/\s{2,}/u', ' ', preg_replace('/[\n\r\t]+/', '', $str == null ? '' : $str));
 	}
 
 	/**
@@ -162,11 +162,6 @@ class Sanitize
 		if (empty($string))
 		{
 			return $string;
-		}
-
-		if (get_magic_quotes_gpc())
-		{
-			$string = stripslashes($string);
 		}
 
 		// strip out any KL_PHP, script, style, HTML comments
@@ -554,7 +549,7 @@ class Sanitize
 
 			foreach ($trans_tbl as $k => $v)
 			{
-				$ttr[$v] = utf8_encode($k);
+				$ttr[$v] = function_exists('mbstring') ? mbstring($k) : $k;
 			}
 		}
 
@@ -565,7 +560,12 @@ class Sanitize
 			'/&#(\d+);/m',
 			function ($matches)
 			{
-				return utf8_encode(chr($matches[1]));
+				$str = chr($matches[1]);
+				if (function_exists('mbstring'))
+				{
+					$str = mbstring($str);
+				}
+				return $str;
 			},
 			$source
 		);
@@ -575,11 +575,64 @@ class Sanitize
 			'/&#x([a-f0-9]+);/mi',
 			function ($matches)
 			{
-				return utf8_encode(chr('0x' . $matches[1]));
+				$str = chr('0x' . $matches[1]);
+				if (function_exists('mbstring'))
+				{
+					$str = mbstring($str);
+				}
+				return $str;
 			},
 			$source
 		);
 
 		return $source;
+	}
+
+	/**
+	 * Replace or remove characters invalid for a proper name
+	 * (name, givenName, middleName, surname)
+	 *
+	 * - (Unicode) invisible control characters and unused code points are removed
+	 * - (Unicode) ASCII or Latin-1 control characters: 0x00–0x1F and 0x7F–0x9F are removed
+	 * - (Unicode) invisible formatting indicators are removed
+	 * - (Unicode) any code point reserved for private use are removed
+	 * - (Unicode) one half of a surrogate pair in UTF-16 encoding are removed
+	 * - (Unicode) any code point to which no character has been assigned are removed
+	 * - Less than sign (<) is converted to left bracket ([)
+	 * - Greater than sign (>) is converted to right bracket (])
+	 * - Ampersand (&) is replaced with an ampersand with a space on each side ( & )
+	 * - Multiple consecutive whitespace is collapsed to a single space
+	 * - Leading and trailing spaces are removed
+	 * - Colon (:) is converted to dash (-)
+	 *
+	 * @param   string  $source  The source string.
+	 * @return  string  cleaned string
+	 */
+	public static function cleanProperName($source)
+	{
+		if ($source == null)
+		{
+			return '';
+		}
+
+		return preg_replace(
+			array('/[^\P{C}\s]/u',
+				'/:/u',
+				'/</u',
+				'/>/u',
+				'/&/u',
+				'/\s+/u',
+				'/(^\s+|\s+$)/u',
+			),
+			array(
+				'',
+				'-',
+				'[',
+				']',
+				' & ',
+				' ',
+				'',
+			),
+			$source);
 	}
 }

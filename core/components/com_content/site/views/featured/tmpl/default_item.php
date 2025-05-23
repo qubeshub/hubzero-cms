@@ -148,7 +148,7 @@ $canEdit = $this->item->params->get('access-edit');
 		$link1 = Route::url('index.php?option=com_users&view=login&Itemid=' . $itemId);
 		$returnURL = Route::url(Components\Content\Site\Helpers\Route::getArticleRoute($this->item->slug, $this->item->catid, $this->item->language));
 		$link = new Hubzero\Utility\Uri($link1);
-		$link->setVar('return', base64_encode(urlencode($returnURL)));
+		$link->setUriVar('return', base64_encode(urlencode($returnURL)));
 	endif;
 	?>
 	<p class="readmore">

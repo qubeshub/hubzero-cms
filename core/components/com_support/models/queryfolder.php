@@ -127,7 +127,7 @@ class QueryFolder extends Relational
 		{
 			$last = self::all()
 				->select('ordering')
-				->whereEquals('user_id', $data['user_id'])
+				->whereEquals('user_id', !isset($data['user_id']) ? '' : $data['user_id'])
 				->order('ordering', 'desc')
 				->row();
 

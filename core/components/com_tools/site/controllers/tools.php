@@ -161,7 +161,7 @@ class Tools extends SiteController
 		$file = 'forge.png';
 
 		$paths = array(
-			\App::get('template')->path . DS . 'html' . DS . $this->_option . DS . 'images' . DS . $file,
+			\App::get('template')->path . DS . 'images' . DS . $file,
 			dirname(__DIR__) . DS . 'assets' . DS . 'img' . DS . $file,
 			dirname(__DIR__) . DS . 'images' . DS . $file
 		);
@@ -173,6 +173,7 @@ class Tools extends SiteController
 			if (file_exists($path))
 			{
 				$image = $path;
+				break;
 			}
 		}
 
@@ -200,7 +201,7 @@ class Tools extends SiteController
 	public function cssTask($css = 'site_css.css')
 	{
 		$paths = array(
-			\App::get('template')->path . DS . 'html' . DS . $this->_option . DS . $css,
+			\App::get('template')->path . DS . 'css' . DS . $css,
 			dirname(__DIR__) . DS . 'assets' . DS . 'css' . DS . $css,
 			dirname(__DIR__) . DS . 'css' . DS . $css
 		);
@@ -212,6 +213,7 @@ class Tools extends SiteController
 			if (file_exists($path))
 			{
 				$file = $path;
+				break;
 			}
 		}
 

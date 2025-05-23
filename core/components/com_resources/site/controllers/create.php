@@ -139,7 +139,7 @@ class Create extends SiteController
 		{
 			$this->_title .= ': ' . Lang::txt('COM_CONTRIBUTE' . '_' . strtoupper($this->_task));
 		}
-		if ($this->step)
+		if ($this->step && isset($this->steps[$this->step]))
 		{
 			$this->_title .= ': ' . Lang::txt('COM_CONTRIBUTE_STEP_NUMBER', $this->step) . ': ' . Lang::txt('COM_CONTRIBUTE_STEP_' . strtoupper($this->steps[$this->step]));
 		}
@@ -1720,7 +1720,7 @@ class Create extends SiteController
 		if ($id)
 		{
 			$resource = Entry::oneOrNew($id);
-			$total = $resource->authors()->total();
+			$contributors = $resource->authors()->total();
 		}
 
 		return $contributors;
@@ -1776,7 +1776,7 @@ class Create extends SiteController
 	private function _txtClean($text)
 	{
 		// Handle special characters copied from MS Word
-		$text = str_replace('“', '"', $text);
+		$text = str_replace('“', '"', $text == null ? '' : $text);
 		$text = str_replace('”', '"', $text);
 		$text = str_replace("’", "'", $text);
 		$text = str_replace("‘", "'", $text);
