@@ -2162,7 +2162,7 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 			else
 			{
 				$apu = $this->_pubconfig->get('autoapproved_users');
-				$apu = explode(',', $apu);
+				$apu = explode(',', $apu == null ? array() : $apu);
 				$apu = array_map('trim', $apu);
 
 				if (in_array(User::get('username'), $apu))
