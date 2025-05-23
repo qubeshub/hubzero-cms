@@ -77,7 +77,7 @@ class Message extends \Symfony\Component\Mime\Email
 					break;
 			}
 		}
-		return parent::setPriority($priority);
+		return parent::priority($priority);
 	}
 
 	/**
