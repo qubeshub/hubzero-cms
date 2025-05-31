@@ -265,11 +265,17 @@ class Base extends Obj
 		{
 			if ($httpEquiv == true)
 			{
-				$result = @$this->_metaTags['http-equiv'][$name];
+				if (isset($this->_metaTags['http-equiv'][$name]))
+				{
+					$result = $this->_metaTags['http-equiv'][$name];
+				}
 			}
 			else
 			{
-				$result = @$this->_metaTags['standard'][$name];
+				if (isset($this->_metaTags['standard'][$name]))
+				{
+					$result = $this->_metaTags['standard'][$name];
+				}
 			}
 		}
 

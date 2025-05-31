@@ -11,7 +11,6 @@ use Qubeshub\Document\Asset\Javascript;
 use Qubeshub\Document\Asset\Stylesheet;
 use Exception;
 use Request;
-use lessc;
 
 /**
  * Class for adding stylesheets from components, modules, and plugins to the document
@@ -100,7 +99,7 @@ class Assets
 	 * @param   string  $script  Script name (optional, uses module name if left blank)
 	 * @return  void
 	 */
-	public static function addScript($script)
+	public static function addScript($script, $defer = false, $async = false)
 	{
 		if (!$script)
 		{
@@ -116,7 +115,7 @@ class Assets
 
 		if ($document = self::app('document'))
 		{
-			$document->addScript(rtrim(Request::base(true), '/') . $script . '?v=' . filemtime($root . $script));
+			$document->addScript(rtrim(Request::base(true), '/') . $script . '?v=' . filemtime($root . $script), "text/javascript", $defer, $async);
 		}
 	}
 
@@ -599,16 +598,16 @@ class Assets
 			{
 				$lesspath = PATH_CORE . DS . 'assets' . DS . 'less';
 
-				if (!class_exists('lessc'))
+				if (!class_exists('\Hubzero\Document\Lessc'))
 				{
 					throw new Exception('LESS parser not found.');
 				}
 
 				// Try to compile LESS files
-				$less = new lessc;
+				$less = new \Hubzero\Document\Lessc;
 				if ($env != 'development')
 				{
-					$less->setFormatter('compressed');
+					$less->setFormatter(new \LesserPHP\FormatterCompressed());
 				}
 
 				// Are there any template overrides?

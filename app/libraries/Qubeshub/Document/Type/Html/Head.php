@@ -150,11 +150,11 @@ class Head extends Renderer
 			}
 			if ($strAttr['defer'])
 			{
-				$line .= ' defer="defer"';
+				$line .= ' defer';
 			}
 			if ($strAttr['async'])
 			{
-				$line .= ' async="async"';
+				$line .= ' async';
 			}
 			$line .= '></script>';
 
