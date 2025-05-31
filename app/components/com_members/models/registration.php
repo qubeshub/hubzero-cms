@@ -170,6 +170,15 @@ class Registration
 			$name['first']  = preg_replace('/\s+/', ' ', trim($name['first']));
 			$name['middle'] = preg_replace('/\s+/', ' ', trim($name['middle']));
 			$name['last']   = preg_replace('/\s+/', ' ', trim($name['last']));
+			$name['first']  = strip_tags($name['first']);
+			$name['middle'] = strip_tags($name['middle']);
+			$name['last']   = strip_tags($name['last']);
+			$name['first']  = preg_replace('/[<>]/', '', trim($name['first']));
+			$name['middle'] = preg_replace('/[<>]/', ' ', trim($name['middle']));
+			$name['last']   = preg_replace('/[<>]/', ' ', trim($name['last']));
+			$name['first']  = htmlentities($name['first'], ENT_QUOTES, "UTF-8");
+			$name['middle']  = htmlentities($name['middle'], ENT_QUOTES, "UTF-8");
+			$name['last']  = htmlentities($name['last'], ENT_QUOTES, "UTF-8");
 			$nm  = trim($name['first']);
 			$nm .= (isset($name['middle']) && trim($name['middle']) != '') ? ' '.$name['middle'] : '';
 			$nm .= ' '.trim($name['last']);
@@ -184,13 +193,8 @@ class Registration
 		$this->_registration['confirmEmail'] = Request::getString('email2', null, 'post');
 		$this->_registration['password'] = Request::getString('password', null, 'post');
 		$this->_registration['confirmPassword'] = Request::getString('password2', null, 'post');
-		$this->_registration['usageAgreement'] = Request::getString('usageAgreement', null, 'post');
+		$this->_registration['usageAgreement'] = Request::getInt('usageAgreement', 0, 'post');
 		$this->_registration['sendEmail'] = Request::getString('sendEmail', '0', 'post');
-
-		if ($this->_registration['usageAgreement'] !== null)
-		{
-			$this->_registration['usageAgreement'] = ($this->_registration['usageAgreement'] === 'unset') ? false : true;
-		}
 
 		// Incoming profile edits
 		$profile = Request::getArray('profile', array(), 'post', 'none', 2);

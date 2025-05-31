@@ -45,6 +45,10 @@ endif;
 
 if ($canDo->get('core.delete')):
 	Toolbar::deleteList('COM_MEMBERS_CONFIRMATION_WARNING');
+
+    if ($canDo->get('core.deidentify')):
+        Toolbar::custom('deidentify', 'eye-close', '', 'COM_MEMBERS_DEIDENTIFY', true);
+    endif;
 endif;
 
 Toolbar::spacer();
@@ -67,6 +71,7 @@ $this->css()
 				<button type="button" class="filter-clear"><?php echo Lang::txt('JSEARCH_RESET'); ?></button>
 			</div>
 			<div class="col span8">
+				<label for="filter_emailConfirmed"><?php echo Lang::txt('COM_MEMBERS_FILTER_EMAIL_CONFIRMED'); ?></label>
 				<select name="activation" id="filter_emailConfirmed" class="inputbox filter filter-submit">
 					<option value="0"<?php if ($this->filters['activation'] == 0) { echo ' selected="selected"'; } ?>><?php echo Lang::txt('COM_MEMBERS_FILTER_EMAIL_CONFIRMED'); ?></option>
 					<option value="1"<?php if ($this->filters['activation'] == 1) { echo ' selected="selected"'; } ?>><?php echo Lang::txt('COM_MEMBERS_FIELD_EMAIL_CONFIRMED_CONFIRMED'); ?></option>
@@ -109,7 +114,10 @@ $this->css()
 	<table class="adminlist">
 		<thead>
 			<tr>
-				<th scope="col"><input type="checkbox" name="toggle" value="" class="checkbox-toggle toggle-all" /></th>
+				<th scope="col">
+					<input type="checkbox" name="checkall-toggle" id="checkall-toggle" value="" class="checkbox-toggle toggle-all" />
+					<label for="checkall-toggle" class="sr-only visually-hidden"><?php echo Lang::txt('JGLOBAL_CHECK_ALL'); ?></label>
+				</th>
 				<th scope="col" class="priority-2"><?php echo Html::grid('sort', 'COM_MEMBERS_COL_ID', 'id', @$this->filters['sort_Dir'], @$this->filters['sort']); ?></th>
 				<th scope="col"><?php echo Html::grid('sort', 'COM_MEMBERS_COL_NAME', 'name', @$this->filters['sort_Dir'], @$this->filters['sort']); ?></th>
 				<th scope="col" class="priority-5"><?php echo Html::grid('sort', 'COM_MEMBERS_COL_USERNAME', 'username', @$this->filters['sort_Dir'], @$this->filters['sort']); ?></th>
@@ -191,7 +199,7 @@ $this->css()
 			$authenticator = 'hub';
 			if (substr($row->get('email'), -8) == '@invalid'):
 				$authenticator = Lang::txt('COM_MEMBERS_UNKNOWN');
-				if ($lnk = Hubzero\Auth\Link::find_by_id(abs($row->get('username')))):
+				if ($lnk = Hubzero\Auth\Link::find_by_id(abs(intval($row->get('username'))))):
 					$domain = Hubzero\Auth\Domain::find_by_id($lnk->auth_domain_id);
 					$authenticator = $domain->authenticator;
 				endif;
@@ -202,6 +210,7 @@ $this->css()
 				<td>
 					<?php if ($canEdit) : ?>
 						<input type="checkbox" name="id[]" id="cb<?php echo $i; ?>" value="<?php echo $row->get('id'); ?>" class="checkbox-toggle" />
+						<label for="cb<?php echo $i; ?>" class="sr-only visually-hidden"><?php echo $row->get('id'); ?></label>
 					<?php endif; ?>
 				</td>
 				<td class="priority-2">

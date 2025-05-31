@@ -8,10 +8,10 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
-$name       = stripslashes($this->profile->get('name'));
-$surname    = stripslashes($this->profile->get('surname'));
-$givenName  = stripslashes($this->profile->get('givenName'));
-$middleName = stripslashes($this->profile->middleName);
+$name       = stripslashes($this->profile->get('name','') == null ? '' : $this->profile->get('name',''));
+$surname    = stripslashes($this->profile->get('surname','') == null ? '' : $this->profile->get('surname',''));
+$givenName  = stripslashes($this->profile->get('givenName','') == null ? '' : $this->profile->get('givenName',''));
+$middleName = stripslashes($this->profile->middleName == null ? '' : $this->profile->middleName);
 
 
 if (!$surname)
@@ -30,7 +30,7 @@ if (!$surname)
 
 $incomplete = false;
 $authenticator = 'hub';
-if (substr($this->profile->get('email'), -8) == '@invalid')
+if (substr($this->profile->get('email',''), -8) == '@invalid')
 {
 	$authenticator = Lang::txt('COM_MEMBERS_UNKNOWN');
 	if ($lnk = Hubzero\Auth\Link::find_by_id(abs($this->profile->get('username'))))
@@ -240,12 +240,19 @@ if (substr($this->profile->get('email'), -8) == '@invalid')
 						{
 							$confirmed  = '<span class="unconfirmed">' . Lang::txt('COM_MEMBERS_FIELD_EMAIL_AWAITING_CONFIRMATION') . '<br />[code: ' . -$this->profile->get('activation') . ']</span>';
 							$confirmed .= '<label for="activation"><input type="checkbox" name="activation" id="activation" value="1" /> ' . Lang::txt('COM_MEMBERS_FIELD_EMAIL_CONFIRM') . '</label>';
+							$return = base64_encode(Route::url(
+									'index.php?option=' . $this->option
+									. '&controller=' . $this->controller
+									. '&id=' . $this->profile->get('id')
+									. '&task=edit&', false, true));
+
 							$confirmLink = Route::url(
 								'index.php?option=' . $this->option
 								. '&controller=' . $this->controller
 								. '&id=' . $this->profile->get('id')
 								. '&task=resendConfirm&'
 								. Session::getFormToken() . '=1'
+								. '&return=' . $return
 							);
 							$confirmed .= '<div class="input-wrap"><a href="' . $confirmLink . '" class="button">' . Lang::txt('COM_MEMBERS_RESEND_CONFIRM') . '</a></div>';
 						}

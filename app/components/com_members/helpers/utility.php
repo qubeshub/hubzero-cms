@@ -154,17 +154,11 @@ class Utility
 	 * Validate name
 	 *
 	 * @param   string   $name  the name to validate
-	 * @return  integer  1 = valid, 0 = invalid
+	 * @return  boolean
 	 */
 	public static function validname($name)
 	{
-		// Exclude all non-printable characters and the ':'
-		// ':' can mess up ldap entries
-		if (preg_match("/^[^:\p{C}]*$/u", $name))
-		{
-			return 1;
-		}
-		return 0;
+		return \Hubzero\Utility\Validate::properName($name);
 	}
 
 	/**
@@ -199,7 +193,7 @@ class Utility
 	 * @param   object  $xregistration
 	 * @return  bool
 	 */
-	public static function sendConfirmEmail($user, $xregistration)
+	public static function sendConfirmEmail($user, $xregistration, $new = true)
 	{
 		$baseURL = rtrim(Request::root(), '/');
 
@@ -216,6 +210,7 @@ class Utility
 		$eview->xprofile      = $user;
 		$eview->baseURL       = $baseURL;
 		$eview->xregistration = $xregistration;
+		$eview->new           = $new;
 
 		$msg = new \Hubzero\Mail\Message();
 		$msg->setSubject($subject)
@@ -290,5 +285,41 @@ class Utility
 		$result = $db->loadResult();
 
 		return ($result) ? true : false;
+	}
+	
+	/**
+	 * Escape the special characters that might exist in the organization names on Research Organization Registry 
+	 *
+	 * @param   string  $term
+	 * @return  string
+	 */
+	public static function escapeSpecialChars($term)
+	{
+		$special_chars = [
+			"+" => "\+", 
+			"-" => "\-", 
+			"=" => "\=", 
+			"&&" => "\&&", 
+			"||" => "\||", 
+			">" => "\>", 
+			"<" => "\<", 
+			"!" => "\!", 
+			"(" => "\(", 
+			")" => "\)", 
+			"{" => "\{", 
+			"}" => "\}", 
+			"[" => "\[", 
+			"]" => "\]", 
+			"^" => "\^", 
+			'"' => '\"', 
+			"~" => "\~", 
+			"*" => "\*", 
+			"?" => "\?", 
+			":" => "\:", 
+			"\\" => "\\\\", 
+			"/" => "\/"
+		];
+    
+		return str_replace(array_keys($special_chars), array_values($special_chars), $term);
 	}
 }

@@ -159,7 +159,7 @@ class Credentials extends SiteController
 		// Send mail
 		if (!$message->send())
 		{
-			Log::error('Members username reminder email failed: ' . Lang::txt('Failed to mail %s', $email));
+			Log::error('Members username reminder email failed[1]: ' . Lang::txt('Failed to mail %s', $email));
 
 			if ($no_html)
 			{
@@ -395,7 +395,7 @@ class Credentials extends SiteController
 
 		// Set the confirmation token
 		$token       = App::hash(\Hubzero\User\Password::genRandomPassword());
-		$salt        = \JUserHelper::getSalt('crypt-md5');
+		$salt        = \Hubzero\User\Password::getSalt('crypt-md5');
 		$hashedToken = md5($token . $salt) . ':' . $salt;
 
 		// Save the token
@@ -434,7 +434,7 @@ class Credentials extends SiteController
 		// Send mail
 		if (!$message->send())
 		{
-			Log::error('Members password reset email failed: ' . Lang::txt('Failed to mail %s', $user->get('email')));
+			Log::error('Members password reset email failed[2]: ' . Lang::txt('Failed to mail %s', $user->get('email')));
 
 			if ($no_html)
 			{
@@ -540,7 +540,7 @@ class Credentials extends SiteController
 		}
 
 		$salt      = $parts[1];
-		$testcrypt = \JUserHelper::getCryptedPassword($token, $salt);
+		$testcrypt = \Hubzero\User\Password::getCryptedPassword($token, $salt);
 
 		// Verify the token
 		if (!($crypt == $testcrypt))

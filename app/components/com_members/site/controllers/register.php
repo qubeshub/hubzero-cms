@@ -174,8 +174,8 @@ class Register extends SiteController
 					'name'   => 'emails',
 					'layout' => 'update'
 				));
-				$eview->option     = $this->_option;
-				$eview->controller = $this->_controller;
+				$eview->set('option', $this->_option);
+				$eview->set('controller', $this->_controller);
 				$eview->sitename   = Config::get('sitename');
 				$eview->xprofile   = $xprofile;
 				$eview->baseURL    = $this->baseURL;
@@ -203,8 +203,8 @@ class Register extends SiteController
 				'name'   => 'emails',
 				'layout' => 'adminupdate'
 			));
-			$eaview->option     = $this->_option;
-			$eaview->controller = $this->_controller;
+			$eaview->set('option', $this->_option);
+			$eaview->set('controller', $this->_controller);
 			$eaview->sitename   = Config::get('sitename');
 			$eaview->xprofile   = $xprofile;
 			$eaview->baseURL    = $this->baseURL;
@@ -241,8 +241,8 @@ class Register extends SiteController
 					'name'   => 'emails',
 					'layout' => 'updateproxy'
 				));
-				$eview->option     = $this->_option;
-				$eview->controller = $this->_controller;
+				$eview->set('option', $this->_option);
+				$eview->set('controller', $this->_controller);
 				$eview->sitename   = Config::get('sitename');
 				$eview->xprofile   = $xprofile;
 				$eview->baseURL    = $this->baseURL;
@@ -270,8 +270,8 @@ class Register extends SiteController
 				'name'   => 'emails',
 				'layout' => 'adminupdateproxy'
 			));
-			$eaview->option     = $this->_option;
-			$eaview->controller = $this->_controller;
+			$eaview->set('option', $this->_option);
+			$eaview->set('controller', $this->_controller);
 			$eaview->sitename   = Config::get('sitename');
 			$eaview->xprofile   = $xprofile;
 			$eaview->baseURL    = $this->baseURL;
@@ -367,6 +367,19 @@ class Register extends SiteController
 					unset($profile[$key . '_other']);
 				}
 			}
+
+			$emailState = Field::state('registrationEmail', 'RRRR', $this->_task);
+
+			if ($emailState == \Components\Members\Models\Profile\Field::STATE_HIDDEN)
+			{
+				$username = User::get('username');
+			
+				if ($username[0] == '-' && is_object($hzal))
+				{
+					$xregistration->set('email', $hzal->email);
+				}
+			}
+
 		}
 		else
 		{
@@ -596,8 +609,8 @@ class Register extends SiteController
 					'name'   => 'emails',
 					'layout' => 'adminupdate'
 				));
-				$eaview->option     = $this->_option;
-				$eaview->controller = $this->_controller;
+				$eaview->set('option', $this->_option);
+				$eaview->set('controller', $this->_controller);
 				$eaview->sitename   = Config::get('sitename');
 				$eaview->xprofile   = $xprofile;
 				$eaview->baseURL    = $this->baseURL;
@@ -695,6 +708,13 @@ class Register extends SiteController
 
 			// Incoming profile edits
 			$profile = Request::getArray('profile', array(), 'post');
+
+			// Querying the organization id on ror.org
+			// If RoR Api is turned off because of failed API or if key doesn't exist, don't retrieve list from Api.
+			$useRorApi = \Component::params('com_members')->get('rorApi');
+			if (isset($profile['organization']) && !empty($profile['organization']) && $useRorApi){
+				$profile['orgid'] = $this->getOrganizationId($profile['organization']);
+			}
 
 			// Compile profile data
 			foreach ($profile as $key => $data)
@@ -847,7 +867,7 @@ class Register extends SiteController
 				$user->set('access', 5);
 				$user->set('activation', -rand(1, pow(2, 31)-1));
 
-				if (is_object($hzal))
+				if (is_object($hzal) && isset($hzal->email))
 				{
 					if ($user->get('email') == $hzal->email)
 					{
@@ -860,7 +880,12 @@ class Register extends SiteController
 					$user->set('access', (int)$this->config->get('privacy', 1));
 				}
 
-				$user->set('password', \Hubzero\User\Password::getPasshash($xregistration->get('password')));
+				$password = $xregistration->get('password');
+
+				if ($password != '')
+				{
+					$user->set('password', \Hubzero\User\Password::getPasshash($xregistration->get('password')));
+				}
 
 				// Do we have a return URL?
 				$regReturn = Request::getString('return', '');
@@ -873,6 +898,12 @@ class Register extends SiteController
 				// If we managed to create a user
 				if ($user->save())
 				{
+					if (is_object($hzal))
+					{
+						$hzal->set('user_id', $user->get('id'));
+						$hzal->update();
+					}
+
 					$access = array();
 					foreach ($fields as $field)
 					{
@@ -906,10 +937,15 @@ class Register extends SiteController
 				// If everything is OK so far...
 				if ($result)
 				{
-					$result = \Hubzero\User\Password::changePassword($user->get('id'), $xregistration->get('password'));
+					$password = $xregistration->get('password');
 
-					// Set password back here in case anything else down the line is looking for it
-					$user->set('password', $xregistration->get('password'));
+					if ($password)
+					{
+						$result = \Hubzero\User\Password::changePassword($user->get('id'), $xregistration->get('password'));
+
+						// Set password back here in case anything else down the line is looking for it
+						$user->set('password', $xregistration->get('password'));
+					}
 
 					// Did we successfully create/update an account?
 					if (!$result)
@@ -1521,7 +1557,7 @@ class Register extends SiteController
 			}
 
 			//check to see if we have a return param
-			$pReturn = base64_decode(urldecode($xprofile->getParam('return')));
+			$pReturn = base64_decode(urldecode($xprofile->getParam('return','')));
 			if (!$return && $pReturn)
 			{
 				$return = $pReturn;
@@ -1689,5 +1725,58 @@ class Register extends SiteController
 		}
 
 		return true;
+	}
+
+	/**
+	 * Perform querying of research organization id on ror.org
+	 * @param   string   $organization
+	 *
+	 * @return  string   organization id
+	 */
+	public function getOrganizationId($organization){
+		$org = trim($organization);
+		$orgQry = \Components\Members\Helpers\Utility::escapeSpecialChars($org);
+		
+		$verNum = \Component::params('com_members')->get('rorApiVersion');
+		
+		if (!empty($verNum))
+		{
+			$queryURL = "https://api.ror.org/$verNum/organizations?query.advanced=names.value:" . urlencode($orgQry);
+			
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $queryURL);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+			$result = curl_exec($ch);
+
+			if (!$result){
+				return false;
+			}
+
+			$info = curl_getinfo($ch);
+
+			$code = $info['http_code'];
+
+			if (($code != 201) && ($code != 200)){
+				return false;
+			}
+
+			$resultObj = json_decode($result);
+
+			foreach ($resultObj->items as $orgObj)
+			{
+				foreach ($orgObj->names as $nameObj)
+				{
+					if (strcmp($nameObj->value, $org) == 0)
+					{
+						curl_close($ch);
+						return $orgObj->id;
+					}
+				}
+			}
+			
+			curl_close($ch);
+			return "";
+		}
 	}
 }
