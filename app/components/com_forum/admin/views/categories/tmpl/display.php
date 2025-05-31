@@ -115,7 +115,10 @@ Toolbar::help('categories');
 	<table class="adminlist">
 		<thead>
 			<tr>
-				<th scope="col"><input type="checkbox" name="toggle" value="" class="checkbox-toggle toggle-all" /></th>
+				<th scope="col">
+					<input type="checkbox" name="checkall-toggle" id="checkall-toggle" value="" class="checkbox-toggle toggle-all" />
+					<label for="checkall-toggle" class="sr-only visually-hidden"><?php echo Lang::txt('JGLOBAL_CHECK_ALL'); ?></label>
+				</th>
 				<th scope="col" class="priority-5"><?php echo Html::grid('sort', 'COM_FORUM_COL_ID', 'id', @$this->filters['sort_Dir'], @$this->filters['sort']); ?></th>
 				<th scope="col"><?php echo Html::grid('sort', 'COM_FORUM_COL_TITLE', 'title', @$this->filters['sort_Dir'], @$this->filters['sort']); ?></th>
 				<th scope="col" class="priority-2"><?php echo Html::grid('sort', 'COM_FORUM_COL_STATE', 'state', @$this->filters['sort_Dir'], @$this->filters['sort']); ?></th>
@@ -161,6 +164,11 @@ Toolbar::help('categories');
 
 				switch ($row->access)
 				{
+					case 1:
+						$color_access = 'public';
+						$task_access  = '1';
+						$row->groupname = Lang::txt('COM_FORUM_ACCESS_PUBLIC');
+						break;
 					case 2:
 						$color_access = 'registered';
 						$task_access  = '2';
@@ -181,11 +189,10 @@ Toolbar::help('categories');
 						$task_access  = '5';
 						$row->groupname = Lang::txt('COM_FORUM_ACCESS_PRIVATE');
 						break;
-					case 1:
 					default:
-						$color_access = 'public';
-						$task_access  = '1';
-						$row->groupname = Lang::txt('COM_FORUM_ACCESS_PUBLIC');
+						$color_access = 'other';
+						$task_access  = (string) $row->access;
+						$row->groupname = Lang::txt('COM_FORUM_ACCESS_OTHER');
 						break;
 				}
 
@@ -195,6 +202,7 @@ Toolbar::help('categories');
 				<tr class="<?php echo "row$k" . ($row->state == 2 ? ' archived' : ''); ?>">
 					<td>
 						<input type="checkbox" name="id[]" id="cb<?php echo $i; ?>" value="<?php echo $row->id; ?>" class="checkbox-toggle" />
+						<label for="cb<?php echo $i; ?>" class="sr-only visually-hidden"><?php echo $row->id; ?></label>
 					</td>
 					<td class="priority-5">
 						<?php echo $row->id; ?>

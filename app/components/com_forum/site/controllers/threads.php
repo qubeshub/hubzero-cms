@@ -23,6 +23,7 @@ use Route;
 use User;
 use Lang;
 use App;
+use DOMDocument;
 
 /**
  * Forum controller class for threads
@@ -128,6 +129,7 @@ class Threads extends SiteController
 			'start'    => Request::getInt('limitstart', 0),
 			'section'  => Request::getCmd('section', ''),
 			'category' => Request::getCmd('category', ''),
+			'parent'   => Request::getInt('parent', ''),
 			'thread'   => Request::getInt('thread', 0),
 			'state'    => Post::STATE_PUBLISHED,
 			'access'   => User::getAuthorisedViewLevels()
@@ -165,7 +167,7 @@ class Threads extends SiteController
 		// Check logged in status
 		if (!in_array($thread->get('access'), User::getAuthorisedViewLevels()))
 		{
-			$return = base64_encode(Route::url('index.php?option=' . $this->_option . '&controller=' . $this->_controller . '&section=' . $this->view->filters['section'] . '&category=' . $this->view->filters['category'] . '&thread=' . $this->view->filters['parent'], false, true));
+			$return = base64_encode(Route::url('index.php?option=' . $this->_option . '&controller=' . $this->_controller . '&section=' . $filters['section'] . '&category=' . $filters['category'] . '&thread=' . $filters['parent'], false, true));
 			App::redirect(
 				Route::url('index.php?option=com_users&view=login&return=' . $return)
 			);
@@ -184,6 +186,16 @@ class Threads extends SiteController
 		// Set the pathway
 		$this->buildPathway($section, $category, $thread);
 
+		// Get all the likes of this thread
+		$db = \App::get('db');
+		$queryLikes = "SELECT LIKES.threadId as 'threadId', LIKES.postId as 'postId', 
+		  LIKES.userId as 'userId', USERS.name as 'userName', USERS.email as 'userEmail' 
+		  FROM jos_forum_posts_like as LIKES, jos_users AS USERS
+		  WHERE LIKES.userId = USERS.id AND LIKES.threadId = " . $thread->get('id');
+
+		$db->setQuery($queryLikes);
+		$initialLikesList = $db->loadObjectList();
+
 		// Output the view
 		$this->view
 			->set('config', $this->config)
@@ -192,6 +204,7 @@ class Threads extends SiteController
 			->set('category', $category)
 			->set('thread', $thread)
 			->set('filters', $filters)
+			->set('likes', $initialLikesList)
 			->setErrors($this->getErrors())
 			->display();
 	}
@@ -338,6 +351,18 @@ class Threads extends SiteController
 			$fields['modified_by'] = User::get('id');
 		}
 
+		// Extracting emails from the new post submitted
+		$domComment = new DOMDocument();
+		$domComment->loadHTML($fields['comment']);
+		$mentionEmailList = array();
+		foreach ($domComment->getElementsByTagName('a') as $item) {
+			$userId = $item->getAttribute('data-user-id');
+            $user = User::getInstance($userId);
+            $email = $user->get('email');
+
+            $mentionEmailList[] = $email;
+		}
+
 		// Authorization check
 		$this->_authorize($assetType, intval($fields['id']));
 
@@ -445,6 +470,21 @@ class Threads extends SiteController
 			}
 		}
 
+		// Email to Users that were mentioned in the post
+		if ($mentionEmailList) 
+		{
+			$comment = $fields['comment'];
+			$createdByUserId = $post->get('created_by');
+			$createdByUser = User::getInstance($createdByUserId);
+			$createdUserName = $createdByUser->get('name');
+
+			$urlExt = 'forum/' . $section . '/' . $category->get('alias') . '/' . $post->get('thread') . '#c' . $post->get('id');
+			$host = $_SERVER['HTTP_HOST'];
+			$externalUrl = 'https://' . $host . '/' . $urlExt;
+
+			$this->emailToAllMentionedUsers($mentionEmailList, $comment, $externalUrl, $createdUserName);
+		}
+
 		Event::trigger('system.logActivity', [
 			'activity' => [
 				'action'      => ($fields['id'] ? 'updated' : 'created'),
@@ -466,6 +506,51 @@ class Threads extends SiteController
 			$message,
 			'message'
 		);
+	}
+
+	/**
+	 * Email the mentioned user with a PHP mail template
+	 *
+	 * @return  void
+	 */
+	public function emailToAllMentionedUsers($emails, $comment, $url, $postAuthor) 
+	{
+		$from = array();
+		$from['name']  = Config::get('sitename') . ' ' . Lang::txt(strtoupper($this->_name));
+		$from['email'] = Config::get('mailfrom');
+
+		$subject = $postAuthor . " mentioned you on forum thread";
+
+		// BUILDING THE EMAIL TEMPLATE
+		$dirTemplate = dirname(dirname(__DIR__));
+		$eView = new \Hubzero\Mail\View(array(
+			'base_path' => $dirTemplate . DS . 'site',
+			'name'   => 'emails',
+			'layout' => 'mentions_html'
+		));
+
+		$eView->comment = $comment;
+		$eView->commentNoTags = strip_tags($comment);
+		$eView->postLink = $url;
+		$eView->postAuthor = $postAuthor;
+
+		$html = $eView->loadTemplate(false);
+		$html = str_replace("\n", "\r\n", $html);
+
+		// Create NEW message object and send
+		$message = new \Hubzero\Mail\Message();
+
+		$message->setSubject($subject)
+			->addFrom($from['email'], $from['name'])
+			->setTo($from['email'])
+			->setBcc($emails)
+			->addHeader('X-Mailer', 'PHP/' . phpversion())
+			->addHeader('X-Component', 'com_forum')
+			->addHeader('X-Component-Object', 'com_forum_mentions_email')
+			->addPart($html, 'text/html')
+			->send();
+
+		return true;
 	}
 
 	/**

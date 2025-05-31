@@ -8,7 +8,7 @@
 defined('_HZEXEC_') or die();
 
 $this->css()
-     ->js();
+	 ->js();
 
 $this->category->set('section_alias', $this->filters['section']);
 
@@ -56,17 +56,18 @@ $now = Date::of('now')->toSql();
 				}
 
 				$this->view('_list')
-				     ->set('option', $this->option)
-				     ->set('controller', $this->controller)
-				     ->set('comments', $posts)
-				     ->set('thread', $this->thread)
-				     ->set('parent', 0)
-				     ->set('config', $this->config)
-				     ->set('depth', 0)
-				     ->set('cls', 'odd')
-				     ->set('filters', $this->filters)
-				     ->set('category', $this->category)
-				     ->display();
+					 ->set('option', $this->option)
+					 ->set('controller', $this->controller)
+					 ->set('comments', $posts)
+					 ->set('thread', $this->thread)
+					 ->set('likes', $this->likes)
+					 ->set('parent', 0)
+					 ->set('config', $this->config)
+					 ->set('depth', 0)
+					 ->set('cls', 'odd')
+					 ->set('filters', $this->filters)
+					 ->set('category', $this->category)
+					 ->display();
 			}
 			else
 			{
@@ -117,11 +118,23 @@ $now = Date::of('now')->toSql();
 								</span>
 							</p>
 
-							<label for="fieldcomment">
-								<?php echo Lang::txt('COM_FORUM_FIELD_COMMENTS'); ?>
-								<?php
-								echo $this->editor('fields[comment]', '', 35, 15, 'fieldcomment', array('class' => 'minimal no-footer'));
-								?>
+							<label for="fieldcomment" id="addNewPostArea">
+								<div>
+									<?php echo Lang::txt('COM_FORUM_FIELD_COMMENTS'); ?>
+									<span class="note" style='float:right'>Use an @ sign to mention users in the post</span>
+								</div>
+								<?php echo $this->editor('fields[comment]', '', 35, 15, 'fieldcomment',
+										array(
+											'class' => 'minimal no-footer',
+											'mentions' => array(
+												array(
+													'minChars' => 0,
+													'feed' =>  '/api/members/mentions/list?search={encodedQuery}',
+													'itemTemplate' => '<li data-id="{id}"><img class="photo" src="{picture}" /><strong class="username">{username}</strong><span class="fullname">{name}</span></li>',
+													'outputTemplate' => '<a href="/members/{id}" data-user-id="{id}" target="_blank">@{username}</a>&nbsp;&nbsp;',
+												)
+											)
+										)); ?>
 							</label>
 
 							<label>
@@ -284,3 +297,4 @@ $now = Date::of('now')->toSql();
 		</aside><!-- / .aside -->
 	</div>
 </section><!-- / .below section -->
+
