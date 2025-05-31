@@ -10,6 +10,7 @@ namespace Qubeshub\Base;
 use Hubzero\Container\Container;
 use Hubzero\Error\Exception\NotAuthorizedException;
 use Hubzero\Error\Exception\NotFoundException;
+use Hubzero\Error\Exception\MethodNotAllowedException;
 use Hubzero\Error\Exception\RuntimeException;
 use Hubzero\Facades\Facade;
 use Hubzero\Http\RedirectResponse;
@@ -39,11 +40,22 @@ class Application extends Container
 	protected $booted = false;
 
 	/**
+	 * Indicates if the application has "loaded".
+	 *
+	 * @var  boolean
+	 */
+	protected $loaded = false;
+
+	/**
 	 * All of the registered service providers.
 	 *
 	 * @var  array
 	 */
 	protected $serviceProviders = array();
+
+	protected $startms = 0;
+
+	protected $endms = 0;
 
 	/**
 	 * Create a new application instance.
@@ -52,12 +64,31 @@ class Application extends Container
 	 * @param   object  $response  Response object
 	 * @return  void
 	 */
-	public function __construct(Request $request = null, Response $response = null)
+	public function __construct($client = '', Request $request = null, Response $response = null)
 	{
+		$this->startms = microtime(true);
+
+		// Work around for issues with SCRIPT_NAME and PHP_SELF set incorrectly by php-fpm
+		// GH-12996 https://github.com/php/php-src/issues/12996 fixed in 8.2.16
+		// GH-10869 https://github.com/php/php-src/issues/10869 fixed in 8.1.18
+		// Don't overrite ORIG_SCRIPT_NAME if already set (e.g. between above versions)
+
+		if (PHP_VERSION_ID < 80216 && isset($_SERVER['PATH_INFO']) && strpos($_SERVER['PATH_INFO'], '%') !== false)
+		{
+			if (!isset($_SERVER['ORIG_SCRIPT_NAME']))
+			{
+				$_SERVER['ORIG_SCRIPT_NAME'] = $_SERVER['SCRIPT_NAME'];
+			}
+
+			$_SERVER['SCRIPT_NAME'] = str_replace(rawurldecode($_SERVER['PATH_INFO']), '', $_SERVER['SCRIPT_NAME']);
+			$_SERVER['PHP_SELF'] = str_replace(rawurldecode($_SERVER['PATH_INFO']), '', $_SERVER['PHP_SELF']);
+		}
+
 		parent::__construct();
 
 		$this['request']  = ($request  ?: Request::createFromGlobals());
 		$this['response'] = ($response ?: new Response());
+		$this['app'] = $this;
 	}
 
 	/**
@@ -265,6 +296,10 @@ class Application extends Container
 	{
 		switch ($code)
 		{
+			case 405:
+				throw new MethodNotAllowedException($message, $code);
+			break;
+
 			case 404:
 				throw new NotFoundException($message, $code);
 			break;
@@ -323,6 +358,65 @@ class Application extends Container
 		return md5($this['config']->get('secret') . $seed);
 	}
 
+	public function load($client = null, $environments = null)
+	{
+		if ($this->loaded)
+		{
+			return;
+		}
+
+		if ($client == null)
+		{
+			if ($environments == null)
+			{
+				$environments = array(
+					'administrator' => 'administrator',
+					'api'           => 'api',
+					'cli'           => 'cli',
+					'install'       => 'install',
+					'files'         => 'files',
+				);
+			}
+
+			$this->detectClient($environments);
+		}
+		else
+		{
+			$this['client'] = ClientManager::client($client, true);
+		}
+
+		$client = $this['client']->name;
+
+		$this['config'] = new \Hubzero\Config\Repository($client);
+
+		$providers = PATH_CORE . '/bootstrap/' . $client . '/services.php';
+		$services  = file_exists($providers) ? require $providers : array();
+
+		$providers = PATH_CORE . '/bootstrap/' . ucfirst($client) . '/services.php';
+		$services  = file_exists($providers) ? array_merge($services, require $providers) : $services;
+
+		$providers = PATH_APP . '/bootstrap/' . $client . '/services.php';
+		$services  = file_exists($providers) ? array_merge($services, require $providers) : $services;
+
+		foreach ($services as $service)
+		{
+			$this->register($service);
+		}
+
+		$facades = PATH_CORE . '/bootstrap/' . $client . '/aliases.php';
+		$aliases = file_exists($facades) ? require $facades : array();
+
+		$facades = PATH_CORE . '/bootstrap/' . ucfirst($client) . '/aliases.php';
+		$aliases = file_exists($facades) ? array_merge($aliases, require $facades) : $aliases;
+
+		$facades = PATH_APP . '/bootstrap/' . $client . '/aliases.php';
+		$aliases = file_exists($facades) ? array_merge($aliases, require $facades) : $aliases;
+
+		$this->registerFacades($aliases);
+
+		$this->loaded = true;
+	}
+
 	/**
 	 * Boot the application's service providers.
 	 *
@@ -334,6 +428,8 @@ class Application extends Container
 		{
 			return;
 		}
+
+		$this->load();
 
 		array_walk($this->serviceProviders, function($p)
 		{
@@ -389,6 +485,12 @@ class Application extends Container
 	 */
 	public function run()
 	{
+		// Boot the application
+		//
+		// This allows service providers to finish performing any
+		// needed setup.
+		$this->boot();
+
 		// Start handling errors before doing anything else
 		if ($this->has('error'))
 		{
@@ -400,12 +502,6 @@ class Application extends Container
 				}
 			});
 		}
-
-		// Boot the application
-		//
-		// This allows service providers to finish performing any
-		// needed setup.
-		$this->boot();
 
 		// Initialise
 		if (!$this->runningInConsole() && $this->has('dispatcher'))
@@ -431,4 +527,51 @@ class Application extends Container
 				$response->send();
 			});
 	}
+
+	public function __destruct()
+	{
+		ignore_user_abort(true);
+
+		session_write_close();
+
+		while(ob_get_level())
+			ob_end_flush();
+
+		flush();
+
+		fastcgi_finish_request();
+
+		$this->endms = microtime(true);
+
+		if ( function_exists("apcu_enabled") && apcu_enabled())
+		{
+			$time = (int) $this->startms;
+			$ms = $this->endms - $this->startms;
+
+			// The following is subject to race conditions, restarts, maybe garbage collection
+			// and other vagaries of the APCu cache.  This data is intended as an
+			// estimate so being exact really should not matter.
+
+			$new_sec_count = (float) apcu_inc($time, 1, $success, 61);
+			$old_sec_avg = (float) apcu_fetch('avg'.$time, $success);
+			$new_sec_avg = ((($new_sec_count - 1) * $old_sec_avg) + $ms)/$new_sec_count;
+			$sec_avg = (float) apcu_store('avg'.$time, $new_sec_avg, 61);
+
+			$new_min_count = (float) apcu_inc(intdiv($time,60), 1, $success, 3601);
+			$old_min_avg = (float) apcu_fetch('avg'.intdiv($time,60), $success);
+			$new_min_avg = ((($new_min_count - 1) * $old_min_avg) + $ms)/$new_min_count;
+			$min_avg = (float) apcu_store('avg'.intdiv($time,60), $new_min_avg, 3601);
+
+			$new_hour_count = (float) apcu_inc(intdiv($time,3600), 1, $success, 86401);
+			$old_hour_avg = (float) apcu_fetch('avg'.intdiv($time,3600), $success);
+			$new_hour_avg = ((($new_hour_count - 1) * $old_hour_avg) + $ms)/$new_hour_count;
+			$hour_avg = (float) apcu_store('avg'.intdiv($time,3600), $new_hour_avg, 86401);
+
+			$new_day_count = (float) apcu_inc(intdiv($time,86400), 1, $success, 2678401);
+			$old_day_avg = (float)  apcu_fetch('avg'.intdiv($time,86400), $success);
+			$new_day_avg = ((($new_day_count - 1) * $old_day_avg) + $ms)/$new_day_count;
+			$day_avg = (float) apcu_store('avg'.intdiv($time,86400), $new_day_avg, 2678401);
+		}
+	}
+
 }

@@ -84,12 +84,12 @@ abstract class Model extends Obj
 			$cls = $this->_tbl_name;
 			$this->_tbl = new $cls($this->_db);
 
-			if (!($this->_tbl instanceof \JTable) && !($this->_tbl instanceof \Hubzero\Database\Table))
+			if (!($this->_tbl instanceof \Hubzero\Database\Table))
 			{
 				$this->_logError(
-					__CLASS__ . '::' . __FUNCTION__ . '(); ' . \Lang::txt('Table class must be an instance of JTable.')
+					__CLASS__ . '::' . __FUNCTION__ . '(); ' . \Lang::txt('Table class must be an instance of Table.')
 				);
-				throw new \LogicException(\Lang::txt('Table class must be an instance of JTable.'));
+				throw new \LogicException(\Lang::txt('Table class must be an instance of Table.'));
 			}
 
 			if (is_numeric($oid) || is_string($oid))
@@ -348,7 +348,7 @@ abstract class Model extends Obj
 	 * @param   string  $message  Message to log
 	 * @return  void
 	 */
-	protected function _log($type='error', $message)
+	protected function _log($type, $message)
 	{
 		if (!$message)
 		{
@@ -357,7 +357,7 @@ abstract class Model extends Obj
 
 		if (\App::get('config')->get('debug'))
 		{
-			$message = '[' . \App::get('request')->getVar('REQUEST_URI', '', 'server') . '] [' . $message . ']';
+			$message = '[' . Request::getVar('REQUEST_URI', '', 'server') . '] [' . $message . ']';
 		}
 
 		$type = strtolower($type);

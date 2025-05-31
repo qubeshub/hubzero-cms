@@ -7,11 +7,3 @@
 
 namespace Qubeshub\Base;
 
-/**
- * Legacy class
- *
- * 'Object' is a reserved word in PHP 7
- */
-class Object extends Obj
-{
-}
