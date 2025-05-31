@@ -34,18 +34,18 @@ $this->js('edit.js');
 
 				<div class="input-wrap">
 					<label for="field-title"><?php echo Lang::txt('COM_EVENTS_TITLE'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span></label>
-					<input type="text" name="fields[title]" id="field-title" class="required" value="<?php echo $this->escape(stripslashes($this->page->title)); ?>" />
+					<input type="text" name="fields[title]" id="field-title" class="required" value="<?php echo $this->escape(stripslashes($this->page->title == null ? '' : $this->page->title)); ?>" />
 				</div>
 
 				<div class="input-wrap" data-hint="<?php echo Lang::txt('COM_EVENTS_ALIAS_HINT'); ?>">
 					<label for="field-alias"><?php echo Lang::txt('COM_EVENTS_ALIAS'); ?>:</label>
-					<input type="text" name="fields[alias]" id="field-alias" value="<?php echo $this->escape(stripslashes($this->page->alias)); ?>" />
+					<input type="text" name="fields[alias]" id="field-alias" value="<?php echo $this->escape(stripslashes($this->page->alias == null ? '' : $this->page->alias)); ?>" />
 					<span class="hint"><?php echo Lang::txt('COM_EVENTS_ALIAS_HINT'); ?></span>
 				</div>
 
 				<div class="input-wrap">
 					<label for="field-pagetext"><?php echo Lang::txt('COM_EVENTS_PAGE_TEXT'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span></label>
-					<?php echo $this->editor('fields[pagetext]', $this->escape(stripslashes($this->page->pagetext)), 40, 20, 'field-pagetext', array('class' => 'required')); ?>
+					<?php echo $this->editor('fields[pagetext]', $this->escape(stripslashes($this->page->pagetext == null ? '' : $this->page->pagetext)), 40, 20, 'field-pagetext', array('class' => 'required')); ?>
 				</div>
 			</fieldset>
 		</div>

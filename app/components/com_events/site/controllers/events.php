@@ -58,6 +58,8 @@ class Events extends SiteController
 			Request::setVar('task', $this->config->getCfg('startview', 'month'));
 		}
 
+		$this->_task = strtolower(Request::getCmd('task', Request::getWord('layout', '')));
+
 		$this->registerTask('__default', $this->_task);
 		$this->registerTask('register', 'eventregister');
 		$this->registerTask('add', 'edit');
@@ -345,18 +347,20 @@ class Events extends SiteController
 
 		// Output HMTL
 		$this->view->setLayout('year')->setName('browse');
-		$this->view->option = $this->_option;
-		$this->view->title = $this->_title;
-		$this->view->task = $this->_task;
-		$this->view->year = $year;
-		$this->view->month = $month;
-		$this->view->day = $day;
-		$this->view->rows = $rows;
-		$this->view->authorized = $authorized;
-		$this->view->fields = $this->config->getCfg('fields');
-		$this->view->category = $this->category;
-		$this->view->categories = $categories;
-		$this->view->offset = $offset;
+		$this->view->setProperties(array(
+			'option' => $this->_option,
+			'title' => $this->_title,
+			'task' => $this->_task,
+			'year' => $year,
+			'month' => $month,
+			'day' => $day,
+			'rows' => $rows,
+			'authorized' => $authorized,
+			'fields' => $this->config->getCfg('fields'),
+			'category' => $this->category,
+			'categories' => $categories,
+			'offset' => $offset,
+		));
 
 		foreach ($this->getErrors() as $error)
 		{
@@ -421,18 +425,20 @@ class Events extends SiteController
 
 		// Output HTML
 		$this->view->setLayout('month')->setName('browse');
-		$this->view->option = $this->_option;
-		$this->view->title = $this->_title;
-		$this->view->task = $this->_task;
-		$this->view->year = $year;
-		$this->view->month = $month;
-		$this->view->day = $day;
-		$this->view->rows = $rows;
-		$this->view->authorized = $authorized;
-		$this->view->fields = $this->config->getCfg('fields');
-		$this->view->category = $this->category;
-		$this->view->categories = $categories;
-		$this->view->offset = $offset;
+		$this->view->setProperties(array(
+			'option' => $this->_option,
+			'title' => $this->_title,
+			'task' => $this->_task,
+			'year' => $year,
+			'month' => $month,
+			'day' => $day,
+			'rows' => $rows,
+			'authorized' => $authorized,
+			'fields' => $this->config->getCfg('fields'),
+			'category' => $this->category,
+			'categories' => $categories,
+			'offset' => $offset,
+		));
 
 		foreach ($this->getErrors() as $error)
 		{
@@ -456,7 +462,7 @@ class Events extends SiteController
 		$month  = intval($this->month);
 		$day    = intval($this->day);
 
-		$startday = _CAL_CONF_STARDAY;
+		$startday = intval(_CAL_CONF_STARDAY);
 		$numday = ((date("w", mktime(0, 0, 0, $month, $day, $year)) - $startday) % 7);
 		if ($numday == -1)
 		{
@@ -465,7 +471,7 @@ class Events extends SiteController
 		$week_start = mktime(0, 0, 0, $month, ($day - $numday), $year);
 
 		$this_date = new EventsDate();
-		$this_date->setDate(strftime("%Y", $week_start), strftime("%m", $week_start), strftime("%d", $week_start));
+		$this_date->setDate(date("Y", $week_start), date("m", $week_start), date("d", $week_start));
 		$this_enddate = clone($this_date);
 		$this_enddate->addDays(+6);
 
@@ -527,21 +533,23 @@ class Events extends SiteController
 
 		// Output HTML;
 		$this->view->setLayout('week')->setName('browse');
-		$this->view->option = $this->_option;
-		$this->view->title = $this->_title;
-		$this->view->task = $this->_task;
-		$this->view->year = $year;
-		$this->view->month = $month;
-		$this->view->day = $day;
-		$this->view->rows = $rows;
-		$this->view->authorized = $authorized;
-		$this->view->fields = $this->config->getCfg('fields');
-		$this->view->category = $this->category;
-		$this->view->categories = $categories;
-		$this->view->offset = $offset;
-		$this->view->startdate = $sdt;
-		$this->view->enddate = $edt;
-		$this->view->week = $week;
+		$this->view->setProperties(array(
+			'option' => $this->_option,
+			'title' => $this->_title,
+			'task' => $this->_task,
+			'year' => $year,
+			'month' => $month,
+			'day' => $day,
+			'rows' => $rows,
+			'authorized' => $authorized,
+			'fields' => $this->config->getCfg('fields'),
+			'category' => $this->category,
+			'categories' => $categories,
+			'offset' => $offset,
+			'startdate' => $sdt,
+			'enddate' => $edt,
+			'week' => $week,
+		));
 
 		foreach ($this->getErrors() as $error)
 		{
@@ -618,18 +626,20 @@ class Events extends SiteController
 
 		// Output HTML
 		$this->view->setLayout('day')->setName('browse');
-		$this->view->option = $this->_option;
-		$this->view->title = $this->_title;
-		$this->view->task = $this->_task;
-		$this->view->year = $year;
-		$this->view->month = $month;
-		$this->view->day = $day;
-		$this->view->rows = $events;
-		$this->view->authorized = $authorized;
-		$this->view->fields = $this->config->getCfg('fields');
-		$this->view->category = $this->category;
-		$this->view->categories = $categories;
-		$this->view->offset = $offset;
+		$this->view->setProperties(array(
+			'option' => $this->_option,
+			'title' => $this->_title,
+			'task' => $this->_task,
+			'year' => $year,
+			'month' => $month,
+			'day' => $day,
+			'rows' => $events,
+			'authorized' => $authorized,
+			'fields' => $this->config->getCfg('fields'),
+			'category' => $this->category,
+			'categories' => $categories,
+			'offset' => $offset,
+		));
 
 		foreach ($this->getErrors() as $error)
 		{
@@ -733,12 +743,12 @@ class Events extends SiteController
 			for ($i=0, $n=count($fields); $i < $n; $i++)
 			{
 				// Explore the text and pull out all matches
-				array_push($fields[$i], self::parseTag($row->content, $fields[$i][0]));
+				array_push($fields[$i], self::parseTag($row->content == null ? '' : $row->content, $fields[$i][0]));
 
 				// Clean the original text of any matches
-				$row->content = str_replace('<ef:' . $fields[$i][0] . '>' . end($fields[$i]) . '</ef:' . $fields[$i][0] . '>', '', $row->content);
+				$row->content = str_replace('<ef:' . $fields[$i][0] . '>' . end($fields[$i]) . '</ef:' . $fields[$i][0] . '>', '', $row->content == null ? '' : $row->content);
 			}
-			$row->content = trim($row->content);
+			$row->content = trim($row->content == null ? '' : $row->content);
 		}
 
 		$bits = explode('-', $row->publish_up);
@@ -811,7 +821,7 @@ class Events extends SiteController
 		if ($alias)
 		{
 			Pathway::append(
-				stripslashes($page->title),
+				stripslashes($page->title == null ? '' : $page->title),
 				'index.php?option=' . $this->_option . '&task=details&id=' . $row->id . '&page=' . $page->alias
 			);
 		}
@@ -822,22 +832,24 @@ class Events extends SiteController
 		{
 			$this->view->setLayout('modal');
 		}
-		$this->view->option = $this->_option;
-		$this->view->title = Lang::txt(strtoupper($this->_name)) . ': ' . Lang::txt(strtoupper($this->_name) . '_' . strtoupper($this->_task));
-		$this->view->task = $this->_task;
-		$this->view->year = $eyear;
-		$this->view->month = $emonth;
-		$this->view->day = $eday;
-		$this->view->row = $row;
-		$this->view->authorized = $authorized;
-		$this->view->fields = $fields;
-		$this->view->config = $this->config;
-		$this->view->categories = $categories;
-		$this->view->offset = $offset;
-		$this->view->tags = $tags;
-		$this->view->auth = $auth;
-		$this->view->page = $page;
-		$this->view->pages = $pages;
+		$this->view->setProperties(array(
+			'option' => $this->_option,
+			'title' => Lang::txt(strtoupper($this->_name)) . ': ' . Lang::txt(strtoupper($this->_name) . '_' . strtoupper($this->_task)),
+			'task' => $this->_task,
+			'year' => $eyear,
+			'month' => $emonth,
+			'day' => $eday,
+			'row' => $row,
+			'authorized' => $authorized,
+			'fields' => $fields,
+			'config' => $this->config,
+			'categories' => $categories,
+			'offset' => $offset,
+			'tags' => $tags,
+			'auth' => $auth,
+			'page' => $page,
+			'pages' => $pages,
+		));
 
 		foreach ($this->getErrors() as $error)
 		{
@@ -984,45 +996,48 @@ class Events extends SiteController
 				{
 					// Instantiate a view
 					$this->view->setLayout('default');
-					$this->view->state = 'open';
+					$this->view->set('state', 'open');
 				}
 				else
 				{
 					// Instantiate a view
 					$this->view->setLayout('restricted');
-					$this->view->state = 'restricted';
+					$this->view->set('state', 'restricted');
 				}
 			}
 			else
 			{
 				// Instantiate a view
 				$this->view->setLayout('default');
-				$this->view->state = 'open';
+				$this->view->set('state', 'open');
 			}
 		}
 		else
 		{
 			// Instantiate a view
 			$this->view->setLayout('closed');
-			$this->view->state = 'closed';
+			$this->view->set('state', 'closed');
 		}
 
 		// Output HTML
 		$this->view->setName('register');
-		$this->view->option = $this->_option;
-		$this->view->title = Lang::txt(strtoupper($this->_name)) . ': ' . Lang::txt('EVENTS_REGISTER');
-		$this->view->task = $this->_task;
-		$this->view->year = $year;
-		$this->view->month = $month;
-		$this->view->day = $day;
-		$this->view->offset = $offset;
-		$this->view->event = $event;
-		$this->view->authorized = $auth;
-		$this->view->page = $page;
-		$this->view->pages = $pages;
-		$this->view->register = $register;
-		$this->view->arrival = null;
-		$this->view->departure = null;
+		$this->view->setProperties(array(
+			'option' => $this->_option,
+			'title' => Lang::txt(strtoupper($this->_name)) . ': ' . Lang::txt('EVENTS_REGISTER'),
+			'task' => $this->_task,
+			'year' => $year,
+			'month' => $month,
+			'day' => $day,
+			'offset' => $offset,
+			'event' => $event,
+			'authorized' => $auth,
+			'page' => $page,
+			'pages' => $pages,
+			'register' => $register,
+			'arrival' => null,
+			'departure' => null,
+		));
+
 
 		foreach ($this->getErrors() as $error)
 		{
@@ -1167,7 +1182,7 @@ class Events extends SiteController
 			);
 
 			$eview = new \Hubzero\Component\View(array('name'=>'register','layout'=>'email'));
-			$eview->option = $this->_option;
+			$eview->set('option', $this->_option);
 			$eview->sitename = Config::get('sitename');
 			$eview->register = $register;
 			$eview->race = $race;
@@ -1225,21 +1240,23 @@ class Events extends SiteController
 			$this->view->setLayout('default');
 		}
 		$this->view->setName('register');
-		$this->view->state = 'open';
-		$this->view->option = $this->_option;
-		$this->view->title = Lang::txt(strtoupper($this->_name)) . ': ' . Lang::txt('EVENTS_REGISTER');
-		$this->view->task = $this->_task;
-		$this->view->year = $year;
-		$this->view->month = $month;
-		$this->view->day = $day;
-		$this->view->offset = $offset;
-		$this->view->event = $event;
-		$this->view->authorized = $auth;
-		$this->view->page = $page;
-		$this->view->pages = $pages;
-		$this->view->register = $register;
-		$this->view->arrival = $arrival;
-		$this->view->departure = $departure;
+		$this->view->setProperties(array(
+			'state' => 'open',
+			'option' => $this->_option,
+			'title' => Lang::txt(strtoupper($this->_name)) . ': ' . Lang::txt('EVENTS_REGISTER'),
+			'task' => $this->_task,
+			'year' => $year,
+			'month' => $month,
+			'day' => $day,
+			'offset' => $offset,
+			'event' => $event,
+			'authorized' => $auth,
+			'page' => $page,
+			'pages' => $pages,
+			'register' => $register,
+			'arrival' => $arrival,
+			'departure' => $departure,
+		));
 		if ($this->getError())
 		{
 			$this->view->setError($this->getError());
@@ -1320,7 +1337,7 @@ class Events extends SiteController
 					break;
 				case 'dinner':
 					$dinner = Request::getString('dinner', null, 'post');
-					$rv[] = is_null($dinner) ? 'null' : $dinner ? '1' : '0';
+					$rv[] = is_null($dinner) ? 'null' : ($dinner ? '1' : '0');
 					break;
 				case 'dietary':
 					$rv[] = (($dietary = Request::getArray('dietary', null, 'post')))
@@ -1342,7 +1359,7 @@ class Events extends SiteController
 					break;
 			}
 		}
-		return implode($rv, ',');
+		return implode(',', $rv);
 	}
 
 	/**
@@ -1432,8 +1449,8 @@ class Events extends SiteController
 			$end_time = Date::of($row->publish_down, $time_zone)->format('H:i', true);
 
 
-			$registerby_date = Date::of($row->registerby, $time_zone)->format('Y-m-d', true);
-			$registerby_time = Date::of($row->registerby, $time_zone)->format('H:i', true);
+			$registerby_date = Date::of($row->registerby == null ? '' : $row->registerby, $time_zone)->format('Y-m-d', true);
+			$registerby_time = Date::of($row->registerby == null ? '' : $row->registerby, $time_zone)->format('H:i', true);
 
 			$arr = array(
 				\Html::select('option', 0, strtolower(Lang::txt('EVENTS_NO')), 'value', 'text'),
@@ -1444,6 +1461,7 @@ class Events extends SiteController
 		}
 		else
 		{
+			// No ID - we're creating a new event
 			if ($row->publish_up && $row->publish_up != '0000-00-00 00:00:00')
 			{
 				$event_up = new EventsDate($row->publish_up);
@@ -1456,13 +1474,12 @@ class Events extends SiteController
 
 				$time_zone = $row->time_zone;
 
-				$event_registerby = new EventsDate($row->registerby);
+				$event_registerby = new EventsDate($row->registerby == null ? '' : $row->registerby);
 				$registerby_date = sprintf("%4d-%02d-%02d", $event_registerby->year, $event_registerby->month, $event_registerby->day);
 				$registerby_time = $event_registerby->hour . ':' . $event_registerby->minute;
 			}
 			else
 			{
-				// No ID - we're creating a new event
 				$year  = $this->year;
 				$month = $this->month;
 				$day   = $this->day;
@@ -1477,9 +1494,9 @@ class Events extends SiteController
 				{
 					$offset = $this->offset;
 
-					$start_publish = strftime("%Y-%m-%d", time()+($offset*60*60)); //date("Y-m-d");
-					$stop_publish = strftime("%Y-%m-%d", time()+($offset*60*60));  //date("Y-m-d");
-					$registerby_date = strftime("%Y-%m-%d", time()+($offset*60*60));  //date("Y-m-d");
+					$start_publish = date("Y-m-d", time()+($offset*60*60)); //date("Y-m-d");
+					$stop_publish = date("Y-m-d", time()+($offset*60*60));  //date("Y-m-d");
+					$registerby_date = date("Y-m-d", time()+($offset*60*60));  //date("Y-m-d");
 				}
 
 				$start_time = "08:00";
@@ -1502,12 +1519,12 @@ class Events extends SiteController
 			for ($i=0, $n=count($fields); $i < $n; $i++)
 			{
 				// Explore the text and pull out all matches
-				array_push($fields[$i], self::parseTag($row->content, $fields[$i][0]));
+				array_push($fields[$i], self::parseTag($row->content == null ? '' : $row->content, $fields[$i][0]));
 
 				// Clean the original text of any matches
-				$row->content = str_replace('<ef:' . $fields[$i][0] . '>' . end($fields[$i]) . '</ef:' . $fields[$i][0] . '>', '', $row->content);
+				$row->content = str_replace('<ef:' . $fields[$i][0] . '>' . end($fields[$i]) . '</ef:' . $fields[$i][0] . '>', '', $row->content == null ? '' : $row->content);
 			}
-			$row->content = trim($row->content);
+			$row->content = trim($row->content == null ? '' : $row->content);
 		}
 
 		list($start_hrs, $start_mins) = explode(':', $start_time);
@@ -1744,7 +1761,7 @@ class Events extends SiteController
 			'name'   => 'emails',
 			'layout' => 'deleted'
 		));
-		$eview->option = $this->_option;
+		$eview->set('option', $this->_option);
 		$eview->sitename = Config::get('sitename');
 		$eview->user = User::getInstance();
 		$eview->event = $event;
@@ -1801,7 +1818,7 @@ class Events extends SiteController
 			$state = 'edit';
 
 			// Existing - update modified info
-			$row->modified = strftime("%Y-%m-%d %H:%M:%S", time()+($offset*60*60));
+			$row->modified = date("Y-m-d h:i:s", time()+($offset*60*60));
 			if (User::get('id'))
 			{
 				$row->modified_by = User::get('id');
@@ -1809,10 +1826,11 @@ class Events extends SiteController
 		}
 		else
 		{
+			$row->id = null;
 			$state = 'add';
 
 			// New - set created info
-			$row->created = strftime("%Y-%m-%d %H:%M:%S", time()+($offset*60*60));
+			$row->created = date("Y-m-d h:i:s", time()+($offset*60*60));
 			if (User::get('id'))
 			{
 				$row->created_by = User::get('id');
@@ -1828,7 +1846,7 @@ class Events extends SiteController
 		//$row->title = htmlentities($row->title);
 
 		$row->content = $_POST['econtent'];
-		$row->content = \Hubzero\Utility\Sanitize::clean($row->content);
+		$row->content = \Hubzero\Utility\Sanitize::clean($row->content == null ? '' : $row->content);
 
 		// Get the custom fields defined in the events configuration
 		if (isset($_POST['fields']))
@@ -1971,7 +1989,7 @@ class Events extends SiteController
 				$tz = 'Pacific/Kiritimati';
 				break;
 			default:
-				$tz = timezone_name_from_abbr('', $row->time_zone * 3600, null);
+				$tz = timezone_name_from_abbr('', $row->time_zone * 3600, -1);
 		}
 
 		// create publish up date time string
@@ -2057,7 +2075,7 @@ class Events extends SiteController
 
 			$eview = new View(array('name'=>'emails','layout'=>'edited'));
 		}
-		$eview->option = $this->_option;
+		$eview->set('option', $this->_option);
 		$eview->sitename = Config::get('sitename');
 		$eview->user = User::getInstance();
 		$eview->row = $row;

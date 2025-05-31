@@ -29,8 +29,10 @@ class Events extends AdminController
 	 */
 	public function execute()
 	{
-		$this->config = new Configs($this->database);
-		$this->config->load();
+		$config = new Configs($this->database);
+		$config->load();
+
+		$this->config = $config;
 
 		$tables = $this->database->getTableList();
 		$table = $this->database->getPrefix() . 'events_respondent_race_rel';
@@ -51,12 +53,12 @@ class Events extends AdminController
 		/**
 		 * Start day
 		 */
-		define('_CAL_CONF_STARDAY', $this->config->getCfg('starday'));
+		define('_CAL_CONF_STARDAY', $config->getCfg('starday'));
 
 		/**
 		 * Nav bar color
 		 */
-		define('_CAL_CONF_DEFCOLOR', $this->config->getCfg('navbarcolor'));
+		define('_CAL_CONF_DEFCOLOR', $config->getCfg('navbarcolor'));
 
 		parent::execute();
 	}
@@ -235,6 +237,11 @@ class Events extends AdminController
 		{
 			$this->view->row->state = 0;
 			$this->view->row->time_zone = -5;
+			$this->view->row->content = '';
+			$this->view->row->title = '';
+			$this->view->row->adresse_info = '';
+			$this->view->row->contact_info = '';
+			$this->view->row->extra_info = '';
 			$start_publish = Date::format('Y-m-d');
 			$stop_publish = Date::format('Y-m-d');
 			$start_time = "08:00";

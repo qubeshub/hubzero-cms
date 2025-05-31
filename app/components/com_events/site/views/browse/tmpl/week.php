@@ -39,9 +39,9 @@ $this->css();
 		<?php
 			foreach ($this->rows as $rows)
 			{
-				if ($rows['week']['month'] == strftime( "%m", time()+($this->offset*60*60) )
-				 && $rows['week']['year'] == strftime( "%Y", time()+($this->offset*60*60) )
-				 && $rows['week']['day'] == strftime( "%d", time()+($this->offset*60*60) )) {
+				if ($rows['week']['month'] == date("m", time()+($this->offset*60*60) )
+				 && $rows['week']['year'] == date("Y", time()+($this->offset*60*60) )
+				 && $rows['week']['day'] == date("d", time()+($this->offset*60*60) )) {
 					$cls = ' class="today"';
 				} else {
 					$cls = '';
@@ -104,21 +104,23 @@ $this->css();
 			<form action="<?php echo Route::url('index.php?option='.$this->option.'&year='.$this->year.'&month='.$this->month.'&day='.$this->day.'&task=week'); ?>" method="get" id="event-categories">
 				<fieldset>
 					<label for="event-cateogry"><?php echo Lang::txt('EVENTS_CAL_LANG_EVENT_CATEGORY'); ?></label>
-					<select name="category" id="event-cateogry">
-						<option value=""><?php echo Lang::txt('EVENTS_ALL_CATEGORIES'); ?></option>
-					<?php
-					if ($this->categories)
-					{
-						foreach ($this->categories as $id => $title)
-						{
-						?>
-							<option value="<?php echo $id; ?>"<?php if ($this->category == $id) { echo ' selected="selected"'; } ?>><?php echo stripslashes($title); ?></option>
+					<div class="hz-input-combo">
+						<select name="category" id="event-cateogry">
+							<option value=""><?php echo Lang::txt('EVENTS_ALL_CATEGORIES'); ?></option>
 						<?php
+						if ($this->categories)
+						{
+							foreach ($this->categories as $id => $title)
+							{
+							?>
+								<option value="<?php echo $id; ?>"<?php if ($this->category == $id) { echo ' selected="selected"'; } ?>><?php echo stripslashes($title); ?></option>
+							<?php
+							}
 						}
-					}
-					?>
-					</select>
-					<input type="submit" value="<?php echo Lang::txt('EVENTS_GO'); ?>" />
+						?>
+						</select>
+						<input type="submit" value="<?php echo Lang::txt('EVENTS_GO'); ?>" />
+					</div>
 				</fieldset>
 			</form>
 
@@ -139,8 +141,8 @@ $this->css();
 									AND `approved`=1";
 					$database->setQuery($sql);
 					$rows = $database->loadObjectList();
-					$first_event_time = new DateTime($rows[0]->min);
-					$last_event_time = new DateTime($rows[0]->max);
+					$first_event_time = new DateTime($rows[0]->min == null ? '' : $rows[0]->min);
+					$last_event_time = new DateTime($rows[0]->max == null ? '' : $rows[0]->max);
 					$this_datetime = new DateTime($this->year . '-' . '01-01');
 					//get a DateTime for the first day of the year and check if there's an event earlier
 					if ($this_datetime > $first_event_time) {
