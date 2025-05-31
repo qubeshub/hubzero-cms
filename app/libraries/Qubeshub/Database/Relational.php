@@ -9,7 +9,6 @@ namespace Qubeshub\Database;
 
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Database' . DS . 'Traits' . DS . 'ErrorBag.php';
 require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Database' . DS . 'Rows.php';
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Database' . DS . 'Rules.php';
 
 use Hubzero\Database\Relationship\BelongsToOne;
 use Hubzero\Database\Relationship\OneToMany;
@@ -22,6 +21,7 @@ use Hubzero\Database\Relationship\ManyShiftsToMany;
 use Hubzero\Error\Exception\BadMethodCallException;
 use Hubzero\Error\Exception\RuntimeException;
 use Hubzero\Utility\Date;
+use Closure;
 
 /**
  * Database ORM base class
@@ -31,6 +31,8 @@ use Hubzero\Utility\Date;
  * @uses  \Hubzero\Error\Exception\BadMethodCallException  to handle calls to undefined methods
  * @uses  \Hubzero\Error\Exception\RuntimeException        to handle scenarios with undefined rows
  */
+
+/** @phpstan-consistent-constructor */
 class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 {
 	/*
@@ -92,7 +94,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 *
 	 * @var  \Hubzero\Database\Driver|object
 	 **/
-	private $connection = null;
+	public $connection = null;
 
 	/**
 	 * Whether or not we're caching query results
@@ -125,7 +127,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	/**
 	 * The includes set on the model for eager loading
 	 *
-	 * @var  string
+	 * @var  array
 	 **/
 	private $includes = [];
 
@@ -258,6 +260,13 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * @var  array
 	 **/
 	private static $classMethods = [];
+
+	/**
+	 * Table schema cache
+	 *
+	 * @var array
+	 */
+	public static $columns = [];
 
 	/**
 	 * Constructs an object instance
@@ -435,11 +444,22 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	}
 
 	/**
+	 * Check if attributes (i.e. field) on the model is set
+	 *
+	 * @param   string  $name    The attribute to check if set
+	 * @return  boolean 
+	 */
+	public function __isset($name)
+	{
+		return $this->hasAttribute($name);
+	}
+
+	/**
 	 * Sets attributes (i.e. fields) on the model
 	 *
 	 * @param   array|string  $key    The key to set, or array of key/value pairs
 	 * @param   mixed         $value  The value to set if key is string
-	 * @return  $this
+	 * @return  self
 	 */
 	public function __set($key, $value)
 	{
@@ -465,11 +485,24 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * @return  string
 	 * @since   2.1.0
 	 **/
+
+	#[\ReturnTypeWillChange]
 	public function serialize()
 	{
-		return serialize($this->getAttributes());
+		return serialize($this->__serialize());
 	}
 
+	/**
+	 * Serializes the model data for storage
+	 *
+	 * @return  array
+	 **/
+	#[\ReturnTypeWillChange]
+	public function __serialize()
+	{
+		return $this->getAttributes();
+	}
+	
 	/**
 	 * Unserializes the data into a new model
 	 *
@@ -477,10 +510,28 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * @return  void
 	 * @since   2.1.0
 	 **/
+
+	#[\ReturnTypeWillChange]
 	public function unserialize($data)
 	{
+		$this->__unserialize($data);
+	}
+
+	/**
+	 * Unserializes the data into a new model
+	 *
+	 * @param   array  $data  The data to build from
+	 * @return  void
+	 **/
+	#[\ReturnTypeWillChange]
+	public function __unserialize($data)
+	{
 		$this->__construct();
-		$this->set(unserialize($data));
+		if (is_string($data))
+		{
+			$data = unserialize($data);
+		}
+		$this->set($data);
 	}
 
 	/**
@@ -509,7 +560,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	/**
 	 * Disables query caching
 	 *
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function disableCaching()
@@ -522,7 +573,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	/**
 	 * Enables query caching
 	 *
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function enableCaching()
@@ -535,7 +586,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	/**
 	 * Purges the query cache
 	 *
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function purgeCache()
@@ -573,7 +624,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 *
 	 * @param   array|string  $key    The key to set, or array of key/value pairs
 	 * @param   mixed         $value  The value to set if key is string
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function set($key, $value = null)
@@ -622,7 +673,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	/**
 	 * Copies the current model (likely used to maintain query parameters between multiple queries)
 	 *
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function copy()
@@ -778,7 +829,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	/**
 	 * Resets the current model, likely for another query to be performed on it
 	 *
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	private function reset()
@@ -813,7 +864,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	/**
 	 * Sets a fresh query object on the model, seeding it with helpful defaults
 	 *
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function newQuery()
@@ -850,7 +901,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * Removes an attribute
 	 *
 	 * @param   string  $key  The attribute to remove
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function removeAttribute($key)
@@ -886,7 +937,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * Sets an interator parent on the model
 	 *
 	 * @param   \Qubeshub\Database\Rows  $rows  The iterator to set
-	 * @return  $this
+	 * @return  self
 	 * @since   2.1.0
 	 **/
 	public function setIterator($rows)
@@ -1045,7 +1096,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 *
 	 * @param   string  $key   The field to which the rule applies
 	 * @param   mixed   $rule  The rule to add
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function addRule($key, $rule)
@@ -1058,11 +1109,14 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	/**
 	 * Get total number of rows
 	 *
+         * @param   boolean     $distinct       Count distinct rows (default false, counts all rows)
 	 * @return  int
 	 * @since   2.0.0
 	 **/
-	public function total()
+	public function total($distinct = false)
 	{
+		$count = $distinct ? 'distinct' : true;
+
 		// Note that we do not need to parse includes at this stage, as includes do not effect
 		// the primary result set, and thus do not effect the count. whereRelated() could effect
 		// the count, but that method is not currently in use.
@@ -1071,7 +1125,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 		// the 'order by' clause to avoid referenced fields in the aforementioned 'select' clauses
 		// that mgiht have been removed. Neither of these should have any effect on a count.
 		$first = $this->deselect()
-		              ->select($this->getQualifiedFieldName($this->getPrimaryKey()), 'count', true)
+                              ->select($this->getQualifiedFieldName($this->getPrimaryKey()), 'count', $count)
 		              ->unordered()
 		              ->rows(false)
 		              ->first();
@@ -1099,6 +1153,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * @return  int
 	 * @since   2.0.0
 	 **/
+	#[\ReturnTypeWillChange]
 	public function count()
 	{
 		return $this->copy()->rows()->count();
@@ -1175,6 +1230,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * @return  \Qubeshub\Database\Rows
 	 * @since   2.0.0
 	 **/
+	#[\ReturnTypeWillChange]
 	public function getIterator()
 	{
 		return $this->copy()->rows();
@@ -1183,60 +1239,64 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	/**
 	 * Sets the atrributes key with value
 	 *
-	 * @param   array|string  $key    The key to set, or array of key/value pairs
-	 * @param   mixed         $value  The value to set if key is string
+	 * @param   mixed $offset    The key to set, or array of key/value pairs
+	 * @param   mixed $value  The value to set if key is string
 	 * @return  void
 	 * @since   2.0.0
 	 **/
-	public function offsetSet($key, $value)
+	#[\ReturnTypeWillChange]
+	public function offsetSet($offset, $value)
 	{
-		if (is_array($key) || is_object($key))
+		if (is_array($offset) || is_object($offset))
 		{
-			foreach ($key as $k => $v)
+			foreach ($offset as $k => $v)
 			{
 				$this->attributes[$k] = $v;
 			}
 		}
 		else
 		{
-			$this->attributes[$key] = $value;
+			$this->attributes[$offset] = $value;
 		}
 	}
 
 	/**
 	 * Checks to see if the requested attribute is set on the model
 	 *
-	 * @param   string  $key  The offset to check for
+	 * @param   mixed  $offset  The offset to check for
 	 * @return  bool
 	 * @since   2.0.0
 	 **/
-	public function offsetExists($key)
+	#[\ReturnTypeWillChange]
+	public function offsetExists($offset)
 	{
-		return $this->hasAttribute($key);
+		return $this->hasAttribute($offset);
 	}
 
 	/**
 	 * Unsets the requested attribute from the model
 	 *
-	 * @param   string  $key  The offset to remove
+	 * @param   mixed $offset  The offset to remove
 	 * @return  void
 	 * @since   2.0.0
 	 **/
-	public function offsetUnset($key)
+	#[\ReturnTypeWillChange]
+	public function offsetUnset($offset)
 	{
-		unset($this->attributes[$key]);
+		unset($this->attributes[$offset]);
 	}
 
 	/**
 	 * Gets an attribute by key
 	 *
-	 * @param   string  $key  The attribute key to get
+	 * @param   mixed $offset  The attribute key to get
 	 * @return  mixed
 	 * @since   2.0.0
 	 **/
-	public function offsetGet($key)
+	#[\ReturnTypeWillChange]
+	public function offsetGet($offset)
 	{
-		return $this->get($key);
+		return $this->get($offset);
 	}
 
 	/**
@@ -1385,19 +1445,17 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 **/
 	public function getTableColumns()
 	{
-		static $columns = null;
-
-		if (is_null($columns))
+		if (!isset(self::$columns[$this->table]) || is_null(self::$columns[$this->table]))
 		{
-			$columns = (array)$this->getStructure()->getTableColumns($this->getTableName(), false);
+			self::$columns[$this->table] = (array)$this->getStructure()->getTableColumns($this->getTableName(), false);
 
-			if (empty($columns))
+			if (empty(self::$columns[$this->table]))
 			{
-				throw new Exception(sprintf('Columns not found for table %s', $this->getTableName()));
+				throw new \Exception(sprintf('Columns not found for table %s', $this->getTableName()));
 			}
 		}
 
-		return $columns;
+		return self::$columns[$this->table];
 	}
 
 	/**
@@ -1470,7 +1528,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * Parses for automatically fillable fields
 	 *
 	 * @param   string  $scope  The scope of rules to parse and run
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	private function parseAutomatics($scope = 'always')
@@ -1558,8 +1616,8 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	/**
 	 * Checks out the current model to the provided user
 	 *
-	 * @param   integer  $userId  Optional userId for whom the row should be checked out
-	 * @return  boolean
+	 * @param   int  $userId  Optional userId for whom the row should be checked out
+	 * @return  bool
 	 * @since   2.0.0
 	 **/
 	public function checkout($userId = null)
@@ -1613,7 +1671,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	/**
 	 * Checks back in the current model
 	 *
-	 * @return  boolean
+	 * @return  bool
 	 * @since   2.0.0
 	 **/
 	public function checkin()
@@ -1689,9 +1747,9 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * directly to the model itself.
 	 *
 	 * @param   string   $relationship  The relationship name
-	 * @param   closure  $constraint    The constraint to apply to the related query
+	 * @param   Closure  $constraint    The constraint to apply to the related query
 	 * @param   int      $depth         The depth level of the clause, for sub clauses
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function whereRelatedHas($relationship, $constraint, $depth = 0)
@@ -1710,9 +1768,9 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * directly to the model itself.
 	 *
 	 * @param   string   $relationship  The relationship name
-	 * @param   closure  $constraint    The constraint to apply to the related query
+	 * @param   Closure  $constraint    The constraint to apply to the related query
 	 * @param   int      $depth         The depth level of the clause, for sub clauses
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function orWhereRelatedHas($relationship, $constraint, $depth = 0)
@@ -1734,7 +1792,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * @param   int     $count         The minimum number of rows required
 	 * @param   int     $depth         The depth level of the clause, for sub clauses
 	 * @param   string  $operator      The comparison operator used between the column and the count
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function whereRelatedHasCount($relationship, $count = 1, $depth = 0, $operator = '>=')
@@ -1759,9 +1817,12 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * To make this work, data would need to be stored on the object, and then seeded
 	 * after the model rows are fetched (like parseIncludes() works now).
 	 *
-	 * @return  $this
+	 * @param \Hubzero\Database\Relationship\Relationship $relationsip
+	 * @param Closure $constraint
+	 * @return  self
 	 * @since   2.0.0
 	 **/
+	/*
 	private function whereRelated($relationship, $constraint)
 	{
 		$this->data = [];
@@ -1796,6 +1857,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 
 		return $this;
 	}
+	*/
 
 	/**
 	 * Seeds the rows with any pre-fetched data
@@ -1825,7 +1887,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * directly to the model itself.
 	 *
 	 * @param   string  $column  The field to use for ownership, defaulting to 'created_by'
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function whereIsMine($column = 'created_by')
@@ -1857,7 +1919,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * Chunks the retrieved data based on a given chunk limit
 	 *
 	 * @param   int    $size  The chunk size
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function paginate($size)
@@ -1871,7 +1933,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 *
 	 * @param   string  $start  The request variable used to denote limit start
 	 * @param   string  $limit  The request variable used to denote limit of results to return
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function paginated($start = 'start', $limit = 'limit')
@@ -1890,7 +1952,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 *
 	 * @param   string  $orderBy   The request variable used to denote ordering column
 	 * @param   string  $orderDir  The request variable used to denote ordering direction
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function ordered($orderBy = 'orderby', $orderDir = 'orderdir')
@@ -1924,7 +1986,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	/**
 	 * Unsets the ordering
 	 *
-	 * @return  $this
+	 * @return  self
 	 * @since   2.2.2
 	 **/
 	public function unordered()
@@ -2183,7 +2245,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 *
 	 * @param   string        $relationship  The relationship to invoke
 	 * @param   array|object  $models        The model or models to attach
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function attach($relationship, $models)
@@ -2216,7 +2278,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	/**
 	 * Sets an associated relationship to be retrieved with the current model
 	 *
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function including()
@@ -2280,7 +2342,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * method above for the code that actually checks for a
 	 * valid attribute on the forwarding model.
 	 *
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function forwardTo()
@@ -2298,7 +2360,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 *
 	 * @param   string  $name   The name of the relationship
 	 * @param   object  $model  The model or rows to add
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function addRelationship($name, $model)
@@ -2335,7 +2397,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * Establishes a relationship, fetching the rows as needed
 	 *
 	 * @param   string  $name  The name of the relationship
-	 * @return  $this
+	 * @return  self
 	 * @since   2.0.0
 	 **/
 	public function makeRelationship($name)
@@ -2355,7 +2417,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * Establishes a relationship, based on the acquaintances, fetching the rows as needed
 	 *
 	 * @param   string  $name  The name of the relationship
-	 * @return  $this
+	 * @return  self
 	 * @since   2.1.0
 	 **/
 	public function makeAcquaintance($name)
@@ -2375,7 +2437,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 * Registers a new relationship at runtime, rather than explicitly in model
 	 *
 	 * @param   string   $name      The relationship name
-	 * @param   closure  $response  The relationship response function
+	 * @param   Closure  $response  The relationship response function
 	 * @return  void
 	 * @since   2.1.0
 	 **/
