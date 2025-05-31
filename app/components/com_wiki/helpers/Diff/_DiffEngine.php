@@ -35,6 +35,12 @@ class _DiffEngine
 	 * Description for 'AX_XREF_LENGTH'
 	 */
 	const MAX_XREF_LENGTH =  10000;
+	var $xchanged = null;
+	var $ychanged = null;
+	var $yv = null;
+	var $xv = null;
+	var $yind = null;
+	var $xind = null;
 
 	/**
 	 * Short description for 'diff'
@@ -264,8 +270,9 @@ class _DiffEngine
 				}
 				$matches = $ymatches[$line];
 				reset($matches);
-				while (list ($junk, $y) = each($matches))
+				while ($y = current($matches))
 				{
+					next($matches);
 					if (empty($this->in_seq[$y]))
 					{
 						$k = $this->_lcs_pos($y);
@@ -273,9 +280,11 @@ class _DiffEngine
 						$ymids[$k] = $ymids[$k-1];
 						break;
 					}
+
 				}
-				while (list (/* $junk */, $y) = each($matches))
+			        while ($y = current($matches))
 				{
+					next($matches);
 					if ($y > $this->seq[$k-1])
 					{
 						USE_ASSERTS && assert($y < $this->seq[$k]);

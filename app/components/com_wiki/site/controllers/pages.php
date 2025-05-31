@@ -658,7 +658,7 @@ class Pages extends SiteController
 
 		// Compare against previous revision
 		// We don't want to create a whole new revision if just the tags were changed
-		if (rtrim($old->get('pagetext')) != rtrim($revision->get('pagetext')))
+		if (rtrim($old->get('pagetext', '')) != rtrim($revision->get('pagetext', '')))
 		{
 			// Transform the wikitext to HTML
 			$revision->set('pagehtml', '');
@@ -1129,11 +1129,11 @@ class Pages extends SiteController
 		// Set font
 		//$pdf->SetFont('dejavusans', '', 11, '', true);
 
-		$pdf->setAuthor  = $this->page->creator()->get('name');
-		$pdf->setCreator = \Config::get('sitename');
+		$pdf->setAuthor($this->page->creator()->get('name'));
+		$pdf->setCreator(\Config::get('sitename'));
 
 		$pdf->setDocModificationTimeStamp($this->page->modified());
-		$pdf->setHeaderData(null, 0, strtoupper($this->page->title), null, array(84, 94, 124), array(146, 152, 169));
+		$pdf->setHeaderData(null, 0, strtoupper($this->page->title), '', array(84, 94, 124), array(146, 152, 169));
 		$pdf->setFooterData(array(255, 255, 255), array(255, 255, 255));
 
 		$pdf->AddPage();
