@@ -7,6 +7,7 @@
 
 namespace Qubeshub\Component;
 
+use Hubzero\Component\Router\DefaultRouter;
 use Qubeshub\Component\Router\Legacy;
 use Hubzero\Container\Container;
 use Hubzero\Config\Registry;
@@ -128,7 +129,7 @@ class Loader
 			$option = implode('', $option);
 		}
 		// do not allow dots in component name to avoid directory traversal issues
-		$option = preg_replace('/[^A-Z0-9_-]/i', '', $option);
+		$option = preg_replace('/[^A-Z0-9_-]/i', '', $option ? $option : '');
 		// if option became empty due to the filtering, return an empty string
 		if (strlen($option) > 0) 
 		{
@@ -200,6 +201,7 @@ class Loader
 		$path      = PATH_COMPONENT . DIRECTORY_SEPARATOR . $file . '.php';
 		$namespace = '\\Components\\' . ucfirst(substr($option, 4)) . '\\' . ucfirst($client) . '\\Bootstrap';
 		$found     = false;
+		$react_path = PATH_COMPONENT . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'react' . DIRECTORY_SEPARATOR . $file;
 
 		// Make sure the component is enabled
 		if ($this->isEnabled($option))
@@ -209,6 +211,7 @@ class Loader
 			{
 				$found = true;
 				$path  = $namespace;
+				$type  = 'bootstrap';
 
 				// Infer the appropriate language path and load from there
 				$file  = with(new \ReflectionClass($namespace))->getFileName();
@@ -218,9 +221,28 @@ class Loader
 				// Load local language files
 				$lang->load($option, $local, null, false, true);
 			}
-			else if (file_exists($path))
+			else if (is_file($path))
 			{
 				$found = true;
+				$type  = 'path';
+
+				// Load local language files
+				$lang->load($option, PATH_COMPONENT, null, false, true);
+			}
+			else if (is_dir($react_path))
+			{
+				$found = true;
+				$path = $react_path;
+				$ype = 'react';
+
+				// Load local language files
+				$lang->load($option, PATH_COMPONENT, null, false, true);
+			}
+			else if (is_dir(PATH_COMPONENT))
+			{
+				$found = true;
+				$path = $option;
+				$type = 'default';
 
 				// Load local language files
 				$lang->load($option, PATH_COMPONENT, null, false, true);
@@ -240,7 +262,7 @@ class Loader
 		$contents = null;
 
 		// Execute the component.
-		$contents = $this->execute($path);
+		$contents = $this->execute($path, $type);
 
 		// Revert the scope
 		$this->app->forget('scope');
@@ -255,15 +277,23 @@ class Loader
 	 * @param   string  $path  The component path.
 	 * @return  string  The component output
 	 */
-	protected function execute($path)
+	protected function execute($path, $type = 'path')
 	{
 		ob_start();
 
-		if (file_exists($path))
+		if ($type == 'path')
 		{
 			$this->executePath($path);
 		}
-		else
+		else if ($type == 'react')
+		{
+			$this->executeReactApp($path);
+		}
+		else if ($type == 'default')
+		{
+			$this->executeDefault($path);
+		}
+		else if ($type == 'bootstrap')
 		{
 			$this->executeBootstrap($path);
 		}
@@ -286,6 +316,55 @@ class Loader
 	}
 
 	/**
+	 * Start component without explicit entrypoint file
+	 *
+	 * @param   string  $namespace  The namespace of the component to start
+	 * @return  void
+	 */
+	private function executeDefault($option = '')
+	{
+		$option = (string) $option;
+
+		if (substr($option, 0, 4) == 'com_')
+		{
+			$component = substr($option, 4);
+		}
+		else
+		{
+			$component = $option;
+		}
+
+		if ( preg_match("/^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$/", $component) !== 1 )
+		{
+			throw new \InvalidArgumentException(sprintf('Invalid component name [%s] requested', htmlspecialchars($component, ENT_HTML5)), 404);
+		}
+
+		$controller = \Request::getCmd('controller', $component);
+
+		if ( preg_match("/^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$/", $controller) !== 1 )
+		{
+			throw new \InvalidArgumentException(sprintf('Invalid controller name [%s] requested', htmlspecialchars($controller, ENT_HTML5)), 404);
+		}
+
+		$path = PATH_COMPONENT;
+
+		$config = array('base_path' => PATH_COMPONENT);
+		$namespace = 'Components\\' . ucfirst($component) . '\Site\Controllers';
+		$class = ucfirst($controller);
+
+		if (file_exists($path . "/controllers/{$controller}.php"))
+		{
+			require_once($path . "/controllers/{$controller}.php");
+		}
+		else
+		{
+			eval("namespace {$namespace}; class {$class} extends \\Hubzero\\Component\\DefaultSiteController\n{\n}\n");
+		}
+
+		(new ($namespace.'\\'.$class)($config))->execute();
+	}
+
+	/**
 	 * Execute the component from a new bootstrapped component
 	 *
 	 * @param   string  $namespace  The namespace of the component to start
@@ -294,6 +373,92 @@ class Loader
 	protected function executeBootstrap($namespace)
 	{
 		with(new $namespace)->start();
+	}
+
+	/**
+	 * Execute the component from a React App
+	 *
+	 * @param   string  $path  The path to the react app
+	 * @return  void
+	 */
+	protected function executeReactApp($path)
+	{
+		$index = file_get_contents($path . DS . 'build' . DS . 'index.html' );
+
+		$dom = new \DOMDocument();
+		$dom->loadHTML($index);
+
+		$bodies = $dom->getElementsByTagName('body');
+
+		assert($bodies->length === 1);
+
+		$heads = $dom->getElementsByTagName('head');
+
+		assert($heads->length === 1);
+
+		$body = $bodies->item(0);
+		$head = $heads->item(0);
+
+		foreach($head->childNodes as $node) 
+		{
+			if ($node->nodeName == 'meta') 
+			{
+
+				if ( $node->hasAttribute('charset')  )
+				{
+					Document::setCharset( $node->getAttribute('charset') );
+					// Doesn't seem to change anything
+				}
+				else if ( $node->hasAttribute('name') )
+				{
+					Document::setMetaData($node->getAttribute('name'), $node->getAttribute('content'));
+				}
+				else if ( $node->hasAttribute('http-equiv') ) 
+				{
+					Document::setMetaData($node->getAttribute('http-equiv'), $node->getAttribute('content'), true);
+				}
+				else if ( $node->hasAttribute('itemprop') ) 
+				{
+					// Not supported
+				}
+			}
+
+			if ($node->nodeName == 'title') 
+			{
+				Document::setTitle( $node->nodeValue );
+				// Oddly concatenated titles
+			}
+
+			if ($node->nodeName == 'link') 
+			{
+				$rel = $node->getAttribute('rel');
+				$href = $node->getAttribute('href');
+
+				if ($rel == 'stylesheet')
+				{
+					Document::addStyleSheet($href);
+				}
+				else if ($rel == 'script')
+				{
+					Document::addScript($href);
+				}
+				else
+				{
+					Document::addHeadLink($href, $rel);
+				}
+			}
+
+			if ($node->nodeName == 'script')
+			{
+				$defer = $node->getAttribute('defer');
+				$async = $node->getAttribute('async');
+				$src = $node->getAttribute('src');
+
+				Document::addScript($src, "text/javascript", ($defer=='defer'), ($async=='async'));
+			}
+		}
+
+		echo substr($dom->saveHtml($body), 6, -7); // remove <body></body>
 	}
 
 	/**
@@ -361,7 +526,17 @@ class Loader
 
 			if (!isset(self::$routers[$key]))
 			{
-				self::$routers[$key] = new Legacy($compname);
+				$path = $this->path($option);
+				$name = substr($option, 4);
+
+				if (!is_file("{$path}/{$name}.php") && !is_file("{$path}/controllers/{$name}.php"))
+				{
+					self::$routers[$key] = new DefaultRouter($compname);
+				}
+				else
+				{
+					self::$routers[$key] = new Legacy($compname);
+				}
 			}
 		}
 
@@ -385,7 +560,7 @@ class Loader
 		}
 
 		// Do we have a database connection?
-		if ($this->app->has('db'))
+		try
 		{
 			$db = $this->app->get('db');
 
@@ -417,6 +592,9 @@ class Loader
 			{
 				throw new Exception($this->app['language']->translate('JLIB_APPLICATION_ERROR_COMPONENT_NOT_LOADING', $option, $error), 500);
 			}
+		}
+		catch (\Hubzero\Database\Exception\ConnectionFailedException $e)
+		{
 		}
 
 		// Create a default object

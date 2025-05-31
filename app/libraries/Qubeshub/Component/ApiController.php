@@ -164,7 +164,7 @@ class ApiController implements ControllerInterface
 		{
 			if (!is_subclass_of($this->resolveModel(),'Hubzero\Database\Relational'))
 			{
-					throw new \Exception('Not Found', 404);
+				throw new \Exception('Not Found', 404);
 			}
 
 			$this->isDynamic = true;
@@ -328,11 +328,20 @@ class ApiController implements ControllerInterface
 			$output->version = 1;
 		}
 
+		$factory  = \phpDocumentor\Reflection\DocBlockFactory::createInstance();
+
 		// loop through each method and process doc
 		foreach ($classReflector->getMethods() as $method)
 		{
-			// create docblock object & make sure we have something
-			$phpdoc = new \phpDocumentor\Reflection\DocBlock($method);
+			// Create docblock object & make sure we have something
+			$docblock = $method->getDocComment();
+
+			if ($docblock == false)
+			{
+				continue;
+			}
+
+                        $phpdoc = $factory->create($docblock);
 
 			// skip constructor
 			if (substr($method->getName(), -4) != 'Task' || in_array($method->getName(), array('registerTask', 'unregisterTask')))
@@ -348,7 +357,7 @@ class ApiController implements ControllerInterface
 
 			// skip if we dont have a short desc
 			// but put in error
-			if (!$phpdoc->getShortDescription())
+			if (!$phpdoc->getSummary())
 			{
 				$output->errors[] = Lang::txt(
 					'JLIB_APPLICATION_ERROR_DOCBLOCK_MISSING',
@@ -361,7 +370,7 @@ class ApiController implements ControllerInterface
 			// create endpoint data array
 			$endpoint = array(
 				'name'        => substr($method->getName(), 0, -4),
-				'description' => preg_replace('/\s+/', ' ', $phpdoc->getShortDescription()),
+				'description' => preg_replace('/\s+/', ' ', $phpdoc->getSummary()),
 				'method'      => '',
 				'uri'         => '',
 				'parameters'  => array()
@@ -372,7 +381,7 @@ class ApiController implements ControllerInterface
 			{
 				// get tag name and content
 				$name    = strtolower(str_replace('api', '', $tag->getName()));
-				$content = $tag->getContent();
+				$content = (string) $tag;
 
 				// handle parameters separately
 				// json decode param input
@@ -1016,8 +1025,15 @@ class ApiController implements ControllerInterface
 			$file = strtolower(end($file));
 
 			$path = \Component::path($this->_option) . '/models/' . $file . '.php';
-
-			require_once $path;
+			$can_path = realpath($path);
+			if ($can_path != $path) {
+				App::abort(404, Lang::txt('JLIB_APPLICATION_ERROR_COMPONENT_NOT_FOUND', $model));
+			}
+			if (is_readable($path)) {
+				require_once $path;
+			} else {
+				App::abort(500, 'Required file is not readable', $model);
+			}
 
 			if (!class_exists($model))
 			{

@@ -15,6 +15,9 @@ use Qubeshub\Document\Assets;
 
 /**
  * Class for a component View
+ * 
+ * @TODO: Change all public attributes of View class to protected
+ * when all references have been fixed to use get()/set()
  */
 class View extends AbstractView
 {
@@ -25,7 +28,35 @@ class View extends AbstractView
 	 *
 	 * @var  string
 	 */
-	protected $_layout = 'display';
+	public $_layout = 'display';
+
+	/**
+	 * Base URL
+	 *
+	 * @var string
+	 */
+	public $baseurl;
+
+	/**
+	 * Current component
+	 *
+	 * @var string
+	 */
+	public $option;
+
+	/**
+	 * Current controller
+	 *
+	 * @var string
+	 */
+	public $controller;
+
+	/**
+	 * Current task
+	 *
+	 * @var string
+	 */
+	public $task;
 
 	/**
 	 * Constructor
@@ -104,7 +135,7 @@ class View extends AbstractView
 	 *
 	 * @param   string  $layout  View layout
 	 * @param   string  $name    View name
-	 * @return  object
+	 * @return  View
 	 */
 	public function view($layout, $name=null)
 	{
