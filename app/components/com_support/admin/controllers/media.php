@@ -181,8 +181,8 @@ class Media extends AdminController
 			'name'   => 'media',
 			'layout' => '_asset'
 		));
-		$view->option     = $this->_option;
-		$view->controller = $this->_controller;
+		$view->set('option', $this->_option);
+		$view->set('controller', $this->_controller);
 		$view->asset      = $asset;
 		$view->no_html    = 1;
 
@@ -271,7 +271,7 @@ class Media extends AdminController
 		$exts = $exts ?: $mediaConfig->get('upload_extensions');
 		$allowed = array_values(array_filter(explode(',', $exts)));
 
-		if (!in_array($ext, explode(',', $allowed)))
+		if (!in_array($ext, $allowed))
 		{
 			$this->setError(Lang::txt('COM_SUPPORT_ERROR_INCORRECT_FILE_TYPE'));
 			echo $this->getError();

@@ -264,6 +264,10 @@ class Abuse extends SiteController
 			$html = str_replace("\n", "\r\n", $html);
 
 			$message->addPart($html, 'text/html');
+			$message->setTo(
+						Config::get('mailfrom'),
+						Config::get('sitename') . ' ' . Lang::txt(strtoupper($this->_option))
+					);
 
 			// Loop through the addresses
 			foreach ($defs as $def)
@@ -277,7 +281,7 @@ class Abuse extends SiteController
 				// Check for a valid address
 				if (Validate::email($def))
 				{
-					$message->addTo($def);
+					$message->addBcc($def);
 				}
 			}
 

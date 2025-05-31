@@ -333,6 +333,11 @@ class Queries extends AdminController
 		$response->success = 1;
 		$response->message = '';
 
+		if (!isset($fields['id']))
+		{
+			$fields['id'] = '';
+		}
+
 		$row = QueryFolder::oneOrNew($fields['id'])->set($fields);
 
 		// Store new content
