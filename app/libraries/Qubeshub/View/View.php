@@ -544,7 +544,7 @@ class View extends Obj
 			return $this->_output;
 		}
 
-		throw new InvalidLayoutException(sprintf('Layout %s not found', $file), 500);
+		throw new InvalidLayoutException(sprintf('Layout %s not found', $file), 404);
 	}
 
 	/**
