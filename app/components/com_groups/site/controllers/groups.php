@@ -1121,7 +1121,7 @@ class Groups extends Base
 
 		// Build the e-mail message
 		$eview = new \Hubzero\Component\View(array('name' => 'emails','layout' => 'deleted'));
-		$eview->option   = $this->_option;
+		$eview->set('option', $this->_option);
 		$eview->sitename = Config::get('sitename');
 		$eview->user     = User::getInstance();
 		$eview->gcn      = $deletedgroup->get('cn');
@@ -1147,7 +1147,8 @@ class Groups extends Base
 		// Build message object and send
 		$message->setSubject($subject)
 				->addFrom($from['email'], $from['name'])
-				->setTo($groupMembers)
+				->setTo($from['email'], $from['name'])
+				->setBcc($groupMembers)
 				->addHeader('X-Mailer', 'PHP/' . phpversion())
 				->addHeader('X-Component', 'com_groups')
 				->addHeader('X-Component-Object', 'group_deleted')
@@ -1510,7 +1511,7 @@ class Groups extends Base
 		if ($group->isSuperGroup())
 		{
 			// do not serve gitignore or PHP files
-			if ($file != 'gitignore' && strpos($file, '.php') === false)
+			if ($file != '.gitignore' && strpos($file, '.php') === false)
 			{
 				// do not allow serving anything from config or .git directory
 				$replace_base = ['/uploads', '/config', '/.git'];

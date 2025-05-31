@@ -27,7 +27,7 @@ Html::behavior('switcher', 'submenu');
 
 // are we using the email gateway for group forum
 $params = Component::params('com_groups');
-$allowEmailResponses = $params->get('email_comment_processing', 0);
+$emailForumComments = $params->get('email_forum_comments', 0);
 
 $autoEmailResponses  = $this->group->get('discussion_email_autosubscribe');
 if (is_null($autoEmailResponses))
@@ -125,7 +125,7 @@ $this->js();
 
 							<div class="input-wrap" data-hint="<?php echo Lang::txt('COM_GROUPS_CN_HINT'); ?>">
 								<label for="field-cn"><?php echo Lang::txt('COM_GROUPS_CN'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span></label><br />
-								<input type="text" name="group[cn]" id="field-cn" class="required" value="<?php echo $this->escape(stripslashes($this->group->cn)); ?>" />
+								<input type="text" name="group[cn]" id="field-cn" class="required" <?php if ($this->group->cn) { echo ' readonly="readonly"'; } ?> value="<?php echo $this->escape(stripslashes($this->group->cn)); ?>" />
 								<span class="hint"><?php echo Lang::txt('COM_GROUPS_CN_HINT'); ?></span>
 							</div>
 							<div class="input-wrap">
@@ -267,7 +267,7 @@ $this->js();
 							</fieldset>
 							<div class="input-wrap">
 								<label for="restrict_msg"><?php echo Lang::txt('COM_GROUPS_EDIT_CREDENTIALS'); ?>:</label><br />
-								<?php echo $this->editor('group[restrict_msg]', $this->escape(stripslashes($this->group->restrict_msg)), 40, 10, 'restrict_msg', array('class' => 'minimal')); ?>
+								<?php echo $this->editor('group[restrict_msg]', $this->escape(stripslashes($this->group->restrict_msg ? $this->group->restrict_msg : '')), 40, 10, 'restrict_msg', array('class' => 'minimal')); ?>
 							</div>
 						</fieldset>
 						<fieldset class="adminform">
@@ -300,7 +300,7 @@ $this->js();
 							</div>
 						</fieldset>
 
-						<?php if ($allowEmailResponses) : ?>
+						<?php if ($emailForumComments) : ?>
 							<fieldset class="adminform">
 								<legend><span><?php echo Lang::txt('COM_GROUPS_EMAIL_SETTINGS'); ?></span></legend>
 

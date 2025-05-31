@@ -292,7 +292,7 @@ class Manage extends AdminController
 		// Check for any missing info
 		if (!$g['cn'])
 		{
-			$this->setError(Lang::txt('COM_GROUPS_ERROR_MISSING_INFORMATION') . ': ' . Lang::txt('COM_GROUPS_ID'));
+			$this->setError(Lang::txt('COM_GROUPS_ERROR_MISSING_INFORMATION') . ': ' . Lang::txt('COM_GROUPS_CN'));
 		}
 		if (!$g['description'])
 		{
@@ -313,7 +313,7 @@ class Manage extends AdminController
 				->setLayout('edit')
 				->set('group', $group)
 				->set('customFields', $customFields)
-				->set('customAnswers', $customFieldForms)
+				->set('customAnswers', $customFieldForm)
 				->display();
 			return;
 		}
@@ -492,12 +492,12 @@ class Manage extends AdminController
 		$srcTplPath = null;
 
 		$db = \App::get('db');
-		$query = $db->getQuery(true);
+		$query = $db->getQuery();
 		$query->select('s.id, s.home, s.template, s.params, e.protected');
 		$query->from('#__template_styles as s');
-		$query->where('s.client_id = 0');
-		$query->where('e.enabled = 1');
-		$query->where('s.home = 1');
+		$query->where('s.client_id', '=', 0);
+		$query->where('e.enabled', '=', 1);
+		$query->where('s.home', '=', 1);
 		$query->leftJoin('#__extensions as e ON e.element=s.template AND e.type=' . $db->quote('template') . ' AND e.client_id=s.client_id');
 		$db->setQuery($query);
 		$template = $db->loadObject();
@@ -909,7 +909,7 @@ class Manage extends AdminController
 			$sudo =  '/usr/bin/sudo -u ' . $user . ' ';
 
 			// Determines the path to muse and run the group update muse command
-			$cmd .= $sudo . PATH_ROOT . DS . 'muse' . ' ' . $task . ' ' . $museCmd . ' --format=json';
+			$cmd .= $sudo . PATH_CORE . '/bin/muse' . ' ' . $task . ' ' . $museCmd . ' --format=json';
 
 			// Execute and format the output
 			$output = shell_exec($cmd);
@@ -1024,7 +1024,7 @@ class Manage extends AdminController
 			$sudo =  '/usr/bin/sudo -u ' . $user . ' ';
 
 			// Determines the path to muse and run the group update muse command
-			$cmd .= $sudo . PATH_ROOT . DS . 'muse' . ' ' . $task . ' ' . $museCmd . ' -f --no-colors';
+			$cmd .= $sudo . PATH_CORE . '/bin/muse' . ' ' . $task . ' ' . $museCmd . ' -f --no-colors';
 
 			// this will run a "git pull --rebase origin master"
 			$output = shell_exec($cmd);
@@ -1033,7 +1033,7 @@ class Manage extends AdminController
 			{
 				$museCmd = 'migrate';
 				$cmd = "cd {$uploadPath} && ";
-				$cmd .= $sudo . PATH_ROOT . DS . 'muse' . ' ' . $task . ' ' . $museCmd . ' -f --no-colors';
+				$cmd .= $sudo . PATH_CORE . '/bin/muse' . ' ' . $task . ' ' . $museCmd . ' -f --no-colors';
 
 				$output .= shell_exec($cmd);
 			}
