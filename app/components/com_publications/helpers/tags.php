@@ -136,15 +136,30 @@ class Tags extends \Hubzero\Base\Obj
 		}
 		if ($tagger_id != 0)
 		{
-			$where[] = "rt.taggerid=" . $tagger_id;
+			$where[] = "rt.taggerid=" . $this->_db->quote($tagger_id);
 		}
 		if ($strength)
 		{
-			$where[] = "rt.strength=" . $strength;
+			$where[] = "rt.strength=" . $this->_db->quote($strength);
 		}
 
 		$sql .= implode(" AND ", $where) . " ORDER BY t.raw_tag";
 
+		$this->_db->setQuery($sql);
+		return $this->_db->loadObjectList();
+	}
+	
+	/**
+	 * Get all user tags of a publication
+	 *
+	 * @param      integer 		$vid		Publication version ID
+	 *
+	 * @return     array or false
+	 */
+	public function getAllUserTags($vid)
+	{
+		$sql = "SELECT DISTINCT jt.* FROM $this->_tag_tbl AS jt LEFT JOIN $this->_obj_tbl AS jto ON jt.id = jto.tagid 
+		WHERE jt.admin = 0 AND jto.tbl = 'publications' AND jto.objectid = $vid";
 		$this->_db->setQuery($sql);
 		return $this->_db->loadObjectList();
 	}
@@ -188,7 +203,7 @@ class Tags extends \Hubzero\Base\Obj
 				AND (V.publish_down IS NULL OR V.publish_down = '0000-00-00 00:00:00' OR V.publish_down >= '$now') ";
 		if ($category)
 		{
-			$sql .= "AND r.category=" . $category . " ";
+			$sql .= "AND r.category=" . $this->_db->quote($category) . " ";
 		}
 
 		if (!User::isGuest())
@@ -372,7 +387,8 @@ class Tags extends \Hubzero\Base\Obj
 	public function get_tag_cloud($showsizes=0, $admin=0, $objectid=null)
 	{
 		$cloud = new PubCloud($objectid, $this->_tbl);
-		return $cloud->render();
+		return $cloud->render(); //TODO: Check with author as to why admin is aasumed not needed
+		//return $cloud->render('html', array('admin' => $admin));
 	}
 
 	/**
@@ -628,6 +644,7 @@ class Tags extends \Hubzero\Base\Obj
 		$sql = "SELECT COUNT(*) FROM $this->_tag_tbl AS t,
 			$this->_obj_tbl AS rt WHERE rt.objectid=$id
 			AND rt.tbl='$this->_tbl' AND rt.tagid=t.id";
+
 		$this->_db->setQuery( $sql );
 		return $this->_db->loadResult();
 	}
@@ -660,6 +677,33 @@ class Tags extends \Hubzero\Base\Obj
 		$sql .= " ORDER BY t.raw_tag";
 		$this->_db->setQuery( $sql );
 		return $this->_db->loadObjectList();
+	}
+	
+	/**
+	 * Get FOS (Field of Science and Technology) tag according to department tag id
+	 *
+	 * @param      int $vid	publication version id
+	 *
+	 * @return     object or false
+	 */
+	public function getFOSTag($vid)
+	{
+		// Get department tag id
+		$deptQuery = "SELECT jt.id FROM $this->_tag_tbl AS jt LEFT JOIN $this->_obj_tbl AS jto ON jt.id = jto.tagid 
+		WHERE jt.admin = 1 AND jto.tbl='publications' AND jt.raw_tag LIKE '%(Dept)%' AND jto.objectid = $vid";
+		$this->_db->setQuery($deptQuery);
+		$deptTagID = $this->_db->loadResult();
+		
+		if (!$deptTagID)
+		{
+			return false;
+		}
+		
+		// Get FOS tag by department tag id
+		$fosQuery = "SELECT jt.* FROM $this->_tag_tbl AS jt LEFT JOIN $this->_obj_tbl AS jto ON jt.id = jto.tagid 
+		WHERE jto.tbl = 'tags' AND jto.label = 'parent' AND jto.objectid = $deptTagID";
+		$this->_db->setQuery($fosQuery);
+		return $this->_db->loadObject();
 	}
 
 	/**
@@ -703,9 +747,9 @@ class Tags extends \Hubzero\Base\Obj
 		$sql .= "FROM $this->_tag_tbl AS t ";
 		$sql .= "JOIN $this->_obj_tbl AS tj ON t.id=tj.tagid ";
 		$sql .= "WHERE ";
-		$sql .= $picked ? " t.id NOT IN (".$picked.")" : "1=1";
+		$sql .= $picked ? " t.id NOT IN (".$this->_db->quote($picked).")" : "1=1";
 		$sql .= " GROUP BY tagid ";
-		$sql .= " HAVING tcount > ".$tcount;
+		$sql .= " HAVING tcount > ".$this->_db->quote($tcount);
 
 		if (!empty($keywords))
 		{
@@ -713,7 +757,7 @@ class Tags extends \Hubzero\Base\Obj
 			$w = 1;
 			foreach ($keywords as $key)
 			{
-				$sql .= 't.raw_tag LIKE "%'.$key.'%"';
+				$sql .= 't.raw_tag LIKE "%'.$this->_db->escape($key).'%"';
 				$sql .= $w == count($keywords) ? '' : ' OR ';
 				$w++;
 			}

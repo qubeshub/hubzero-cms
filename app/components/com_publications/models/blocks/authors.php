@@ -321,6 +321,8 @@ class Authors extends Base
 		}
 
 		$this->set('_message', Lang::txt('New author order saved'));
+		// Reflect the update in curation record
+		$this->_parent->set('_update', 1);
 
 		return true;
 	}
@@ -344,6 +346,7 @@ class Authors extends Base
 		$firstName  = trim(Request::getString('firstName', '', 'post'));
 		$lastName   = trim(Request::getString('lastName', '', 'post'));
 		$org        = trim(Request::getString('organization', '', 'post'));
+		$orcid      = trim(Request::getString('orcid', '', 'post'));
 		$credit     = trim(Request::getString('credit', '', 'post'));
 		$uid        = trim(Request::getInt('uid', 0, 'post'));
 
@@ -463,6 +466,15 @@ class Authors extends Base
 		$pAuthor->firstName    = $firstName;
 		$pAuthor->lastName     = $lastName;
 		$pAuthor->organization = $org;
+		$pAuthor->orcid        = $orcid;
+
+		// Get organization id on ror.org
+		// If RoR Api is turned off because of failed API or if key doesn't exist, don't retrieve list from Api.
+		$useRorApi = \Component::params('com_members')->get('rorApi');
+		if ($useRorApi){
+			$orgid = $this->getOrganizationId($org);
+			$pAuthor->orgid = $orgid;
+		}
 
 		if (!$pAuthor->store())
 		{
@@ -545,6 +557,7 @@ class Authors extends Base
 		$firstName  = Request::getString('firstName', '', 'post');
 		$lastName   = Request::getString('lastName', '', 'post');
 		$org        = Request::getString('organization', '', 'post');
+		$orcid      = Request::getString('orcid', '', 'post');
 		$credit     = Request::getString('credit', '', 'post');
 		$sendInvite = 0;
 		$code       = \Components\Projects\Helpers\Html::generateCode();
@@ -559,6 +572,14 @@ class Authors extends Base
 			return false;
 		}
 
+		// Get organization id on ror.org
+		// If RoR Api is turned off because of failed API or if key doesn't exist, don't retrieve list from Api.
+		$useRorApi = \Component::params('com_members')->get('rorApi');
+		if ($useRorApi){
+			$orgid = $this->getOrganizationId($org);
+			$row->orgid = $orgid;
+		}
+
 		$row->organization  = $org;
 		$row->firstName     = $firstName;
 		$row->lastName      = $lastName;
@@ -566,6 +587,7 @@ class Authors extends Base
 		$row->credit        = $credit;
 		$row->modified_by   = $actor;
 		$row->modified      = Date::toSql();
+		$row->orcid         = $orcid;
 
 		// Check that profile exists
 		if ($uid)
@@ -824,5 +846,61 @@ class Authors extends Base
 		}
 
 		return $manifest;
+	}
+
+	/**
+	 * Perform querying of research organization id on ror.org
+	 * @param   string   $organization
+	 *
+	 * @return  string   organization id
+	 */
+	public function getOrganizationId($organization)
+	{
+		$org = trim($organization);
+		$orgQry = \Components\Members\Helpers\Utility::escapeSpecialChars($org);
+		
+		$verNum = \Component::params('com_members')->get('rorApiVersion');
+		
+		if (!empty($verNum))
+		{
+			$queryURL = "https://api.ror.org/$verNum/organizations?query.advanced=names.value:" . urlencode($orgQry);
+			
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL, $queryURL);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+			$result = curl_exec($ch);
+
+			if (!$result)
+			{
+				return false;
+			}
+
+			$info = curl_getinfo($ch);
+
+			$code = $info['http_code'];
+
+			if (($code != 201) && ($code != 200))
+			{
+				return false;
+			}
+
+			$resultObj = json_decode($result);
+			
+			foreach ($resultObj->items as $orgObj)
+			{
+				foreach ($orgObj->names as $nameObj)
+				{
+					if (strcmp($nameObj->value, $org) == 0)
+					{
+						curl_close($ch);
+						return $orgObj->id;
+					}
+				}
+			}
+			
+			curl_close($ch);
+			return "";
+		}
 	}
 }

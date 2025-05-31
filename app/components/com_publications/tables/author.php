@@ -114,7 +114,7 @@ class Author extends Table
 		{
 			return false;
 		}
-		$uids = "'" . implode($uids, "','") . "'";
+		$uids = "'" . implode( "','", $uids) . "'";
 		$query  = "SELECT id FROM $this->_tbl WHERE publication_version_id=" . $this->_db->quote($vid) . " AND id IN (" . $uids . ")";
 		$query .= " AND (role != 'submitter')";
 		$query .= " ORDER BY ordering";
@@ -317,7 +317,22 @@ class Author extends Table
 					// $res->middleName = $user->get('middleName');
 
 					$res->surname = $user->get('surname');
-					$res->orcid = $user->get('orcid');
+					$res->p_email = $user->get('email');
+					
+					if (!empty($user->get('orcid')))
+					{
+						$res->orcid = $user->get('orcid');
+					}
+					
+					if (empty($res->organization) && !empty($user->get('organization')))
+					{
+						$res->organization = $user->get('organization');
+					}
+					
+					if (empty($res->orgid) && !empty($user->get('orgid')))
+					{
+						$res->orgid = $user->get('orgid');
+					}
 				}
 			}
 		}
@@ -514,26 +529,38 @@ class Author extends Table
 		{
 			return false;
 		}
-
-		$query  = "SELECT  A.*, po.invited_email as invited_email, po.invited_name as invited_name,  ";
-		$query .= "x.name as p_name, x.username, x.organization as p_organization,
-				   x.picture, x.surname, x.givenName, x.orcid, ";
-		$query .= " COALESCE(A.name , x.name) as name, x.username,
-					COALESCE(A.organization , x.organization) as organization, ";
-		$query .= " COALESCE(A.firstName, x.givenName) firstName, ";
-		$query .= " COALESCE(A.lastName, x.surname) lastName ";
+		$query  = "SELECT  A.*, po.invited_email as invited_email, po.invited_name as invited_name ";
 		$query .= " FROM #__project_owners as po  ";
 		$query .= " LEFT JOIN $this->_tbl as A ON po.id=A.project_owner_id
 		            AND A.publication_version_id=" . $this->_db->quote($vid);
-		$query .= " LEFT JOIN #__xprofiles as x ON x.uidNumber=po.userid ";
 		$query .= " AND po.status!=2 ";
 		$query .= " WHERE po.id=" . $this->_db->quote($owner_id);
 		$query .= " AND (A.role IS NULL OR A.role != 'submitter')  ";
 		$query .= " LIMIT 1 ";
 
 		$this->_db->setQuery($query);
-		$result = $this->_db->loadObjectList();
-		return $result ? $result[0] : false;
+		$result = $this->_db->loadObject();
+		
+		if (!empty($result->user_id))
+		{
+			$user = \Components\Members\Models\Member::oneOrNew($result->user_id);
+			$result->p_name = $user->get('name');
+			$result->username = $user->get('username');
+			$result->p_organization = $user->get('organization');
+			$result->picture = $user->picture(0, false);
+			$result->givenName = $user->get('givenName');
+			$result->surname = $user->get('surname');
+			$result->orcid = $user->get('orcid');
+			$result->p_email = $user->get('email');
+			$result->organization = $user->get('organization');
+			$result->orgid = $user->get('orgid');
+		}
+		else
+		{
+			$result->p_name = $result->username = $result->p_organization = $result->picture = $result->givenName = $result->surname = $result->p_email = null;
+		}
+		
+		return $result;
 	}
 
 	/**
@@ -809,5 +836,26 @@ class Author extends Table
 			$this->setError($this->_db->getErrorMsg());
 			return false;
 		}
+	}
+	
+	/**
+	 * Save ORCID work put-code
+	 *
+	 * @param   string  $authorID	Author's id
+	 * @param   string  $putCode	ORCID work put-code
+	 *
+	 * @return  none
+	 */
+	public function saveORCIDPutCode($authorID, $putCode)
+	{
+		$query = "SELECT * FROM $this->_tbl WHERE id=" . $this->_db->quote($authorID);		
+		$this->_db->setQuery($query);
+		if ($result = $this->_db->loadAssoc())
+		{
+			$this->bind($result);
+		}
+		
+		$this->orcid_work_put_code = $putCode;
+		$this->store();
 	}
 }

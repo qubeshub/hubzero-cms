@@ -219,7 +219,7 @@ class Html
 	 * @param   string  $c         Extra classes
 	 * @return  string  HTML
 	 */
-	public static function sections($sections, $cats, $active='about', $h, $c)
+	public static function sections($sections, $cats, $active, $h, $c)
 	{
 		$html = '';
 
@@ -844,16 +844,16 @@ class Html
 			'name'      => 'view',
 			'layout'    => '_primary'
 		));
-		$view->option   = 'com_publications';
-		$view->disabled = $disabled;
-		$view->class    = $class;
-		$view->href     = $href;
-		$view->title    = $title;
-		$view->action   = $action;
-		$view->xtra     = $xtra;
-		$view->pop      = $pop;
-		$view->msg      = $msg;
-		$view->options  = $options;
+		$view->set('option', 'com_publications');
+		$view->set('disabled', $disabled);
+		$view->set('class', $class);
+		$view->set('href', $href);
+		$view->set('title', $title);
+		$view->set('action', $action);
+		$view->set('xtra', $xtra);
+		$view->set('pop', $pop);
+		$view->set('msg', $msg);
+		$view->set('options', $options);
 
 		return $view->loadTemplate();
 	}
@@ -877,21 +877,21 @@ class Html
 				'layout'  =>'statusbar'
 			)
 		);
-		$view->row           = $item->row;
-		$view->version       = $item->version;
-		$view->panels        = $item->panels;
-		$view->active        = isset($item->active) ? $item->active : null;
-		$view->move          = isset($item->move) ? $item->move : 0;
-		$view->step          = $step;
-		$view->lastpane      = $item->lastpane;
-		$view->option        = $item->option;
-		$view->project       = $item->project;
-		$view->current_idx   = $item->current_idx;
-		$view->last_idx      = $item->last_idx;
-		$view->checked       = $item->checked;
-		$view->url           = $item->url;
-		$view->review        = $review;
-		$view->show_substeps = $showSubSteps;
+		$view->set('row', $item->row);
+		$view->set('version', $item->version);
+		$view->set('panels', $item->panels);
+		$view->set('active', isset($item->active) ? $item->active : null);
+		$view->set('move', isset($item->move) ? $item->move : 0);
+		$view->set('step', $step);
+		$view->set('lastpane', $item->lastpane);
+		$view->set('option', $item->option);
+		$view->set('project', $item->project);
+		$view->set('current_idx', $item->current_idx);
+		$view->set('last_idx', $item->last_idx);
+		$view->set('checked', $item->checked);
+		$view->set('url', $item->url);
+		$view->set('review', $review);
+		$view->set('show_substeps', $showSubSteps);
 		$view->display();
 	}
 
@@ -1237,6 +1237,178 @@ class Html
 		}
 
 		return true;
+	}
+	
+	/**
+	 * Get files in data directory of database publication
+	 *
+	 * @param   int  $publication_id
+	 * @param   int  $publication_version_id
+	 *
+	 * @return  array or false
+	 */
+	public static function getdatabaseFiles($publication_id, $publication_version_id)
+	{
+		$path = self::buildPubPath($publication_id, $publication_version_id, '', '', 1);
+		$path .= DIRECTORY_SEPARATOR . "data";
+		
+		if (!opendir($path))
+		{
+			return false;
+		}
+		
+		return self::getFileNames($path);
+	}
+	
+	/**
+	 * Get file names in data directory of database publication
+	 *
+	 * @param   string  $path
+	 *
+	 * @return  array
+	 */
+	public static function getFileNames($path)
+	{
+		$files = [];
+		
+		$dirHandle = opendir($path);
+		
+		while (false !== ($fileName = readdir($dirHandle)))
+		{
+			$tnPattern = '/\_tn\.gif/';
+			$mediumPattern = '/\_medium\.gif/';
+			
+			if ($fileName == '.' || $fileName == '..'
+			|| preg_match($tnPattern, $fileName, $matches, PREG_OFFSET_CAPTURE)
+			|| preg_match($mediumPattern, $fileName, $matches, PREG_OFFSET_CAPTURE))
+			{
+				continue;
+			}
+			
+			$subDir = $path . DIRECTORY_SEPARATOR . $fileName;
+			if (is_dir($subDir))
+			{
+				self::getFileNames($subDir);
+			}
+			else
+			{
+				$files[] = $path . DIRECTORY_SEPARATOR . $fileName;
+			}
+		}
+		closedir($dirHandle);
+		
+		return $files;
+	}
+	
+	/**
+	 * Get MIME type of files in the publication
+	 *
+	 * @param   int  $pubType	publication type
+	 * @param   int  $publication_id	publication id
+	 * @param   int  $publication_version_id	publication version id
+	 * @param   string  $secret	publication secret
+	 * @param   object array  $attachments	publication attachments
+	 *
+	 * @return  array
+	 */
+	public static function getMimeTypes($pubType, $publication_id, $publication_version_id, $secret, $attachments)
+	{
+		$mimeTypes = [];
+		
+		if ($pubType == 1)
+		{
+			self::getMIMEtypesOfPrimarySupportFiles($publication_id, $publication_version_id, $secret, 1, $attachments, $mimeTypes);
+		}
+		
+		if (is_array($attachments) && array_key_exists(2, $attachments))
+		{
+			self::getMIMEtypesOfPrimarySupportFiles($publication_id, $publication_version_id, $secret, 2, $attachments, $mimeTypes);
+		}
+		
+		if (is_array($attachments) && array_key_exists(3, $attachments))
+		{
+			self::getMIMEtypesOfGalleryFile($publication_id, $publication_version_id, $mimeTypes);
+		}
+		
+		return $mimeTypes;
+	}
+	
+	/**
+	 * Get the MIME types for primary file and support file
+	 *
+	 * @param   object  $pub	publication model
+	 * @param   int  $role
+	 * @param   array  $attachments
+	 * @param   array  $mimeTypes
+	 *
+	 * @return  null or false
+	 */
+	public static function getMIMEtypesOfPrimarySupportFiles($publication_id, $publication_version_id, $secret, $role, $attachments, &$mimeTypes)
+	{
+		$path = self::buildPubPath($publication_id, $publication_version_id, '', '', 1);
+		$path .= DIRECTORY_SEPARATOR . $secret;
+		
+		if (!file_exists($path))
+		{
+			return false;
+		}
+		
+		foreach ($attachments[$role] as $attachment)
+		{
+			$file = $path . DIRECTORY_SEPARATOR . ltrim($attachment->path, '/');
+			if (file_exists($file))
+			{
+				$mimeType = mime_content_type($file);
+				if ($mimeType && !in_array($mimeType, $mimeTypes))
+				{
+					$mimeTypes[] = $mimeType;
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Get the MIME type for gallery files
+	 *
+	 * @param   object  $pub	publication model
+	 * @param   int  $role
+	 * @param   array  $attachments
+	 * @param   array  $mimeTypes
+	 *
+	 * @return  null or false
+	 */
+	public static function getMIMEtypesOfGalleryFile($publication_id, $publication_version_id, &$mimeTypes)
+	{
+		$path = self::buildPubPath($publication_id, $publication_version_id, '', '', 1);
+		$galleryDir = $path . DIRECTORY_SEPARATOR . "gallery";
+		
+		if (!file_exists($galleryDir))
+		{
+			return false;
+		}
+				
+		$dirHandle = opendir($galleryDir);
+		
+		while (false !== ($galleryFile = readdir($dirHandle)))
+		{
+			$tnPattern = '/\_tn\.png/';
+			$hashPattern = '/\.hash/';
+			
+			if ($galleryFile == '.' || $galleryFile == '..'
+				|| preg_match($tnPattern, $galleryFile, $matches, PREG_OFFSET_CAPTURE)
+				|| preg_match($hashPattern, $galleryFile, $matches, PREG_OFFSET_CAPTURE))
+			{
+				continue;
+			}
+
+			$file = $galleryDir . DIRECTORY_SEPARATOR . $galleryFile;
+			$mimeType = mime_content_type($file);
+			if ($mimeType && !in_array($mimeType, $mimeTypes))
+			{
+				$mimeTypes[] = $mimeType;
+			}
+		}
+		closedir($dirHandle);
 	}
 
 }

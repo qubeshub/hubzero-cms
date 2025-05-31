@@ -235,7 +235,7 @@ class Items extends AdminController
 
 		if (!$el)
 		{
-			$this->setError();
+			$this->setError('No Element Id');
 		}
 		else
 		{
@@ -338,6 +338,13 @@ class Items extends AdminController
 		{
 			throw new Exception(Lang::txt('COM_PUBLICATIONS_ERROR_NO_AUTHOR_RECORD'), 404);
 			return;
+		}
+		
+		if (!empty($this->view->author->user_id))
+		{
+			$user = \Components\Members\Models\Member::oneOrNew($this->view->author->user_id);
+			$this->view->author->orcid = $user->get('orcid');
+			$this->view->author->organization = $user->get('organization');
 		}
 
 		// Version ID
@@ -774,6 +781,7 @@ class Items extends AdminController
 		{
 			$this->model->version->version_label = $version_label;
 		}
+		$this->model->version->downloadDisabled = Request::getBool('disabledownloadlink', false, 'post');
 
 		// Get DOI service
 		$doiService = new Models\Doi($this->model);
@@ -815,21 +823,88 @@ class Items extends AdminController
 
 			$this->model->version->state = $state;
 		}
-
-		// Update DOI with latest information
-		if ($this->model->version->doi && !$action)
+		else
 		{
-			// Update DOI if locally issued
-			if (preg_match("/" . $doiService->_configs->shoulder . "/", $this->model->version->doi))
+			foreach ($authors as $author)
 			{
-				$doiService->update($this->model->version->doi, true);
-
-				if ($doiService->getError())
+				$putCode = $author->orcid_work_put_code;
+				
+				if (!empty($putCode))
 				{
-					$this->setError($doiService->getError());
+					// Update the publication information in author's ORCID record
+					if (!empty($author->user_id))
+					{
+						$profile = \Components\Members\Models\Member::oneOrFail($author->user_id);
+					
+						if ($profile)
+						{
+							$orcidID = $profile->get('orcid');
+							$accessToken = $profile->get('access_token');
+						}
+					}
+					else
+					{
+						$collaborator = $this->model->getCollaboratorByName($author->invited_name);
+						
+						if (!empty($collaborator))
+						{
+							$orcidID = $collaborator->orcid;
+							$accessToken = $collaborator->access_token;
+						}
+					}
+					
+					if (!empty($orcidID) && !empty($accessToken))
+					{
+						$this->model->updateWorkInORCID($orcidID, $accessToken, $putCode);
+					}
+				}
+				else
+				{
+					// Add publication to author's ORCID record
+					if ($this->model->version->state == 1)
+					{
+						if (!empty($author->user_id))
+						{
+							$profile = \Components\Members\Models\Member::oneOrFail($author->user_id);
+						
+							if ($profile)
+							{
+								$orcidID = $profile->get('orcid');
+								$accessToken = $profile->get('access_token');
+							}
+						}
+						else
+						{
+							$collaborator = $this->model->getCollaboratorByName($author->invited_name);
+							
+							if (!empty($collaborator))
+							{
+								$orcidID = $collaborator->orcid;
+								$accessToken = $collaborator->access_token;
+							}
+						}
+						
+						if (!empty($orcidID) && !empty($accessToken))
+						{
+							$putCode = $this->model->addPubToORCID($orcidID, $accessToken);
+						
+							if (!empty($putCode))
+							{
+								$authorTbl = new Tables\Author($this->database);
+								$authorTbl->saveORCIDPutCode($author->id, $putCode);
+							}
+						}
+					}
 				}
 			}
 		}
+		
+		// // Incoming tags
+		// $tags = Request::getString('tags', '', 'post');
+
+		// // Save the tags
+		// $rt = new Helpers\Tags($this->database);
+		// $rt->tag_object(User::get('id'), $this->model->version->id, $tags, 1, true);
 
 		// Incoming keywords
 		$keywords = explode(',', Request::getString('tags', '', 'post'));
@@ -843,6 +918,28 @@ class Items extends AdminController
 		$rt = new Helpers\Tags($this->database);
 		$rt->tag_existing_object($this->model->version->id, $tags);
 		// $rt->tag_object(User::get('id'), $this->model->version->id, $tags, 1, true);
+
+		// Update DOI with latest information
+		if ($this->model->version->doi && !$action)
+		{
+			if (preg_match("/" . $doiService->_configs->shoulder . "/", $this->model->version->doi))
+			{
+				$doiService->set('authors', $authors);
+				
+				$fosTag = $this->model->getFOSTag();
+				if (!empty($fosTag))
+				{
+					$doiService->set('fosTag', $fosTag);
+				}
+				
+				$doiService->update($this->model->version->doi, true);
+
+				if ($doiService->getError())
+				{
+					$this->setError($doiService->getError());
+				}
+			}
+		}
 
 		// Email config
 		$pubtitle = \Hubzero\Utility\Str::truncate($this->model->version->title, 100);
@@ -881,6 +978,7 @@ class Items extends AdminController
 						if ($this->model->version->doi
 							&& preg_match("/" . $doiService->_configs->shoulder . "/", $this->model->version->doi))
 						{
+							$doiService->set('authors', $authors);
 							$doiService->update($this->model->version->doi, true);
 
 							if ($doiService->getError())
@@ -960,6 +1058,113 @@ class Items extends AdminController
 							$this->model->version->archived = Date::toSql();
 						}
 					}
+					
+					if ($action == 'republish')
+					{
+						$this->model->version->accepted = Date::toSql();
+					}
+					
+					// Add publication to author's ORCID record
+					foreach ($authors as $author)
+					{
+						if (!empty($author->user_id))
+						{
+							$profile = \Components\Members\Models\Member::oneOrFail($author->user_id);
+							
+							if ($profile)
+							{
+								$orcidID = $profile->get('orcid');
+								$accessToken = $profile->get('access_token');
+								
+								if (!empty($orcidID) && !empty($accessToken))
+								{
+									$putCode = $this->model->addPubToORCID($orcidID, $accessToken);
+									
+									if ($putCode)
+									{
+										$tblAuthor = new Tables\Author($this->database);
+										$tblAuthor->saveORCIDPutCode($author->id, $putCode);
+									}
+								}
+							}
+						}
+						else
+						{
+							$collaborator = $this->model->getCollaboratorByName($author->invited_name);
+							
+							// Add pub to orcid record when both orcid and access_token are not null. Othewise, send email that includes ORCID management permission link
+							if (!empty($collaborator))
+							{
+								$orcidID = $collaborator->orcid;
+								$accessToken = $collaborator->access_token;
+								
+								if (!empty($orcidID) && !empty($accessToken))
+								{
+									$putCode = $this->model->addPubToORCID($orcidID, $accessToken);
+									
+									if ($putCode)
+									{
+										$authorTbl = new Tables\Author($this->database);
+										$authorTbl->saveORCIDPutCode($author->id, $putCode);
+									}
+								}
+							}
+							else
+							{
+								if (!empty($author->invited_email))
+								{
+									$subjectForPermissionEmail = Lang::txt('COM_PUBLICATIONS_GRANT_ORCID_MANAGEMENT_PERMISSION');
+									$messageForPermissionEmail = Lang::txt('COM_PUBLICATIONS_GRANT_ORCID_EMAIL_MESSAGE');
+									
+									$config = Component::params('com_members');
+									$srv = $config->get('orcid_service', 'members');
+									$clientID = $config->get('orcid_' . $srv . '_client_id', '');
+									$redirectURI = $config->get('orcid_' . $srv . '_permission_uri', '');
+									
+									if (!empty($srv) && !empty($clientID) && !empty($redirectURI))
+									{
+										$permissionURL = "https://";
+										
+										if ($config->get('orcid_service', 'members') == 'sandbox')
+										{
+											$permissionURL .= 'sandbox.';
+										}
+										
+										$permissionURL .= 'orcid.org/oauth/authorize?client_id=' . $clientID . htmlspecialchars('&') . "response_type=code" . htmlspecialchars('&') . "scope=/read-limited%20/activities/update%20/person/update&redirect_uri=" . urlencode($redirectURI);
+										
+										$from = [];
+										$from['name']  = Config::get('sitename') . ' ' . Lang::txt('COM_PUBLICATIONS');
+										$from['email'] = Config::get('mailfrom');
+										
+										$eview = new \Hubzero\Mail\View(array(
+											'base_path' => dirname(__DIR__),
+											'name'      => 'emails',
+											'layout'    => 'admin_html'
+										));
+										
+										$eview->model = $this->model;
+										$eview->project = $this->model->project();
+										$eview->subject = $subjectForPermissionEmail;
+										$eview->message = $messageForPermissionEmail;
+										$eview->permissionURL = $permissionURL;
+										$eview->permissionTxt = Lang::txt('COM_PUBLICATIONS_GRANT_ORCID_MANAGEMENT_PERMISSION');
+
+										$body = [];
+										$body['multipart'] = $eview->loadTemplate();
+										$body['multipart'] = str_replace("\n", "\r\n", $body['multipart']);
+										
+										$mail = new \Hubzero\Mail\Message();
+										$mail->setSubject($subject)
+											->addTo($author->invited_email, $author->invited_name)
+											->addFrom($from['email'], $from['name'])
+											->setPriority('normal')
+											->addPart($body['multipart'], 'text/html');
+										$mail->send();
+									}
+								}
+							}
+						}
+					}
 
 					if (!$this->getError())
 					{
@@ -978,6 +1183,48 @@ class Items extends AdminController
 					$subject .= Lang::txt('COM_PUBLICATIONS_MSG_ADMIN_REVERTED');
 					$output .= ' ' . Lang::txt('COM_PUBLICATIONS_ITEM') . ' ';
 					$output .= Lang::txt('COM_PUBLICATIONS_MSG_ADMIN_REVERTED');
+					
+					// Remove the publication from author's ORCID record
+					foreach ($authors as $author)
+					{
+						$putCode = $author->orcid_work_put_code;
+						
+						if (!empty($putCode))
+						{
+							if (!empty($author->user_id))
+							{
+								$profile = \Components\Members\Models\Member::oneOrFail($author->user_id);
+								
+								if ($profile)
+								{
+									$orcidID = $profile->get('orcid');
+									$accessToken = $profile->get('access_token');
+								}
+							}
+							else
+							{
+								$collaborator = $this->model->getCollaboratorByName($author->invited_name);
+								
+								if (!empty($collaborator))
+								{
+									$orcidID = $collaborator->orcid;
+									$accessToken = $collaborator->access_token;
+								}
+							}
+							
+							if (!empty($orcidID) && !empty($accessToken))
+							{
+								$result = $this->model->deleteWorkInORCID($orcidID, $accessToken, $putCode);
+								
+								if ($result)
+								{
+									$tblAuthor = new Tables\Author($this->database);
+									$tblAuthor->saveORCIDPutCode($author->id, '');
+								}
+							}
+						}
+					}
+					
 					break;
 
 				case 'unpublish':
@@ -988,6 +1235,92 @@ class Items extends AdminController
 
 					$output .= ' ' . Lang::txt('COM_PUBLICATIONS_ITEM') . ' ';
 					$output .= Lang::txt('COM_PUBLICATIONS_MSG_ADMIN_UNPUBLISHED');
+					
+					// Save the unpublished reason
+					$selectedReason = Request::getInt('unPubReasonDropdownList', 0);
+					$verTblObj = new Tables\Version($db);
+					
+					if ($selectedReason == 0)
+					{
+						$otherReason = Request::getString('reason', '');
+						$verTblObj->saveUnPubReason($id, $this->model->version->version_number, $selectedReason, $otherReason);
+					}
+					else
+					{
+						if ($selectedReason == 1)
+						{
+							$verTblObj->saveUnPubReason($id, $this->model->version->version_number, Lang::txt('COM_PUBLICATIONS_UNPUBLISHED_NOT_AVAILABLE'));
+						}
+						else if ($selectedReason == 2)
+						{
+							$verTblObj->saveUnPubReason($id, $this->model->version->version_number, Lang::txt('COM_PUBLICATIONS_UNPUBLISHED_ERROR'));
+						}
+					}
+					
+					// Update DOI metadata, and set resource URL to tombstone page url.
+					if ($doiService->on())
+					{
+						if ($this->model->version->doi
+							&& preg_match("/" . $doiService->_configs->shoulder . "/", $this->model->version->doi))
+						{
+							$doiService->set('authors', $authors);
+							$doiService->update($this->model->version->doi, true);
+							
+							$resURL = $doiService->_configs->livesite . DS . 'index.php?option=' . $this->_option . '&controller=' . $this->_controller . '&task=tombstone' . '&id=' . $id . '&v=' . $this->model->version->version_number;
+							$result = $doiService->registerURL($doi, $resURL);
+							
+							if (!$result)
+							{
+								$doiService->setError(Lang::txt('COM_PUBLICATIONS_ERROR_REGISTER_NAME_URL'));
+							}
+							
+							if ($doiService->getError())
+							{
+								$this->setError($doiService->getError());
+							}
+						}
+					}
+					
+					// Remove the publication from author's ORCID record
+					foreach ($authors as $author)
+					{
+						$putCode = $author->orcid_work_put_code;
+						
+						if (!empty($putCode))
+						{
+							if (!empty($author->user_id))
+							{
+								$profile = \Components\Members\Models\Member::oneOrFail($author->user_id);
+								
+								if ($profile)
+								{
+									$orcidID = $profile->get('orcid');
+									$accessToken = $profile->get('access_token');
+								}
+							}
+							else
+							{
+								$collaborator = $this->model->getCollaboratorByName($author->invited_name);
+								
+								if (!empty($collaborator))
+								{
+									$orcidID = $collaborator->orcid;
+									$accessToken = $collaborator->access_token;
+								}
+							}
+							
+							if (!empty($orcidID) && !empty($accessToken))
+							{
+								$result = $this->model->deleteWorkInORCID($orcidID, $accessToken, $putCode);
+								
+								if ($result)
+								{
+									$tblAuthor = new Tables\Author($this->database);
+									$tblAuthor->saveORCIDPutCode($author->id, '');
+								}
+							}
+						}
+					}
 					break;
 
 				case 'wip':
@@ -1018,11 +1351,11 @@ class Items extends AdminController
 			{
 				if ($this->model->version->state != 1)
 				{
-					$this->model->_curationModel->removeSymLink();
+					$this->model->_curationModel->removeLink();
 				}
 				elseif (($action == 'republish' || $action == 'publish') && !$this->model->isEmbargoed())
 				{
-					$this->model->_curationModel->createSymLink();
+					$this->model->_curationModel->createLink();
 				}
 
 				// Add activity
@@ -1610,8 +1943,8 @@ class Items extends AdminController
 		// Produce archival package
 		if (!$pub->_curationModel->package(true, $instructorBundle))
 		{
-			// Create symlink
-			$pub->_curationModel->createSymLink();
+			// Create link
+			$pub->_curationModel->createLink();
 
 			// Checkin the resource
 			$pub->publication->checkin();

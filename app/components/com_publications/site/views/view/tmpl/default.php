@@ -59,6 +59,13 @@ else
 						<?php echo \Components\Publications\Helpers\Html::showSubInfo($this->publication); // Show published date and category ?>
 					</div><!-- / .overviewcontainer -->
 					<div class="col span4 omega launcharea">
+						<?php if ($this->publication->version->get('downloadDisabled')): ?>
+						<p>
+							<?php echo Lang::txt('COM_PUBLICATIONS_DOWNLOAD_DATASET_DISABLED'); echo Lang::txt('COM_PUBLICATIONS_PLEASE')?>
+							<a href="/support/ticket/new" target="_blank"><?php echo Lang::txt('COM_PUBLICATIONS_SUBMIT_TICKET');?></a>
+							<?php echo Lang::txt('COM_PUBLICATIONS_TO_INQUIRE_DATASET_STATUS'); ?>
+						</p>
+						<?php else: ?>
 						<?php
 						// Sort out primary files and draw a launch button
 						if ($this->tab != 'play')
@@ -107,6 +114,7 @@ else
 							}
 						}
 						?>
+						<?php endif; ?>
 					</div><!-- / .aside launcharea -->
 				</div>
 
