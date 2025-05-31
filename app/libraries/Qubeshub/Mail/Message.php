@@ -1,8 +1,8 @@
 <?php
 /**
- * @package    framework
+ * @package	framework
  * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
- * @license    http://opensource.org/licenses/MIT MIT
+ * @license	http://opensource.org/licenses/MIT MIT
  */
 
 namespace Qubeshub\Mail;
@@ -10,7 +10,7 @@ namespace Qubeshub\Mail;
 /**
  * Class for creating and sending email
  */
-class Message extends \Swift_Message
+class Message extends \Symfony\Component\Mime\Email
 {
 	/**
 	 * Failed email address
@@ -85,81 +85,103 @@ class Message extends \Swift_Message
 	 *
 	 * @return  object
 	 */
-	public function send($transporter='', $options=array())
+	public function send($transport='', $options=array())
 	{
-		$transporter = $transporter ? $transporter : \Config::get('mailer');
-
-		if (is_object($transporter) && ($transporter instanceof \Swift_Transport))
+		if (is_subclass_of($transport, '\Symfony\Component\Mailer\Transport\AbstractTransport'))
 		{
-			// We were given a valid tranport mechanisms, so just use it
-			$transport = $transporter;
+			// We have our transport
 		}
-		elseif (is_string($transporter) && self::hasTrasporter($transporter))
+		else if (is_string($transport) && self::hasTransporter($transport))
 		{
-			$transport = self::getTrasporter($transporter);
+			// Use the registered custom HUBzero transport
+			$transport = self::getTransporter($transport);
 		}
 		else
 		{
-			switch (strtolower($transporter))
+			$dsn = \Config::get('mailer_dsn', '');
+
+			if (!$dsn)
 			{
-				case 'smtp':
-					if (!isset($options['host']))
-					{
-						$options['host'] = \Config::get('smtphost');
-					}
-					if (!isset($options['port']))
-					{
-						$options['port'] = \Config::get('smtpport');
-					}
-					if (!isset($options['username']))
-					{
-						$options['username'] = \Config::get('smtpuser');
-					}
-					if (!isset($options['password']))
-					{
-						$options['password'] = \Config::get('smtppass');
-					}
+				$scheme = strtolower(trim(\Config::get('mailer','sendmail')));
+				$host = strtolower(trim(\Config::get('smtphost','localhost')));
+				$port = strtolower(trim(\Config::get('smtpport','0')));
+				$username = strtolower(trim(\Config::get('smtpuser','')));
+				$password = strtolower(trim(\Config::get('smtppass','')));
 
-					if (!empty($options))
-					{
-						$transport = \Swift_SmtpTransport::newInstance($options['host'], $options['port']);
-						$transport->setUsername($options['username'])
-						          ->setPassword($options['password']);
-					}
-				break;
+				switch ($scheme)
+				{
+					case 'smtp':
+						$dsn = "smtp://";
 
-				case 'sendmail':
-					if (!isset($options['command']))
-					{
-						$options['command'] = '/usr/sbin/exim -bs';
-					}
-					$transport = \Swift_SendmailTransport::newInstance($options['command']);
-				break;
+						if ($username || $password)
+						{
+							$dsn .= $username;
 
-				case 'mail':
-				default:
-					$transport = \Swift_MailTransport::newInstance();
-					//set mail additional args (mail return path - used for bounces)
-					//$transport->setExtraParams('-f hubmail-bounces@' . $_SERVER['HTTP_HOST']);
-				break;
+							if ($password)
+							{
+								$dsn .= ":" . $password;
+							}
+
+							$dsn .= "@";
+						}
+
+						$dsn .= $host;
+
+						if ($port)
+						{
+							$dsn .= ":" . $port;
+						}
+
+						break;
+
+					case 'sendmail':
+						$dsn = "sendmail://default";
+						break;
+
+					case 'mail':
+					case 'native':
+						$dsn = "native://default";
+						break;
+
+					case 'mandrill+smtp':
+						$dsn = "mandrill+smtp://";
+
+						if ($username || $password)
+						{
+							$dsn .= $username;
+
+							if ($password)
+							{
+								$dsn .= ":" . $password;
+							}
+
+							$dsn .= "@";
+						}
+
+						$dsn .= "default";
+
+						break;
+				}
 			}
 
-			if (!($transport instanceof \Swift_Transport))
+			$transport = \Symfony\Component\Mailer\Transport::fromDsn($dsn);
+
+			if (!is_subclass_of($transport, '\Symfony\Component\Mailer\Transport\AbstractTransport'))
 			{
 				throw new \InvalidArgumentException('Invalid transport specified');
 			}
 		}
 
-		$mailer = \Swift_Mailer::newInstance($transport);
-		$result = $mailer->send($this, $this->_failures);
+		$mailer = new \Symfony\Component\Mailer\Mailer($transport);
 
-		if ($result)
+		try
 		{
-			\Log::info(sprintf('Mail sent to %s', json_encode($this->getTo())));
+			$mailer->send($this, $this->_failures);
+			$result = true;
 		}
-		else
+		catch (Exception $e)
 		{
-			\Log::error(sprintf('Failed to mail %s', json_encode($this->getTo())));
+			$result = false;
 		}
 
 		return $result;
@@ -178,7 +200,7 @@ class Message extends \Swift_Message
 	/**
 	 * Generates email token
 	 *
-	 * @param   integer  $user_id    User ID
+	 * @param   integer  $user_id	User ID
 	 * @param   integer  $object_id  Object ID
 	 * @return  string
 	 */
@@ -191,36 +213,31 @@ class Message extends \Swift_Message
 	/**
 	 * Add an attachment
 	 *
-	 * @param   mixed   $attachment  File path (string) or object (Swift_Mime_MimeEntity)
-	 * @param   string  $filename    Optional filename to set
+	 * @param   mixed   $attachment  File path (string) or object (Symfony\Component\Mime\Part\DataPart)
+	 * @param   string  $filename	Optional filename to set
 	 * @return  object
 	 */
 	public function addAttachment($attachment, $filename=null)
 	{
-		if (!($attachment instanceof Swift_Mime_MimeEntity))
+		if (!($attachment instanceof Symfony\Component\Mime\Part\DataPart))
 		{
-			$attachment = \Swift_Attachment::fromPath($attachment);
+			$attachment = \Symfony\Component\Mime\Part\DataPart::fromPath($attachment, $filename);
 		}
 
-		if ($filename && is_string($filename))
-		{
-			$attachment->setFilename($filename);
-		}
-
-		return $this->attach($attachment);
+		return $this->attachPart($attachment);
 	}
 
 	/**
 	 * Remove an attachment
 	 *
-	 * @param   mixed  $attachment  File path (string) or object (Swift_Mime_MimeEntity)
+	 * @param   mixed  $attachment  File path (string) or object (Symfony\Component\Mime\Part\DataPart)
 	 * @return  object
 	 */
 	public function removeAttachment($attachment)
 	{
-		if (!($attachment instanceof Swift_Mime_MimeEntity))
+		if (!($attachment instanceof Symfony\Component\Mime\Part\DataPart))
 		{
-			$attachment = \Swift_Attachment::fromPath($attachment);
+			$attachment = Symfony\Component\Mime\Part\DataPart::fromPath($attachment);
 		}
 
 		return $this->detach($attachment);
@@ -229,17 +246,355 @@ class Message extends \Swift_Message
 	/**
 	 * Get an embed string for an attachment
 	 *
-	 * @param   mixed  $attachment  File path (string) or object (Swift_Image)
+	 * @param   mixed  $attachment  File path (string)
 	 * @return  object
 	 */
 	public function getEmbed($attachment)
 	{
-		if (!($attachment instanceof \Swift_Image))
+		$cid =  bin2hex(random_bytes(16)).'@hubzero';
+
+		$this->embedFromPath($attachment, $cid);
+
+		return $cid;
+	}
+
+	/**
+	 * Set the body of this entity, as a string. (compatability function)
+	 *
+	 * @param mixed  $body
+	 * @param string $contentType optional
+	 *
+	 * @return $this
+	 */
+	public function setBody(...$params)
+	{
+		if (isset($params[1]))
 		{
-			$attachment = \Swift_Image::fromPath($attachment);
+			$this->text($params[0], $params[1]);
+		}
+		else
+		{
+			$this->text($params[0]);
 		}
 
-		return $this->embed($attachment);
+		return $this;
+	}
+
+	/**
+	 * Set the subject of this message. (compatability function)
+	 *
+	 * @param string $subject
+	 *
+	 * @return $this
+	 */
+	public function setSubject($subject)
+	{
+		return $this->subject($subject);
+	}
+
+	/**
+	 * Set the from address of this message (compatability function)
+	 *
+	 * You may pass an array of addresses if this message is from multiple people.
+	 *
+	 * If $name is passed and the first parameter is a string, this name will be
+	 * associated with the address.
+	 *
+	 * @param string|array $addresses
+	 * @param string	   $name	  optional
+	 *
+	 * @return $this
+	 */
+	public function setFrom($addresses, $name = null)
+	{
+		if (!is_array($addresses) && isset($name))
+		{
+			$addresses = array($addresses => $name);
+		}
+
+		foreach($addresses as $key => $value)
+		{
+			if (is_numeric($key))
+			{
+				$address = new \Symfony\Component\Mime\Address($value);
+			}
+			else
+			{
+				$address = new \Symfony\Component\Mime\Address($key, $value);
+			}
+
+			if (isset($first_set))
+			{
+				parent::from($address);
+				$first_set = true;
+			}
+			else
+			{
+				parent::addFrom($address);
+			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Add a From: address to this message. (compatability function)
+	 *
+	 * If $name is passed this name will be associated with the address.
+	 *
+	 * @param string $address
+	 * @param string $name	optional
+	 *
+	 * @return $this
+	 */
+	public function addFrom(...$address)
+	{
+		if (isset($address[1]))
+		{
+			$address = new \Symfony\Component\Mime\Address($address[0], $address[1]);
+		}
+		else
+		{
+			$address = new \Symfony\Component\Mime\Address($address[0]);
+		}
+
+		parent::addFrom($address);
+
+		return $this;
+	}
+
+	/**
+	 * Set the to addresses of this message. (compatability function)
+	 *
+	 * If multiple recipients will receive the message an array should be used.
+	 * Example: array('receiver@domain.org', 'other@domain.org' => 'A name')
+	 *
+	 * If $name is passed and the first parameter is a string, this name will be
+	 * associated with the address.
+	 *
+	 * @param mixed  $addresses
+	 * @param string $name	  optional
+	 *
+	 * @return $this
+	 */
+	public function setTo($addresses, $name = '')
+	{
+		if (!is_array($addresses))
+		{
+			$addresses = array($addresses => $name);
+		}
+
+		foreach($addresses as $key => $value)
+		{
+			if (is_numeric($key))
+			{
+				$address = new \Symfony\Component\Mime\Address($value);
+			}
+			else
+			{
+				$address = new \Symfony\Component\Mime\Address($key, $value);
+			}
+
+			if (isset($first_set))
+			{
+				parent::to($address);
+
+				$first_set = true;
+			}
+			else
+			{
+				parent::addTo($address);
+			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Add a To: address to this message. (compatability function)
+	 *
+	 * If $name is passed this name will be associated with the address.
+	 *
+	 * @param string $address
+	 * @param string $name	optional
+	 *
+	 * @return $this
+	 */
+	public function addTo(...$address)
+	{
+		if (isset($address[1]))
+		{
+			$address = new \Symfony\Component\Mime\Address($address[0], $address[1]);
+		}
+		else
+		{
+			$address = new \Symfony\Component\Mime\Address($address[0]);
+		}
+
+		parent::addTo($address);
+
+		return $this;
+	}
+
+	/**
+	 * Set the reply-to address of this message. (compatability function)
+	 *
+	 * You may pass an array of addresses if replies will go to multiple people.
+	 *
+	 * If $name is passed and the first parameter is a string, this name will be
+	 * associated with the address.
+	 *
+	 * @param mixed  $addresses
+	 * @param string $name	  optional
+	 *
+	 * @return $this
+	 */
+	public function setReplyTo($addresses, $name = '')
+	{
+		if (!is_array($addresses)) {
+			$addresses = array($addresses => $name);
+		}
+
+		foreach($addresses as $key => $value)
+		{
+			if (is_numeric($key))
+			{
+				$address = new \Symfony\Component\Mime\Address($value);
+			}
+			else
+			{
+				$address = new \Symfony\Component\Mime\Address($key, $value);
+			}
+
+			if (isset($first_set))
+			{
+				parent::reply($address);
+				$first_set = true;
+			}
+			else
+			{
+				parent::addReplyTo($address);
+			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Add a Reply-To: address to this message. (compatability function)
+	 *
+	 * If $name is passed this name will be associated with the address.
+	 *
+	 * @param string $address
+	 * @param string $name	optional
+	 *
+	 * @return $this
+	 */
+	public function addReplyTo(...$address)
+	{
+		if (isset($address[1]))
+		{
+			$address = new \Symfony\Component\Mime\Address($address[0], $address[1]);
+		}
+		else
+		{
+			$address = new \Symfony\Component\Mime\Address($address[0]);
+		}
+
+		return parent::addReplyTo($address);
+	}
+
+	/**
+	 * Set the Bcc addresses of this message. (compatability function)
+	 *
+	 * If $name is passed and the first parameter is a string, this name will be
+	 * associated with the address.
+	 *
+	 * @param mixed  $addresses
+	 * @param string $name	  optional
+	 *
+	 * @return $this
+	 */
+	public function setBcc($addresses, $name = null)
+	{
+		if (!is_array($addresses) && isset($name)) {
+			$addresses = array($addresses => $name);
+		}
+
+		foreach($addresses as $key => $value)
+		{
+			if (is_numeric($key))
+			{
+				$address = new \Symfony\Component\Mime\Address($value);
+			}
+			else
+			{
+				$address = new \Symfony\Component\Mime\Address($key, $value);
+			}
+
+			if (isset($first_set))
+			{
+				parent::bcc($address);
+				$first_set = true;
+			}
+			else
+			{
+				parent::addBcc($address);
+			}
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Add a Bcc: address to this message. (compatability function)
+	 *
+	 * If $name is passed this name will be associated with the address.
+	 *
+	 * @param string $address
+	 * @param string $name	optional
+	 *
+	 * @return $this
+	 */
+	public function addBcc(...$address)
+	{
+		if (isset($address[1]))
+		{
+			$address = new \Symfony\Component\Mime\Address($address[0], $address[1]);
+		}
+		else
+		{
+			$address = new \Symfony\Component\Mime\Address($address[0]);
+		}
+
+		return parent::addBcc($address);
+	}
+
+	 /**
+	 * Add a MimePart to this Message. (compatability function)
+	 *
+	 * @param string $body
+	 * @param string $contentType
+	 * @param string $charset
+	 *
+	 * @return $this
+	 */
+	public function addPart($body, $contentType = null, $charset = '')
+	{
+		if ($contentType == "text/html")
+		{
+			$this->html($body, $charset);
+		}
+		else if ($contentType == "text/plain")
+		{
+			$this->text($body, $charset);
+		}
+		else
+		{
+			$this->attach($body, null, $contentType);
+		}
+
+		return $this;
 	}
 
 	/**
@@ -266,8 +621,8 @@ class Message extends \Swift_Message
 	/**
 	 * Adds a transport mechanisms to the known list
 	 *
-	 * @param   string  $name         the mechanism name
-	 * @param   object  $transporter  the transporter object
+	 * @param   string  $name		 the mechanism name
+	 * @param   object  $transporter the transporter object
 	 * @return  void
 	 */
 	public static function addTransporter($name, $transporter)
@@ -281,7 +636,7 @@ class Message extends \Swift_Message
 	 * @param   string  $name  The transporter name
 	 * @return  bool
 	 */
-	public static function hasTrasporter($name)
+	public static function hasTransporter($name)
 	{
 		return isset(self::$_transporters[$name]);
 	}
@@ -292,7 +647,7 @@ class Message extends \Swift_Message
 	 * @param   string  $name  The transporter name
 	 * @return  object
 	 */
-	public static function getTrasporter($name)
+	public static function getTransporter($name)
 	{
 		return self::$_transporters[$name];
 	}
