@@ -14,7 +14,7 @@ $this->js('solr')
 	->js('jquery.datetimepicker', 'system');
 
 $terms = isset($this->terms) ? $this->terms : '';
-$noResult = count($this->results) > 0 ? false : true;
+$noResult = ($this->results && count($this->results)) > 0 ? false : true;
 $tagSearchEnabled = $this->tagSearchEnabled;
 
 if ($this->section == 'map'):
@@ -26,16 +26,17 @@ endif;
 
 <!-- start component output -->
 <header id="content-header">
-	<h2><?php echo Lang::txt('Search'); ?></h2>
+	<h2><?php echo Lang::txt('COM_SEARCH_SEARCH'); ?></h2>
 </header><!-- / #content-header -->
 
-<form action="<?php echo Route::url('index.php?option=com_search'); ?>" method="get" class="container data-entry">
+<form action="<?php echo Route::url('index.php?option=com_search'); ?>" method="get" class="container" id="solr">
 	<section class="options section">
+		<div class="section-inner data-entry">
 		<input class="entry-search-submit" type="submit" value="<?php echo Lang::txt('Search'); ?>" />
 		<fieldset class="entry-search">
-			<legend><?php echo Lang::txt('Search site'); ?></legend>
-			<label for="terms"><?php echo Lang::txt('Search terms'); ?></label>
-			<input type="text" name="terms" id="terms" value="<?php echo htmlspecialchars($terms); ?>" placeholder="<?php echo Lang::txt('Enter keyword or phrase'); ?>" />
+			<legend><?php echo Lang::txt('COM_SEARCH_SITE'); ?></legend>
+			<label for="terms"><?php echo Lang::txt('COM_SEARCH_TERMS'); ?></label>
+			<input type="text" name="terms" id="terms" value="<?php echo htmlspecialchars($terms); ?>" placeholder="<?php echo Lang::txt('COM_SEARCH_ENTER_PROMPT'); ?>" />
 			<input type="hidden" name="section" value="<?php echo $this->escape($this->section); ?>" />
 			<input type="hidden" name="type" value="<?php echo !empty($this->type) ? $this->type : ''; ?>" />
 		</fieldset>
@@ -64,6 +65,7 @@ endif;
 				<input type="hidden" name="maxlon" id="maxlon" value="<?php if (isset($this->maxlon)) { echo $this->maxlon; } ?>" />
 			</fieldset>
 		<?php } // end if ?>
+		</div>
 	</section>
 
 	<section class="main section">
@@ -91,7 +93,7 @@ endif;
 						<?php if ($this->type == ''): ?>
 							<ul>
 								<li>
-									<a <?php echo ($this->type == '') ? 'class="active"' : ''; ?> href="<?php echo Route::url('index.php?option=com_search&terms=' . $this->terms); ?>"><?php echo Lang::txt('All Categories'); ?> <span class="item-count">
+									<a <?php echo ($this->type == '') ? 'class="active"' : ''; ?> href="<?php echo Route::url('index.php?option=com_search&terms=' . $this->terms); ?>"><?php echo Lang::txt('COM_SEARCH_FILTER_ALL'); ?> <span class="item-count">
 										<?php echo $this->total; ?></span>
 									</a>
 								</li>
@@ -102,7 +104,7 @@ endif;
 						<?php else: ?>
 							<ul>
 								<li>
-									<a <?php echo ($this->type == '') ? 'class="active"' : ''; ?> href="<?php echo Route::url('index.php?option=com_search&terms=' . $this->terms); ?>"><?php echo Lang::txt('&lt; Back'); ?></a>
+									<a <?php echo ($this->type == '') ? 'class="active"' : ''; ?> href="<?php echo Route::url('index.php?option=com_search&terms=' . $this->terms); ?>"><?php echo Lang::txt('COM_SEARCH_ALL_COMPONENTS'); ?></a>
 								</li>
 								<?php echo $this->searchComponent->formatWithCounts($this->facetCounts, $this->type, $this->terms, $this->childTermsString, $this->filters);?>
 							</ul>

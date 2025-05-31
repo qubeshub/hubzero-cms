@@ -12,7 +12,7 @@ use Hubzero\Database\Rows;
 use Components\Search\Helpers\DiscoveryHelper;
 use Components\Search\Models\Solr\Blacklist;
 use \Solarium\Exception\HttpException;
-use Component;
+//use Component;
 
 require_once Component::path('com_search') . '/helpers/discoveryhelper.php';
 require_once Component::path('com_search') . '/models/solr/filters/filter.php';
@@ -274,12 +274,15 @@ class SearchComponent extends Relational
 		$count = isset($counts[$countIndex]) ? $counts[$countIndex] : 0;
 		$html = '';
 
+		// If the search returns any records:
 		if ($count > 0)
 		{
 			$class = ($activeType == $this->id) ? 'class="active"' : '';
 			$link = Route::url('index.php?option=com_search&terms=' . $terms . '&type=' . $this->id . $childTerms);
 			$html .= '<li><a ' . $class . ' href="' . $link . '" data-type=' . $this->id . '>';
-			$html .= $this->name . '<span class="item-count">' . $count . '</span></a>';
+			$html .= $this->title . '<span class="item-count">' . $count . '</span></a>';
+
+			// Display filter controls, if the admin has configured a filter for this component:
 			if ($activeType && $this->filters->count() > 0)
 			{
 				foreach ($this->filters()->order('ordering', 'ASC') as $filter)
