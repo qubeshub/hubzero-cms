@@ -491,7 +491,9 @@ class Password
 	 */
 	private function _error($message, $level = E_USER_NOTICE)
 	{
-		$caller = next(debug_backtrace());
+		$backtrace = debug_backtrace();
+
+		$caller = next($backtrace);
 
 		switch ($level)
 		{
@@ -636,7 +638,7 @@ class Password
 	 * @param   string  $password
 	 * @return  bool
 	 */
-	public static function changePassword($user = null, $password)
+	public static function changePassword($user, $password)
 	{
 		$passhash = self::getPasshash($password);
 
@@ -650,7 +652,7 @@ class Password
 	 * @param   string  $password
 	 * @return  bool
 	 */
-	public static function changePasshash($user = null, $passhash)
+	public static function changePasshash($user, $passhash)
 	{
 		// Get config values for min, max, and warning
 		$config        = \Component::params('com_members');
@@ -764,7 +766,7 @@ class Password
 		}
 		else
 		{
-			$hashed = self::_getCryptedPassword($password, $salt, $encryption);
+			$hashed = self::getCryptedPassword($password, $salt, $encryption);
 		}
 
 		return ($crypt == $hashed);
@@ -779,7 +781,7 @@ class Password
 	 * @param   boolean  $show_encrypt  Some password systems prepend the kind of encryption to the crypted password ({SHA}, etc). Defaults to false.
 	 * @return  string   The encrypted password.
 	 */
-	protected static function _getCryptedPassword($plaintext, $salt = '', $encryption = 'md5-hex', $show_encrypt = false)
+	static function getCryptedPassword($plaintext, $salt = '', $encryption = 'md5-hex', $show_encrypt = false)
 	{
 		// Get the salt to use.
 		$salt = self::getSalt($encryption, $salt, $plaintext);
@@ -1026,7 +1028,7 @@ class Password
 	 * @param   bool    $alltables
 	 * @return  bool
 	 */
-	public static function passwordMatches($user = null, $password, $alltables = false)
+	public static function passwordMatches($user, $password, $alltables = false)
 	{
 		$passhash = null;
 
