@@ -234,10 +234,7 @@ class Cloud extends \Hubzero\Base\Obj
 				// Filter out admin tags - JBG
 				$results->whereNotIn('admin', [1]);
 			}
-			else
-			{
-				$results->whereEquals('admin', (int) $filters['admin']);
-			}
+
 		}
 		if (isset($filters['created_by']) && $filters['created_by'] > 0)
 		{
@@ -364,6 +361,7 @@ class Cloud extends \Hubzero\Base\Obj
 				$tag->set('admin', $admin);
 				$tag->set('tag', $tg);
 				$tag->set('raw_tag', $raw);
+				$tag->set('description', '');
 				$tag->set('created', Date::toSql());
 				$tag->set('created_by', $tagger);
 				$tag->save();
@@ -608,10 +606,6 @@ class Cloud extends \Hubzero\Base\Obj
 			$tag = trim($tag);
 			if ($tag != '')
 			{
-				if (get_magic_quotes_gpc())
-				{
-					$tag = addslashes($tag);
-				}
 				$thistag = $tagArray2[$tag];
 
 				$this->add($thistag, $tagger_id, $admin, $strength, $label);
