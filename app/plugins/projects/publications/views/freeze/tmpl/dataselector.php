@@ -107,10 +107,10 @@ if ($this->name == 'curator')
 		<div class="block-subject">
 		<?php } ?>
 			<h5 class="element-title"><?php echo $this->manifest->label; ?>
-				<?php if (count($this->attachments)) { echo ' (' . count($this->attachments) . ')'; }?>
-				<?php if (count($this->attachments) > 1 && $multiZip && $this->type == 'file') { ?><span class="download-all"><a href="<?php echo $bundleUrl; ?>" title="<?php echo $bundleName; ?>"><?php echo Lang::txt('Download all'); ?></a></span><?php } ?></h5>
+				<?php if (is_array($this->attachments) && count($this->attachments)) { echo ' (' . count($this->attachments) . ')'; }?>
+				<?php if (is_array($this->attachments) && count($this->attachments) > 1 && $multiZip && $this->type == 'file') { ?><span class="download-all"><a href="<?php echo $bundleUrl; ?>" title="<?php echo $bundleName; ?>"><?php echo Lang::txt('Download all'); ?></a></span><?php } ?></h5>
 				<?php if ($this->name == 'curator') { echo $this->pub->_curationModel->drawCurationNotice($curatorStatus, $props, 'curator', $elName); } ?>
-		<?php if (count($this->attachments) > 0) { ?>
+		<?php if (is_array($this->attachments) && count($this->attachments) > 0) { ?>
 		<div class="list-wrapper">
 			<ul class="itemlist">
 		<?php	$i= 1; ?>

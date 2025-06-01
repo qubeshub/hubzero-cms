@@ -240,6 +240,16 @@
 	#contrib-section .omega p {
 		font-size: 85%;
 	}
+	.pubType {
+		display: block;
+		margin-top: 12px;
+	}
+	.pubType > a:before {
+		content: "" !important;
+	}
+	.pubType > a:hover {
+		text-decoration: underline;
+	}
 
 /* Status bar publication version
 --------------------------------------------- */
@@ -1240,6 +1250,10 @@
 	.author-edit .hint {
 		font-size: 85%;
 		padding: 0.5em 0 1em 0;
+	}
+	.author-edit .prompt {
+		font-size: 85%;
+		color: red;
 	}
 	.a-tip {
 		font-size: 75%;

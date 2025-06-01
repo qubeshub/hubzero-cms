@@ -539,11 +539,11 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 			$view->editor = $modelHandler->loadEditor($view->handler, $view->publication, $element);
 		}
 
-		$view->option   = $this->_option;
+		$view->set('option', $this->_option);
 		$view->database = $this->_database;
 		$view->uid      = $this->_uid;
 		$view->ajax     = $ajax;
-		$view->task     = $this->_task;
+		$view->set('task', $this->_task);
 		$view->element  = $element;
 		$view->block    = $block;
 		$view->blockId  = $blockId;
@@ -1148,7 +1148,8 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 		$view->config   = $this->model->config();
 		$view->choices  = $choices;
 		$view->title    = $this->_area['title'];
-
+		$view->pubConfig = $this->_pubconfig;
+		
 		// Get messages	and errors
 		$view->msg = $this->_msg;
 		if ($this->getError())
@@ -1287,6 +1288,8 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 		$row = new \Components\Publications\Tables\Version($this->_database);
 		$row->publication_id = $this->_pid;
 		$row->title          = $row->getDefaultTitle($this->model->get('id'), $title);
+		$row->abstract       = "";
+		$row->description    = "";
 		$row->state          = 3; // dev
 		$row->main           = 1;
 		$row->created_by     = $this->_uid;
@@ -2113,6 +2116,16 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 				{
 					$this->setError(Lang::txt('PLG_PROJECTS_PUBLICATIONS_PUBLICATION_ERROR_CONTACT_NOT_FOUND'));
 					continue;
+				}
+
+				// Prompt error message if an invited author is chosen as contact but the email address is empty
+				$owner = $author->getAuthorByOwnerId($pub->version->id, $author->project_owner_id);
+				
+				if (empty($owner->user_id) && empty($owner->invited_email))
+				{
+					Notify::error(Lang::txt('PLG_PROJECTS_PUBLICATIONS_PUBLICATION_ERROR_CONTACT_EMAIL_ADDRESS_MISSING'), 'projects');
+					App::redirect(Route::url($pub->link('editversion') . '&action=' . $this->_task));
+					return;
 				}
 
 				$author->repository_contact = 1;

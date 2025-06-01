@@ -781,8 +781,11 @@
 /* Notice from authors form
 --------------------------------------------- */
 	.addnotice {
+		padding: 1rem;
 		width: 500px;
-		height: 300px;
+	}
+	.addnotice label {
+		display: block;
 	}
 	.fancybox-wrap fieldset .notice-item,
 	.notice-item {
@@ -791,6 +794,10 @@
 	}
 	.submitarea {
 		text-align: center;
+	}
+	
+	#notice-review {
+		width: 100%;
 	}
 
 /*
@@ -1234,4 +1241,34 @@
 		border-top: 4px solid #CCC;
 		min-height: 400px;
 		background: #ecf7f8;
+	}
+	.draft-review ul.filelist li {
+		display: flex;
+	}
+	.draft-review ul.filelist .item-icon {
+		width: 25px;
+	}
+
+	#notice-form .form-group > label {
+		width: 100%;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	#notice-form .form-group > label > span {
+		width: 100%;
+		text-align: center;
+	}
+
+	#notice-form .form-group > label > textarea {
+		width: 80%;
+	}
+
+	/* Draft review page */
+	.item-msg {
+		padding-right: 6em;
+		margin-left: 0;
+		padding-left: 0;
+		color: red;
 	}
