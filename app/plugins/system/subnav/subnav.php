@@ -25,7 +25,7 @@ class plgSystemSubnav extends \Hubzero\Plugin\Plugin
 		$urlMappings = $this->params->get('url_mappings');
 
 		$comMappings = explode("\n", $comMappings);
-		$urlMappings = explode("\n", $urlMappings);
+		$urlMappings = explode("\n", $urlMappings ?: '');
 
 		$componentsMap = array();
 		foreach ($comMappings as $mapping)
