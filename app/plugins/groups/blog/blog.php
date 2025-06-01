@@ -80,7 +80,7 @@ class plgGroupsBlog extends \Qubeshub\Plugin\Plugin
 	 * @param   array    $areas       Active area(s)
 	 * @return  array
 	 */
-	public function onGroup($group, $option, $authorized, $limit=0, $limitstart=0, $action='', $access, $areas=null)
+	public function onGroup($group, $option, $authorized, $limit, $limitstart, $action, $access, $areas=null)
 	{
 		$return = 'html';
 		$active = $this->_name;
@@ -437,7 +437,7 @@ class plgGroupsBlog extends \Qubeshub\Plugin\Plugin
 			'scope_id'   => $this->group->get('gidNumber'),
 			'search'     => Request::getString('search', ''),
 			'created_by' => Request::getInt('author', 0),
-			'state'      => 'public'
+			'state'      => 1
 		);
 
 		$path = Request::path();
