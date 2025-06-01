@@ -4,7 +4,6 @@ app/language/**
 app/logs/**
 app/site/**
 app/tmp/**
-app/**
 core/vendor/**
 .vscode/**
 *.sublime-*
