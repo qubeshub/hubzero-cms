@@ -84,7 +84,7 @@ class Diff_SequenceMatcher
 	 * @param string|array $b A string or array containing the lines to compare.
 	 * @param string|array $junkCallback Either an array or string that references a callback function (if there is one) to determine 'junk' characters.
 	 */
-	public function __construct($a, $b, $junkCallback=null, $options)
+	public function __construct($a, $b, $junkCallback, $options)
 	{
 		$this->a = null;
 		$this->b = null;
@@ -683,7 +683,7 @@ class Diff_SequenceMatcher
 		if ($this->fullBCount === null)
 		{
 			$this->fullBCount = array();
-			$bLength = count ($b);
+			$bLength = count($this->b);
 			for ($i = 0; $i < $bLength; ++$i)
 			{
 				$char = $this->b[$i];
