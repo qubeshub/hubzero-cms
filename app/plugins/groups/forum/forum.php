@@ -87,7 +87,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 	 * @param   array    $areas       Active area(s)
 	 * @return  array
 	 */
-	public function onGroup($group, $option, $authorized, $limit=0, $limitstart=0, $action='', $access, $areas=null)
+	public function onGroup($group, $option, $authorized, $limit, $limitstart, $action, $access, $areas=null)
 	{
 		$return = 'html';
 		$active = $this->_name;
@@ -1260,6 +1260,15 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 		$this->_authorize('thread', $thread->get('id'));
 		$this->_authorize('post');
 
+		// Get all the likes of this thread
+		$db = \App::get('db');
+		$queryLikes = "SELECT LIKES.threadId as 'threadId', LIKES.postId as 'postId', 
+		  LIKES.userId as 'userId', USERS.name as 'userName', USERS.email as 'userEmail' 
+		  FROM jos_forum_posts_like as LIKES, jos_users AS USERS
+		  WHERE LIKES.userId = USERS.id AND LIKES.threadId = " . $thread->get('id');
+		$db->setQuery($queryLikes);
+		$initialLikesList = $db->loadObjectList();
+
 		// If the access is anything beyond public,
 		// make sure they're logged in.
 		if (User::isGuest() && !in_array($thread->get('access'), User::getAuthorisedViewLevels()))
@@ -1294,6 +1303,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 			->set('section', $section)
 			->set('category', $category)
 			->set('thread', $thread)
+			->set('likes', $initialLikesList)
 			->set('filters', $filters)
 			->setErrors($this->getErrors())
 			->loadTemplate();
@@ -1436,6 +1446,18 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 			$fields['modified_by'] = User::get('id');
 		}
 
+		// Extracting emails from the new post submitted
+		$domComment = new \DOMDocument();
+		$domComment->loadHTML($fields['comment']);
+		$mentionEmailList = array();
+		foreach ($domComment->getElementsByTagName('a') as $item) {
+			$userId = $item->getAttribute('data-user-id');
+            $user = User::getInstance($userId);
+            $email = $user->get('email');
+
+            $mentionEmailList[] = $email;
+		}
+
 		if (!$this->params->get('access-edit-thread')
 		 && !$this->params->get('access-create-thread'))
 		{
@@ -1519,7 +1541,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 
 		// Email the group and insert email tokens to allow them to respond to group posts via email
 		$params = Component::params('com_groups');
-		if ($params->get('email_comment_processing') && (isset($moving) && $moving == false))
+		if ($params->get('email_forum_comments') && (isset($moving) && $moving == false))
 		{
 			$thread->set('section', $section->get('alias'));
 			$thread->set('category', $category->get('alias'));
@@ -1566,8 +1588,17 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 					$unsubscribeToken = $encryptor->buildEmailToken(1, 3, $userID, $this->group->get('gidNumber'));
 					$unsubscribeLink  = rtrim(Request::base(), '/') . '/' . ltrim(Route::url('index.php?option=com_groups&cn=' . $this->group->get('cn') .'&active=forum&action=unsubscribe&t=' . $unsubscribeToken), DS);
 
-					$from['replytoname']  = Lang::txt('PLG_GROUPS_FORUM_REPLYTO') . ' @ ' . Config::get('sitename');
-					$from['replytoemail'] = 'hgm-' . $token . '@' . $_SERVER['HTTP_HOST'];
+
+					if(Component::params('com_groups')->get('email_comment_processing'))
+					{
+						$from['replytoname']  = Lang::txt('PLG_GROUPS_FORUM_REPLYTO') . ' @ ' . Config::get('sitename');
+						$from['replytoemail'] = 'hgm-' . $token . '@' . $_SERVER['HTTP_HOST'];
+					}
+					else
+					{
+						$from['replytoname']  = 'noreply';
+						$from['replytoemail'] = 'noreply@' . $_SERVER['HTTP_HOST'];
+					}
 				}
 
 				$msg = array();
@@ -1646,6 +1677,23 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 			}
 		}
 
+		// Email to Users
+		if ($mentionEmailList) 
+		{
+			$comment = $fields['comment'];
+			$createdByUserId = $post->get('created_by');
+			$createdByUser = User::getInstance($createdByUserId);
+			$createdUserName = $createdByUser->get('name');
+			$groupAlias = $this->group->get('cn');
+			$groupTitle = $this->group->get('description');
+
+			$urlExt = 'groups/' . $this->group->get('cn') . '/forum/' . $section->get('alias') . '/' . $category->get('alias') . '/' . $post->get('thread') . '#c' . $post->get('id');
+			$host = $_SERVER['HTTP_HOST'];
+			$externalUrl = 'https://' . $host . '/' . $urlExt;
+
+			$this->emailToAllMentionedUsersInGroup($mentionEmailList, $comment, $externalUrl, $createdUserName, $groupAlias, $groupTitle);
+		}
+
 		Event::trigger('system.logActivity', [
 			'activity' => [
 				'action'      => ($fields['id'] ? 'updated' : 'created'),
@@ -1667,6 +1715,48 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 			$message,
 			'passed'
 		);
+	}
+
+	/**
+	 * Email the mentioned users with a PHP html template
+	 *
+	 * @return  void
+	 */
+	public function emailToAllMentionedUsersInGroup($emails, $comment, $url, $postAuthor, $groupAlias, $groupTitle) 
+	{
+		$from = array();
+		$from['name']  = Config::get('sitename') . ' ' . Lang::txt(strtoupper($this->_name));
+		$from['email'] = Config::get('mailfrom');
+
+		$subject = $postAuthor . " mentioned you on a group thread from " . $groupTitle;
+
+		// BUILDING THE EMAIL TEMPLATE
+		$eView = new \Hubzero\Mail\View(array(
+			'base_path'	=> __DIR__,
+			'name'		=> 'email',
+			'layout'	=> 'mentions_html'
+		));
+
+		$eView->comment = $comment;
+		$eView->commentNoTags = strip_tags($comment);
+		$eView->postLink = $url;
+		$eView->postAuthor = $postAuthor;
+		$eView->groupTitle = $groupTitle;
+		$eView->groupAlias = $groupAlias;
+
+		$html = $eView->loadTemplate(false);
+		$html = str_replace("\n", "\r\n", $html);
+
+		// Create NEW message object and send
+		$message = new \Hubzero\Mail\Message();
+		$message->setSubject($subject)
+			->addFrom($from['email'], $from['name'])
+			->setTo($from['email'])
+			->setBcc($emails)
+			->addPart($html, 'text/html')
+			->send();
+
+		return true;
 	}
 
 	/**

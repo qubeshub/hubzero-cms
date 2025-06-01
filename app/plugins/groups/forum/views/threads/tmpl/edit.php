@@ -24,7 +24,7 @@ else
 }
 
 $this->css()
-     ->js();
+	 ->js();
 ?>
 <ul id="page_options">
 	<li>
@@ -132,7 +132,7 @@ $this->css()
 				<div class="form-group">
 					<label for="field-title">
 						<?php echo Lang::txt('PLG_GROUPS_FORUM_FIELD_TITLE'); ?> <span class="required"><?php echo Lang::txt('PLG_GROUPS_FORUM_REQUIRED'); ?></span>
-						<input type="text" class="form-control" name="fields[title]" id="field-title" value="<?php echo $this->escape(stripslashes($this->post->get('title'))); ?>" />
+						<input type="text" class="form-control" name="fields[title]" id="field-title" value="<?php echo $this->escape(stripslashes($this->post->get('title', ''))); ?>" />
 					</label>
 				</div>
 			<?php } else { ?>
@@ -142,8 +142,26 @@ $this->css()
 
 				<div class="form-group">
 					<label for="field_comment">
-						<?php echo Lang::txt('PLG_GROUPS_FORUM_FIELD_COMMENTS'); ?> <span class="required"><?php echo Lang::txt('PLG_GROUPS_FORUM_REQUIRED'); ?></span>
-						<?php echo $this->editor('fields[comment]', $this->escape(stripslashes($this->post->get('comment'))), 35, 15, 'field_comment', array('class' => 'form-control minimal no-footer')); ?>
+						<div>
+							<?php echo Lang::txt('PLG_GROUPS_FORUM_FIELD_COMMENTS'); ?> <span class="required"><?php echo Lang::txt('PLG_GROUPS_FORUM_REQUIRED'); ?></span>
+							<span class="note" style='float:right'>Use an @ sign to mention group users in the post</span>
+						</div>						
+						<?php
+							$gid = $this->group->get('gidNumber');
+							$feedUrl = '/api/members/mentions/group?gid=' . $gid . '&search={encodedQuery}';
+
+							echo $this->editor('fields[comment]', $this->escape(stripslashes($this->post->get('comment',''))), 35, 15, 'field_comment',
+								array(
+									'class' => 'minimal no-footer',
+									'mentions' => array(
+										array(
+											'minChars' => 0,
+											'feed' => $feedUrl,
+											'itemTemplate' => '<li data-id="{id}"><img class="photo" src="{picture}" /><strong class="username">{username}</strong><span class="fullname">{name}</span></li>',
+											'outputTemplate' => '<a href="/members/{id}" data-user-id="{id}" target="_blank">@{username}</a>&nbsp;&nbsp;',
+										)
+									)
+								)); ?>
 					</label>
 				</div>
 
@@ -172,11 +190,11 @@ $this->css()
 							<div class="form-group">
 								<label for="field-attach-descritpion">
 									<?php echo Lang::txt('PLG_GROUPS_FORUM_FIELD_DESCRIPTION'); ?>:
-									<input type="text" class="form-control" name="description" id="field-attach-descritpion" value="<?php echo $this->escape(stripslashes($attachment->get('description'))); ?>" />
+									<input type="text" class="form-control" name="description" id="field-attach-descritpion" value="<?php echo $this->escape(stripslashes($attachment->get('description', ''))); ?>" />
 								</label>
 							</div>
 						</div>
-						<input type="hidden" name="attachment" value="<?php echo $this->escape(stripslashes($attachment->get('id'))); ?>" />
+						<input type="hidden" name="attachment" value="<?php echo $this->escape(stripslashes($attachment->get('id',''))); ?>" />
 					</div>
 					<?php if ($attachment->get('id')) { ?>
 						<p class="warning">

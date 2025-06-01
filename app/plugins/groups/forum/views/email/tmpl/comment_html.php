@@ -29,7 +29,8 @@ $preheader = (!$this->post->get('anonymous') ? $this->post->creator->get('name')
 <span class="preheader"><?php echo $preheader; ?></span>
 <!-- End Preheader -->
 
-<?php if ($this->delimiter) { ?>
+<?php if ($this->delimiter) {
+	if (Component::params('com_groups')->get('email_comment_processing')) { ?>
 	<!-- Start Header Spacer -->
 	<table class="tbl-delimiter" width="100%" cellpadding="0" cellspacing="0" border="0" style="border: 1px dashed #b5c6b5;">
 		<tbody>
@@ -41,6 +42,7 @@ $preheader = (!$this->post->get('anonymous') ? $this->post->creator->get('name')
 			</tr>
 		</tbody>
 	</table>
+	<?php } ?>
 	<!-- End Header Spacer -->
 
 	<!-- Start Spacer -->
