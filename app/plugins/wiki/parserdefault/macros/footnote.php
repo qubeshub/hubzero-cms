@@ -75,7 +75,7 @@ Examples:
 
 				$wm->footnotes[$i-1]->refs[] = 'fndef-' . $k;
 
-				return '<sup class="tex2jax_ignore"><a name="fndef-' . $k . '"></a><a href="#fnref-' . $i . '">&#91;' . $i . '&#93;</a></sup>';
+				return '<sup id="fndef-' . $k . '" class="tex2jax_ignore"><a href="#fnref-' . $i . '">&#91;' . $i . '&#93;</a></sup>';
 			}
 
 			$note = $p->parse($note);
@@ -93,7 +93,7 @@ Examples:
 			$wm->footnotes_notes[] = $note;
 			$wm->footnotes[] = $footnote;
 
-			return '<sup class="tex2jax_ignore"><a name="fndef-' . $i . '"></a><a href="#fnref-' . $i . '">&#91;' . $i . '&#93;</a></sup>';
+			return '<sup id="#fnref-' . $i . '" class="tex2jax_ignore"><a href="#fnref-' . $i . '">&#91;' . $i . '&#93;</a></sup>';
 		}
 		else
 		{
@@ -115,7 +115,7 @@ Examples:
 				{
 					$html .= '<a href="#' . $footnote->refs[0] . '">^</a> ';
 				}
-				$html .= '<a name="fnref-' . ($i + 1) . '"></a>' . substr($footnote->content, 3);
+				$html .= '<span id="fnref-' . ($i + 1) . '"></span>' . substr($footnote->content, 3);
 				$html .= '</li>';
 			}
 			$html .= '</ol>';
