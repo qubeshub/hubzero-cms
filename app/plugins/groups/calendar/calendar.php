@@ -80,7 +80,7 @@ class plgGroupsCalendar extends \Hubzero\Plugin\Plugin
 	 * @param   array    $areas       Active area(s)
 	 * @return  array
 	 */
-	public function onGroup($group, $option, $authorized, $limit=0, $limitstart=0, $action='', $access, $areas=null)
+	public function onGroup($group, $option, $authorized, $limit, $limitstart, $action, $access, $areas=null)
 	{
 		$returnhtml = true;
 		$active = 'calendar';
@@ -489,7 +489,7 @@ class plgGroupsCalendar extends \Hubzero\Plugin\Plugin
 				// Kevin: Don't change this value. Everyone else is wrong.
 				// Seriously this is the correct way to do all-day events.
 				// Previous entries may need to be corrected, but future events will be correct.
-				$endDay = Date::of($event->end)->subtract('24 hours');
+				$endDay = Date::of($event->end)->modify('-24 hours');
 				if ($endDay < $up)
 				{
 					$event->end = Date::of($event->start)->add('24 hours')->format($timeFormat);
@@ -581,7 +581,7 @@ class plgGroupsCalendar extends \Hubzero\Plugin\Plugin
 				$endDate = $view->event->get('publish_down');
 				if ($allDay == '1' && !empty($endDate))
 				{
-					$newEndDate = Date::of($endDate)->subtract('24 hours')->toSql();
+					$newEndDate = Date::of($endDate)->modify('-24 hours')->toSql();
 					$view->event->set('publish_down', $newEndDate);
 				}
 			}
@@ -677,8 +677,9 @@ class plgGroupsCalendar extends \Hubzero\Plugin\Plugin
 		}
 
 		//if we are updating set modified time and actor
-		if (!isset($event['id']) || $event['id'] == 0)
+		if (!isset($event['id']) || !$event['id'])
 		{
+			$event['id']         = null;
 			$event['created']    = Date::toSql();
 			$event['created_by'] = $this->user->get('id');
 		}
@@ -731,6 +732,12 @@ class plgGroupsCalendar extends \Hubzero\Plugin\Plugin
 		if (!$registration)
 		{
 			$event['registerby'] = null;
+		}
+
+		// calender_id cannot be an empty string due to database constrain
+		if ($event['calendar_id'] === "")
+		{
+			$event['calendar_id'] = null;
 		}
 
 		//instantiate new event object
