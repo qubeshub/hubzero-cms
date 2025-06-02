@@ -93,7 +93,7 @@ Examples:
 			$wm->footnotes_notes[] = $note;
 			$wm->footnotes[] = $footnote;
 
-			return '<sup id="#fnref-' . $i . '" class="tex2jax_ignore"><a href="#fnref-' . $i . '">&#91;' . $i . '&#93;</a></sup>';
+			return '<sup id="fndef-' . $i . '" class="tex2jax_ignore"><a href="#fnref-' . $i . '">&#91;' . $i . '&#93;</a></sup>';
 		}
 		else
 		{
