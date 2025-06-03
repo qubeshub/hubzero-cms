@@ -56,7 +56,7 @@ $updated  = $curatorStatus->updated && (($curatorStatus->status == 3 && !$comple
 
 			<fieldset class="focus-areas">
 				<?php
-					if (count($this->fas) > 0):
+					if ($this->fas->count() > 0):
 						foreach ($this->fas as $fa):
 				?>
 							<fieldset value="<?php echo ($fa->mandatory_depth ? $fa->mandatory_depth : 0) ?>">
