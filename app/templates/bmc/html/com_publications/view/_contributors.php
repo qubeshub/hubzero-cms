@@ -49,7 +49,10 @@ if ($this->contributors)
 		{
 			$contributor->organization = $contributor->p_organization;
 		}
-		$contributor->organization = $this->escape(stripslashes(trim($contributor->organization)));
+		if ($contributor->organization)
+		{
+			$contributor->organization = $this->escape(stripslashes(trim($contributor->organization)));
+		}
 
 		$name = str_replace( '"', '&quot;', $name );
 		if ($contributor->user_id && $contributor->open)
@@ -63,17 +66,17 @@ if ($this->contributors)
 		}
 		$link .= ($contributor->role) ? ' ('.$contributor->role.')' : '';
 
-		if (trim($contributor->organization) != '' && !in_array(trim($contributor->organization), $orgs))
+		if ($contributor->organization && !in_array(trim($contributor->organization), $orgs))
 		{
-			$orgs[$i-1] = trim($contributor->organization);
-			$orgsln 	.= $i. '. ' . trim($contributor->organization) . ' ';
-			$orgsln_s 	.= trim($contributor->organization) . ' ';
+			$orgs[$i-1] = $contributor->organization;
+			$orgsln 	.= $i. '. ' . $contributor->organization . ' ';
+			$orgsln_s 	.= $contributor->organization . ' ';
 			$k = $i;
 			$i++;
 		}
-		else if (trim($contributor->organization) != '')
+		else if ($contributor->organization)
 		{
-			$k = array_search(trim($contributor->organization), $orgs) + 1;
+			$k = array_search($contributor->organization, $orgs) + 1;
 		}
 		else
 		{
@@ -84,6 +87,12 @@ if ($this->contributors)
 		if ($this->showorgs && $k)
 		{
 			$link .= '<sup>' . $k . '</sup>';
+		}
+		if ($contributor->orcid)
+		{
+			$orcid = '<a href="https://orcid.org/' . $contributor->orcid . '" target="blank" title="' . $name . '\'s ORCID page"><img alt="ORCID logo" src="https://info.orcid.org/wp-content/uploads/2019/11/orcid_16x16.png" width="16" height="16" /></a>';
+			$link_s .= $orcid;
+			$link .= $orcid;
 		}
 		$names_s[] = $link_s;
 		$names[] = $link;
@@ -105,7 +114,6 @@ if ($this->contributors)
 	{
 		$html = count($names) > 1  ? implode( ', ', $names ) : implode( ', ', $names_s );
 	}
-
 }
 else
 {
