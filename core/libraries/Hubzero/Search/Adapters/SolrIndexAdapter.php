@@ -30,6 +30,8 @@ class SolrIndexAdapter implements IndexInterface
 
 	var $overwrite = null;
 
+	var $logs = null;
+
 	/**
 	 * __construct - Constructor for adapter, sets config and established connection
 	 *
