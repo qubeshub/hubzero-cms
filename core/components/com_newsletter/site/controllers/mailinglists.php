@@ -99,9 +99,6 @@ class Mailinglists extends SiteController
 	 */
 	public function subscribeTask()
 	{
-		//check to make sure we have a valid token
-		Request::checkToken();
-
 		//get email
 		if (User::isGuest())
 		{
