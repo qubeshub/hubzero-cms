@@ -395,7 +395,7 @@ class Message extends \Symfony\Component\Mime\Email
 				$address = new \Symfony\Component\Mime\Address($key, $value);
 			}
 
-			if (isset($first_set))
+			if (!isset($first_set))
 			{
 				parent::to($address);
 
