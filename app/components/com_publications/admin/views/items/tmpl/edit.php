@@ -194,7 +194,7 @@ $panels = array(
 					<div class="input-wrap">
 						<?php 
 						$focusAreas = $this->model->getFocusAreasForEditing();
-						if (count($focusAreas['fas']) > 0) {
+						if ($focusAreas['fas']->count() > 0) {
 						foreach ($focusAreas['fas'] as $fa) { ?>
 							<fieldset value="<?php echo ($fa->mandatory_depth ? $fa->mandatory_depth : 0) ?>">
 								<legend>
