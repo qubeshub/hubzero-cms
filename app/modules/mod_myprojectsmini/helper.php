@@ -72,7 +72,7 @@ class Helper extends Module
 		}
 
     uasort($projctsorted, function($first, $second) {
-    	return $first->lastvisit < $second->lastvisit;
+    	return $second->lastvisit <=> $first->lastvisit;
     });
 		
     // pass limit to view
