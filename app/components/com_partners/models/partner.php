@@ -8,7 +8,7 @@
 namespace Components\Partners\Models;
 
 use Hubzero\Database\Relational;
-use Hubzero\Utility\String;
+use Hubzero\Utility\Str;
 use Session;
 use Date;
 use stdClass;
@@ -126,7 +126,7 @@ class Partner extends Relational implements \Hubzero\Search\Searchable
 
 		if ($shorten)
 		{
-			$content = String::truncate($content, $shorten, $options);
+			$content = Str::truncate($content, $shorten, $options);
 		}
 		return $content;
 	}
