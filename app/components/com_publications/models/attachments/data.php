@@ -651,7 +651,7 @@ class Data extends Base
 		$role     = $element->role;
 		$params   = $element->typeParams;
 		$required = $element->required;
-		$counter  = count($attachments);
+		$counter  = is_array($attachments) ? count($attachments) : 0;
 
 		if (!$required)
 		{
