@@ -131,7 +131,7 @@ class Tags extends Base
 	 * @param   string  $viewname
 	 * @return  string  HTML
 	 */
-	public function buildContent($pub = null, $viewname = 'edit', $status, $master)
+	public function buildContent($pub, $viewname, $status, $master)
 	{
 		$name = $viewname == 'freeze' || $viewname == 'curator' ? 'freeze' : 'draft';
 
