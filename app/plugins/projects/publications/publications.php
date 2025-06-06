@@ -2189,7 +2189,7 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 			else
 			{
 				$apu = $this->_pubconfig->get('autoapproved_users');
-				$apu = explode(',', $apu);
+				$apu = explode(',', $apu == null ? '' : $apu);
 				$apu = array_map('trim', $apu);
 
 				if (in_array(User::get('username'), $apu))
@@ -2497,11 +2497,11 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 
 		if ($pub->version->get('state') == 1 && !$pub->isEmbargoed())
 		{
-			$pub->_curationModel->createSymLink();
+			$pub->_curationModel->createLink();
 		}
 		else
 		{
-			$pub->_curationModel->removeSymLink();
+			$pub->_curationModel->removeLink();
 		}
 
 		// Pass error or success message
