@@ -227,7 +227,7 @@ class plgPublicationsComments extends \Qubeshub\Plugin\Plugin
 				break;
 			}
 
-			$pdt = strftime('Y', $dt) . '-' . strftime('m', $dt) . '-' . strftime('d', $dt) . ' 00:00:00';
+			$pdt = date('Y', $dt) . '-' . date('m', $dt) . '-' . date('d', $dt) . ' 00:00:00';
 			$today = Date::toSql();
 
 			// Can users create comments?
