@@ -1174,7 +1174,7 @@ class Html
 	 */
 	public static function parseTag($text, $tag)
 	{
-		preg_match("#<nb:" . $tag . ">(.*?)</nb:" . $tag . ">#s", $text, $matches);
+		preg_match("#<nb:" . $tag . ">(.*?)</nb:" . $tag . ">#s", $text ?: '', $matches);
 		if (count($matches) > 0)
 		{
 			$match = $matches[0];
