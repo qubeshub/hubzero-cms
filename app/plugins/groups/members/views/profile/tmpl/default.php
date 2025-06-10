@@ -170,7 +170,7 @@ foreach ($profiles as $profile)
 					}
 					else
 					{
-						if (strstr($value, '{'))
+						if (strstr($value == null ? '' : $value, '{'))
 						{
 							$v = json_decode((string)$value, true);
 
