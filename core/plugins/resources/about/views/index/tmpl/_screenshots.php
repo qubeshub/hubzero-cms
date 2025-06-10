@@ -25,7 +25,12 @@ if ($versionid && $allowversions)
 	$path .= DS . $versionid;
 }
 
-$d = @dir(PATH_APP . $upath . $path);
+$d = '';
+if (is_dir(PATH_APP . $upath . $path))
+{
+	$d = dir(PATH_APP . $upath . $path);
+}
+
 $images = array();
 $tns = array();
 $all = array();
