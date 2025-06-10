@@ -70,6 +70,10 @@
 #page_sidebar {
   background: #222b37;
 }
+#page_header {
+  flex-direction: column;
+  align-items: flex-start;
+}
 #page_header h2 {
   float: none;
 }
