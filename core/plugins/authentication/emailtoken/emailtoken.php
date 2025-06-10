@@ -88,7 +88,7 @@ class plgAuthenticationEmailtoken extends \Hubzero\Plugin\Plugin
 		}
 
 		// Check if they gave the correct confimation token
-		if ($code != -$activation)
+		if ($code != -intval($activation))
 		{
 			// Don't need to do anything if it failed
 			return;
