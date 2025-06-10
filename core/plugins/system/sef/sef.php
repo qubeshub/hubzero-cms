@@ -49,7 +49,7 @@ class plgSystemSef extends \Hubzero\Plugin\Plugin
 		$this->checkBuffer($buffer);
 
 		// Background image
-		$regex  = '#style\s*=\s*[\'\"](.*):\s*url\s*\([\'\"]?(?!/|'.$protocols.'|\#)([^\)\'\"]+)[\'\"]?\)#m';
+		$regex  = '#style\s*=\s*[\'\"](\w*):\s*url\s*\([\'\"]?(?!/|'.$protocols.'|\#)([^\)\'\"]+)[\'\"]?\)#m';
 		$buffer = preg_replace($regex, 'style="$1: url(\'' . $base . '$2$3\')', $buffer);
 		$this->checkBuffer($buffer);
 
