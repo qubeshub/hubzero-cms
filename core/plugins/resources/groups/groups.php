@@ -65,10 +65,10 @@ class plgResourcesGroups extends \Hubzero\Plugin\Plugin
                 {
                         $aclgroup = \Hubzero\User\Group::getInstance($g);
 
-                        if ($group && $group->get('cn') == $aclgroup->get('cn'))
+                        if ($aclgroup && $group && $group->get('cn') == $aclgroup->get('cn'))
                                 continue;
 
-                        if ($aclgroup->get('gidNumber'))
+                        if ($aclgroup && $aclgroup->get('gidNumber'))
                                 $aclgroups[] = $aclgroup;
                 }
  

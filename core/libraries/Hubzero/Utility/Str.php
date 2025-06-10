@@ -504,7 +504,7 @@ class Str
 			$value = abs($value);
 		}
 
-		while (strlen($value) < $length)
+		while (strlen($value == null ? '' : $value) < $length)
 		{
 			$value = $prfx . "$value";
 		}

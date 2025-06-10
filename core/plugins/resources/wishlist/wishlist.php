@@ -335,7 +335,7 @@ class plgResourcesWishlist extends \Hubzero\Plugin\Plugin
 					->rows();
 
 				$title = ($admin) ?  Lang::txt('COM_WISHLIST_TITLE_PRIORITIZED') : Lang::txt('COM_WISHLIST_TITLE_RECENT_WISHES');
-				if (count($wishlist->items) > 0 && $items > $filters['limit'])
+				if (is_array($wishlist->items) && count($wishlist->items) > 0 && $items > $filters['limit'])
 				{
 					$title.= ' (<a href="' . Route::url('index.php?option=' . $option . '&task=wishlist&category=' . $wishlist->category . '&rid=' . $wishlist->referenceid) . '">' . Lang::txt('PLG_RESOURCES_WISHLIST_VIEW_ALL') . '</a>)';
 				}

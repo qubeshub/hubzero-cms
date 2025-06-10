@@ -103,7 +103,7 @@ if ($label == 'none') {
 						<?php
 
 							// Fixes the counter so it starts counting at the current citation number instead of restarting on 1 at every page
-							$counter = $this->filters['limitstart'] + 1;
+							$counter = intval($this->filters['limitstart']) + 1;
 
 							if ($counter == '')
 							{

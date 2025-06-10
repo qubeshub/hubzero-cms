@@ -622,7 +622,7 @@ class Customexts extends AdminController
 						{
 							// Run migrations
 							$migrations_response = Cli::migration($dryRun=false, $ignoreDates=true, $file=null, $dir='up', $folder=$extension->path);
-							$migrations_response = json_decode($migrations_response);
+							$migrations_response = json_decode($migrations_response == null ? '' : $migrations_response);
 
 							// if the response from the fetch was empty no changes needed, otherwise display error.
 							// Possible the message here is considered an error because we're only testing for several specific 
@@ -682,7 +682,7 @@ class Customexts extends AdminController
 
 			$museCmd = 'update -r=' . $extension->path . ' -f --no-colors';
 			$update_response = Cli::call($museCmd, $task='repository');
-			$update_response = json_decode($update_response);
+			$update_response = json_decode($update_response == null ? '' : $update_response);
 
 			// add output message, success or failure, just output.
 			$msg[] = array(
@@ -692,7 +692,7 @@ class Customexts extends AdminController
 
 			// Run migrations
 			$migrations_response = Cli::migration($dryRun=false, $ignoreDates=true, $file=null, $dir='up', $folder=$extension->path);
-			$migrations_response = json_decode($migrations_response);
+			$migrations_response = json_decode($migrations_response == null ? '' : $migration_response);
 
 		}
 
