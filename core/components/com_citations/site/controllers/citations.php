@@ -237,7 +237,7 @@ class Citations extends SiteController
 		{
 			if (!is_array($val))
 			{
-				$val = trim($val);
+				$val = trim($val == null ? '' : $val);
 				$val = str_replace('"', '', $val);
 			}
 		});

@@ -97,7 +97,7 @@ if ($this->contributors)
 				}
 			}
 
-			if (trim($contributor->organization) != '' && !in_array(trim($contributor->organization), $orgs))
+			if (trim($contributor->organization == null ? '' : $contributor->organization) != '' && !in_array(trim($contributor->organization == null ? '' : $contributor->organization), $orgs))
 			{
 				$orgs[$i-1] = trim($contributor->organization);
 				$orgsln    .= $i . '. ' . trim($contributor->organization) . ' ';
@@ -107,10 +107,10 @@ if ($this->contributors)
 			}
 			else
 			{
-				$k = array_search(trim($contributor->organization), $orgs) + 1;
+				$k = array_search(trim($contributor->organization == null ? '' : $contributor->organization), $orgs) + 1;
 			}
 			$link_s = $link;
-			if (trim($contributor->organization) != '')
+			if (trim($contributor->organization == null ? '' : $contributor->organization) != '')
 			{
 				$link .= '<sup>' . $k . '</sup>';
 			}
