@@ -885,7 +885,7 @@ class Tickets extends SiteController
 
 		$reporter['name']  = trim($reporter['name']);
 		$reporter['email'] = trim($reporter['email']);
-		$problem['long']   = trim($problem['long']);
+		$problem['long']   = isset($problem['long']) ? trim($problem['long']) : '';
 
 		// Make sure email address is valid
 		$validemail = Validate::email($reporter['email']);
