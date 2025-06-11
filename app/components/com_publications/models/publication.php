@@ -2137,7 +2137,7 @@ class Publication extends Obj
 					$file_list = scandir(PATH_APP . DS . $path . DS . 'gallery');
 					foreach ($file_list as $file)
 					{
-						if ($file != '.' && $file != '..' && exif_imagetype(PATH_APP . DS . $path . DS . 'gallery' . DS . $file))
+						if (is_file(PATH_APP . DS . $path . DS . 'gallery' . DS . $file) && exif_imagetype(PATH_APP . DS . $path . DS . 'gallery' . DS . $file))
 						{
 							list($width, $height, $type, $attr) = getimagesize(PATH_APP . DS . $path . DS . 'gallery' . DS . $file);
 							if ($width > 200)
