@@ -299,7 +299,7 @@ $router->rules('parse')->append('prep', function ($uri)
 	$path = $uri->getPath();
 
 	// Remove the base URI path.
-	$path = substr_replace($path, '', 0, strlen(\App::get('request')->base(true)));
+	$path = substr_replace($path == null ? '' : $path, '', 0, strlen(\App::get('request')->base(true)));
 
 	// Remove prefix
 	$path = str_replace('index.php', '', $path);
