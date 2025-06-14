@@ -136,7 +136,7 @@ class plgResourcesFindThisText extends \Hubzero\Plugin\Plugin
 
 		// Parse the return from resolver lookup
 		$xml = simplexml_load_string($r);
-		$resolver = $xml->resolverRegistryEntry->resolver;
+		$resolver = ($xml == false) ? null : $xml->resolverRegistryEntry->resolver;
 
 		// If we have resolver set vars for creating open urls
 		if ($resolver != null)
