@@ -5,14 +5,24 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
+namespace Components\Storefront\Site;
+
+use Hubzero\Component\Router\Base;
+
 defined('_HZEXEC_') or die();
+
+/**
+ * Routing class for the component
+ */
+class Router extends Base
+{
 
 /**
  * Turn querystring parameters into an SEF route
  *
  * @param  array &$query Querystring
  */
-function StorefrontBuildRoute(&$query)
+function build(&$query)
 {
 	$segments = array();
 
@@ -30,7 +40,7 @@ function StorefrontBuildRoute(&$query)
  * @param  array $segments Exploded route
  * @return array
  */
-function StorefrontParseRoute($segments)
+function parse(&$segments)
 {
 	$vars = array();
 
@@ -61,4 +71,6 @@ function StorefrontParseRoute($segments)
 
 	//print_r($vars);
 	return $vars;
+}
+
 }
