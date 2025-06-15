@@ -130,9 +130,9 @@ Document::setTitle(Lang::txt('COM_KB') . ': ' . $this->category->get('title'));
 									<span class="entry-identifier icon-file"><?php echo $row->get('id'); ?></span>
 								</th>
 								<td>
-									<a class="entry-title" href="<?php echo Route::url($row->link()); ?>"><?php echo $this->escape(stripslashes($row->get('title'))); ?></a><br />
+									<a class="entry-title" href="<?php echo Route::url($row->link()); ?>"><?php echo $this->escape(stripslashes($row->get('title',''))); ?></a><br />
 									<span class="entry-details">
-										<?php if ($this->catid <= 0) { echo Lang::txt('COM_KB_IN_CATEGORY', $this->escape(stripslashes($row->get('ctitle','')))); } ?>
+										<?php if ($this->catid <= 0) { echo Lang::txt('COM_KB_IN_CATEGORY', $this->escape(stripslashes($row->get('ctitle','')  ?? ''))); } ?>
 										<?php echo Lang::txt('COM_KB_LAST_MODIFIED'); ?>
 										<span class="entry-time-at"><?php echo Lang::txt('COM_KB_DATETIME_AT'); ?></span>
 										<span class="entry-time"><?php echo $row->modified('time'); ?></span>
