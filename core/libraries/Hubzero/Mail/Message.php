@@ -307,8 +307,13 @@ class Message extends \Symfony\Component\Mime\Email
 	 */
 	public function setFrom($addresses, $name = null)
 	{
-		if (!is_array($addresses) && isset($name))
+		if (!is_array($addresses))
 		{
+			if ($name == null)
+			{
+				$name = '';
+			}
+
 			$addresses = array($addresses => $name);
 		}
 
