@@ -203,7 +203,10 @@ class Newsletters extends SiteController
 			//$cmd = '/usr/local/bin/wkhtmltopdf ' . $newsletterUrl . ' ' . $newsletterPdf;
 			$cmd = '/usr/local/bin/xvfb-run -a -s "-screen 0 640x480x16" wkhtmltopdf ' . $newsletterUrl . ' ' . $newsletterPdf;
 		}
-
+		else if (file_exists('/usr/local/bin/wkhtmltopdf'))
+		{
+			$cmd = '/usr/local/bin/wkhtmltopdf ' . $newsletterUrl . ' ' . $newsletterPdf;
+		}
 		else if (file_exists('/usr/bin/phantomjs'))
 		{
 			$rasterizeFile = dirname(__DIR__) . DS . 'assets' . DS . 'js' . DS . 'rasterize.js';
