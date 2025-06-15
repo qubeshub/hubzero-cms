@@ -19,6 +19,7 @@ class CartProductHandler
 	// Item info
 	var $item;
 	var $crtId;
+	var $tId;
 
 	/**
 	 * Constructor
