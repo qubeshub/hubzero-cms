@@ -16,6 +16,7 @@ class Model_Handler
 	var $item;
 
 	var $crtId;
+	var $tId;
 
 	/**
 	 * Constructor
