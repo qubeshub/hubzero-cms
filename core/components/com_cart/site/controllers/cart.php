@@ -64,7 +64,7 @@ class Cart extends ComponentController
 
 		// If pIds are posted, convert them to SKUs
 		$pIds = Request::getVar('pId', false, 'post');
-		$skus = Request::getVar('skus', false, 'post');
+		$skus = Request::getArray('skus', false, 'post');
 
 		if ($updateCartRequest && ($pIds || $skus))
 		{
