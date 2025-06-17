@@ -2086,7 +2086,14 @@ class Resources extends SiteController
 		// Ensure the upath has format of /upath
 		$upath = DS . trim($upath, DS);
 
-		$d = @dir(PATH_APP . $upath . $path);
+		if (is_dir(PATH_APP . $upath . $path))
+		{
+			$d = dir(PATH_APP . $upath . $path);
+		}
+		else
+		{
+			$d = false;
+		}
 
 		$images = array();
 
