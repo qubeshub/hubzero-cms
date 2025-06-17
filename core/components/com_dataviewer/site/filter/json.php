@@ -221,7 +221,7 @@ function filter($res, $dd)
 						$title = $dd['cols'][$key]['null_desc'];
 					}
 
-					$val = '<span title="' . htmlentities($title, ENT_QUOTES, 'UTF-8') . '" class="dv-null-dash">' . $val . '</span>';
+					$val = '<span title="' . htmlentities($title == null ? '' : $title, ENT_QUOTES, 'UTF-8') . '" class="dv-null-dash">' . $val . '</span>';
 
 					$null_val = true;
 
