@@ -186,7 +186,6 @@ class plgAuthenticationOrcid extends \Hubzero\Plugin\OauthClient
 			}
 
 			$hzal->set('email', $orcid->email());
-			$hzal->update();
 
 			$parser = new TheIconic\NameParser\Parser();
 
@@ -226,6 +225,18 @@ class plgAuthenticationOrcid extends \Hubzero\Plugin\OauthClient
 
 				\Hubzero\Utility\Cookie::bake($namespace, $lifetime, $prefs);
 			}
+			else
+			{
+				$response->username = '-' . $hzal->id;
+				$response->email    = $response->username . '@invalid';
+
+				// Also set a suggested username for their hub account
+				$sub_email    = explode('@', $orcid->email(), 2);
+				$tmp_username = $sub_email[0];
+				Session::set('auth_link.tmp_username', $tmp_username);
+			}
+
+			$hzal->update();
 		}
 		else
 		{
