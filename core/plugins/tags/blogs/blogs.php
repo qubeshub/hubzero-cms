@@ -79,11 +79,14 @@ class plgTagsBlogs extends \Hubzero\Plugin\Plugin
 
 			$gs = array();
 
-			foreach($ugs as $g)
+			if (is_array($ugs))
 			{
-				if ($g->published)
+				foreach($ugs as $g)
 				{
-					$gs[] = $g->gidNumber;
+					if ($g->published)
+					{
+						$gs[] = $g->gidNumber;
+					}
 				}
 			}
 
