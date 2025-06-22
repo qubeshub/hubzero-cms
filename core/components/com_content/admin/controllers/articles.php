@@ -119,7 +119,7 @@ class Articles extends AdminController
 			'access' => Request::getState(
 				$this->_option . '.' . $this->_controller . '.access',
 				'filter_access',
-				0
+				''
 			),
 			'author_id' => Request::getState(
 				$this->_option . '.' . $this->_controller . '.author_id',
