@@ -199,7 +199,8 @@ class Sessions extends AdminController
 		$retval = true; // Assume success.
 		$output = new \stdClass();
 		$hubname = \App::get('config')->get('database.db');
-		$cmd = "/bin/sh " . dirname(dirname(__DIR__)) . "/scripts/mw $comm dbname=$hubname 2>&1 </dev/null";
+		//$cmd = "/bin/sh " . dirname(dirname(__DIR__)) . "/scripts/mw $comm dbname=$hubname 2>&1 </dev/null";
+		$cmd = "/bin/sh " . dirname(dirname(__DIR__)) . "/scripts/mw $comm 2>&1 </dev/null";
 
 		exec($cmd, $results, $status);
 
