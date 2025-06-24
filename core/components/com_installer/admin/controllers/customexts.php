@@ -605,7 +605,7 @@ class Customexts extends AdminController
 						$museCmd = 'update -r=' . $extension->path . ((!empty($extension->get('git_branch'))) ? ' source=' . $extension->get('git_branch') : '');
 
 						$fetch_response = Cli::call($museCmd, $task='repository');
-						$fetch_response = json_decode($fetch_response);
+						$fetch_response = json_decode($fetch_response == null ? '' : $fetch_response);
 
 						// check for several failure scenarios, otherwise consider the muse update sucessful
 						if (!is_null($fetch_response) && preg_grep("/command not found/uis", $fetch_response))
