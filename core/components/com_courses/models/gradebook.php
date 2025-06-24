@@ -840,7 +840,7 @@ class GradeBook extends Base
 		$quiz_weight     = $gradePolicy->get('quiz_weight');
 		$homework_weight = $gradePolicy->get('homework_weight');
 
-		$return = false;
+		$return = array();
 
 		if (isset($counts))
 		{
