@@ -429,7 +429,7 @@ class Entry extends Relational implements \Hubzero\Search\Searchable
 						{
 							$cons[$k]->name = $cons[$k]->xname;
 						}
-						if (trim($cons[$k]->organization) == '')
+						if (trim($cons[$k]->organization == null ? '' : $cons[$k]->organization) == '')
 						{
 							$cons[$k]->organization = $cons[$k]->xorg;
 						}

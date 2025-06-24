@@ -451,10 +451,10 @@ $presentation->subtitles = array_values($presentation->subtitles);
 							?>
 							<source src="<?php echo $content_url.DS.$source->source; ?>" type="<?php echo $type; ?>" />
 						<?php endforeach; ?>
-						<a href="<?php echo $content_url.DS.$presentation->media[0]->source; ?>" id="flowplayer" duration="<?php if ($presentation->duration) { echo $presentation->duration; } ?>" data-mediaid="<?php echo $rr->id; ?>"></a>
+						<a href="<?php echo $content_url.DS.$presentation->media[0]->source; ?>" id="flowplayer" duration="<?php if (isset($presentation->duration) && $presentation->duration) { echo $presentation->duration; } ?>" data-mediaid="<?php echo $rr->id; ?>"></a>
 					</audio>
 
-					<?php if ($presentation->placeholder) : ?>
+					<?php if (isset($presentation->placeholder) && $presentation->placeholder) : ?>
 						<img src="<?php echo $content_url.DS.$presentation->placeholder; ?>" title="" id="placeholder" />
 					<?php endif; ?>
 				<?php endif; ?>
