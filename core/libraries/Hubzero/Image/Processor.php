@@ -560,8 +560,12 @@ class Processor extends Obj
 	public function display()
 	{
 		$image_atts = getimagesize($this->source);
-		header('Content-type: ' . $image_atts['mime']);
-		$this->output(null);
+
+		if ($image_atts)
+		{
+			header('Content-type: ' . $image_atts['mime']);
+			$this->output(null);
+		}
 	}
 
 	/**
