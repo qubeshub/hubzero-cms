@@ -41,7 +41,8 @@ HUB.Modules.MyTools	 = {
 		container: '#myToolsTabs',
 		panels: '#myToolsTabs .tab_panel',
 		favs: '.fav',
-		favd: '.favd'
+		favd: '.favd',
+		favds : '.favds'
 	},
 
 	initialize: function() {
@@ -63,8 +64,10 @@ HUB.Modules.MyTools	 = {
 		$(settings.favs).each(function(i, item) {
 			$(item).on('click', function (e) {
 				e.preventDefault();
-
-				if ($(this).parent().hasClass('favd')) {
+				if ($(this).parent().hasClass('favds')) {
+				  $(this).parent().removeClass('favd');
+				  $('#alltools #' + $(this).parent().attr('id') + '[class=\'favd\']').removeClass('favd');
+				} else if ($(this).parent().hasClass('favd')) {
 					$(this).parent().removeClass('favd');
 				} else {
 					$(this).parent().addClass('favd');
@@ -138,8 +141,24 @@ HUB.Modules.MyTools	 = {
 			success: function(data, status, jqXHR)
 			{
 				dta = $(data.html);
-
 				$('#favtools').html(dta.find('.module-content').html());
+
+                $(settings.favs).each(function(i, item) {
+                        $(item).on('click', function (e) {
+                                e.preventDefault();
+                                if ($(this).parent().hasClass('favds')) {
+                                  $(this).parent().removeClass('favd');
+                                  $('#alltools #' + $(this).parent().attr('id') + '[class=\'favd\']').removeClass('favd');
+                                } else if ($(this).parent().hasClass('favd')) {
+                                        $(this).parent().removeClass('favd');
+                                } else {
+                                        $(this).parent().addClass('favd');
+                                }
+                                HUB.Modules.MyTools.updateFavs($(this).parents('.module').first());
+                                return false;
+                        });
+                });
+
 			},
 			error: function(jqXHR, status, error)
 			{

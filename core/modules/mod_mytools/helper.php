@@ -160,6 +160,10 @@ class Helper extends Module
 							$cls = 'favd';
 						}
 					}
+					else if($type="favs")
+					{
+						$cls = 'favds';
+					}
 					if ($this->supportedtag)
 					{
 						if (in_array($tool->toolname, $this->supportedtagusage))
@@ -174,7 +178,7 @@ class Helper extends Module
 					$html .= "\t\t\t" . ' <a href="' . Route::url('index.php?option=com_tools&controller=pipeline&app=' . $tool->toolname) . '" class="tooltips" title="' . $tool->caption . ' :: ' . $tool->desc . '">' . $tool->caption . '</a>' . "\n";
 
 					// Only add the "favorites" button to the all tools list
-					if ($type == 'all')
+					if ($type == 'all'  ||$type == 'favs')
 					{
 						$html .= "\t\t\t" . ' <a href="javascript:void(0);" class="fav" title="' . Lang::txt('MOD_MYTOOLS_ADD_TO_FAVORITES', $tool->caption) . '">' . $tool->caption . '</a>' . "\n";
 					}

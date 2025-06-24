@@ -128,10 +128,12 @@
 		color: #222;
 	}
 
-	.mod_mytools #recenttools .fav,
-	.mod_mytools #favtools .fav {
+	.mod_mytools #recenttools .fav{
 		display: none;
 	}
+        .mod_mytools #favtools .fav:before {
+                color: red;
+        }
 	.mod_mytools .favd {
 		background-color: #FFFFEB;
 	}
