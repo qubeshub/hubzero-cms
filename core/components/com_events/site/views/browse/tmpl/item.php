@@ -32,7 +32,7 @@ if (!isset($this->row->time_zone) || $this->row->time_zone == '')
 else
 {
 	// else use the one provided by the event
-	$timezone = timezone_name_from_abbr('', intval($this->row->time_zone*3600), -1);
+	$timezone = timezone_name_from_abbr('', intval($this->row->time_zone)*3600, -1);
 }
 
 // If not timezone is found or cannot be ascertained from above
@@ -40,7 +40,7 @@ if ($timezone === false)
 {
 	$timezone = null;
 
-	$offset = $this->row->time_zone*3600; // convert hour offset to seconds
+	$offset = intval($this->row->time_zone)*3600; // convert hour offset to seconds
 	$abbrarray = timezone_abbreviations_list();
 	foreach ($abbrarray as $abbr)
 	{
