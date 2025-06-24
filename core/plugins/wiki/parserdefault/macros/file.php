@@ -564,7 +564,7 @@ class FileMacro extends WikiMacro
 				\Document::addScript(\Request::scheme() . '://www.wolfram.com/cdf-player/plugin/v2.1/cdfplugin.js');
 				\Document::addScript(\Request::root() . 'core/plugins/content/formathtml/macros/macro-assets/file/file.js?t=' . filemtime(__DIR__ . '/macro-assets/file/file.js'));
 
-				$html .= '<noscript>';
+				$html = '<noscript>';
 				$html .= '<div class="embedded-plugin" style="width: ' . intval($attr['width']) . 'px; height: ' . intval($attr['height']) . ';">';
 				$html .= $attr['alt'];
 				$html .= '</div>';
