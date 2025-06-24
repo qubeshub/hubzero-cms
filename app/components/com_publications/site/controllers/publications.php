@@ -557,7 +557,8 @@ class Publications extends SiteController
 				'html' => [
 					'cards' => $this->view->setLayout('cards')->loadTemplate(),
 					'filters' => $this->view->setLayout('filters')->loadTemplate()
-				]
+				],
+				'uri' => $search_results['uri']
 			);
 
 			// Ugly brute force method of cleaning output
