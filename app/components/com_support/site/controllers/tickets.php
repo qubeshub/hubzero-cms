@@ -2278,7 +2278,7 @@ class Tickets extends SiteController
 			$row->set('severity', ($row->get('severity') ? $row->get('severity') : 'normal'));
 			$row->set('category', ($row->get('category') ? $row->get('category') : Lang::txt('COM_SUPPORT_CATEGORY_TOOLS')));
 			$row->set('resolved', '');
-			$row->set('email', ($row->get('email') ? $row->get('email') : $this->_data['supportemail']));
+			$row->set('email', ($row->get('email') ? $row->get('email') : (!isset($this->_data['supportemail']) ? '' : $this->_data['supportemail'])));
 			$row->set('name', ($row->get('name') ? $row->get('name') : Lang::txt('COM_SUPPORT_AUTOMATED_REPORT')));
 			$row->set('cookies', ($row->get('cookies') ? $row->get('cookies') : 1));
 			$row->set('instances', 1);
@@ -2292,7 +2292,7 @@ class Tickets extends SiteController
 				return;
 			}
 
-			$row->tag($incoming['tags'], User::get('id'));
+			$row->tag(!isset($incoming['tags']) ? '' : $incoming['tags'], User::get('id'));
 
 			$this->uploadTask($row->get('id'));
 
