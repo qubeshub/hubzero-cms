@@ -324,7 +324,7 @@ class Application extends Container
 	 */
 	public function redirect($url, $message = null, $type = 'success')
 	{
-		$redirect = new RedirectResponse($url);
+		$redirect = new RedirectResponse($url == null ? '' : $url);
 		$redirect->setRequest($this['request']);
 
 		if ($message && $this->has('notification'))
