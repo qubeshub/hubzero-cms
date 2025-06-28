@@ -567,7 +567,8 @@ class plgUsageTools extends \Hubzero\Plugin\Plugin
                 $database = App::get('db');
                 if (!isset($this->totals))
                 {
-                        $sql = "SELECT COUNT(datetime) AS total, DATE_FORMAT(datetime,'%Y-%m') as date FROM `#__stats_topvals` WHERE `period`=" . $database->Quote($period) . "GROUP BY datetime";
+                        $sql = "SELECT COUNT(datetime) AS total, DATE_FORMAT(datetime,'%Y-%m') as date FROM `#__stats_topvals` WHERE `period`=" . $database->quote($period) . " GROUP BY datetime";
+
                         $database->setQuery($sql);
                         $results = $database->loadObjectList();
                         if ($results)

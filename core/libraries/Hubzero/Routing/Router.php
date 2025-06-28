@@ -67,8 +67,8 @@ class Router
 	 */
 	public function url($url, $xhtml = true, $ssl = null)
 	{
-		if ((strpos($url, '&') !== 0)
-		 && (strpos($url, 'index.php') !== 0))
+		if ((strpos($url == null ? '' : $url, '&') !== 0)
+		 && (strpos($url == null ? '' : $url, 'index.php') !== 0))
 		{
 			return $url;
 		}

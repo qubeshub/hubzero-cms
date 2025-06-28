@@ -33,7 +33,9 @@
 		line-height: 1.6em;
 	}
 	.resource .citations {
-		border: 2px solid #e5e5e5;
+		border: 0px;
+		border-radius: 1em;
+		background-color: #fafafa;
 		padding: 0 1em;
 		margin: 0;
 		list-style: none;

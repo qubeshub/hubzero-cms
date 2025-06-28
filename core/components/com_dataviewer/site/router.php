@@ -5,7 +5,18 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
+namespace Components\Dataviewer\Site;
+
+use Hubzero\Component\Router\Base;
+
 defined('_HZEXEC_') or die();
+
+/**
+ * Routing class for the component
+ */
+class Router extends Base
+{
+
 
 /**
  * Turn querystring parameters into an SEF route
@@ -13,7 +24,7 @@ defined('_HZEXEC_') or die();
  * @param  array &$query Querystring bits
  * @return array
  */
-function dataviewerBuildRoute(&$query)
+function build(&$query)
 {
 	$segments = array();
 
@@ -26,7 +37,7 @@ function dataviewerBuildRoute(&$query)
  * @param  array $segments Exploded SEF URL
  * @return array
  */
-function dataviewerParseRoute($segments)
+function parse(&$segments)
 {
 	$vars = array();
 
@@ -40,4 +51,5 @@ function dataviewerParseRoute($segments)
 	$vars['dv']   = isset($segments[2]) ? $segments[2] : false;
 
 	return $vars;
+}
 }

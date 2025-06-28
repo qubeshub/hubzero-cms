@@ -116,7 +116,7 @@ class plgResourcesDublincore extends \Hubzero\Plugin\Plugin
 		}
 		else
 		{
-			$name = stripslashes($contributor->xname);
+			$name = stripslashes($contributor->xname == null ? '' : $contributor->xname);
 		}
 
 		return $name;

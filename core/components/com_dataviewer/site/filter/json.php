@@ -40,7 +40,7 @@ function filter($res, $dd)
 	$first_col = true;
 
 	foreach ($header as $key => $val) {
-		if (count($data)>0) {
+		if (is_array($data) && count($data)>0) {
 			$field_type = mysqli_fetch_field_direct($data, $field_offset)->type;
 		} else {
 			$field_type = 'string';
@@ -221,7 +221,7 @@ function filter($res, $dd)
 						$title = $dd['cols'][$key]['null_desc'];
 					}
 
-					$val = '<span title="' . htmlentities($title, ENT_QUOTES, 'UTF-8') . '" class="dv-null-dash">' . $val . '</span>';
+					$val = '<span title="' . htmlentities($title == null ? '' : $title, ENT_QUOTES, 'UTF-8') . '" class="dv-null-dash">' . $val . '</span>';
 
 					$null_val = true;
 

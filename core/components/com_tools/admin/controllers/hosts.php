@@ -148,7 +148,8 @@ class Hosts extends AdminController
 		$fnoutput = array();
 
 		$dbname = \App::get('config')->get('database.db');
-		$cmd = "/bin/sh " . dirname(__DIR__) . "/../scripts/mw $comm dbname=$dbname 2>&1 </dev/null";
+		//$cmd = "/bin/sh " . dirname(__DIR__) . "/../scripts/mw $comm dbname=$dbname 2>&1 </dev/null";
+		$cmd = "/bin/sh " . dirname(__DIR__) . "/../scripts/mw $comm 2>&1 </dev/null";
 		exec($cmd, $output, $status);
 
 		$outln = 0;

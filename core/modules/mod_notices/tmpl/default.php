@@ -26,6 +26,7 @@ if ($this->publish)
 			{
 				$page .= (strstr($page, '?')) ? '&' : '?';
 				$page .= $this->moduleid . '=close';
+                                $page = htmlspecialchars($page,ENT_COMPAT, 'UTF-8');
 				?>
 				<a class="close" href="<?php echo $page; ?>" data-duration="<?php echo $this->days_left; ?>" title="<?php echo Lang::txt('MOD_NOTICES_CLOSE_TITLE'); ?>">
 					<span><?php echo Lang::txt('MOD_NOTICES_CLOSE'); ?></span>

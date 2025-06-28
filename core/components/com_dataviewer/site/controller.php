@@ -38,8 +38,6 @@ function controller()
 	}
 }
 
-/* functions task_file and task_stream_file removed 2/8/2021 due to multitude of severe vulnerabilities */
-
 function task_view($db_id)
 {
 	global $dv_conf;

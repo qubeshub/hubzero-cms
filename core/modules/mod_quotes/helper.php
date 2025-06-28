@@ -29,7 +29,7 @@ class Helper extends Module
 
 		//Get the admin configured settings
 		$this->filters = array(
-			'limit'         => trim($this->params->get('maxquotes')),
+			'limit'         => trim($this->params->get('maxquotes','')),
 			'id'            => Request::getInt('quoteid', 0),
 			'notable_quote' => 1
 		);

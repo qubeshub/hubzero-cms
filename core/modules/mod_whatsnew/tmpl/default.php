@@ -35,7 +35,7 @@ if (!$this->tagged)
 			$html .= "\t\t" . '<li class="new">';
 			$html .= '<a href="' . Route::url($row->href) . '">' . $this->escape(stripslashes($row->title)) . '</a><br />';
 			$html .= '<span>' . Lang::txt('in') . ' ';
-			$html .= ($row->area) ? Lang::txt(stripslashes($row->area)) : Lang::txt(strtoupper(stripslashes($row->section)));
+			$html .= ($row->area) ? Lang::txt(stripslashes($row->area == null ? '' : $row->area)) : Lang::txt(strtoupper(stripslashes($row->section == null ? '' : $row->section)));
 			if ($row->publish_up)
 			{
 				$html .= ', ' . Date::of($row->publish_up)->toLocal(Lang::txt('DATE_FORMAT_HZ1'));

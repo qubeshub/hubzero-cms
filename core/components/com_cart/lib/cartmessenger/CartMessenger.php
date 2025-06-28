@@ -377,7 +377,7 @@ class CartMessenger
 			$sendFromEmail,
 			Config::get('sitename')
 		);
-		$message->setSender(Config::get('mailfrom'));
+		$message->setFrom(Config::get('mailfrom'));
 		$message->addPart($plain, 'text/plain');
 
 		// Get user's email address

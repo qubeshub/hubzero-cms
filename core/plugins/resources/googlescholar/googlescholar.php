@@ -84,7 +84,7 @@ class plgResourcesGooglescholar extends \Hubzero\Plugin\Plugin
 			}
 			else
 			{
-				$name = stripslashes($contributor->xname);
+				$name = stripslashes($contributor->xname == null ? '' : $contributor->xname);
 			}
 
 			if (!$contributor->org)

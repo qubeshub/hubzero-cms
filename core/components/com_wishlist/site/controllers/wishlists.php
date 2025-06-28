@@ -2581,7 +2581,7 @@ class Wishlists extends SiteController
 	 */
 	public function convertTime($rawnum, $due=array())
 	{
-		$rawnum = round($rawnum);
+		$rawnum = round(floatval($rawnum));
 		switch ($rawnum)
 		{
 			case 0:

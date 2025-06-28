@@ -44,7 +44,7 @@ if ($this->contributors)
 		}
 		else
 		{
-			$name = $this->escape(stripslashes($contributor->xname));
+			$name = $this->escape(stripslashes($contributor->xname == null ? '' : $contributor->xname));
 		}
 		if (!trim($name))
 		{

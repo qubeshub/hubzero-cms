@@ -125,7 +125,8 @@ class Utils
 	{
 		$dbname = \App::get('config')->get('database.db');
 		$command = "create_userhome '{$username}'";
-		$cmd = "/bin/sh " . dirname(__DIR__) . "/scripts/mw {$command} dbname={$dbname} 2>&1 </dev/null";
+		//$cmd = "/bin/sh " . dirname(__DIR__) . "/scripts/mw {$command} dbname={$dbname} 2>&1 </dev/null";
+		$cmd = "/bin/sh " . dirname(__DIR__) . "/scripts/mw {$command} 2>&1 </dev/null";
 
 		exec($cmd, $results, $status);
 
@@ -481,7 +482,7 @@ class Utils
 		$ip = Request::ip();
 
 		//get the export control level
-		$export_control = strtolower($export_control);
+		$export_control = strtolower($export_control == null ? '' : $export_control);
 
 		//get the users country based on ip address
 		$country = \Hubzero\Geocode\Geocode::ipcountry($ip);
@@ -643,7 +644,8 @@ class Utils
 		$comm = escapeshellcmd($comm);
 		$dbname = \App::get('config')->get('database.db');
 
-		$cmd = "/bin/sh ". dirname(__DIR__) . "/scripts/mw $comm dbname=$dbname 2>&1 </dev/null";
+		//$cmd = "/bin/sh ". dirname(__DIR__) . "/scripts/mw $comm dbname=$dbname 2>&1 </dev/null";
+		$cmd = "/bin/sh ". dirname(__DIR__) . "/scripts/mw $comm 2>&1 </dev/null";
 
 		exec($cmd, $results, $status);
 

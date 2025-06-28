@@ -162,7 +162,7 @@ class Download extends ComponentController
 		foreach ($userGroups as $groupId)
 		{
 			$group = Accessgroup::one($groupId);
-			if (!in_array(strtolower($group->get('title')), $ignoreGroups))
+			if ($group && !in_array(strtolower($group->get('title')), $ignoreGroups))
 			{
 				$meta[$groupId] = $group->get('title');
 			}

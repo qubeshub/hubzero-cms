@@ -329,7 +329,7 @@ class SolrQueryAdapter implements QueryInterface
 		$filterParams['query'] = $string;
 		if ($tag)
 		{
-			$filterParams['tag'] = $tag;
+			$filterParams['local_tag'] = $tag;
 		}
 
 		$this->query->createFilterQuery($filterParams);

@@ -1591,7 +1591,7 @@ class Tool
 				{
 					if ($groupName != ($group_prefix . strtolower($tool['toolname'])))
 					{
-						$err['membergroups' . $k] = 'Group name ' . $groupName . ' is not valid';
+						$err['membergroups' . $k] = 'Group name ' . $groupName . ' is not valid and is not ' . $group_prefix . strtolower($tool['toolname']);
 					}
 				}
 			}

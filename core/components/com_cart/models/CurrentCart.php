@@ -682,7 +682,9 @@ class CurrentCart extends Cart
 	 */
 	public function addTransactionItemMeta($sId, $meta)
 	{
-		$currentMeta = json_decode($this->getTransactionItemMeta($sId));
+		$meta = $this->getTransactionItemMeta($sId);
+		$currentMeta = json_decode($meta == null ? '' : $meta);
+
 		if (!$currentMeta)
 		{
 			$this->setTransactionItemMeta($sId, json_encode($meta));

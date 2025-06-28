@@ -37,7 +37,7 @@ class Warehouse extends \Hubzero\Base\Obj
 	var $accessLevelsScope = false;
 
 	// Access groups scope (what is allowed to display)
-	var $accessGroupsScope = false;
+	var $accessGroupsScope = array();
 
 	// User scope (what user is trying to get the info)
 	var $userScope = false;
@@ -109,7 +109,15 @@ class Warehouse extends \Hubzero\Base\Obj
 	 */
 	public function addAccessGroups($accessGroups)
 	{
-		$this->accessGroupsScope = (array)$accessGroups;
+		$this->accessGroupsScope = array();
+
+		foreach($accessGroups as $group)
+		{
+			if ($group != null)
+			{
+				$this->accessGroupsScope[] = $group;
+			}
+		}
 	}
 
 	/**
