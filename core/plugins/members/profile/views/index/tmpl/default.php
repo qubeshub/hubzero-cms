@@ -797,7 +797,7 @@ $legacy = array(
 						{
 							if ($field->get('type') == 'url')
 							{
-								$value = strip_tags($val);
+								$value = strip_tags($val ?: '');
 							}
 							if ($field->get('type') == 'tags')
 							{
