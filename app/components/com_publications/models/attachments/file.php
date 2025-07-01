@@ -242,7 +242,7 @@ class File extends Base
 					$where .= $configs->subdir ? DS . $configs->subdir : '';
 					$where .= DS . $fPath;
 
-					if ($zip->addFile($filePath, $where))
+					if (file_exists($filePath) && $zip->addFile($filePath, $where))
 					{
 						$readme .= '>>> ' . str_replace($bundleDir . DS, '', $where) . ($attach->access ? ' (instructors only)' : '') . "\n";
 					}
