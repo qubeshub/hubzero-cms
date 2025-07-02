@@ -352,7 +352,7 @@ class FormResponse extends Relational
 	{
 		$rawTags = $this->_getRawTags();
 
-		$tagString = join($rawTags, ',');
+		$tagString = join(',', $rawTags);
 
 		return $tagString;
 	}
