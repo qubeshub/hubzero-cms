@@ -68,7 +68,7 @@ lazyLoadUsersOrGroupsFunc = (_, options) => {
         ((options.question.name === "user") || 
          (options.question.name === "group"))) {
         const option = (options.question.name === "user" ? "members" : "groups");
-        const url = window.location.origin + `/index.php?option=com_` + option + `&no_html=1&task=autocomplete&admin=true&start=${options.skip}&limit=${options.take}&value=${options.filter}&total=1`;
+        const url = window.location.origin + `?option=com_` + option + `&no_html=1&task=autocomplete&admin=true&start=${options.skip}&limit=${options.take}&value=${options.filter}&total=1`;
         sendRequest(url, (data) => {
             const choices = data["items"].map((item) => {
                 return { value: item.id, text: item.name + ' (' + item.id + ')' };
@@ -85,7 +85,7 @@ getUsersOrGroupsFunc = (_, options) => {
          (options.question.name === "group"))) {
         const idStr = "id=" + options.values[0];
         const option = (options.question.name === "user" ? "members" : "groups");
-        const url = window.location.origin + `/index.php?option=com_` + option + `&no_html=1&task=autocomplete&admin=true&${idStr}`;
+        const url = window.location.origin + `?option=com_` + option + `&no_html=1&task=autocomplete&admin=true&${idStr}`;
         sendRequest(url, (data) => { 
             const choice = [data[0].name + ' (' + data[0].id + ')'];
             options.setItems(choice);

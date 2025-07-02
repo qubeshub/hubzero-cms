@@ -121,7 +121,7 @@ $formJson = '{
               "isRequired": true,
               "defaultValue": "members",
               "choicesByUrl": {
-                "url": "index.php?option=com_groups&no_html=1&task=autocomplete&id[]={row.group}&roles=1",
+                "url": "?option=com_groups&no_html=1&task=autocomplete&id[]={row.group}&roles=1",
                 "valueName": "id",
                 "titleName": "name"
               },
