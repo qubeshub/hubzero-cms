@@ -16,6 +16,8 @@ use Components\Forms\Helpers\CrudHelper;
 class RelationalCrudHelper extends CrudHelper
 {
 
+	protected $_controller;
+
 	/**
 	 * Constructs RelationalCrudHelper instance
 	 *

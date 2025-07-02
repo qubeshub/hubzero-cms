@@ -18,6 +18,8 @@ use Hubzero\Utility\Arr;
 class ComFormsPageBouncer extends PageBouncer
 {
 
+	protected $_userHelper;
+
 	/**
 	 * Constructs PageBouncer instance
 	 *

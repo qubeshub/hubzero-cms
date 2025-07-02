@@ -19,6 +19,8 @@ use Hubzero\Utility\Arr;
 class FormResponseActivityHelper
 {
 
+	protected $_activityFactory;
+
 	/**
 	 * Constructs an FormResponseActivityHelper instance
 	 *

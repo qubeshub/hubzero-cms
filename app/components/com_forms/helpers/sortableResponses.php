@@ -10,6 +10,9 @@ namespace Components\Forms\Helpers;
 class SortableResponses
 {
 
+	protected $_responses, $_rows;
+	public $pagination;
+
 	/**
 	 * Constructs SortableResponses instance
 	 *

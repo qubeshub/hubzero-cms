@@ -20,6 +20,8 @@ use Hubzero\Utility\Arr;
 class TagsHelper
 {
 
+	protected $_resultFactory, $_tagCreator, $_records, $_tagString, $_taggerId, $_result;
+
 	/**
 	 * Constructs TagsHelper instance
 	 *

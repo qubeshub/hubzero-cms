@@ -21,7 +21,7 @@ use Hubzero\Utility\Arr;
 class PageBouncer
 {
 
-	protected $_permitter,	$_router;
+	protected $_permitter, $_router, $_notify, $_routes;
 
 	/**
 	 * Constructs PageBouncer instance

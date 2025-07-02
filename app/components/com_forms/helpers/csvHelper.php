@@ -19,6 +19,8 @@ use Hubzero\Utility\Arr;
 class CsvHelper
 {
 
+	protected $_fileFactory, $_systemHelper;
+
 	/**
 	 * Constructs a CsvHelper instance
 	 *

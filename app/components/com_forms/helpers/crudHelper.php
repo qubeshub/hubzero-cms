@@ -20,6 +20,8 @@ use Components\Forms\Helpers\MockProxy;
 class CrudHelper
 {
 
+	protected $_errorSummary, $_router, $_notify;
+
 	/**
 	 * Constructs CrudHelper instance
 	 *

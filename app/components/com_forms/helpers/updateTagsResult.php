@@ -12,6 +12,8 @@ use stdClass;
 class UpdateTagsResult
 {
 
+	protected $_failures, $_successes;
+
 	/**
 	 * Constructs UpdateTagsResult instance
 	 *
