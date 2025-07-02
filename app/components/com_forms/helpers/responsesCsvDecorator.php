@@ -129,7 +129,7 @@ class ResponsesCsvDecorator implements \Iterator
 	 *
 	 * @return   object
 	 */
-	public function current()
+	public function current(): mixed
 	{
 		return $this->_getDecoratedResponse($this->_position);
 	}
@@ -233,7 +233,7 @@ class ResponsesCsvDecorator implements \Iterator
 	 *
 	 * @return   int
 	 */
-	public function key()
+	public function key(): mixed
 	{
 		return $this->_position;
 	}
@@ -243,9 +243,9 @@ class ResponsesCsvDecorator implements \Iterator
 	 *
 	 * @return   int
 	 */
-	public function next()
+	public function next(): void
 	{
-		return ++$this->_position;
+		++$this->_position;
 	}
 
 	/**
@@ -253,7 +253,7 @@ class ResponsesCsvDecorator implements \Iterator
 	 *
 	 * @return   bool
 	 */
-	public function valid()
+	public function valid(): bool
 	{
 		$i = $this->_position;
 		$responsesArray = $this->_getResponsesArray();
@@ -266,7 +266,7 @@ class ResponsesCsvDecorator implements \Iterator
 	 *
 	 * @return   void
 	 */
-	public function rewind()
+	public function rewind(): void
 	{
 		$this->_position = 0;
 	}
