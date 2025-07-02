@@ -7,7 +7,7 @@
 
 namespace Components\Forms\Admin\Helpers;
 
-use Hubzero\Base\Object;
+use Hubzero\Base\Obj;
 use User;
 
 class Permissions
@@ -44,7 +44,7 @@ class Permissions
 	public static function getActions($assetType = 'component', $assetId = 0)
 	{
 		$assetName  = static::_buildAssetName($assetType, $assetId);
-		$result = new Object;
+		$result = new Obj;
 
 		foreach (static::$_actions as $action)
 		{
