@@ -26,7 +26,7 @@ $steps = $this->steps;
 	<a class="btn surveyjs-popup-btn icon-group">
 		<?php echo Lang::txt('COM_FORMS_LINKS_RESPONSE_ACCESS'); ?>
 	</a>
-	<? endif; ?>
+	<?php endif; ?>
 	<a class="btn icon-arrow-left" href="<?php echo Route::url($routes->formsDisplayUrl($formId)); ?>">
 		<?php echo Lang::txt('COM_FORMS_LINKS_OVERVIEW'); ?>
 	</a>
