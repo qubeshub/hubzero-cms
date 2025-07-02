@@ -116,7 +116,7 @@ function saveSurveyJson(url, json, saveNo, callback) {
 }
 
 // Hide read-only mode (custom handling)
-Survey.Serializer.getProperty("survey", "mode").visible = false;
+Survey.Serializer.getProperty("survey", "readOnly").visible = false;
 
 // Remove built-in ability to limit one response per user (custom handling)
 Survey.Serializer.getProperty("survey", "cookieName").visible = false;
