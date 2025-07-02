@@ -30,7 +30,7 @@ $this->view('_forms_breadcrumbs', 'shared')
 			->set('textKey', 'Start new response')
 			->set('urlFunction', 'formResponseStartUrl')
 			->set('urlFunctionArgs', [$formId])
-			->set('classes', 'icon-edit btn')
+			->set('classes', 'icon-plus btn')
 			->display();
 
         $this->view('_protected_link', 'shared')
@@ -57,7 +57,7 @@ $this->view('_forms_breadcrumbs', 'shared')
             ->set('textKey', 'COM_FORMS_FIELDS_VALUES_EDIT_FORM')
             ->set('urlFunction', 'formsEditUrl')
             ->set('urlFunctionArgs', [$formId])
-            ->set('classes', 'icon-cog btn')
+            ->set('classes', 'icon-edit btn')
             ->display();
 
 		$this->view('_protected_link', 'shared')
