@@ -93,11 +93,11 @@ class UriBase extends Middleware
 			return $value;
 		}
 
-		if (substr($value, 0, 4) == 'http')
+		if (substr($value == null ? '' : $value, 0, 4) == 'http')
 		{
 			return $value;
 		}
 
-		return rtrim(str_replace('/api', '', $request->root()), '/') . '/' . ltrim($value, '/');
+		return rtrim(str_replace('/api', '', $request->root()), '/') . '/' . ltrim($value == null ? '' : $value, '/');
 	}
 }

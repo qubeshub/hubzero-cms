@@ -265,10 +265,10 @@ else
 				</td>
 				<?php if ($this->filters['parent_id'] > 0) { ?>
 					<td>
-						<?php echo $pageNav->orderUpIcon($i, ($row->associative_ordering != @$orderings[$i-1])); ?>
+						<?php echo $pageNav->orderUpIcon($i, isset($orderings[$i-1]) ? ($row->associative_ordering != $orderings[$i-1]) : true); ?>
 					</td>
 					<td>
-						<?php echo $pageNav->orderDownIcon($i, $pageNav->total, ($row->associative_ordering != @$orderings[$i+1])); ?>
+						<?php echo $pageNav->orderDownIcon($i, $pageNav->total, sset($ordering[$i+1]) ? ($row->associative_ordering != $orderings[$i+1]) : true); ?>
 					</td>
 					<td>
 						<?php echo $row->associative_ordering; ?>

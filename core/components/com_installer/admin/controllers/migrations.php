@@ -69,7 +69,7 @@ class Migrations extends AdminController
 
 		$migrations = json_decode(Cli::migration(true, true, null, 'up', $filters['folder']));
 
-		if ($migrations && count($migrations) > 0)
+		if ($migrations && count((array)$migrations) > 0)
 		{
 			foreach ($migrations as $status => $files)
 			{

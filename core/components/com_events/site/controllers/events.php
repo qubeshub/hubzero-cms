@@ -722,7 +722,7 @@ class Events extends SiteController
 
 		// Adresse
 		$row->adresse_info = preg_replace("/(mailto:\/\/)?((-|$alphadigit|\.)+)@((-|$alphadigit|\.)+)(\.$alphadigit+)/i", "<a href=\"mailto:$2@$5$8\">$2@$5$8</a>", $row->adresse_info);
-		$row->adresse_info = preg_replace("/(http:\/\/|https:\/\/)((-|$alphadigit|\.)+)(\.$alphadigit+)/i", "<a href=\"$1$2$5$8\">$1$2$5$8</a>", $row->adresse_info);
+		$row->adresse_info = preg_replace("/(http:\/\/|https:\/\/)((-|$alphadigit|\.)+)(\.$alphadigit+)/i", "<a href=\"$1$2$5$8\">$1$2$5$8</a>", $row->adresse_info == null ? '' : $row->address_info);
 
 		// Contact
 		$row->contact_info = stripslashes(strip_tags($row->contact_info));
