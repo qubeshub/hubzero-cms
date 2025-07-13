@@ -528,23 +528,25 @@ class Message extends \Symfony\Component\Mime\Email
 
 		foreach($addresses as $key => $value)
 		{
-			if (is_numeric($key))
-			{
-				$address = new \Symfony\Component\Mime\Address($value);
-			}
-			else
-			{
-				$address = new \Symfony\Component\Mime\Address($key, $value);
-			}
+			if ($value) {
+				if (is_numeric($key))
+				{
+					$address = new \Symfony\Component\Mime\Address($value);
+				}
+				else
+				{
+					$address = new \Symfony\Component\Mime\Address($key, $value);
+				}
 
-			if (isset($first_set))
-			{
-				parent::bcc($address);
-				$first_set = true;
-			}
-			else
-			{
-				parent::addBcc($address);
+				if (isset($first_set))
+				{
+					parent::bcc($address);
+					$first_set = true;
+				}
+				else
+				{
+					parent::addBcc($address);
+				}
 			}
 		}
 
