@@ -11,6 +11,8 @@ use Components\Forum\Models\Category;
 use Components\Forum\Models\Post;
 use Components\Forum\Models\Attachment;
 
+require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Mail' . DS . 'Message.php';
+
 // No direct access
 defined('_HZEXEC_') or die();
 
@@ -1748,7 +1750,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 		$html = str_replace("\n", "\r\n", $html);
 
 		// Create NEW message object and send
-		$message = new \Hubzero\Mail\Message();
+		$message = new Qubeshub\Mail\Message();
 		$message->setSubject($subject)
 			->addFrom($from['email'], $from['name'])
 			->setTo($from['email'])
