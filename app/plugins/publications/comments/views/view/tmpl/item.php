@@ -130,7 +130,7 @@ $author_modified = ($this->comment->get('modified_by') == $this->comment->get('c
 				<?php
 				foreach ($this->comment->files()->rows() as $attachment)
 				{
-					if (!trim($attachment->get('description')))
+					if (!trim($attachment->get('description') ?: ''))
 					{
 						$attachment->set('description', $attachment->get('filename'));
 					}
