@@ -155,7 +155,6 @@ class plgCronForum extends \Hubzero\Plugin\Plugin
 					->whereEquals('state', 1)
 					->where('created', '>', Date::of(strtotime("now -1 {$interval}"))->toSql())
 					->order('created', 'desc')
-					->limit(10)
 					->rows();
 
 				if ($results->count() > 0)
