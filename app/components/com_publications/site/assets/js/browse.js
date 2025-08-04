@@ -174,14 +174,28 @@ $(document).ready(function () {
         return false;
     });
 
-    $(document).on('DOMNodeInserted', 'nav.pagination', function (e) {
-        $('#limit').removeAttr('onchange').bind('change', function(e) {
-            e.preventDefault();
+    const observer = new MutationObserver(function (mutationsList) {
+        for (const mutation of mutationsList) {
+            if (mutation.type === 'childList') {
+                for (const node of mutation.addedNodes) {
+                    if (node.nodeType === 1 && node.matches('nav.pagination')) {
+                        $('#limit').removeAttr('onchange').bind('change', function(e) {
+                            e.preventDefault();
 
-            $('#filter-form').submit();
+                            $('#filter-form').submit();
 
-            return false;
-        });
+                            return false;
+                        });
+                    }
+                }
+            }
+        }
+    });
+
+    const cardContainer = document.querySelector('div.card-container');
+    observer.observe(cardContainer, {
+        childList: true,
+        subtree: true
     });
 
     let tags = []
@@ -276,10 +290,10 @@ $(document).ready(function () {
         window.history.pushState({href: urlToFetch}, '', urlToFetch);
     }
 
-    $(document).on('submit', 'form', function(e) {
+    $(document).on('submit', '#filter-form', function(e) {
         e.preventDefault();
 
-        updateUrl()
+        updateUrl();
 
         var formData = new FormData(this);
     

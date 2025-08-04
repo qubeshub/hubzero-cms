@@ -29,7 +29,7 @@ $no_html = Request::getInt('no_html', 0);
 
 	if (!count($this->results))
 	{
-		echo '<p class="warning">' . Lang::txt('PLG_GROUPS_PUBLICATIONS_NONE') . '</p>';
+		echo '<p class="warning">' . Lang::txt('COM_PUBLICATIONS_NO_RESULTS') . '</p>';
 	}
 
 	echo $this->pageNav->render();

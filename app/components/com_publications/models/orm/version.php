@@ -811,11 +811,16 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 		$obj->hubtype = self::searchNamespace();
 		$obj->title = $this->get('title');
 
-		$description = $this->get('abstract') . ' ' . $this->get('description');
+		$abstract = $this->get('abstract');
+		$abstract = html_entity_decode($abstract);
+		$abstract = \Hubzero\Utility\Sanitize::stripAll($abstract);
+		$obj->abstract = $abstract;
+
+		$description = $this->get('description');
 		$description = html_entity_decode($description);
 		$description = \Hubzero\Utility\Sanitize::stripAll($description);
-
 		$obj->description   = $description;
+
 		$obj->url = rtrim(Request::root(), '/') . Route::urlForClient('site', $this->link('version'));
 		$obj->doi = $this->get('doi');
 		if ($this->get('published_up')) {
