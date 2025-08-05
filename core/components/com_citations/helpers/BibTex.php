@@ -156,6 +156,9 @@ class Structures_BibTex
 	 */
 	var $authorstring;
 
+	var $_oldpos;
+	var $_pos;
+
 	/**
 	 * Constructor
 	 *
