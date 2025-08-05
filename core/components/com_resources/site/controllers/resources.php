@@ -2529,7 +2529,7 @@ class Resources extends SiteController
 		}
 
 		// Set the page title
-		$title = stripslashes($row->title) . ': ' . Lang::txt('COM_RESOURCES_LICENSE');
+		$title = stripslashes($row->title ?: '') . ': ' . Lang::txt('COM_RESOURCES_LICENSE');
 
 		// Write title
 		Document::setTitle($title);
