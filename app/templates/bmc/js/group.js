@@ -252,9 +252,10 @@ jQuery(document).ready(function(jq){
 		// Send forms via AJAX - if successful, close pop-up
 		var el = $(this);
 		var formData = new FormData(this);
+		var formEntries = Object.fromEntries(formData);
 		$.ajax({
 			method: 'POST',
-			url: $(this).attr('action').nohtml(),
+			url: $(this).attr('action') ? $(this).attr('action').nohtml() : formEntries.ajax_url.nohtml(),
 			data: formData,
 			processData: false,
 			contentType: false,
