@@ -310,6 +310,9 @@ class plgMembersGroups extends \Hubzero\Plugin\Plugin
 		{
 			$g .= "g.type=" . $db->quote($cat) . " AND ";
 		}
+		if ($uid == 0){
+			return false;
+		}
 
 		// Get all groups the user is a member of
 		$query1 = "SELECT g.gidNumber, g.published, g.approved, g.cn, g.description, g.logo, g.created, g.join_policy, '1' AS registered, '0' AS regconfirmed, '0' AS manager FROM `#__xgroups` AS g, `#__xgroups_applicants` AS m WHERE $g m.gidNumber=g.gidNumber AND m.uidNumber=" . $uid;

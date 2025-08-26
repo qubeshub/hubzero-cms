@@ -80,7 +80,7 @@ $roles = [
 			</label>
 
 			<div class="group-action group-action-selective">
-				<?php if (count($notteam)) { ?>
+				<?php if (count($notteam) >= 0) { ?>
 					<p><a class="btn icon-group" id="choosemember" href="<?php echo Route::url('index.php?option=' . $this->option . '&task=' . $this->task . '&alias=' . $this->model->get('alias') . '&active=team&action=choose'); ?>"><?php echo Lang::txt('PLG_PROJECTS_TEAM_GROUP_SELECT'); ?></a></p>
 				<?php } else { ?>
 					<p class="icon-info"><?php echo Lang::txt('PLG_PROJECTS_TEAM_GROUP_MEMBERS_TEAM'); ?></p>

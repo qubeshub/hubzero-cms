@@ -133,7 +133,6 @@ class plgCoursesProgress extends \Hubzero\Plugin\Plugin
 		}
 
 		$response->set('html', $this->view->loadTemplate());
-
 		// Return the output
 		return $response;
 	}

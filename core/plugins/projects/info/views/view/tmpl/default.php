@@ -10,7 +10,6 @@ defined('_HZEXEC_') or die();
 
 $privacy = !$this->model->isPublic() ? Lang::txt('COM_PROJECTS_PRIVATE') : Lang::txt('COM_PROJECTS_PUBLIC');
 $config  = $this->model->config();
-
 ?>
 <div id="plg-header">
 	<h3 class="inform"><?php echo Lang::txt('COM_PROJECTS_PROJECT_INFO'); ?></h3>
@@ -73,10 +72,19 @@ $config  = $this->model->config();
 					} // end if
 				?>
 
-			<?php if ($this->model->about('parsed')) { ?>
+			<?php if ($this->model->about('parsed')) { 
+				$val = $this->model->about('parsed');	
+				$componentPath = Component::path('com_redirect');
+				if($componentPath){
+					require_once($componentPath . DS . "helpers" . DS . "converter.php");
+					$val = \Component\Redirect\Helpers\Converter::convert($val);
+				} else {
+					$val = preg_replace('#<a\s[^>]*href="([^"]*)"[^>]*?>(.*?)</a>#is', "<a href='$1' rel='nofollow'>$2</a>", $val);
+				}
+			?>
 			<tr>
 				<th class="htd"><?php echo Lang::txt('COM_PROJECTS_ABOUT'); ?></th>
-				<td><?php echo $this->model->about('parsed'); ?></td>
+				<td><?php echo $val; ?></td>
 			</tr>
 			<?php } ?>
 		</tbody>

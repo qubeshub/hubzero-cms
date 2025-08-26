@@ -20,6 +20,7 @@ use App;
 
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'middleware.php';
 require_once dirname(dirname(__DIR__)) . DS . 'helpers' . DS . 'vnc.php';
+require_once Component::path('com_resources') . DS . 'models' . DS . 'entry.php';
 
 /**
  * Tools controller class for simulation sessions
@@ -696,7 +697,6 @@ class Sessions extends SiteController
 				['user', User::get('id')]
 			)
 		]);
-
 		App::redirect(
 			Route::url($url, false)
 		);
@@ -1124,6 +1124,16 @@ class Sessions extends SiteController
 		//$tv->loadFromInstance($row->appname);
 		$app->title = stripslashes($tv->title);
 		$app->params = new \Hubzero\Config\Registry($tv->params);
+		
+		$res = \Components\Resources\Models\Entry::getInstance($toolname);
+		if ($res->get('id')>0)
+		{
+			$page_template = $res->params->get("page_template");
+			if ($page_template && $page_template != ""){
+				$_app = App::getApplication()->template;
+				$_app->template = $page_template;
+			}
+		}
 
 		// Ensure we found an active session
 		if (!$row->sesstoken)
@@ -1193,7 +1203,14 @@ class Sessions extends SiteController
 		// redirect to the proxy URL provided.  And we're done.
 		if (isset($output->redirect_url))
 		{
-			App::Redirect($output->redirect_url);
+			$componentPath = Component::path('com_redirect');
+			if($componentPath){
+				require_once($componentPath . DS . "helpers" . DS . "converter.php");
+				$redirect_url = \Component\Redirect\Helpers\Converter::encode($output->redirect_url);
+				App::Redirect($redirect_url);
+			} else {
+				App::Redirect($output->redirect_url);
+			}
 			return; // Do no more after this.
 		}
 
