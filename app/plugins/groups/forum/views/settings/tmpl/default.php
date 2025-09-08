@@ -9,6 +9,7 @@
 defined('_HZEXEC_') or die();
 
 $base = 'index.php?option=com_groups&cn=' . $this->group->get('cn') . '&active=forum';
+$discussion_email_autosubscribe = $this->config->get('discussion_email_autosubscribe', null);
 
 $this->css()
      ->js();
@@ -71,6 +72,61 @@ $this->css()
 				</div>
 			</fieldset>
 		</fieldset>
+
+		<fieldset class="email-settings">
+			<legend><?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_SETTING_FORUM_SECTION_LEGEND'); ?></legend>
+			<p><?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_SETTINGS_DESC'); ?></p>
+
+			<div class="form-group form-check">
+				<label for="discussion_email_autosubscribe" class="form-check-label">
+					<input type="hidden" name="params[discussion_email_autosubscribe]" value="0" />
+					<input type="checkbox" class="option form-check-input" name="params[discussion_email_autosubscribe]" id="discussion_email_autosubscribe" value="1" <?php
+						if ($discussion_email_autosubscribe >= 1):
+							echo ' checked="checked"';
+						endif;
+						?> />
+					<strong><?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_SETTING_FORUM_AUTO_SUBSCRIBE'); ?></strong> <br />
+					<span class="indent">
+						<?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_SETTINGS_FORUM_AUTO_SUBSCRIBE_NOTE'); ?>
+					</span>
+				</label>
+				<label>
+					<input type="radio" name="params[discussion_email_autosubscribe]" class="forum-email-digest" id='forum-immediate' value="1"
+						<?php if (empty($discussion_email_autosubscribe) || ($discussion_email_autosubscribe == 1)) { echo ' checked="checked"'; } ?> 
+						<?php if ($discussion_email_autosubscribe == 0) { echo ' disabled="disabled"'; } ?> />
+					<?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_POSTS_IMMEDIATELY'); ?>
+
+					<br />
+
+					<input type="radio" name="params[discussion_email_autosubscribe]" class="forum-email-digest" id='forum-digest' value="2"
+						<?php if ($discussion_email_autosubscribe >= 2) { echo ' checked="checked"'; } ?>
+						<?php if ($discussion_email_autosubscribe == 0) { echo ' disabled="disabled"'; } ?> />
+					<?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_POSTS_AS_A'); ?>
+
+					<select name="params[discussion_email_autosubscribe]" class="forum-email-digest" id='forum-frequency' <?php if ($discussion_email_autosubscribe < 2) { echo ' disabled="disabled"'; } ?>>
+						<option value="2"<?php if ($discussion_email_autosubscribe == 2) { echo ' selected="selected"'; } ?>><?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_POSTS_DAILY'); ?></option>
+						<option value="3"<?php if ($discussion_email_autosubscribe == 3) { echo ' selected="selected"'; } ?>><?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_POSTS_WEEKLY'); ?></option>
+						<option value="4"<?php if ($discussion_email_autosubscribe == 4) { echo ' selected="selected"'; } ?>><?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_POSTS_MONTHLY'); ?></option>
+					</select>
+					<?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_POSTS_DIGEST'); ?>
+
+					<div>
+						Send individual emails when:
+						<br />
+						<label for="digest_option_reply" class="form-check-label">
+							<input type="checkbox" class="option form-check-input" name="digest_options[reply]" id="digest_option_reply" value="1" />
+							someone replies to my post
+						</label>
+						<label for="digest_option_mention" class="form-check-label">
+							<input type="checkbox" class="option form-check-input" name="digest_options[mention]" id="digest_option_mention" value="1" />
+							someone mentions me in a post
+						</label>
+					</div>
+				</label>
+			</div>
+
+		</fieldset>
+
 		<div class="clear"></div>
 
 		<input type="hidden" name="cn" value="<?php echo $this->group->get('cn'); ?>" />

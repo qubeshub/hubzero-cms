@@ -133,4 +133,27 @@ jQuery(document).ready(function(jq){
 			}
 		});
 	});
+
+	$('#discussion_email_autosubscribe').click(function () {
+		if ($(this).prop('checked')) {
+			$('#forum-immediate').prop('disabled', false);
+			$('#forum-digest').prop('disabled', false);
+
+			if (('#forum-digest').prop('checked')) {
+				$('#forum-frequency').prop('disabled', false);
+			}
+		} else {
+			$('#forum-immediate').prop('disabled', true);
+			$('#forum-digest').prop('disabled', true);
+			$('#forum-frequency').prop('disabled', true);
+		}
+	});
+
+	$('#forum-digest').click(function (e) {
+		$('#forum-frequency').prop('disabled', false);
+	});
+
+	$('#forum-immediate').click(function (e) {
+		$('#forum-frequency').prop('disabled', true);
+	});
 });
