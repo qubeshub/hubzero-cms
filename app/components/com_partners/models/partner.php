@@ -120,7 +120,7 @@ class Partner extends Relational implements \Hubzero\Search\Searchable
 			case 'raw':
 			default:
 				$content = $this->get('about');
-				$content = preg_replace('/^(<!-- \{FORMAT:.*\} -->)/i', '', $content);
+				$content = preg_replace('/^(<!-- \{FORMAT:.*\} -->)/i', '', $content ?: '');
 			break;
 		}
 

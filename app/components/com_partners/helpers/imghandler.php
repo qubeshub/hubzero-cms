@@ -7,14 +7,14 @@
 
 namespace Components\Partners\Helpers;
 
-use Hubzero\Base\Object;
+use Hubzero\Base\Obj;
 use Filesystem;
 use Lang;
 
 /**
  * Image manipulation class
  */
-class ImgHandler extends Object
+class ImgHandler extends Obj
 {
 	/**
 	 * Description for 'path'

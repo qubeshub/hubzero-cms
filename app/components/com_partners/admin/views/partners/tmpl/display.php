@@ -20,20 +20,20 @@ $canDo = \Components\Partners\Helpers\Permissions::getActions('partners');
 Toolbar::title(Lang::txt('COM_PARTNERS'));
 if ($canDo->get('core.admin'))
 {
-	JToolBarHelper::preferences($this->option, '550');
-	JToolBarHelper::spacer();
+	Toolbar::preferences($this->option, '550');
+	Toolbar::spacer();
 }
 if ($canDo->get('core.edit.state'))
 {
-	JToolBarHelper::publishList();
-	JToolBarHelper::unpublishList();
-	JToolBarHelper::spacer();
+	Toolbar::publishList();
+	Toolbar::unpublishList();
+	Toolbar::spacer();
 }
 if ($canDo->get('core.edit.featured'))
 {
-	JToolBarHelper::custom('feature', 'default', '', "Feature");
-	JToolBarHelper::custom('unfeature', 'unpublish', '', "Unfeature");
-	JToolBarHelper::spacer();
+	Toolbar::custom('feature', 'default', '', "Feature");
+	Toolbar::custom('unfeature', 'unpublish', '', "Unfeature");
+	Toolbar::spacer();
 }
 if ($canDo->get('core.create'))
 {
@@ -60,7 +60,7 @@ Html::behavior('framework');
 		<label for="filter_search"><?php echo Lang::txt('JSEARCH_FILTER'); ?>:</label>
 		<input type="text" name="search" id="filter_search" value="<?php echo $this->escape($this->filters['search']); ?>" placeholder="<?php echo Lang::txt('COM_PARTNERS_FILTER_SEARCH_PLACEHOLDER'); ?>" />
 		<input type="submit" value="<?php echo Lang::txt('COM_PARTNERS_GO'); ?>" />
-		<button type="button" onclick="$('#filter_search').val('');this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
+		<button type="button" onclick="$('#filter_search').val('');this.form.submit();"><?php echo Lang::txt('JSEARCH_FILTER_CLEAR'); ?></button>
 	</fieldset>
 	<!--our big table -->
 	<div class="clr"></div>
@@ -69,7 +69,7 @@ Html::behavior('framework');
 		<thead>
 			<tr>
 			<!--VERY IMPORTANT MESSAGE: where there is id, state, partner_type and liason, this is how it is sorted, make sure name is same as database if you want sorting/ordering capabilities in the table -->
-				<th><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo count($this->rows);?>);" /></th>
+				<th><input type="checkbox" name="toggle" value="" onclick="checkAll(<?php echo $this->rows->count();?>);" /></th>
 				<th scope="col" class="priority-5"><?php echo Html::grid('sort', 'COM_PARTNERS_COL_ID', 'id', @$this->filters['sort_Dir'], @$this->filters['sort']); ?></th>
 				<th scope="col" class="priority-3"><?php echo Html::grid('sort', 'COM_PARTNERS_COL_FEATURED', 'featured', @$this->filters['sort_Dir'], @$this->filters['sort']); ?></th>
 				<th scope="col"><?php echo Html::grid('sort', 'COM_PARTNERS_COL_NAME', 'name', @$this->filters['sort_Dir'], @$this->filters['sort']); ?></th>

@@ -8,7 +8,7 @@
 //define namespace
 namespace Components\Partners\Helpers;
 
-use Hubzero\Base\Object;
+use Hubzero\Base\Obj;
 use User;
 
 //this model needs to be required in admin/partners.php, and included in the view files
@@ -40,7 +40,7 @@ class Permissions
 			$assetName .= '.' . (int) $assetId;
 		}
 
-		$result = new Object;
+		$result = new Obj;
 
 		$actions = array(
 			'core.admin',

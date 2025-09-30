@@ -128,7 +128,7 @@ class Partner_type extends Relational
 			case 'raw':
 			default:
 				$content = $this->get('description');
-				$content = preg_replace('/^(<!-- \{FORMAT:.*\} -->)/i', '', $content);
+				$content = preg_replace('/^(<!-- \{FORMAT:.*\} -->)/i', '', $content ?: '');
 			break;
 		}
 

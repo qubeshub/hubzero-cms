@@ -7,7 +7,7 @@
 
 namespace Components\Fmns\Admin\Controllers;
 use Hubzero\Component\AdminController;
-use JRequest;
+use Request;
 use Config;
 use Notify;
 use Route;
@@ -281,7 +281,7 @@ class Fmns extends AdminController
 		// We're expecting an array of incoming IDs from the
 		// entries listing. But, we'll force the data into an
 		// array just to be extra sure.
-		$ids = JRequest::getVar('id', array());
+		$ids = Request::getVar('id', array());
 		$ids = (!is_array($ids) ? array($ids) : $ids);
 
 		// Do we actually have any entries?
