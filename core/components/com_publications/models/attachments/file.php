@@ -552,6 +552,7 @@ class File extends Base
 			{
 				$label = Lang::txt('Download');
 				$showDoc = false;
+				$ftpDoc = "";
 				// Link to bundle
 				if ($showArchive == 1 || ($showArchive == 2 && count($attachments) > 1))
 				{
