@@ -380,7 +380,18 @@ class plgAuthenticationShibboleth extends \Hubzero\Plugin\Plugin
 			// Normalize things a bit
 			if (!isset($attrs['eppn']))
 			{
-				$attrs['eppn'] = $attrs['userPrincipalName'];
+				if (isset($attrs['userPrincipalName']))
+				{
+					$attrs['eppn'] = $attrs['userPrincipalName'];
+				} 
+				elseif (isset($attrs['eduPersonUniqueId']))
+				{
+					$attrs['eppn'] = $attrs['eduPersonUniqueId'];
+				} 
+				else
+				{
+					$attrs['eppn'] = $attrs['eduPersonPrincipalName'];
+				}
 			}
 			if (!isset($attrs['username']) && isset($attrs['eppn']))
 			{
