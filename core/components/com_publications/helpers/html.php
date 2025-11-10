@@ -1268,7 +1268,12 @@ class Html
 	{
 		$path = self::buildPubPath($publication_id, $publication_version_id, '', '', 1);
 		$path .= DIRECTORY_SEPARATOR . "data";
-		
+
+		if (!is_dir($path))
+		{
+			return false;
+		}
+
 		if (!opendir($path))
 		{
 			return false;
