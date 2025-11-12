@@ -23,7 +23,7 @@ class plgFilesystemLocal extends \Hubzero\Plugin\Plugin
 	 **/
 	public static function init($params = [])
 	{
-		$path = rtrim($params['path'], '/') . '/' . (isset($params['subdir']) ? trim($params['subdir'], '/') : '');
+		$path = rtrim($params['path'] ?? '', '/') . '/' . (isset($params['subdir']) ? trim($params['subdir'], '/') : '');
 		return new LocalAdapter($path);
 	}
 }
