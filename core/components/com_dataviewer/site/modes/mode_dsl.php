@@ -50,7 +50,7 @@ function get_dd($db_id, $dv_id = false, $version = false)
 		$sql = 'SELECT data_definition FROM `#__project_databases` WHERE `database_name` = ' . $db->quote($name);
 		$db->setQuery($sql);
 		$database = $db->loadAssoc();
-		$dd = json_decode($database['data_definition'], true);
+		$dd = json_decode($database['data_definition'] ?? '', true);
 	}
 	else
 	{
