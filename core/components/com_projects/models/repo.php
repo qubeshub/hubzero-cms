@@ -76,7 +76,7 @@ class Repo extends Obj
 		$this->_adapter();
 
 		// Create and initialize local repo (edge case)
-		if ($this->get('name') == 'local' && !is_dir($this->get('path')))
+		if ($this->get('name') == 'local' && !is_dir($this->get('path','')))
 		{
 			$this->iniLocal();
 		}
