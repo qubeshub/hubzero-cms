@@ -458,6 +458,15 @@ class Ldap
 			$dn = "uid=" . $newUid . ",ou=users," . $hubLDAPBaseDN;
 		}
 
+		// @TODO there are cases where jos_xprofile is missing, something
+		// should fix that. But we catch the critical part here as gidNumber
+		// is a required field.
+
+		if (empty($entry['gidNumber']))
+		{
+			$entry['gidNumber'] = array(3000);
+		}
+
 		// Now do the modify
 		$result = ldap_modify($conn, $dn, $entry);
 

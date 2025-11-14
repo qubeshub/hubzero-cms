@@ -342,6 +342,10 @@ class Sanitize
 		{
 			$purifierConfigSettings['Cache.SerializerPath'] = $clientSerializerPath;
 		}
+		else
+		{
+			$purifierConfigSettings['Cache.SerializerPath'] = sys_get_temp_dir();
+		}
 	}
 
 	/**

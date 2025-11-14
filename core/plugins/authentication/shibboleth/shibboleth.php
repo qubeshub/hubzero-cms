@@ -361,7 +361,7 @@ class plgAuthenticationShibboleth extends \Hubzero\Plugin\Plugin
 				'id' => $sid,
 				'idp' => isset($_SERVER['REDIRECT_Shib-Identity-Provider']) ? $_SERVER['REDIRECT_Shib-Identity-Provider'] : $_SERVER['Shib-Identity-Provider']
 			);
-			foreach (array('email', 'eppn', 'displayName', 'givenName', 'sn', 'mail', 'middleName', 'lastName', 'userPrincipalName') as $key)
+			foreach (array('email', 'eppn', 'displayName', 'givenName', 'sn', 'mail', 'middleName', 'lastName', 'userPrincipalName', 'eduPersonPrincipalName', 'eduPersonUniqueId') as $key)
 			{
 				if (isset($_SERVER[$key]))
 				{
@@ -380,7 +380,18 @@ class plgAuthenticationShibboleth extends \Hubzero\Plugin\Plugin
 			// Normalize things a bit
 			if (!isset($attrs['eppn']))
 			{
-				$attrs['eppn'] = attrs['userPrincipalName'];
+				if (isset($attrs['userPrincipalName']))
+				{
+					$attrs['eppn'] = $attrs['userPrincipalName'];
+				} 
+				elseif (isset($attrs['eduPersonUniqueId']))
+				{
+					$attrs['eppn'] = $attrs['eduPersonUniqueId'];
+				} 
+				else
+				{
+					$attrs['eppn'] = $attrs['eduPersonPrincipalName'];
+				}
 			}
 			if (!isset($attrs['username']) && isset($attrs['eppn']))
 			{

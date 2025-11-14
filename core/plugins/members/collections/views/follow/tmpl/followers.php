@@ -47,11 +47,11 @@ $this->css()
 				<?php foreach ($this->rows as $row) { ?>
 					<tr class="<?php echo $row->get('follower_type'); ?>">
 						<th class="entry-img">
-							<img src="<?php echo $row->follower()->image(); ?>" width="40" height="40" alt="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_PROFILE_PICTURE', $this->escape(stripslashes($row->follower()->title()))); ?>" />
+							<img src="<?php echo $row->follower()->image(); ?>" width="40" height="40" alt="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_PROFILE_PICTURE', $this->escape(stripslashes($row->follower()->title() == null ? '' : $row->follower()->title()))); ?>" />
 						</th>
 						<td>
 							<a class="entry-title" href="<?php echo Route::url($row->follower()->link()); ?>">
-								<?php echo $this->escape(stripslashes($row->follower()->title())); ?>
+								<?php echo $this->escape(stripslashes($row->follower()->title() == null ? '' : $row->follower()->title())); ?>
 							</a>
 							<br />
 							<span class="entry-details">

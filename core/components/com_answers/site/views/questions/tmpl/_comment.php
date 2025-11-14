@@ -70,6 +70,13 @@ if (!$this->comment->get('item_id'))
 			<div class="comment-body">
 				<?php
 				$comment  = htmlspecialchars_decode($this->comment->content);
+				$componentPath = Component::path('com_redirect');
+				if($componentPath){
+					require_once($componentPath . DS . "helpers" . DS . "converter.php");
+					$comment = \Component\Redirect\Helpers\Converter::convert($comment);
+				} else {
+					$comment = preg_replace('#<a\s[^>]*href="([^"]*)"[^>]*?>(.*?)</a>#is', "<a href='$1' rel='nofollow'>$2</a>", $comment);
+				}
 
 				if ($this->comment->isReported())
 				{
@@ -156,7 +163,7 @@ if (!$this->comment->get('item_id'))
 						</div>
 
 						<p class="submit">
-							<input type="submit" class="btn" value="<?php echo Lang::txt('COM_ANSWERS_SUBMIT'); ?>" />
+							<input type="submit" class="btcommentvalue="<?php echo Lang::txt('COM_ANSWERS_SUBMIT'); ?>" />
 						</p>
 					</fieldset>
 				</form>

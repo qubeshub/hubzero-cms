@@ -31,6 +31,8 @@
         "splitbrain/lesserphp": "0.10.*",
         "monolog/monolog": "1.27.*",
         "symfony/mailer": "v5.2.*",
+        "symfony/console": "v5.4.*",
+        "symfony/event-dispatcher": "v5.0.11",
         "php-http/curl-client":"2.3.*",
         "willdurand/geocoder": "4.6.*",
         "geocoder-php/common-http": "4.6.*",
@@ -59,12 +61,13 @@
         "srmklive/flysystem-dropbox-v2": "1.0.*",
         "stevenmaguire/oauth2-dropbox": "3.1.*",
 	"composer/composer": "2.8.*",
-	"phpoffice/phpspreadsheet": "1.29.*",
+	"phpoffice/phpspreadsheet": "1.30.*",
 	"league/oauth2-facebook": "2.0.*",
 	"league/oauth2-client": "~2.8.1",
 	"litesaml/lightsaml": "2.3.*",
         "http-interop/http-factory-guzzle": "*",
-	"theiconic/name-parser": "0.1.*"
+	"theiconic/name-parser": "0.1.*",
+        "pear/archive_tar": "^1.6"
     },
     "require-dev": {
         "mockery/mockery": "1.3.*",

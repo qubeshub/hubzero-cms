@@ -52,7 +52,7 @@ $this->css('.none {
 
 				<div class="input-wrap">
 					<label for="field-title"><?php echo Lang::txt('COM_CRON_FIELD_TITLE'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span></label><br />
-					<input type="text" name="fields[title]" id="field-title" class="required" size="30" maxlength="250" value="<?php echo $this->escape(stripslashes($this->row->get('title'))); ?>" />
+					<input type="text" name="fields[title]" id="field-title" class="required" size="30" maxlength="250" value="<?php echo $this->escape(stripslashes($this->row->get('title',''))); ?>" />
 				</div>
 
 				<div class="input-wrap">

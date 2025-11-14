@@ -506,5 +506,7 @@ class plgCronPublications extends \Hubzero\Plugin\Plugin
 				$publication->_curationModel->removeLink();
 			}
 		}
+
+		return true;
 	}
 }

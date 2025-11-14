@@ -451,7 +451,7 @@ class Resources extends SiteController
 		{
 			$default_sort = 'ranking';
 		}
-
+		$search = preg_replace("/[^a-zA-Z0-9]/", '', strtolower(Request::getString('toolsSearch', '')));
 		// Set some filters
 		$filters = array(
 			'tag'    => ($tag2 ? $tag2 : ''),
@@ -462,7 +462,8 @@ class Resources extends SiteController
 			'now'    => Date::toSql(),
 			'limit'  => 10,
 			'start'  => 0,
-			'access' => array(0)
+			'access' => array(0),
+			'search' => $search,
 		);
 
 		if (!User::isGuest())
@@ -500,7 +501,6 @@ class Resources extends SiteController
 			->order($filters['sortby'], 'desc')
 			->limit($filters['limit'])
 			->rows();
-
 		$this->type = $type;
 		if ($activetitle)
 		{
@@ -510,7 +510,6 @@ class Resources extends SiteController
 		{
 			$this->_task_title = Lang::txt('COM_RESOURCES_ALL');
 		}
-
 		// Set page title
 		$this->_buildTitle();
 
@@ -531,8 +530,9 @@ class Resources extends SiteController
 			->set('supportedtag', $supportedtag)
 			->setName('browse')
 			->setLayout('tags')
-			->setErrors($this->getErrors())
-			->display();
+			->setErrors($this->getErrors());
+		//print_r($this->view);
+		$this->view->display();
 	}
 
 	/**
@@ -1321,12 +1321,20 @@ class Resources extends SiteController
 
 		// Load the resource
 		$this->model = Entry::getInstance(($alias ? $alias : $id), $revision);
-
+		
 		// Make sure we got a result from the database
 		if (!$this->model->get('id') || $this->model->isDeleted())
 		{
 			App::abort(404, Lang::txt('COM_RESOURCES_RESOURCE_NOT_FOUND'));
 		}
+
+		// Template overloading
+		$page_template = $this->model->params->get("page_template");
+                if ($page_template && $page_template != ""){
+			//print_r(App::get('template.loader')->load());
+			//print_r(App::get("client"));
+			App::get('template')->template = $page_template;
+                }
 
 		// Make sure the resource is published and standalone
 		if (!$this->model->get('standalone')) // || !$this->model->isPublished())
@@ -1684,7 +1692,6 @@ class Resources extends SiteController
 			$resource = Entry::getInstance($id);
 			$alias = $resource->get('alias');
 		}
-
 		// Make sure we got a result from the database
 		if (!$resource->get('id'))
 		{
@@ -2529,7 +2536,7 @@ class Resources extends SiteController
 		}
 
 		// Set the page title
-		$title = stripslashes($row->title) . ': ' . Lang::txt('COM_RESOURCES_LICENSE');
+		$title = stripslashes($row->title ?: '') . ': ' . Lang::txt('COM_RESOURCES_LICENSE');
 
 		// Write title
 		Document::setTitle($title);

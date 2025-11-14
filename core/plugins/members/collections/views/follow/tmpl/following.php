@@ -45,7 +45,7 @@ $this->css()
 						<tr class="<?php echo $row->get('following_type'); ?>">
 							<th>
 								<?php if ($row->following()->image()) { ?>
-									<img src="<?php echo $row->following()->image(); ?>" width="40" height="40" alt="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_PROFILE_PICTURE', $this->escape(stripslashes($row->following()->title()))); ?>" />
+									<img src="<?php echo $row->following()->image(); ?>" width="40" height="40" alt="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_PROFILE_PICTURE', $this->escape(stripslashes($row->following()->title() ?: ''))); ?>" />
 								<?php } else { ?>
 									<span class="entry-id">
 										<?php echo $row->get('following_id'); ?>
@@ -54,10 +54,10 @@ $this->css()
 							</th>
 							<td>
 								<a class="entry-title" href="<?php echo Route::url($row->following()->link()); ?>">
-									<?php echo $this->escape(stripslashes($row->following()->title())); ?>
+									<?php echo $this->escape(stripslashes($row->following()->title() ?: '')); ?>
 								</a>
 								<?php if ($row->get('following_type') == 'collection') { ?>
-									<?php echo Lang::txt('by %s', $this->escape(stripslashes($row->following()->creator('name')))); ?>
+									<?php echo Lang::txt('by %s', $this->escape(stripslashes($row->following()->creator('name') ?: ''))); ?>
 								<?php } ?>
 								<br />
 								<span class="entry-details">

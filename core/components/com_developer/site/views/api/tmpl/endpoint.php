@@ -172,7 +172,7 @@ $base = 'index.php?option=' . $this->option . '&controller=' . $this->controller
 								<tbody>
 									<?php foreach ($endpoint['parameters'] as $param) : ?>
 										<tr>
-											<td><?php echo $param['name']; ?></td>
+											<td><?php echo (isset($param['name'])) ? $param['name'] : ' '; ?></td>
 											<td><?php echo (isset($param['type'])) ? $param['type'] : ' '; ?></td>
 											<td>
 												<?php echo ($param['required']) ? '<span class="required">' . Lang::txt('JREQUIRED') . '</span>.' : ''; ?> 

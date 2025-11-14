@@ -213,8 +213,10 @@ class plgResourcesUsage extends \Hubzero\Plugin\Plugin
 
 				$stats = $query->whereEquals('resid', $model->id)
 				               ->whereEquals('period', $period)
-				               ->whereLike('datetime', $previousDate . '-%')
-				               ->row();
+				               //->whereLike('datetime', $previousDate . '-%')
+				               ->order('datetime', 'desc')
+					       ->limit(1)
+					       ->row();
 
 				$clusters = \Components\Resources\Models\Stat\Cluster::all()
 				            ->whereEquals('resid', $model->id)

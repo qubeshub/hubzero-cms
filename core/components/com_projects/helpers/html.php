@@ -817,7 +817,7 @@ class Html extends Obj
 	 */
 	public static function getAdminNotes($notes = '', $reviewer = '')
 	{
-		preg_match_all("#<nb:" . $reviewer . ">(.*?)</nb:" . $reviewer . ">#s", $notes, $matches);
+		preg_match_all("#<nb:" . $reviewer . ">(.*?)</nb:" . $reviewer . ">#s", $notes ?: '', $matches);
 
 		$ntext = '';
 		if (count($matches) > 0)
