@@ -671,7 +671,7 @@ class Events extends SiteController
 		$row->load($id);
 
 		// Ensure we have an event
-		if (!$row || !$row->id)
+		if (!$row || !$row->id || $row->state!=1)
 		{
 			App::abort(404, Lang::txt('EVENTS_CAL_LANG_NO_EVENTFOR') . ' ' . Lang::txt('EVENTS_CAL_LANG_THIS_DAY'));
 		}
@@ -722,7 +722,7 @@ class Events extends SiteController
 
 		// Adresse
 		$row->adresse_info = preg_replace("/(mailto:\/\/)?((-|$alphadigit|\.)+)@((-|$alphadigit|\.)+)(\.$alphadigit+)/i", "<a href=\"mailto:$2@$5$8\">$2@$5$8</a>", $row->adresse_info);
-		$row->adresse_info = preg_replace("/(http:\/\/|https:\/\/)((-|$alphadigit|\.)+)(\.$alphadigit+)/i", "<a href=\"$1$2$5$8\">$1$2$5$8</a>", $row->adresse_info);
+		$row->adresse_info = preg_replace("/(http:\/\/|https:\/\/)((-|$alphadigit|\.)+)(\.$alphadigit+)/i", "<a href=\"$1$2$5$8\">$1$2$5$8</a>", $row->adresse_info == null ? '' : $row->adresse_info);
 
 		// Contact
 		$row->contact_info = stripslashes(strip_tags($row->contact_info));
@@ -2018,8 +2018,6 @@ class Events extends SiteController
 		{
 			$row->state = 1;
 		}
-
-		$row->state = 1;
 
 		// Verify that the event doesn't start after it ends or ends before it starts.
 		$pubdow = strtotime($row->publish_down);
