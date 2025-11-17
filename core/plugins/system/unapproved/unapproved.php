@@ -40,8 +40,12 @@ class plgSystemUnapproved extends \Hubzero\Plugin\Plugin
 			$current .= ($task       = Request::getWord('task', false)) ? '.' . $task : '';
 			$current .= ($view       = Request::getWord('view', false)) ? '.' . $view : '';
 
+			// Pull current user data from DB rather than cached session value.
+			// Proper fix should reload the session value
+			$user = \Hubzero\User\User::oneByUsername(User::get('username'));
+
 			// If guest, proceed as normal and they'll land on the login page
-			if (!in_array($current, $exceptions) && !User::get('approved'))
+			if (!in_array($current, $exceptions) && $user->get('approved'))
 			{
 				Request::setVar('option', 'com_members');
 				Request::setVar('task', 'unapproved');
