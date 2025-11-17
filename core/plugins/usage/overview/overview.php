@@ -245,8 +245,8 @@ class plgUsageOverview extends \Hubzero\Plugin\Plugin
 		$data = new stdClass;
 		$data->visits = new stdClass;
 		$data->visits->total        = number_format($result == null ? 0.0 : floatval($result));
-		$data->visits->residence    = $residence;
-		$data->visits->organization = $organization;
+		$data->visits->residence    = $residence ?? '';
+		$data->visits->organization = $organization ?? '';
 
 		$sql = "SELECT value, valfmt
 				FROM `summary_user_vals`
