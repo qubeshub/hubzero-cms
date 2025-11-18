@@ -835,9 +835,11 @@ class Html
 	 * @param   boolean  $disabled  Is the button disable?
 	 * @param   string   $pop       Pop-up content
 	 * @param   array    $options
+	 * @param   boolean  $showDoc   show download guide?
+	 * @param   string   $ftpDoc    Download guide doc
 	 * @return  string
 	 */
-	public static function primaryButton($class, $href, $msg, $xtra = '', $title = '', $action = '', $disabled = false, $pop = '', $options = array())
+	public static function primaryButton($class, $href, $msg, $xtra = '', $title = '', $action = '', $disabled = false, $pop = '', $options = array(), $showDoc = false, $ftpDoc = '')
 	{
 		$view = new \Hubzero\Component\View(array(
 			'base_path' => dirname(__DIR__) . DS . 'site',
@@ -854,6 +856,8 @@ class Html
 		$view->set('pop', $pop);
 		$view->set('msg', $msg);
 		$view->set('options', $options);
+		$view->set('showDoc', $showDoc);
+		$view->set('ftpDoc', $ftpDoc);
 
 		return $view->loadTemplate();
 	}
@@ -1251,7 +1255,12 @@ class Html
 	{
 		$path = self::buildPubPath($publication_id, $publication_version_id, '', '', 1);
 		$path .= DIRECTORY_SEPARATOR . "data";
-		
+
+		if (!is_dir($path))
+		{
+			return false;
+		}
+
 		if (!opendir($path))
 		{
 			return false;

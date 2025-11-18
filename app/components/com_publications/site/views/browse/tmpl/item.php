@@ -65,7 +65,7 @@ $extras = Event::trigger('publications.onPublicationsList', array($this->line));
 
 		<?php
 		if ($this->params->get('show_ranking') && $this->config->get('show_ranking')):
-			$ranking = round($this->line->get('master_ranking'), 1);
+			$ranking = round(floatval($this->line->get('master_ranking', 1)));
 
 			$r = (10 * $ranking);
 
