@@ -333,7 +333,7 @@ class Query extends Relational
 			{
 				$expr->fldval = 'group_id';
 
-				if (!is_numeric($expr->val))
+				if (!is_numeric($expr->val) && $expr->val != '*')
 				{
 					if ($group = \Hubzero\User\Group::getInstance($expr->val))
 					{
@@ -343,10 +343,15 @@ class Query extends Relational
 					{
 						$expr->val = 0;
 					}
+
+					if ($expr->val == 0)
+					{
+						continue;
+					}
 				}
 			}
 
-			if (strtoupper($expr->val) == 'NULL' || strtoupper($expr->val) == 'NULL')
+			if (strtoupper($expr->val) == 'NULL' || $expr->val === null)
 			{
 				$expr->opval = ($expr->opval == '=') ? 'IS $1' : 'IS NOT $1';
 			}
