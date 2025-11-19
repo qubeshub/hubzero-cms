@@ -539,7 +539,10 @@ class Application extends Container
 
 		flush();
 
-		fastcgi_finish_request();
+		if (function_exists('fastcgi_finish_request'))
+		{
+			fastcgi_finish_request();
+		}
 
 		$this->endms = microtime(true);
 
