@@ -1177,7 +1177,7 @@ class Html extends Obj
 	 */
 	public static function getProjectRepoPath($projectAlias = '', $case = 'files', $exists = true)
 	{
-		if (!trim($projectAlias))
+		if (!trim($projectAlias ?? ''))
 		{
 			return false;
 		}
