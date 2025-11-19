@@ -28,7 +28,7 @@ if ($this->delimiter)
 $message .= ($this->post->get('anonymous')) ? Lang::txt('JANONYMOUS') : $this->post->creator->get('name') . ' (' . $this->post->creator->get('username') . ')';
 $message .= ' wrote (in ' . $this->group->get('description') . ': ' . $this->section->get('title') . ' - ' . $this->category->get('title') . ' - ' . $this->thread->get('title') . '):';
 
-$output = html_entity_decode(strip_tags($this->post->content ?: ''), ENT_COMPAT, 'UTF-8');
+$output = html_entity_decode(strip_tags($this->post->content ?? ''), ENT_COMPAT, 'UTF-8');
 $output = preg_replace_callback(
 	"/(&#[0-9]+;)/",
 	function($m)
