@@ -114,7 +114,7 @@ $lastname = $author->lastName ? htmlspecialchars($author->lastName) : $lastname;
 					<div class="clear"></div>
 					<label for="credit">
 						<span class="leftshift faded"><?php echo ucfirst(Lang::txt('PLG_PROJECTS_PUBLICATIONS_AUTHORS_AUTHOR_CREDIT')); ?>:</span>
-						<input type="text" name="credit"  class="long" value="<?php echo htmlspecialchars($author->credit); ?>" maxlength="255"  /><span class="optional"><?php echo Lang::txt('OPTIONAL'); ?></span>
+						<input type="text" name="credit"  class="long" value="<?php echo htmlspecialchars($author->credit ?: ''); ?>" maxlength="255"  /><span class="optional"><?php echo Lang::txt('OPTIONAL'); ?></span>
 					</label>
 					<div class="clear"></div>
 				</div>
