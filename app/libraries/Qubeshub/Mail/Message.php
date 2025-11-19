@@ -522,31 +522,35 @@ class Message extends \Symfony\Component\Mime\Email
 	 */
 	public function setBcc($addresses, $name = null)
 	{
-		if (!is_array($addresses) && isset($name)) {
+		if (!is_array($addresses))
+		{
+			if ($name == null)
+			{
+				$name = '';
+			}
+
 			$addresses = array($addresses => $name);
 		}
 
 		foreach($addresses as $key => $value)
 		{
-			if ($value) {
-				if (is_numeric($key))
-				{
-					$address = new \Symfony\Component\Mime\Address($value);
-				}
-				else
-				{
-					$address = new \Symfony\Component\Mime\Address($key, $value);
-				}
+			if (is_numeric($key))
+			{
+				$address = new \Symfony\Component\Mime\Address($value);
+			}
+			else
+			{
+				$address = new \Symfony\Component\Mime\Address($key, $value);
+			}
 
-				if (isset($first_set))
-				{
-					parent::bcc($address);
-					$first_set = true;
-				}
-				else
-				{
-					parent::addBcc($address);
-				}
+			if (isset($first_set))
+			{
+				parent::bcc($address);
+				$first_set = true;
+			}
+			else
+			{
+				parent::addBcc($address);
 			}
 		}
 
