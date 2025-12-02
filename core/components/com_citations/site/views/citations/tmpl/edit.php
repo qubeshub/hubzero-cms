@@ -286,12 +286,12 @@ $pid = Request::getInt('publication', 0);
 
 			<label for="abstract">
 				<?php echo Lang::txt('COM_CITATIONS_ABSTRACT'); ?>:
-				<textarea name="fields[abstract]" id="abstract" rows="8" cols="10"><?php echo $this->escape(stripslashes($this->row->abstract)); ?></textarea>
+				<textarea name="fields[abstract]" id="abstract" rows="8" cols="10"><?php echo $this->escape(stripslashes($this->row->abstract ?? '')); ?></textarea>
 			</label>
 
 			<label for="note">
 				<?php echo Lang::txt('COM_CITATIONS_NOTES'); ?>:
-				<textarea name="fields[note]" id="note" rows="8" cols="10"><?php echo $this->escape(stripslashes($this->row->note)); ?></textarea>
+				<textarea name="fields[note]" id="note" rows="8" cols="10"><?php echo $this->escape(stripslashes($this->row->note ?? '')); ?></textarea>
 			</label>
 
 			<label for="keywords">
@@ -329,7 +329,7 @@ $pid = Request::getInt('publication', 0);
 			</label>
 			<label for="formatted">
 				<?php echo Lang::txt('COM_CITATIONS_MANUALLY_FORMAT_CITATION'); ?>:
-				<textarea name="fields[formatted]" id="formatted" rows="8" cols="10"><?php echo $this->escape(stripslashes($this->row->get('formatted'))); ?></textarea>
+				<textarea name="fields[formatted]" id="formatted" rows="8" cols="10"><?php echo $this->escape(stripslashes($this->row->get('formatted',''))); ?></textarea>
 			</label>
 		</fieldset><div class="clear"></div>
 
