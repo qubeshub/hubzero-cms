@@ -239,7 +239,7 @@ class Citation extends Relational implements \Hubzero\Search\Searchable
 	 * @param   array  $searchableFields
 	 * @return  $this
 	 */
-	public function filterBySearch($term, $depth = 0, $searchableFields = array('title', 'isbn', 'doi', 'abstract', 'author', 'publisher'))
+	public function filterBySearch($term, $depth = 0, $searchableFields = array('title', 'isbn', 'doi', 'abstract', 'author', 'publisher','keywords'))
 	{
 		if (is_array($term))
 		{
