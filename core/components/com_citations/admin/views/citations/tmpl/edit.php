@@ -191,7 +191,7 @@ if (function_exists('mbstring'))
 				</div>
 				<div class="input-wrap">
 					<label for="callnumber"><?php echo Lang::txt('COM_CITATIONS_FIELD_CALL_NUMBER'); ?>:</label><br />
-					<input type="text" name="citation[call_number]" id="callnumber" maxlength="250" value="<?php echo $this->escape(stripslashes($this->row->call_number ?? ''); ?>" />
+					<input type="text" name="citation[call_number]" id="callnumber" maxlength="250" value="<?php echo $this->escape(stripslashes($this->row->call_number ?? '')); ?>" />
 				</div>
 				<div class="input-wrap">
 					<label for="accessionnumber"><?php echo Lang::txt('COM_CITATIONS_FIELD_ACCESSION_NUMBER'); ?>:</label><br />
