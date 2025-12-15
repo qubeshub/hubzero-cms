@@ -24,14 +24,6 @@ Toolbar::cancel();
 					<td><input type="text" name="config[adminmail]" size="30" maxlength="50" value="<?php echo $this->config->adminmail; ?>" /></td>
 				</tr>
 				<tr>
-					<th scope="row" class="key"><?php echo Lang::txt('COM_EVENTS_CAL_LANG_CONFIG_ADMINLEVEL'); ?></th>
-					<td><?php
-					$level[] = Html::select('option', '0', Lang::txt('COM_EVENTS_CAL_LANG_CONFIG_ALL'), 'value', 'text' );
-					$level[] = Html::select('option', '1', Lang::txt('COM_EVENTS_CAL_LANG_CONFIG_SPECIAL'), 'value', 'text' );
-					echo Html::select('genericlist', $level, 'config[adminlevel]', '', 'value', 'text', $this->config->adminlevel, false, false );
-					?></td>
-				</tr>
-				<tr>
 					<th scope="row" class="key"><?php echo Lang::txt('COM_EVENTS_CAL_LANG_CONFIG_FIRSTDAY'); ?></th>
 					<td><?php
 					$first[] = Html::select('option', '0', Lang::txt('COM_EVENTS_CAL_LANG_CONFIG_SUNDAY_FIRST'), 'value', 'text' );

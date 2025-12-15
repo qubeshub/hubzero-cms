@@ -120,7 +120,6 @@ class Configs
 	{
 		$config = array(
 			'adminmail' => '',
-			'adminlevel' => '0',
 			'starday' => '0',
 			'mailview' => 'NO',
 			'byview' => 'NO',

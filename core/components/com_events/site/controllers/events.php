@@ -325,16 +325,7 @@ class Events extends SiteController
 		$ee = new Event($this->database);
 		$rows = $ee->getEvents('year', $filters);
 
-		// Everyone has access unless restricted to admins in the configuration
-		$authorized = true;
-		if (User::isGuest())
-		{
-			$authorized = false;
-		}
-		if ($this->config->getCfg('adminlevel'))
-		{
-			$authorized = $this->_authorize();
-		}
+		$authorized = $this->_authorize();
 
 		// Get a list of categories
 		$categories = $this->_getCategories();
@@ -403,16 +394,7 @@ class Events extends SiteController
 		$ee = new Event($this->database);
 		$rows = $ee->getEvents('month', $filters);
 
-		// Everyone has access unless restricted to admins in the configuration
-		$authorized = true;
-		if (User::isGuest())
-		{
-			$authorized = false;
-		}
-		if ($this->config->getCfg('adminlevel'))
-		{
-			$authorized = $this->_authorize();
-		}
+		$authorized = $this->_authorize();
 
 		// Get a list of categories
 		$categories = $this->_getCategories();
@@ -514,16 +496,7 @@ class Events extends SiteController
 			$rows[$d]['week']   = $week;
 		}
 
-		// Everyone has access unless restricted to admins in the configuration
-		$authorized = true;
-		if (User::isGuest())
-		{
-			$authorized = false;
-		}
-		if ($this->config->getCfg('adminlevel'))
-		{
-			$authorized = $this->_authorize();
-		}
+		$authorized = $this->_authorize();
 
 		// Build the page title
 		$this->_buildTitle();
@@ -604,16 +577,7 @@ class Events extends SiteController
 		// 	}
 		// }
 
-		// Everyone has access unless restricted to admins in the configuration
-		$authorized = true;
-		if (User::isGuest())
-		{
-			$authorized = false;
-		}
-		if ($this->config->getCfg('adminlevel'))
-		{
-			$authorized = $this->_authorize();
-		}
+		$authorized = $this->_authorize();
 
 		// Get a list of categories
 		$categories = $this->_getCategories();
@@ -760,15 +724,7 @@ class Events extends SiteController
 		// Everyone has access unless restricted to admins in the configuration
 		$authorized = true;
 
-		$auth = true;
-		if (User::isGuest())
-		{
-			$auth = false;
-		}
-		if ($this->config->getCfg('adminlevel'))
-		{
-			$auth = $this->_authorize();
-		}
+		$auth = $this->_authorize();
 
 		// Get a list of categories
 		$categories = $this->_getCategories();
@@ -919,11 +875,7 @@ class Events extends SiteController
 			return;
 		}
 
-		$auth = true;
-		if ($this->config->getCfg('adminlevel'))
-		{
-			$auth = $this->_authorize();
-		}
+		$auth = $this->_authorize();
 
 		$bits = explode('-', $event->publish_up);
 		$eyear = $bits[0];
@@ -1083,11 +1035,7 @@ class Events extends SiteController
 			return;
 		}
 
-		$auth = true;
-		if ($this->config->getCfg('adminlevel'))
-		{
-			$auth = $this->_authorize();
-		}
+		$auth = $this->_authorize();
 
 		$bits = explode('-', $event->publish_up);
 		$eyear  = $bits[0];
@@ -1791,7 +1739,7 @@ class Events extends SiteController
 
 		// good ol' form validation
 		Request::checkToken();
-		Request::checkHoneypot() or die('Invalid Field Data Detected. Please try again.');
+		Request::checkHoneypot(null,0) or die('Invalid Field Data Detected. Please try again.');
 
 		$offset = $this->offset;
 
@@ -1992,6 +1940,8 @@ class Events extends SiteController
 				$tz = timezone_name_from_abbr('', $row->time_zone * 3600, -1);
 		}
 
+		$row->state = 1;
+
 		// create publish up date time string
 		$rpup = $row->publish_up;
 		$publishtime = date('Y-m-d 00:00:00');
@@ -2007,16 +1957,6 @@ class Events extends SiteController
 		{
 			$publishtime = $row->publish_down . ' ' . $end_time . ':00';
 			$row->publish_down = \Date::of($publishtime)->toSql();
-		}
-
-		// Always unpublish if no Publisher otherwise publish automatically
-		if ($this->config->getCfg('adminlevel'))
-		{
-			$row->state = 0;
-		}
-		else
-		{
-			$row->state = 1;
 		}
 
 		// Verify that the event doesn't start after it ends or ends before it starts.
@@ -2236,15 +2176,6 @@ class Events extends SiteController
 		 || User::authorise('core.manage', $this->_option))
 		{
 			return true;
-		}
-
-		// Check against events configuration
-		if (!$this->config->getCfg('adminlevel'))
-		{
-			if ($id && $id == User::get('id'))
-			{
-				return true;
-			}
 		}
 
 		return false;

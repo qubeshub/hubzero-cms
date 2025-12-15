@@ -215,7 +215,6 @@ INSERT INTO `#__content` VALUES (31,96,'Community','community','','{xhub:include
 --
 
 INSERT INTO `#__events_config` (`param`, `value`) VALUES ('adminmail','');
-INSERT INTO `#__events_config` (`param`, `value`) VALUES ('adminlevel','0');
 INSERT INTO `#__events_config` (`param`, `value`) VALUES ('starday','0');
 INSERT INTO `#__events_config` (`param`, `value`) VALUES ('mailview','NO');
 INSERT INTO `#__events_config` (`param`, `value`) VALUES ('byview','NO');
