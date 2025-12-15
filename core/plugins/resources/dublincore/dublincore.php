@@ -71,7 +71,7 @@ class plgResourcesDublincore extends \Hubzero\Plugin\Plugin
 
 		foreach ($model->contributors('!submitter') as $contributor)
 		{
-			if (strtolower($contributor->role) == 'submitter')
+			if (strtolower($contributor->role ?? '') == 'submitter')
 			{
 				continue;
 			}
