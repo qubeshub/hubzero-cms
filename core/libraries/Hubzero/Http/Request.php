@@ -659,7 +659,14 @@ class Request extends BaseRequest
 		}
 		else
 		{
-			return $this->$source->get($key, $default, true);
+			if (is_array($default))
+			{
+				return $this->$source->all($key, $default, true);
+			}
+			else
+			{
+				return $this->$source->get($key, $default, true);
+			}
 		}
 	}
 
