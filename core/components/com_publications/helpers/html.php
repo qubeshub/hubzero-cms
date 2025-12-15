@@ -1333,23 +1333,23 @@ class Html
 	 *
 	 * @return  array
 	 */
-	public static function getMimeTypes($pubType, $publication_id, $publication_version_id, $secret, $attachments)
+	public static function getMimeTypes($pubType, $publication_id, $publication_version_id, $secret, $attachments, $fast = false)
 	{
 		$mimeTypes = [];
 		
 		if ($pubType == 1)
 		{
-			self::getMIMEtypesOfPrimarySupportFiles($publication_id, $publication_version_id, $secret, 1, $attachments, $mimeTypes);
+			self::getMIMEtypesOfPrimarySupportFiles($publication_id, $publication_version_id, $secret, 1, $attachments, $mimeTypes, $fast);
 		}
 		
 		if (is_array($attachments) && array_key_exists(2, $attachments))
 		{
-			self::getMIMEtypesOfPrimarySupportFiles($publication_id, $publication_version_id, $secret, 2, $attachments, $mimeTypes);
+			self::getMIMEtypesOfPrimarySupportFiles($publication_id, $publication_version_id, $secret, 2, $attachments, $mimeTypes, $fast);
 		}
 		
 		if (is_array($attachments) && array_key_exists(3, $attachments))
 		{
-			self::getMIMEtypesOfGalleryFile($publication_id, $publication_version_id, $mimeTypes);
+			self::getMIMEtypesOfGalleryFile($publication_id, $publication_version_id, $mimeTypes, $fast);
 		}
 		
 		return $mimeTypes;
@@ -1365,7 +1365,7 @@ class Html
 	 *
 	 * @return  null or false
 	 */
-	public static function getMIMEtypesOfPrimarySupportFiles($publication_id, $publication_version_id, $secret, $role, $attachments, &$mimeTypes)
+	public static function getMIMEtypesOfPrimarySupportFiles($publication_id, $publication_version_id, $secret, $role, $attachments, &$mimeTypes, $fast = false)
 	{
 		$path = self::buildPubPath($publication_id, $publication_version_id, '', '', 1);
 		$path .= DIRECTORY_SEPARATOR . $secret;
@@ -1380,7 +1380,16 @@ class Html
 			$file = $path . DIRECTORY_SEPARATOR . ltrim($attachment->path, '/');
 			if (file_exists($file))
 			{
-				$mimeType = mime_content_type($file);
+				if ($fast)
+				{
+					$mimer = new  \Hubzero\Content\Mimetypes();
+                                        $mimeType = $mimer->getMimeType($file,true);
+				}
+				else
+				{
+					error_log("1: calling mime_content_type($file)");
+					$mimeType = mime_content_type($file);
+				}
 				if ($mimeType && !in_array($mimeType, $mimeTypes))
 				{
 					$mimeTypes[] = $mimeType;
@@ -1399,7 +1408,7 @@ class Html
 	 *
 	 * @return  null or false
 	 */
-	public static function getMIMEtypesOfGalleryFile($publication_id, $publication_version_id, &$mimeTypes)
+	public static function getMIMEtypesOfGalleryFile($publication_id, $publication_version_id, &$mimeTypes, $fast = false)
 	{
 		$path = self::buildPubPath($publication_id, $publication_version_id, '', '', 1);
 		$galleryDir = $path . DIRECTORY_SEPARATOR . "gallery";
@@ -1424,7 +1433,18 @@ class Html
 			}
 
 			$file = $galleryDir . DIRECTORY_SEPARATOR . $galleryFile;
-			$mimeType = mime_content_type($file);
+
+			if ($fast)
+			{
+				$mimer = new  \Hubzero\Content\Mimetypes();
+                                $mimeType = $mimer->getMimeType($file,true);
+			}
+			else
+			{
+				error_log("2: calling mime_content_type($file)");
+				$mimeType = mime_content_type($file);
+			}
+
 			if ($mimeType && !in_array($mimeType, $mimeTypes))
 			{
 				$mimeTypes[] = $mimeType;

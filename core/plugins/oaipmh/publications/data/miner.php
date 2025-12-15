@@ -327,19 +327,21 @@ class Miner extends Obj implements Provider
 			
 			if ($masterType == 1)
 			{
-				$mimeTypes = \Components\Publications\Helpers\Html::getMimeTypes($masterType, $record->publication_id, $record->version_id, $record->secret, $attachments);
+				$mimeTypes = \Components\Publications\Helpers\Html::getMimeTypes($masterType, $record->publication_id, $record->version_id, $record->secret, $attachments, true);
 			}
 			else if ($masterType == 7)
 			{				
 				$files = \Components\Publications\Helpers\Html::getdatabaseFiles($record->publication_id, $record->version_id);
 				
-				$mimeTypes = \Components\Publications\Helpers\Html::getMimeTypes($masterType, $record->publication_id, $record->version_id, $record->secret, $attachments);
+				$mimeTypes = \Components\Publications\Helpers\Html::getMimeTypes($masterType, $record->publication_id, $record->version_id, $record->secret, $attachments, true);
 				
 				if ($files != false && !empty($files))
 				{
 					foreach ($files as $file)
 					{
-						$mimeType = mime_content_type($file);
+						//$mimeType = mime_content_type($file);
+						$mimer = new  \Hubzero\Content\Mimetypes();
+						$mimeType = $mimer->getMimeType($file,true);
 						if ($mimeType && !in_array($mimeType, $mimeTypes))
 						{
 							$mimeTypes[] = $mimeType;

@@ -739,7 +739,7 @@ class Mimetypes
 	 * @param   string  $file  File Name (relative location such as "image_test.jpg" or full "http://site.com/path/to/image_test.jpg")
 	 * @return  string  The type of the file passed in the argument
 	 */
-	public function getMimeType($file = null)
+	public function getMimeType($file = null, $fast = false)
 	{
 		if (is_file($file))
 		{
@@ -749,7 +749,7 @@ class Mimetypes
 			// If FINFO functions are not available then try to retrieve MIME type from pre-defined MIMEs
 			// If MIME type doesn't exist, then try (as a last resort) to use the (deprecated) mime_content_type function
 			// If all else fails, just return application/octet-stream
-			if (!function_exists('finfo_open') || in_array($extension, array('docx', 'pptx', 'xlsx')))
+			if ($fast || !function_exists('finfo_open') || in_array($extension, array('docx', 'pptx', 'xlsx')))
 			{
 				if (array_key_exists($extension, $this->mimeTypes))
 				{
