@@ -296,12 +296,12 @@ $pid = Request::getInt('publication', 0);
 
 			<label for="keywords">
 				<?php echo Lang::txt('COM_CITATIONS_KEYWORDS'); ?>:
-				<textarea name="fields[keywords]" id="keywords" rows="8" cols="10"><?php echo $this->escape(stripslashes($this->row->keywords)); ?></textarea>
+				<textarea name="fields[keywords]" id="keywords" rows="8" cols="10"><?php echo $this->escape(stripslashes($this->row->keywords ?? '')); ?></textarea>
 			</label>
 
 			<label for="research_notes">
 				<?php echo Lang::txt('COM_CITATIONS_RESEARCH_NOTES'); ?>:
-				<textarea name="fields[research_notes]" id="research_notes" rows="8" cols="10"><?php echo $this->escape(stripslashes($this->row->research_notes)); ?></textarea>
+				<textarea name="fields[research_notes]" id="research_notes" rows="8" cols="10"><?php echo $this->escape(stripslashes($this->row->research_notes ?? '')); ?></textarea>
 			</label>
 
 			<div class="group twoup">
