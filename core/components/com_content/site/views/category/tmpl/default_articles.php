@@ -13,7 +13,7 @@ Html::behavior('tooltip');
 Html::behavior('framework');
 
 // Create some shortcuts.
-$params    = &$this->item->params;
+$params    = $this->item->params ?? '';
 $n         = count($this->items);
 $listOrder = $this->escape($this->filters['ordering']);
 $listDirn  = $this->escape($this->filters['direction']);
