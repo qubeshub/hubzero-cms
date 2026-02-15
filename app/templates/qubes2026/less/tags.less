@@ -1,0 +1,26 @@
+ol.tags {
+    display: flex;
+    flex-wrap: wrap;
+    list-style-type: none;
+
+    li {
+        margin: .25em;
+        position: relative;
+       
+        .tag {
+            background: #D8DBE9;
+            border: 1px solid #40476D;
+            border-radius: 3px;
+            color: #40476D;
+            font-family: @fontSimple;
+            padding: .25em .5em;
+            transition: .2s;
+
+            &:hover {
+                background: #40476D;
+                border: 1px solid #40476D;
+                color: #D8DBE9;
+            }
+        }
+    }
+}

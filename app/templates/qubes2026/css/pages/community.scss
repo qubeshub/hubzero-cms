@@ -1,0 +1,412 @@
+@import 'variables';
+@import 'mixins';
+
+.content-header {
+  display: none;
+}
+
+//Feature
+.module-feature {
+  @include flexbox(wrap);
+  @include grid-template(repeat(auto-fit, minmax(12.5rem, 1fr)), null, .625em);
+  grid-auto-flow: dense;
+  grid-auto-rows: 12.5rem;
+  margin: 1em;
+
+  .billboard-image,
+  .blog-img,
+  .newsletter-img,
+  .fmn-img {
+    @extend %showcase-img;
+  }
+
+  .billboard,
+  .resource,
+  .group,
+  .blog,
+  .newsletter,
+  .fmn {
+    position: relative;
+  }
+
+  .billboard-header,
+  .partner-title,
+  .group-description,
+  .blog-title,
+  .newsletter-title,
+  .fmn-title {
+    @include showcase-header(1em, 1.1, 2);
+  }
+
+  .billboard-tag,
+  .partner-tag,
+  .group-tag,
+  .blog-tag,
+  .newsletter-tag,
+  .fmn-tag {
+    @include showcase-tag($color-accent2, $white);
+  }
+
+  .partner-img,
+  .group-img {
+    @extend %showcase-group;
+  }
+
+  .big {
+    @include grid-support {
+      height: auto;
+      margin: 0;
+      width: auto;
+    }
+    @include respond-at(77.5em) {
+      @include grid(null, span 1);
+    }
+    @include grid(span 2, span 2);
+    flex: 1 1 20rem;
+    height: 15rem;
+    margin: .15625em;
+  }
+
+  .flex {
+    @extend .big;
+    @include respond-at(64.6875em) {
+      @include grid(span 3, span 1);
+    }
+    @include respond-at(90.3125em) {
+      @include grid(null, span 1);
+    }
+  }
+
+  .horizontal {
+    @include grid-support {
+      height: auto;
+      margin: 0;
+      width: auto;
+    }
+    @include respond-at(39.0625em) {
+      @include grid(span 3, null);
+    }
+    @include grid(span 2, null);
+    flex: 1 1 20rem;
+    height: 15rem;
+    margin: .15625em;
+  }
+
+  .regular {
+    @include grid-support {
+      height: auto;
+      margin: 0;
+      width: auto;
+    }
+    flex: 1 1 20rem;
+    height: 15rem;
+    margin: .15625em;
+  }
+}
+
+//Search
+.search-wrapper {
+  @include grid(col / span 4, row 2);
+  justify-content: center;
+  padding: 2.5em;
+  text-align: center;
+
+  h5 {
+    margin: 0 auto 1em;
+    width: 75%;
+  }
+}
+
+#rsearch {
+  width: 70%;
+}
+
+.page-body {
+  .content {
+    .search {
+      input[type='submit'] {
+        background-color: $color-link;
+        color: $white;
+      }
+    }
+  }
+}
+
+//Explore
+.explore {
+  @include respond-at(36.875em) {
+    padding: 2.5em;
+  }
+  padding: 1em;
+}
+
+.community-container {
+  @extend %anchor-container;
+}
+
+.communities {
+  @extend %anchor;
+}
+
+//Faculty Mentoring Network
+.one {
+  background-color: $white-smoke;
+
+  p {
+    margin: 1em 0;
+  }
+
+  .fmn-intro {
+    padding: 2.5em;
+    text-align: center;
+
+    .link {
+      @include btn-border-drawing($color-link, $color-link-hover, 1px, bottom, right);
+    }
+  }
+
+  .module-fmn {
+    @include flexbox(wrap);
+    @include grid-template(repeat(auto-fit, minmax(23.4375rem, max-content)), null, 2em);
+    grid-auto-rows: 8rem;
+    justify-content: center;
+
+    .fmn {
+      @include grid-support {
+        margin: 0;
+      }
+      @extend %showcase-horizontal;
+    }
+
+    .fmn-img {
+      @include showcase-horizontal-img(100%, 12.5rem);
+    }
+
+    .fmn-title {
+      @extend %showcase-horizontal-title;
+      a {
+        @include truncate(1rem, 1.4, 5);
+      }
+    }
+
+    .fmn-tag {
+      @include showcase-horizontal-tag($color-accent2, $white);
+    }
+
+    .regular {
+      @include grid-support {
+        height: auto;
+      }
+      height: 7rem;
+      width: 23.4375rem;
+    }
+  }
+
+  .ambassador {
+    align-self: center;
+    padding: 2.5em;
+    text-align: center;
+
+    .link {
+      @include btn-border-drawing($color-link, $color-link-hover, 1px, bottom, right);
+      margin-top: 3em;
+    }
+  }
+}
+
+//Workshops and Meetings
+.two {
+  @include flexbox(wrap);
+  justify-content: center;
+  margin: 4em 0;
+
+  .workshops {
+    @include respond-at(68.75em) {
+      width: 50%;
+    }
+    align-self: center;
+    padding: 2.5em;
+    width: 100%;
+  }
+
+  .module-workshops {
+    @include respond-at(68.75em) {
+      width: 50%;
+    }
+    @include flexbox(wrap);
+    align-self: center;
+    width: 100%;
+
+    .regular {
+      flex: 1 1 15rem;
+      height: 15rem;
+      margin: .15625em;
+    }
+
+    .billboard-image {
+      @extend %showcase-img;
+    }
+
+    .billboard {
+      position: relative;
+
+      .billboard-tag {
+        @include showcase-tag($color-accent2, $white);
+      }
+
+      .billboard-header {
+        @include showcase-header(1em, 1.1, 2);
+      }
+    }
+  }
+}
+
+//Classrooms
+.no-webp .three .horizonal,
+.no-jpeg2000 .three .horizontal,
+.no-jpegxr .three .horizontal {
+  background: url('/app/site/media/images/workgroup.jpg');
+}
+
+.webp {
+  .three {
+    .horizontal {
+      background: url('/app/site/media/images/workgroup.webp');
+    }
+  }
+}
+
+.jpeg2000 {
+  .three {
+    .horizontal {
+      background: url('/app/site/media/images/workgroup.jp2');
+    }
+  }
+}
+
+.jpeg2xr {
+  .three {
+    .horizontal {
+      background: url('/app/site/media/images/workgroup.jxr');
+    }
+  }
+}
+
+.three {
+  @include flexbox(wrap);
+  margin-bottom: 4em;
+
+  .horizontal {
+    @include respond-at(56.3125em) {
+      width: 50%;
+    }
+    background-repeat: no-repeat !important;
+    background-size: cover !important;
+    height: 20rem;
+    width: 100%;
+  }
+
+  .classrooms {
+    @include respond-at(56.3125em) {
+      order: 1;
+      width: 50%;
+    }
+    align-self: center;
+    order: -1;
+    padding: 2.5em;
+    width: 100%;
+  }
+}
+
+//Collaborative Publishing
+.no-webp .four,
+.no-jpeg2000 .four,
+.no-jpegxr .four {
+  @include bcg-img('/app/site/media/images/workgroup-tech.jpg');
+}
+
+.webp {
+  .four {
+    @include bcg-img('/app/site/media/images/workgroup-tech.webp');
+  }
+}
+
+.jpeg2000 {
+  .four {
+    @include bcg-img('/app/site/media/images/workgroup-tech.jp2');
+  }
+}
+
+.jpeg2xr {
+  .four {
+    @include bcg-img('/app/site/media/images/workgroup-tech.jxr');
+  }
+}
+
+.four {
+  color: $white;
+  padding: 2.5em;
+  text-align: center;
+
+  h2 {
+    color: $white;
+  }
+}
+
+//Project Websites
+.five {
+  @include flexbox(wrap);
+  margin: 4em 0;
+
+  .sites {
+    @include respond-at(68.75em) {
+      width: 50%;
+    }
+    align-self: center;
+    padding: 2.5em;
+    width: 100%;
+  }
+
+  .module-sites {
+    @include respond-at(68.75em) {
+      width: 50%;
+    }
+    @include flexbox(wrap);
+    align-self: center;
+    width: 100%;
+
+    .regular {
+      flex: 1 1 15rem;
+      height: 15rem;
+      margin: .15625em;
+    }
+
+    .group {
+      position: relative;
+
+      .group-img {
+        @extend %showcase-group;
+      }
+
+      .group-tag {
+        @include showcase-tag($color-accent2, $white);
+      }
+
+      .group-description {
+        @include showcase-header(1em, 1.1, 2)
+      }
+    }
+  }
+}
+
+// Private Working Groups
+.c-six {
+  @include flexbox;
+  background-color: $white-smoke;
+  padding: 2.5em;
+  text-align: center;
+
+  .link {
+    @include btn-border-drawing($color-link, $color-link-hover, 1px, bottom, right);
+  }
+}

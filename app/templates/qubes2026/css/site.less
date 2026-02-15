@@ -1,0 +1,97 @@
+// out: site.css
+
+.aside .menu li.current.active > a {
+  font-weight: bold;
+
+  &:before {
+    content: "\f0da";
+    position: absolute;
+    left: -1em;
+    top: 0.2em;
+    width: 1em;
+    height: 1em;
+    font-size: 1.2em;
+    font-family: 'Fontcons';
+    /* color: #999; */
+    -ms-filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity=90)";
+    filter: alpha(opacity=90);
+    opacity: 0.9;
+    background: none;
+  }
+}
+
+input[type="submit"],
+button {
+	line-height: 1.61803399em;
+	padding: 0.4045084975em 1em;
+	border: none;
+	background: #597f2f;
+	color: #fff;
+	border: 1px solid #597f2f;
+
+	-webkit-border-radius: .25em;
+	-moz-border-radius: .25em;
+	-ms-border-radius: .25em;
+	-o-border-radius: .25em;
+	border-radius: .25em;
+
+	-webkit-transition: all 0.2s ease-out;
+	-moz-transition: all 0.2s ease-out;
+	-ms-transition: all 0.2s ease-out;
+	-o-transition: all 0.2s ease-out;
+	transition: all 0.2s ease-out;
+
+  &:hover {
+    background: #008099;
+  	border-color: #008099;
+  }
+}
+
+.mobile-panel.show.menu .subpanel.search .label,
+.mobile-panel .subpanel.search .label {
+  opacity: inherit;
+}
+
+.mobile-panel .subpanel.search .label {
+  font-size: 3rem;
+}
+
+// Notifications
+.sub #system-message-container {
+  margin: 0 -50px;
+}
+
+#system-message button.close {
+  position: absolute;
+  right: 1em;
+  top: 0.2em;
+  background: unset;
+  border: unset;
+  width: 0.5em;
+}
+
+#system-message button.close:before {
+  font-family: 'Fontcons';
+  content: "\f057";
+}
+
+#system-message dd:before {
+  margin-top: 0.2em;
+}
+
+#system-message dd.success:before {
+  content: "\f087";
+}
+
+#system-message dd.success a {
+  color: #FFF;
+}
+
+#system-message dd.success a:hover {
+  color: #DDD;
+}
+
+#system-message dd.error:before {
+  content: "\f088";
+}
+ 

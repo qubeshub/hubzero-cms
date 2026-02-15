@@ -1,0 +1,202 @@
+@import 'variables';
+@import 'mixins';
+
+.link-anchor {
+  color: inherit;
+  &:hover {
+    color: inherit;
+  }
+  &:visited {
+    color: inherit;
+  }
+}
+
+.link {
+  @include btn-border-drawing($color-link, $color-link-hover, 1px, bottom, right);
+}
+
+//Header
+.no-webp .oer-header,
+.no-jpeg2000 .oer-header,
+.no-jpegxr .oer-header {
+  @include bcg-img('/app/site/media/images/library.jpg');
+}
+
+.webp {
+  .oer-header {
+    @include bcg-img('/app/site/media/images/library.webp');
+  }
+}
+
+.jpeg2000 {
+  .oer-header {
+    @include bcg-img('/app/site/media/images/library.jp2');
+  }
+}
+
+.jpegxr {
+  .oer-header {
+    @include bcg-img('/app/site/media/images/library.jxr');
+  }
+}
+.oer-header {
+  @include flexbox;
+  background-color: $black;
+  color: $white;
+  text-align: center;
+  visibility: hidden;
+
+  .intro {
+    align-self: center;
+    margin: 0 auto;
+    padding: 2.5em;
+
+    .link {
+      @include btn-border-drawing($white, $color-accent, 1px, bottom, right);
+      text-decoration: none;
+    }
+  }
+
+  h2 {
+    color: $white;
+    visibility: hidden;
+  }
+
+  h3 {
+    color: $white;
+    visibility: hidden;
+  }
+
+  p {
+    @include respond-at(62.5625em) {
+      text-align: center;
+    }
+    margin: 2em auto;
+    text-align: left;
+    visibility: hidden;
+  }
+
+  a {
+    color: $white;
+    text-decoration: underline;
+
+    &:hover {
+      color: $color-accent;
+    }
+  }
+}
+
+//Services
+.learn {
+  @include grid(col / span 4, row 2);
+  padding: 2.5em;
+}
+
+.oer-wrapper {
+  @include flexbox(wrap);
+  justify-content: center;
+}
+
+.oer {
+  @extend %anchor;
+  visibility: hidden;
+}
+
+//Sharing on QUBES
+#one {
+  background-color: $white-smoke;
+  padding: 0 2em;
+
+  .sharing {
+    @include respond-at(61.3125em) {
+      @include flexbox;
+    }
+    @include flexbox(wrap);
+    padding: 2em;
+    width: 100%;
+
+    img {
+      height: 30rem;
+    }
+
+    ul {
+      list-style-type: none;
+      text-align: left;
+    }
+  }
+
+  .sharing-wrap {
+    @include respond-at(61.3125em) {
+      margin-bottom: 0;
+      margin-right: 2em;
+    }
+    align-self: center;
+    margin-bottom: 2em;
+    text-align: center;
+
+    h3,
+    p,
+    ul {
+      text-align: left;
+    }
+
+    ul {
+      margin-bottom: 2em;
+    }
+  }
+
+  .img-wrap {
+    height: 100%;
+    width: 100%;
+
+    img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+  }
+}
+
+//Examples
+#two {
+  padding: 2.5em;
+  text-align: center;
+}
+
+.projects-wrap {
+  @include respond-at(48.8125em) {
+    @include flexbox;
+  }
+  @include flexbox(wrap);
+  margin-top: 2em;
+}
+
+.project {
+  @include flexbox;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 1em;
+
+  h6 {
+    margin-top: .5em;
+    text-align: left;
+  }
+}
+
+//OER Culture
+#three {
+  @include respond-at(61.3125em) {
+    @include flexbox;
+  }
+  @include flexbox(wrap);
+
+  .culture {
+    align-self: center;
+    padding: 2.5em;
+  }
+
+  .img-wrap {
+    width: 100%;
+    height: 100%;
+  }
+}

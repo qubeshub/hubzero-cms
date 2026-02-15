@@ -1,0 +1,218 @@
+/* not yet supported
+.keyframes(@name; @arguments) {
+	@-moz-keyframes @name { @arguments(); }
+	@-webkit-keyframes @name { @arguments(); }
+	@keyframes @name { @arguments(); }
+}
+*/
+@import url("/app/components/com_groups/site/assets/css/groups.css");
+#page_menu .menuItem button {
+  background-color: transparent;
+  border: none;
+  color: #d2d2d2;
+  font-family: 'montserratregular', Helvetica Neue, Helvetica, sans-serif;
+  position: relative;
+  text-align: left;
+  width: 100%;
+}
+#page_menu .menuItem button::after {
+  background-color: #494a5a;
+  content: '';
+  width: 0.8em;
+  height: 1px;
+  position: absolute;
+  top: 45%;
+  left: 0;
+}
+#page_menu .menuItem button::before {
+  position: absolute;
+  right: 0.5em;
+}
+#page_menu .menuItem button:hover {
+  background-color: transparent;
+}
+#page_menu .menuItem .menu-icon {
+  filter: invert(100%) sepia(0%) saturate(4918%) hue-rotate(247deg) brightness(83%) contrast(95%);
+  height: 16px;
+  padding: 0.2em 0.4em;
+  position: absolute;
+  right: 0.5em;
+  top: 50%;
+  transform: translateY(-50%);
+}
+#page_menu .menuItem ul {
+  max-height: 0;
+  overflow: hidden;
+}
+#page_menu .menuItem .subMenuExpand {
+  max-height: 60rem;
+  transition: max-height 0.3s ease;
+}
+#page_menu li {
+  border-bottom-color: #494a5a;
+}
+#page_menu li a {
+  line-height: 1.6rem;
+}
+#page_menu li a:hover {
+  color: #fff;
+}
+#page_menu li a:before {
+  line-height: 1.6rem;
+}
+#page_menu li .meta .count {
+  text-shadow: none;
+}
+#page_menu li a,
+#page_menu li span {
+  color: #d2d2d2;
+}
+#page_sidebar {
+  background: #222b37;
+}
+#page_header {
+  flex-direction: column;
+  align-items: flex-start;
+}
+#page_header h2 {
+  float: none;
+}
+#page_header h3 {
+  font-size: 2.2rem;
+  margin: 2rem 0;
+  color: #1c1b20;
+}
+.group-page.page-overview h3 {
+  font-size: 1.1rem;
+}
+.groups-container .group-contents {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+}
+.groups-container .group-alias,
+.group-meta span {
+  color: #1c1b20;
+}
+.groups-container .user-actions a {
+  line-height: 1em;
+}
+.groups-container .group-identity > span:after {
+  font-size: 60px;
+}
+#page_menu li ul:after,
+#page_menu li ul li .page:before {
+  background: #494a5a;
+}
+#page_menu li ul li.active > a {
+  background: #fff;
+  color: #000;
+}
+#page_menu li.active > a {
+  background: #fff;
+  color: #000;
+}
+#page_menu li.active > a:before {
+  color: #000;
+}
+#page_menu li.active:after {
+  display: none;
+}
+#description,
+#member_browser {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+#description:after,
+#member_browser:after {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  top: 15px;
+  left: 25px;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  padding-top: 0;
+}
+#page_options {
+  position: static;
+  padding: 0.5em 0 1em 0;
+}
+#page_identity {
+  border: 4px solid #FFFFFF;
+  background: white;
+  border-radius: 20%;
+  overflow: hidden;
+}
+#page_identity a {
+  min-width: 0;
+  max-width: none;
+}
+/* BEGIN: Fixing files plugin */
+.files-wrap .qq-upload-button span,
+.files-wrap .qq-upload-drop-area span {
+  font-size: 0.8em;
+}
+.filelist-headers ul {
+  list-style: none;
+}
+.upload-filelist-toolbar .filelist-headers div {
+  margin-top: -12px !important;
+}
+.upload-filelist-toolbar .filelist-headers li {
+  padding: 12px 5px !important;
+}
+/* END: Fixing files plugin */
+/* BEGIN: Fixing page creation */
+.btn-info {
+  color: #fff;
+  border-color: inherit;
+  background: #597F2F;
+}
+.form-controls .save .btn {
+  border: 1px solid #fff;
+  border-right-color: inherit;
+  border-bottom-color: inherit;
+}
+a.fs-dropdown-selected-item span {
+  font-weight: normal;
+  color: #000;
+}
+.item-list .item-container:before {
+  top: 10px;
+}
+/* END: Fixing page creation */
+/* Group edit - handle custom fields for new member message */
+#hubForm.full fieldset div.field-wrap:nth-last-child(2) {
+  margin-bottom: 2em;
+}
+#hubForm.full fieldset div.field-wrap:last-child {
+  margin-top: 0;
+  margin-bottom: 2em;
+}
+#hubForm.full fieldset div.field-wrap fieldset.radio {
+  margin: 0;
+  padding: 0;
+}
+#hubForm.full fieldset div.field-wrap fieldset.radio ul {
+  margin-left: 0;
+}
+#hubForm.full fieldset div.field-wrap fieldset.radio ul input {
+  margin: 0 0.5em 0 0;
+}
+#hubForm.full fieldset div.field-wrap fieldset.radio ul label {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+  display: inline-block;
+}
+/* Welcome message */
+.fancybox-outer #welcome {
+  margin: 20px;
+}
+/* Fix system message container */
+/* Need to fix in supergroup template files */
+#sitenotice,
+#system-message-container {
+  top: 44px;
+}

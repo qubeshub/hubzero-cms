@@ -1,0 +1,65 @@
+@use '../../css/pages/variables.scss' as v;
+@use '../../css/pages/mixins.scss' as m;
+
+@import url("/app/components/com_support/site/assets/css/support.css");
+
+.support-wrapper {
+    @include m.respond-at(53.75em) {
+        @include m.flexbox;
+    }
+    @include m.flexbox(wrap);
+}
+
+.kb-section {
+    @include m.respond-at(53.75em) {
+        width: 75%;
+    }
+    margin-right: 2.5em;
+    width: 100%;
+}
+
+.ui-accordion-header {
+    @include m.flexbox;
+    background: v.$midnight;
+    border: 1px solid v.$midnight;
+    border-radius: 5px;
+    color: v.$white;
+    margin-top: .25em;
+    margin-bottom: 0;
+    padding: .5em 1em;
+}
+
+.ui-accordion-header-active {
+    background: v.$white;
+    color: v.$midnight;
+}
+
+.hz-icon {
+    margin-left: auto;
+}
+
+.ui-accordion-content {
+    background: v.$white-smoke;
+    border: 1px solid v.$midnight;
+    border-radius: 5px;
+    padding: 1em 1.25em;
+}
+
+.articles {
+    li {
+        list-style: none;
+    }
+}
+
+.ticket-section {
+    @include m.respond-at(53.75em) {
+        margin-top: 0;
+        width: 25%;
+    }
+    margin-top: 2em;
+    width: 100%;
+
+    h3 {
+        text-align: center;
+    }
+}

@@ -1,0 +1,21 @@
+{
+	"name": "qubeshub/tpl_qubes2026",
+	"description": "QUBES template (2018)",
+	"type": "hubzero-template",
+	"keywords": ["hubzero", "qubeshub"],
+	"homepage": "https://qubeshub.org",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "HUBzero",
+			"email": "support@hubzero.org"
+		},
+		{
+			"name": "QUBESHub",
+			"email": "qubeshub@gmail.com"
+		}
+	],
+	"extra": {
+	    "install-directory": "/templates/qubes2026"
+	}
+}

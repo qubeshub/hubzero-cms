@@ -1,0 +1,11 @@
+@import url('/core/plugins/members/contributions/assets/css/contributions.css');
+
+.pub-thumb {
+    float: left;
+    margin-right: 10px;
+}
+
+.pub-thumb img {
+    width: 40px;
+    height: 40px;
+}

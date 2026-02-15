@@ -1,0 +1,107 @@
+@import 'variables';
+@import 'mixins';
+
+.header-logo {
+  @include respond-at(60.375em) {
+    flex: 1 1 69%
+  }
+  width: 100%;
+}
+
+.header-title {
+  @include respond-at(79.0625em) {
+    @include flexbox;
+  }
+  @include flexbox(wrap);
+  align-items: center;
+}
+
+.spotlight-logo {
+  width: 28%;
+}
+
+.header-wrap {
+  margin: 0 1.5em;
+  width: 70%;
+
+  .btn {
+    margin: .5em;
+  }
+}
+
+.wrapper {
+  @include respond-at(60.375em) {
+    @include flexbox;
+  }
+  @include flexbox(wrap);
+  max-width: 110.625rem;
+
+  .most-recent {
+    @include respond-at(60.375em) {
+      flex: 1 1 30%;
+    }
+    width: 100%;
+
+    h4 {
+      position: relative;
+      top: .75em;
+    }
+  }
+
+  .mailinglist-signup {
+    margin: 1.25em 0;
+
+    h4 {
+      position: static;
+    }
+  }
+}
+
+.module-recent {
+  border: 1px solid $android-green;
+  border-radius: 6px;
+  padding: 1em;
+}
+
+.past-row {
+  margin-top: 2em;
+  max-width: 110.625rem;
+
+  h4 {
+    border-bottom: 1px solid $midnight;
+    position: relative;
+
+    &:after {
+      content: '';
+      width: 57%;
+      height: 1.1px;
+      background-color: $white;
+      position: absolute;
+      right: 0;
+      bottom: -1px;
+    }
+  }
+}
+
+.module-past {
+  @include flexbox(wrap);
+  justify-items: center;
+
+  .newsletter {
+    height: 14.0625rem;
+    margin: 1em;
+    width: 20rem;
+  }
+}
+
+.newsletter-img {
+  @extend %showcase-img;
+}
+
+.newsletter {
+  position: relative;
+
+  .newsletter-title {
+    @include showcase-header(1.1rem, 1.3, 2);
+  }
+}

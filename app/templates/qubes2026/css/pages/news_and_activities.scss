@@ -1,0 +1,247 @@
+@import 'variables';
+@import 'mixins';
+
+.content-header {
+  display: none;
+}
+
+.wrapper {
+  @include grid-template(repeat(4, 1fr), 7rem auto);
+
+  hr {
+    background-color: $midnight;
+    margin: 0 0 1em;
+    width: 45%;
+  }
+}
+
+.header {
+  @include respond-at(57.5625em) {
+    @include grid(1 / span 3, 1);
+  }
+  @include grid(1 / span 4, 1);
+  @include flexbox;
+
+  .header-title {
+    width: 70%;
+  }
+
+  img {
+    height: 100%;
+  }
+
+  h1 {
+    border-bottom: 3px solid $color-accent;
+    margin: 1rem 0;
+  }
+
+  h4 {
+    text-align: right;
+  }
+}
+
+.twitter-wrapper {
+  @include respond-at(57.5625em) {
+    @include grid(4 / span 1, 1 / span 2);
+    margin-left: 1.5em;
+  }
+  @include grid(1 / span 4, null);
+}
+
+.activities-wrapper {
+  @include respond-at(57.5625em) {
+    @include grid(1 / span 3, 2);
+  }
+  @include grid(1 / span 4, 2);
+}
+
+.row {
+  background-color: $white-smoke;
+  height: fit-content;
+  margin-top: 3em;
+  padding: 1em;
+
+  .regular {
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    margin: 0 .75em .75em;
+    width: 12rem;
+  }
+
+  h2 {
+    @include gradient-header($color-accent, transparent);
+  }
+}
+
+.module-row {
+  @include flexbox(wrap);
+  @include respond-at(60.375em) {
+    @include flexbox;
+  }
+  justify-content: center;
+}
+
+.inner-wrap {
+  @include flexbox(wrap);
+  margin-top: 1.5em;
+}
+
+.blogs,
+.newsletters {
+  @include respond-at(47.5em) {
+    width: 50%;
+  }
+  width: 100%;
+
+  .module {
+    text-align: center;
+    border-top: none;
+    padding-top: 0;
+  }
+}
+
+.module-blogs {
+  @include flexbox(wrap);
+
+  .regular {
+    flex: 1 1 20rem;
+    margin: 0 .75em .75em;
+  }
+}
+
+.newsletters {
+  border: 1px solid $midnight;
+  border-radius: 6px;
+  padding: 1em;
+
+  h2 {
+    color: $midnight;
+    margin-bottom: .6em;
+    text-align: center;
+  }
+
+  h6 {
+    margin-bottom: 2em;
+    text-align: center;
+  }
+}
+
+.module-newsletters {
+  @include flexbox(wrap);
+  justify-content: center;
+
+  .newsletter {
+    margin: .5em;
+  }
+
+  .newsletter-img {
+    border: 1px solid $white-smoke;
+    img {
+      object-fit: contain;
+    }
+  }
+
+  .newsletter-title {
+    @include showcase-header(1em, 1.2, 2);
+    position: static;
+
+    a {
+      margin: .3em 0;
+    }
+  }
+
+  div:first-of-type {
+    width: 100%;
+
+    .newsletter-img {
+      display: block;
+      border: none;
+      height: auto;
+      margin: 0 auto;
+      width: 50%;
+    }
+
+    .newsletter-title {
+      border: none;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-top: .75em;
+      text-align: center;
+    }
+  }
+
+  div:nth-of-type(2) {
+    margin: 0 1em;
+    width: 40%;
+  }
+
+  div:nth-of-type(3) {
+    margin: 0 1em;
+    width: 40%;
+  }
+}
+
+.blog {
+  @include flexbox;
+  position: relative;
+}
+
+.blog-img {
+  @include showcase-horizontal-img(5rem, 5rem);
+}
+
+.blog-title {
+  @extend %showcase-horizontal-title;
+
+  a {
+    @include truncate(1rem, 1.2, 3);
+  }
+}
+
+.newsletter {
+  position: relative;
+}
+
+.newsletter-img {
+  border: none;
+  width: 100%;
+  height: 7rem;
+  overflow: hidden;
+
+  img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    transition: 3s ease-in-out;
+  }
+
+  &:hover {
+    img {
+      transform: scale(1.1)
+    }
+  }
+}
+
+.newsletter-tag {
+  position: absolute;
+  bottom: 0;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: .8em;
+  padding: .5em .8em;
+  background-color: $color-accent;
+  a {
+    color: $white;
+  }
+}
+
+.newsletter-title {
+  @include showcase-header(1em, 1.2, 4);
+  border-bottom: 2px solid $color-accent;
+  position: static;
+
+  a {
+    margin: .3em 0;
+  }
+}

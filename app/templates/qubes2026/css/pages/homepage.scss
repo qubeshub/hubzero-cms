@@ -1,0 +1,639 @@
+@import 'variables';
+@import 'mixins';
+
+.wrapper {
+  @include grid-template(repeat(4, [col] 1fr), repeat(4, [row] minmax(30rem, auto)));
+}
+
+//Banner
+.intro-container {
+  @include flexbox(wrap);
+  @include grid(col / span 4, row);
+  @include respond-at(56.3125em) {
+    @include flexbox;
+  }
+}
+
+// .no-webp .intro,
+// .no-jpeg2000 .intro,
+// .no-jpegxr .intro {
+//   @include bcg-img('/app/site/media/images/bg_spheres.jpg');
+// }
+
+// .webp {
+//   .intro {
+//     @include bcg-img('/app/site/media/images/bg_spheres.jpg');
+//   }
+// }
+
+// .jpeg2000 {
+//   .intro {
+//     @include bcg-img('/app/site/media/images/bg_spheres.jpg');
+//   }
+// }
+
+// .jpegxr {
+//   .intro {
+//     @include bcg-img('/app/site/media/images/bg_spheres.jpg');
+//   }
+// }
+
+.intro {
+  background-image: url('/app/site/media/images/bg_spheres.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  flex-direction: column;
+  width: 100%;
+
+  h5 {
+    text-align: center;
+  }
+  @include respond-at(56.3125em) {
+    width: 50%;
+  }
+}
+
+.tagline-wrap {
+  padding: 2.5em;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+
+  h4 {
+    margin-top: 2em;
+  }
+}
+
+.advert-img {
+  @include flexbox;
+
+  img {
+    margin-right: 1em;
+    width: 10rem;
+  }
+
+  h2 {
+    align-self: center;
+  }
+}
+
+.green {
+  color: $color-accent;
+}
+
+.anchor-link-wrap {
+  @include flexbox;
+  justify-content: space-around;
+  margin-top: 2em;
+}
+
+.anchor-link {
+  .link {
+    @include btn-border-drawing($white, $color-accent, 1px, bottom, right);
+    border-radius: 2px;
+  }
+}
+
+.latest-tweet {
+  @include respond-at(56.3125em) {
+    width: 20%;
+  }
+  margin: 2em;
+  width: 100%;
+
+  .link {
+    @include respond-at(56.3125em) {
+      display: block;
+      text-align: center;
+    }
+    @include respond-at(62.375em) {
+      display: inline;
+      text-align: left;
+    }
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    text-transform: capitalize;
+
+    span {
+      font-size: 1.2rem;
+    }
+  }
+
+  svg {
+    fill: $midnight;
+    float: left;
+    margin-right: .5em;
+    width: 1.2rem;
+  }
+}
+
+.feature {
+  margin: 2em;
+  position: relative;
+  width: 100%;
+
+  h2 {
+    font-size: 1.5rem;
+    text-transform: capitalize;
+  }
+
+  @include respond-at(56.3125em) {
+    width: 25%;
+  }
+
+  .module-feature {
+    @include flexbox;
+    flex-direction: column;
+    margin-bottom: 1em;
+  }
+
+  .billboard-image,
+  .blog-img,
+  .newsletter-img,
+  .fmn-img {
+    @include showcase-horizontal-img(6rem, 6rem);
+  }
+
+  .billboard,
+  .blog,
+  .newsletter,
+  .fmn {
+    @extend %showcase-horizontal;
+  }
+
+  .billboard-tag,
+  .fmn-tag {
+    @include showcase-tag($color-accent2, $white);
+    bottom: 15%;
+    font-size: .7em;
+    left: -.5em;
+  }
+
+  .billboard-header,
+  .blog-title,
+  .newsletter-title,
+  .fmn-title {
+    @extend %showcase-horizontal-title;
+    a {
+      @include truncate(1rem, 1.2, 4);
+    }
+  }
+
+  .regular {
+    margin: .25em;
+  }
+}
+
+.button {
+  margin-top: 1em;
+}
+
+.link {
+  @include btn-border-drawing($color-link, $color-link-hover, 1px, bottom, right);
+}
+
+//Resources
+.one {
+  @include grid(col / span 4, row 2);
+  @include grid-template(1fr, repeat(4, auto));
+  @include bcg($white-smoke, null);
+}
+
+@include respond-at(56.3125em) {
+  @include grid-template(repeat(4, 1fr), repeat(2, minmax(23rem, auto)));
+}
+
+.resources {
+  @include flexbox(wrap);
+  @include grid(null, 1);
+  @include grid-template(1fr, repeat(2, auto));
+  @include respond-at(56.3125em) {
+    @include grid(1 / span 4, 1);
+    @include grid-template(repeat(4, 1fr), auto);
+  }
+  flex: 1;
+
+  .oer {
+    @include grid(1fr, 1);
+    align-self: center;
+    order: -1;
+    padding: 2.5em;
+    width: 100%;
+
+    .link {
+      @include btn-border-drawing($color-link, $color-link-hover, 1px, bottom, right);
+      margin-top: 2em;
+    }
+
+    @include respond-at(56.3125em) {
+      @include grid(3 / span 2, null);
+      order: 0;
+      width: 50%;
+    }
+    @include grid-support {
+      width: auto;
+    }
+  }
+
+  .module-left {
+    @include flexbox(wrap);
+    @include grid-template(repeat(auto-fit, minmax(15rem, 1fr)), null, .625em);
+    grid-auto-rows: 15rem;
+    padding: 2.5em;
+    width: 100%;
+
+    .resource-img {
+      @extend %showcase-img;
+    }
+
+    .resource {
+      flex: 1 1 15rem;
+      height: 15rem;
+      margin: 0.3125em;
+      position: relative;
+
+      .resource-tag {
+        @include showcase-tag($color-accent2, $white);
+      }
+
+      .resource-title {
+        @include showcase-header(1em, 1.1, 2);
+      }
+      @include grid-support {
+        margin: 0;
+      }
+    }
+    @include respond-at(56.3125em) {
+      @include grid(1 / span 2, null);
+      @include grid-template(1fr, repeat(3, 15rem), .625em);
+      width: 50%;
+    }
+    @include respond-at(75.0625em) {
+      @include grid-template(repeat(3, 1fr), 1fr, .625em);
+      grid-auto-rows: auto;
+    }
+    @include grid-support {
+      width: auto;
+    }
+  }
+}
+
+.software {
+  @include flexbox(wrap);
+  @include grid(1fr, 2);
+  @include grid-template(1fr, repeat(2, auto));
+  @include respond-at(56.3125em) {
+    @include grid(1 / span 4, 2);
+    @include grid-template(repeat(2, 1fr), null);
+  }
+  flex: 1;
+
+  .left {
+    padding: 2.5em;
+    width: 100%;
+
+    .link {
+      @include btn-border-drawing($color-link, $color-link-hover, 1px, bottom, right);
+      margin-top: 2em;
+    }
+    @include respond-at(56.3125em) {
+      width: 50%;
+    }
+    @include grid-support {
+      width: auto;
+    }
+  }
+
+  .software-logos {
+    @include flexbox(wrap);
+    @include grid-template(repeat(auto-fit, minmax(100px, 1fr)), null, .625em);
+    align-self: center;
+    grid-auto-rows: 7.8125rem;
+    justify-items: center;
+    padding: 2.5em;
+    text-align: center;
+    width: 100%;
+
+    .logo-wrap {
+      @include grid-support {
+        height: auto;
+        width: auto;
+      }
+      height: 8rem;
+      transition: .3s ease-in-out;
+      width: 9rem;
+
+      img {
+        height: 65%;
+        object-fit: scale-down;
+        width: 100px;
+      }
+
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+
+    h6 {
+      align-self: center;
+      margin: 0;
+      padding-top: .5em;
+    }
+    @include respond-at(56.3125em) {
+      width: 50%;
+    }
+    @include grid-support {
+      width: auto;
+    }
+  }
+}
+
+.sub-title {
+  margin-left: 1.875em;
+}
+
+//Network & Community
+.two {
+  @include grid(col / span 4, row 3);
+  @include grid-template(1fr, repeat(2, auto));
+}
+
+.network {
+  @include flexbox(wrap);
+  @include grid(null, 1);
+  @include grid-template(1fr, repeat(2, auto));
+  @include respond-at(56.3125em) {
+    @include grid-template(repeat(2, 1fr), 23rem);
+  }
+
+  .network-logos {
+    @include grid-template(repeat(auto-fit, minmax(75px, 1fr)), null, .3125em);
+    justify-items: center;
+    padding: 2.5em;
+
+    .logo {
+      align-self: center;
+      background-color: transparent !important;
+      border: none !important;
+      width: 4.6rem !important;
+    }
+  }
+
+  .left {
+    @include respond-at(56.3125em) {
+      @include grid(1 / span 1, null);
+      width: 50%;
+    }
+    @include grid-support {
+      width: auto;
+    }
+    padding: 2.5em;
+    width: 100%;
+  }
+
+  .right {
+    @extend .left;
+    @include grid(1fr, 1);
+    @include respond-at(56.3125em) {
+      @include grid(2 / span 1, null);
+      order: 0;
+      width: 50%;
+    }
+    @include grid-support {
+      width: auto;
+    }
+    order: -1;
+    width: 100%;
+  }
+
+  .link {
+    @include btn-border-drawing($color-link, $color-link-hover, 1px, bottom, right);
+    margin-top: 2em;
+  }
+}
+
+.community {
+  @include flexbox(wrap);
+  @include grid-template(1fr, repeat(2, auto));
+  @include respond-at(56.3125em) {
+    @include grid-template(repeat(2, 1fr), auto);
+  }
+  padding: 0 2.5em;
+
+  .left {
+    @include respond-at(37.625em) {
+      @include grid-template(repeat(2, 1fr), repeat(2, auto));
+    }
+    @include respond-at(56.3125em) {
+      width: 50%;
+    }
+    padding-right: 2.5em;
+    width: 100%;
+
+    .title {
+      @include grid(null, 1);
+      @include respond-at(37.625em) {
+        @include grid(span 2, null);
+      }
+    }
+
+    ul {
+      @include grid(null, 2);
+      @include respond-at(37.625em) {
+        @include grid(span 1, null);
+      }
+      list-style: none;
+
+    }
+
+    .button {
+      @include grid(null, 3);
+      margin: 1em 0;
+      text-align: center;
+
+      a {
+        @include btn-border-drawing($color-link, $color-link-hover, 1px, bottom, right);
+        position: relative;
+        top: 50%;
+      }
+      @include respond-at(37.625em) {
+        @include grid(null, 2);
+      }
+    }
+    @include grid-support {
+      width: auto;
+    }
+  }
+
+  .right {
+    @include respond-at(56.3125em) {
+      width: 50%;
+    }
+    @include grid-support {
+      width: auto;
+    }
+    width: 100%;
+
+    h2 {
+      @include gradient-header($color-accent, $white);
+    }
+  }
+
+  .module-right {
+    @include flexbox(wrap);
+    @include grid-template(repeat(4, 1fr), repeat(4, 15rem));
+    @include respond-at(62.5625em) {
+    @include grid-template(na, repeat(2, 15rem), .625em);
+    }
+    padding: 1em;
+
+    .horizontal {
+      @include grid(span 4, null);
+      @include respond-at(56.3125em) {
+        @include grid(span 4, null);
+        flex: 1 1 24rem;
+        height: 12rem;
+      }
+      @include respond-at(62.5625em) {
+        @include grid(span 2, null);
+      }
+      @include grid-support {
+        height: auto;
+        width: auto;
+      }
+      flex: 1 1 30rem;
+      height: 15rem;
+    }
+
+    .regular {
+      @include grid(span 2, null);
+      @include respond-at(56.3125em) {
+        @include grid(span 2, null);
+        flex: 1 1 12rem;
+        height: 12rem;
+      }
+      @include respond-at(62.5625em) {
+        @include grid(span 1, null);
+      }
+      @include grid-support {
+        height: auto;
+        width: auto;
+      }
+      flex: 1 1 15rem;
+      height: 15rem;
+    }
+
+    .billboard-image,
+    .resource-img,
+    .blog-img,
+    .newsletter-img,
+    .fmn-img {
+      @extend %showcase-img;
+    }
+
+    .billboard,
+    .resource,
+    .group,
+    .blog,
+    .newsletter,
+    .fmn {
+      position: relative;
+    }
+
+    .billboard-tag,
+    .resource-tag,
+    .partner-tag,
+    .group-tag,
+    .fmn-tag {
+      @include showcase-tag($color-accent2, $white);
+    }
+
+    .billboard-header,
+    .resource-title,
+    .partner-title,
+    .group-description,
+    .blog-title,
+    .newsletter-title,
+    .fmn-title {
+      @include showcase-header(1em, 1.1, 2);
+    }
+
+    .partner-img,
+    .group-img {
+      @extend %showcase-group;
+    }
+
+    .blog {
+      @include flexbox;
+    }
+
+    @include grid-support {
+      width: auto;
+    }
+  }
+}
+
+//Services
+.three {
+  @include flexbox(wrap);
+  @include grid(col / span 4, row 4);
+  @include grid-template(2fr , repeat(5, auto), .625em);
+  @include respond-at(56.3125em) {
+    @include grid-template(repeat(4, 1fr), auto, .625em);
+  }
+  flex: 1;
+  justify-content: space-between;
+  justify-self: center;
+  padding: 2.5em;
+
+  .title {
+    @include grid(span 4, null);
+    text-align: center;
+    width: 100%;
+  }
+
+  .service {
+    @include grid(1 / span 2, null);
+    @include respond-at(56.3125em) {
+      @include grid(span 2, null);
+      width: 47%;
+      margin: .3125em;
+    }
+    @include respond-at(75.0625em) {
+      @include grid(span 1, null);
+      width: 21%;
+    }
+    margin: .3125em 0;
+    padding: 1.5em 1em 2.5em;
+    position: relative;
+    width: 100%;
+
+    h4 {
+      height: 4rem;
+      margin-bottom: 0;
+    }
+
+    hr {
+      background-color: $color-accent;
+      height: 2px;
+      margin: 0 0 1em;
+    }
+
+    .button {
+      bottom: .5rem;
+      position: absolute;
+
+    }
+
+    .link {
+      @include btn-border-drawing($color-link, $color-link-hover, 1px, bottom, right);
+      border-radius: 2px;
+    }
+    @include grid-support {
+      margin: 0;
+      width: auto;
+    }
+  }
+}

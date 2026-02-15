@@ -1,0 +1,67 @@
+@import url("/app/components/com_support/site/assets/css/support.css");
+.support-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+}
+@media only screen and (min-width: 53.75em) {
+  .support-wrapper {
+    display: flex;
+    flex-wrap: nowrap;
+  }
+}
+
+.kb-section {
+  margin-right: 2.5em;
+  width: 100%;
+}
+@media only screen and (min-width: 53.75em) {
+  .kb-section {
+    width: 75%;
+  }
+}
+
+.ui-accordion-header {
+  display: flex;
+  flex-wrap: nowrap;
+  background: #222b37;
+  border: 1px solid #222b37;
+  border-radius: 5px;
+  color: #fff;
+  margin-top: 0.25em;
+  margin-bottom: 0;
+  padding: 0.5em 1em;
+}
+
+.ui-accordion-header-active {
+  background: #fff;
+  color: #222b37;
+}
+
+.hz-icon {
+  margin-left: auto;
+}
+
+.ui-accordion-content {
+  background: #f1f1f1;
+  border: 1px solid #222b37;
+  border-radius: 5px;
+  padding: 1em 1.25em;
+}
+
+.articles li {
+  list-style: none;
+}
+
+.ticket-section {
+  margin-top: 2em;
+  width: 100%;
+}
+@media only screen and (min-width: 53.75em) {
+  .ticket-section {
+    margin-top: 0;
+    width: 25%;
+  }
+}
+.ticket-section h3 {
+  text-align: center;
+}/*# sourceMappingURL=support.css.map */

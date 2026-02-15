@@ -1,0 +1,222 @@
+@use 'variables' as v;
+@use 'mixins' as m;
+
+// html {
+//   overflow-y: hidden;
+// }
+
+// .item-page {
+//   p {
+//     font-size: 1rem;
+//   }
+// }
+
+
+.about,
+.contact-us {
+  text-align: center;
+
+}
+
+.link {
+  @include m.btn-border-drawing(v.$color-link, v.$color-link-hover, 1px, bottom, right);
+}
+
+//Mission Statement
+.mission {
+  padding: 1em;
+  @include m.respond-at(43.8125em) {
+    padding: 4em;
+  }
+}
+
+.no-webp .mission,
+.no-jpeg2000 .mission,
+.no-jpegxr .mission {
+  background-image: url('/app/site/media/images/31Z_nov32_Converted.png');
+  background-position: center right;
+  background-repeat: no-repeat;
+  background-size: auto 100%;
+}
+
+.webp {
+  .mission {
+    background-image: url('/app/site/media/images/31Z_nov32_Converted.webp');
+    background-position: center right;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+  }
+}
+
+.jpeg2000 {
+  .mission {
+    background-image: url('/app/site/media/images/31Z_nov32_Converted.jp2');
+    background-position: center right;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+  }
+}
+
+.jpegxr {
+  .mission {
+    background-image: url('/app/site/media/images/31Z_nov32_Converted.jxr');
+    background-position: center right;
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+  }
+}
+
+.mission-statement {
+  @include m.respond-at(73.75em) {
+    background-color: transparent;
+    width: 60%;
+  }
+  background-color: rgba(255, 255, 255, 0.6);
+  padding: 1em;
+  width: 100%;
+  z-index: 2;
+
+  h4 {
+    z-index: 3;
+  }
+}
+
+//About
+.about {
+  background-color: v.$white-smoke;
+  padding: 1em;
+
+  h6 {
+    font-size: 1.2rem;
+    line-height: 1.5;
+    margin: 0 auto;
+    max-width: 41rem;
+    padding: 1em;
+    text-align: center;
+  }
+}
+
+//Contact Us
+.contact-us {
+  padding: 2em;
+
+  p {
+    margin: 0 auto;
+    max-width: 55rem;
+    padding: 2em;
+  }
+
+  .attribution {
+    font-size: .8rem;
+    margin: 0;
+    text-align: left;
+  }
+}
+
+.contact-us {
+  background-color: v.$white-smoke;
+}
+
+//Citations & Funder
+.citations,
+.funders {
+  h2 {
+    text-align: center;
+  }
+
+  p {
+    margin: 1em auto;
+    max-width: 55rem;
+    text-align: center;
+  }
+}
+
+.funders {
+  margin-top: 2em;
+}
+
+.funder-wrapper {
+  @include m.respond-at(60em) {
+    margin: 0 2em;
+  }
+  @include m.flexbox;
+  margin: 0;
+}
+
+.funder-info {
+  @include m.flexbox;
+  flex-direction: column;
+  padding: 1.5em;
+  width: 50%;
+
+  .funder-logo {
+    @include m.flexbox;
+    height: 9.375em;
+    object-fit: contain;
+
+    img {
+      align-self: center;
+      display: block;
+      margin: 0 auto;
+      max-height: 100%;
+    }
+  }
+}
+
+.citations {
+  padding: 7em 0;
+
+  h4 {
+
+    margin-top: 2em;
+    text-align: center;
+  }
+
+  .example {
+    text-align: left;
+  }
+
+  .citation-pub {
+    font-style: italic;
+  }
+
+  .issue {
+    font-weight: bold;
+  }
+
+  .module-citations {
+    @include m.flexbox(wrap);
+
+    .billboard {
+      border: 1px solid v.$color-link;
+      border-radius: 5px;
+      flex: 1 1 21.875em;
+      margin: .635em;
+      padding: .5em;
+
+      p {
+        margin: 0;
+        text-align: left;
+      }
+
+      .billboard-image {
+        margin-bottom: 1em;
+        max-height: 13.5rem;
+        overflow: hidden;
+
+        img {
+          height: 100%;
+          object-fit: cover;
+          width: 100%;
+        }
+      }
+
+      .billboard-content {
+        border-top: 1px solid v.$mine-shaft;
+        display: block;
+        margin-top: .5em;
+      }
+    }
+  }
+}
+

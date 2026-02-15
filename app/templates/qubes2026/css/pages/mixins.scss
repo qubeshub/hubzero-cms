@@ -1,0 +1,390 @@
+// !compileOnSave
+// compileOnSave: false
+//The above is to disable sass-autocompile plugin from compiling on save for Atom.io text editor
+
+@import 'variables';
+
+//Grid and Flexbox
+@mixin grid-template($columns, $rows, $gap: null) {
+  display: grid;
+  grid-gap: $gap;
+  grid-template-columns: $columns;
+  grid-template-rows: $rows;
+}
+
+@mixin grid($column, $row) {
+  grid-column: $column;
+  grid-row: $row;
+}
+
+@mixin flexbox($wrap: nowrap) {
+  display: flex;
+  flex-wrap: $wrap;
+}
+
+//Media Queries and Grid Support(resets)
+@mixin respond-at($media) {
+  @media only screen and (min-width: $media) {
+    @content;
+  }
+}
+
+@mixin grid-support {
+  @supports (display:grid) {
+    @content;
+  }
+}
+
+//Background Image & Color
+@mixin bcg-img($url) {
+  background: url($url);
+  background-image: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.7) 100%), url($url);
+  background-repeat: no-repeat;
+  background-size: cover;
+  // background-position: center;
+}
+
+@mixin bcg-plain-img($url) {
+  background: url($url);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+@mixin bcg($color, $text-color) {
+  background-color: $color;
+  color: $text-color;
+}
+
+//Gradient for feature headers
+@mixin gradient-header($color-start, $color-end) {
+  background-image: linear-gradient(30deg, $color-start 0%, $color-end 100%);
+  background-position: 0 88%;
+  background-repeat: no-repeat;
+  background-size: 100% .1em;
+  padding: 0 3px;
+}
+
+//Buttons
+@mixin buttons($color) {
+  text-transform: uppercase;
+  a {
+    border: 1px solid $color;
+    color: $color !important;
+    padding: .25em .75em;
+
+    &:active {
+      color: $color;
+    }
+
+    &:visited {
+      color: $color;
+    }
+  }
+}
+
+@mixin btn-border-drawing($color: #ccc, $hover: black, $width: 2px, $vertical: top, $horizontal: left, $duration: 0.25s) {
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 $width $color;
+  color: $color;
+  padding: .25em .75em;
+  position: relative;
+  text-transform: capitalize;
+  transition: color $duration $duration/3;
+
+
+  &::before,
+  &::after {
+    border: 0 solid transparent;
+    box-sizing: border-box;
+    content: '';
+    height: 0;
+    pointer-events: none;
+    position: absolute;
+    width: 0;
+
+    #{$vertical}: 0;
+    #{$horizontal}: 0;
+  }
+
+  &::before {
+    $h-side: if($horizontal == 'left', 'right', 'left');
+
+    border-#{$vertical}-width: $width;
+    border-#{$h-side}-width: $width;
+  }
+
+  &::after {
+    $v-side: if($vertical == 'top', 'bottom', 'top');
+
+    border-#{$v-side}-width: $width;
+    border-#{$horizontal}-width: $width;
+  }
+
+  &:hover {
+    color: $hover;
+
+    &::before,
+    &::after {
+      border-color: $hover;
+      border-radius: 2px;
+      height: 100%;
+      transition: border-color 0s, width $duration, height $duration;
+      width: 100%;
+    }
+
+    &::before { transition-delay: 0s, 0s, $duration; }
+
+    &::after { transition-delay: 0s, $duration, 0s; }
+  }
+}
+
+//Truncate
+@mixin truncate($font-size, $line-height, $lines-to-show) {
+  display: block; /* Fallback for non-webkit */
+  display: -webkit-box;
+  height: $font-size*$line-height*$lines-to-show; /* Fallback for non-webkit */
+  margin: 0 auto;
+  font-size: $font-size;
+  line-height: $line-height;
+  -webkit-line-clamp: $lines-to-show;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+//Showcase Module
+@mixin showcase-header($font-size, $line-height, $lines-to-show) {
+  background-color: $white;
+  border: 1px solid $white-smoke;
+  bottom: 0;
+  opacity: .95;
+  padding: .625em;
+  position: absolute;
+  width: 100%;
+
+  a {
+    display: block; /* Fallback for non-webkit */
+    display: -webkit-box;
+    height: $font-size*$line-height*$lines-to-show; /* Fallback for non-webkit */
+    font-family: $font-link;
+    margin: 0 auto;
+    font-size: $font-size;
+    line-height: $line-height;
+    -webkit-line-clamp: $lines-to-show;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: $color-link;
+
+    &:hover {
+      color: $color-link-hover;
+    }
+  }
+}
+
+@mixin showcase-tag($background-color, $link-color) {
+  background-color: $background-color;
+  bottom: 5em;
+  font-family: $font-body;
+  font-size: .8em;
+  font-weight: bold;
+  left: -.5em;
+  padding: .5em .8em;
+  position: absolute;
+  text-transform: uppercase;
+  &::before {
+    content: '';
+    height: 0;
+    width: 0;
+    display: block;
+    position: absolute;
+    bottom: -0.625em;
+    left: 0;
+    border-top: 8px solid mix($background-color, $black, 70%);
+    border-left: 8px solid transparent;
+  }
+
+  span {
+    color: $link-color;
+  }
+}
+
+@mixin showcase-horizontal-img($height, $width) {
+  background-color: $white;
+  border-right: 3px solid $color-accent;
+  height: $height;
+  overflow: hidden;
+  width: $width;
+
+  img {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: 3s ease-in-out;
+  }
+
+  &:hover {
+    img {
+      transform: translateY(-50%) scale(1.1);
+    }
+  }
+
+  &::after {
+    visibility: hidden;
+  }
+}
+
+@mixin showcase-horizontal-tag($background-color, $link-color) {
+  background-color: $background-color;
+  bottom: -.875em;
+  font-family: $font-body;
+  font-size: .8em;
+  font-weight: bold;
+  left: -.5em;
+  padding: .5em .8em;
+  position: absolute;
+  text-transform: uppercase;
+
+  &::before {
+    content: '';
+    height: 0;
+    width: 0;
+    display: block;
+    position: absolute;
+    bottom: 2.56em;
+    left: 0;
+    border-bottom: 6px solid mix($background-color, $black, 70%);
+    border-left: 6px solid transparent;
+  }
+
+  span {
+    color: $link-color;
+  }
+}
+
+//Extends for showcase module
+%showcase-img {
+  border: 1px $white-smoke solid;
+  height: 100%;
+  overflow: hidden;
+  width: 100%;
+
+  img {
+    height: 100%;
+    object-fit: cover;
+    transition: 3s ease-in-out;
+    width: 100%;
+  }
+
+  // &::after {
+  //   @extend %image-gradient;
+  // }
+
+  &:hover {
+    img {
+      transform: scale(1.1);
+    }
+  }
+}
+
+%showcase-group {
+  border: 1px $white-smoke solid;
+  height: 100%;
+  overflow: hidden;
+  text-align: center;
+  width: 100%;
+
+  img {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: 3s ease-in-out;
+  }
+
+  // &::after {
+  //   @extend %image-gradient;
+  // }
+
+  &:hover {
+    img {
+      transform: translateY(-50%) scale(1.1);
+    }
+  }
+}
+
+%showcase-horizontal {
+  @include flexbox;
+  margin: 1em .75em;
+  position: relative;
+}
+
+%showcase-horizontal-title {
+  background-color: $white;
+  font-family: $font-link;
+  padding: .5em;
+  position: static;
+}
+
+%image-gradient {
+  content: '';
+  display: block;
+  position: absolute;
+  bottom: 0;
+  background-image: linear-gradient(to bottom, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 50%,rgba(0,0,0,1) 100%);
+  height: 100%;
+  width: 100%;
+}
+
+// Extends for Anchor Links
+%anchor-container {
+  @include flexbox(wrap);
+  @include grid-template(repeat(auto-fit, minmax(22rem, max-content)), null, 2em);
+  justify-content: center;
+}
+
+%anchor {
+  margin: 2em;
+  padding: 1em;
+  transition: .2s ease;
+  width: 22rem;
+
+  hr {
+    background: $color-accent;
+    margin: 0;
+    transition: .3s;
+    width: 45%;
+  }
+
+  h4 {
+    transition: .2s;
+  }
+
+  p {
+    a {
+      color: $color-text-body;
+      font-family: $font-body;
+
+      &:hover,
+      &:visited {
+        color: $color-text-body;
+      }
+    }
+  }
+
+  &:hover {
+    border-left: 4px solid $color-link-hover;
+
+    hr {
+      background-color: $color-link-hover;
+      width: 65%;
+    }
+
+    h4 {
+      margin-left: .25em;
+      a {
+        color: $color-link-hover;
+      }
+    }
+  }
+}

@@ -1,0 +1,630 @@
+@import 'variables';
+@import 'mixins';
+
+.wrapper {
+	@include grid-template(repeat(3, [col] 1fr), repeat(5, [row] auto));
+}
+
+.one {
+	@include flexbox(wrap);
+	@include grid(col / span 3, row);
+	@include grid-template(repeat(3, 1fr), repeat(2, auto), 1rem);
+	visibility: hidden;
+
+	.postdoc-intro {
+		@include grid(1 / span 3, 1);
+		@include respond-at(50.0625em) {
+			@include grid(1 / span 2, null);
+		}
+		padding: 0 .625em;
+	}
+
+	.current-postdocs {
+		@include grid(1 / span 3, 2);
+		padding: 0 1.125em 0 .625em;
+		position: relative;
+
+		.postdoc-title {
+			@include gradient-header($color-accent, $white);
+			left: 0;
+			position: absolute;
+			text-align: left;
+			top: -1em;
+		}
+
+		@include respond-at(50.0625em) {
+			@include grid(3 / span 1, 1);
+		}
+	}
+
+	.box-accent-wrapper {
+	  position: relative;
+	}
+
+	.box-accent {
+	  border: 1px solid $midnight;
+	  padding: 1em 1em 1em 4em;
+	  position: relative;
+	}
+
+	.arrow-right {
+	  border-bottom: 60px solid transparent;
+	  border-left: 60px solid $android-green;
+	  border-top: 60px solid transparent;
+	  height: 0;
+	  left: -.5em;
+	  position: absolute;
+	  width: 0;
+	}
+	@include respond-at(50.0625em) {
+		@include flexbox;
+		@include grid-template(repeat(3, 1fr), null, 1rem);
+		padding: 2.5em;
+	}
+}
+
+.two {
+	@include flexbox(wrap);
+	@include grid(col / span 3, row 2);
+	@include grid-template(repeat(3, 1fr), repeat(3, auto), 1rem);
+	background-color: $white-smoke;
+	padding: 2.5em;
+
+	h2 {
+		@include grid(1 / span 3, 1);
+	}
+
+	.postdoc-activities {
+		@include grid(1 / span 3, 2);
+		@include respond-at(50.0625em) {
+			@include grid(1 / span 2, 2);
+		}
+	}
+
+	.img-container {
+		@include grid(1 / span 3, 3);
+		margin: 0 auto;
+
+		img {
+			position: relative;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+
+		@include respond-at(50.0625em) {
+			@include grid(3 / span 1, 2);
+			width: 50%;
+		}
+
+		@include grid-support {
+			width: auto;
+		}
+	}
+
+	@include respond-at(50.0625em) {
+		@include flexbox;
+		@include grid-template(repeat(3, 1fr), repeat(2, auto), 1rem);
+	}
+}
+
+.three {
+	@include flexbox(wrap);
+	@include grid(col / span 3, row 3);
+	@include grid-template(repeat(3, 1fr), repeat(2, auto), 1rem);
+	padding: 2.5em;
+
+	.img-container {
+		@include grid(1 / span 3, 2);
+		@include respond-at(50.0625em) {
+			@include grid(1 / span 1, 1);
+		}
+		padding: 0 .625em;
+	}
+
+	.postdoc-activities {
+		@include grid(1 / span 3, null);
+		@include respond-at(50.0625em) {
+			@include grid(2 / span 2, null);
+			order: 1;
+		}
+		align-self: center;
+		order: -1;
+		padding: 0 10px;
+	}
+
+	@include respond-at(50.0625em) {
+		@include flexbox;
+		@include grid-template(repeat(3, 1fr), null, 1rem);
+	}
+}
+
+.four {
+	@include flexbox(wrap);
+	@include grid(col / span 3, row 4);
+	@include grid-template(repeat(3, 1fr), repeat(2, auto), 1rem);
+	background-color: $white-smoke;
+	padding: 2.5em;
+
+	.postdoc-activities {
+		@include grid(1 / span 3, 1);
+		@include respond-at(43.8125em) {
+			@include grid(1 / span 2, null);
+		}
+		align-self: center;
+		padding: 0 .625em;
+	}
+
+	.img-container {
+		@include grid(1 / span 3, 2);
+		@include respond-at(50.0625em) {
+			@include grid(3 / span 1, 1);
+		}
+		padding: 0 10px;
+	}
+	@include respond-at(50.0625em) {
+		@include flexbox;
+		@include grid-template(repeat(3, 1fr), null, 1rem);
+	}
+}
+
+.five {
+	@include grid(col / span 3, row 5);
+	@include respond-at(50.0625em) {
+		padding: 2.5em;
+	}
+}
+
+.past-postdocs {
+	@include grid-template(18.75rem, null, 3.125em);
+	@include respond-at(42.5em) {
+		@include grid-template(repeat(2, 18.75rem), null, 3.125em);
+	}
+	@include respond-at(81.875em) {
+		@include grid-template(repeat(3, 18.75rem), null, 3.125em);
+	}
+	grid-auto-rows: 21.875rem;
+	justify-content: center;
+}
+
+a {
+	border: none;
+}
+
+
+ul.postdoc-list {
+	list-style: none;
+}
+
+#postdoc-pos1 {
+	display: none;
+	padding: 0.9375em;
+}
+
+.type-em {
+	font-size: 1.2rem;
+	font-style: italic;
+	line-height: 1em;
+}
+
+.open-positions {
+	border: 1px solid #eb6546;
+	padding: 10px;
+  position: relative;
+}
+
+.ribbon {
+	height: 75px;
+	overflow: hidden;
+  position: absolute;
+  right: -5px;
+	text-align: right;
+	top: -5px;
+  width: 75px;
+	z-index: 1;
+}
+
+.ribbon span {
+	background: #79A70A;
+  background: linear-gradient(#F70505 0%, #8F0808 100%);
+  box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
+	color: #FFF;
+	display: block;
+  font-size: 10px;
+  font-weight: bold;
+  line-height: 20px;
+	position: absolute;
+	right: -21px;
+	transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
+	text-align: center;
+  text-transform: uppercase;
+	top: 19px;
+  width: 100px;
+}
+
+.ribbon span::before {
+	border-bottom: 3px solid transparent;
+	border-left: 3px solid #8F0808;
+  border-right: 3px solid transparent;
+  border-top: 3px solid #8F0808;
+  content: '';
+	left: 0;
+  position: absolute;
+	top: 100%;
+  z-index: -1;
+}
+
+.ribbon span::after {
+	border-bottom: 3px solid transparent;
+	border-left: 3px solid transparent;
+  border-right: 3px solid #8F0808;
+  border-top: 3px solid #8F0808;
+  content: '';
+  position: absolute;
+	right: 0;
+	top: 100%;
+  z-index: -1;
+
+}
+
+//Cards
+.icon-spinner {
+  -webkit-animation: spin-animation .2s infinite linear;
+  animation: spin-animation .2s infinite linear;
+  display: inline-block;
+}
+
+@keyframes spin-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(359deg);
+  }
+}
+
+.card {
+  height: 0;
+  margin-bottom: 6.6em;
+  padding-bottom: calc(100% - 1em);
+  position: relative;
+
+  h2 {
+    color: $white;
+    font-size: 1.4em;
+    left: 0;
+    line-height: 1.6em;
+    margin: 0;
+    padding: .625em 1em;
+    position: absolute;
+    top: calc(100% - 1em);
+    transition: .3s;
+    width: 100%;
+    z-index: 10;
+
+    span {
+      display: block;
+    }
+
+    strong {
+      display: block;
+      font-size: 1.03rem;
+      font-weight: 400;
+    }
+
+    &:before,
+    &:after {
+      border: 8px solid;
+      content: '';
+      left: 0;
+      position: absolute;
+      top: -.7em;
+      transition: .3s;
+      width: 0;
+    }
+
+    &:after {
+      bottom: 0;
+      top: auto;
+    }
+  }
+
+  &.active {
+    @include respond-at(47.9375em) {
+      height: auto;
+      padding-bottom: 0;
+    }
+
+    h2 {
+      padding: .5em 1em .5em 4em;
+      top: 0;
+
+      span {
+        @include truncate(1em, 1, 2);
+      }
+
+      strong {
+        @include truncate(.8em, 1.6, 1);
+      }
+
+      &:before {
+        top: 0;
+      }
+
+      &:after {
+        bottom: -.7em;
+      }
+    }
+  }
+
+  &.focus {
+    // transform: scale(1.1);
+    transition: .5s;
+  }
+
+  &.unfocus {
+    opacity: .4 !important;
+    transform: scale(.9) !important;
+    transition: .5s;
+  }
+
+  .card-content {
+    bottom: 1em;
+    height: 21.875rem;
+    left: 1em;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: .3s;
+  }
+
+  .btn-action {
+    border: 5px solid;
+    border-radius: 50%;
+    color: $white;
+    height: 3.375rem;
+    // line-height: 44px;
+    position: absolute;
+    right: 1em;
+    text-align: center;
+    top: 0.9375em;
+    transition: .3s;
+    width: 3.375rem;
+    z-index: 20;
+
+    i {
+      font-size: inherit;
+    }
+  }
+
+  &.active .btn-action {
+    top: 3.875em;
+  }
+
+  .description {
+    bottom: 3.375em;
+    left: 1.875em;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    right: 1.875em;
+    top: 100%;
+    transition: 1.2s;
+
+    p {
+      @include truncate(1rem, 1.6, 5);
+    }
+  }
+
+  .menu:before {
+    content: '\f039';
+    font-family: 'Fontcons';
+    font-style: normal;
+  }
+
+  .arrow-left:before {
+    content: '\2190';
+    font-family: 'Fontcons';
+    font-style: normal;
+  }
+
+  .profile:before {
+    content: '\f007';
+    font-family: 'Fontcons';
+    font-style: normal;
+    padding: 0 .5em;
+  }
+
+  .contact:before {
+    content: '\2709';
+    font-family: 'Fontcons';
+    font-style: normal;
+    padding: 0 .5em;
+  }
+
+  .card-footer {
+    height: 0;
+    overflow: hidden;
+    transition: .3s;
+
+    a {
+      color: $white;
+      display: block;
+      float: left;
+      font-size: 1.75rem;
+      height: 3.3125rem;
+      line-height: 3.25rem;
+      margin-bottom: .9375em;
+      margin-left: .3125em;
+      position: relative;
+      text-decoration: none;
+      top: 200px;
+      width: 3.25rem;
+
+      &:nth-child(1) {
+        transition: .5s;
+      }
+
+      &:nth-child(2) {
+        transition: .6s;
+      }
+    }
+  }
+
+  .img-container {
+    height: 100%;
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    transition: .3s;
+    width: 100%;
+    z-index: 3;
+  }
+  // .team-member {
+  //   min-height: 284px;
+  //   width: 100%;
+  //   object-fit: cover;
+  // }
+  &.active {
+    .img-container {
+      border-radius: 50%;
+      height: 3.75rem;
+      left: 0;
+      top: .75em;
+      width: 3.75rem;
+      z-index: 20;
+    }
+
+    .card-content {
+      @include respond-at(767px) {
+        margin-right: 1em;
+        position: relative;
+      }
+      padding-top: 5.6em;
+    }
+
+    .description {
+      opacity: 1;
+      padding-top: 5em;
+      top: 3.125em;
+      // @include respond-at(767px) {
+      //   position: relative;
+      //   top: auto;
+      //   right: auto;
+      //   left: auto;
+      //   padding: 30px 30px 70px 30px;
+      //   bottom: 0;
+      // }
+    }
+
+    .card-footer {
+      height: 5.125rem;
+      left: 1em;
+      overflow: visible;
+      padding-left: 1.5625em;
+      padding-top: .9375em;
+      position: absolute;
+      right: 0;
+      top: calc(100% - 5em);
+
+      a {
+        top: 0;
+      }
+    }
+  }
+}
+
+//Mixin for color pallete of cards
+@mixin card-color($color) {
+  h2 {
+    background-color: $color;
+    &:after {
+      border-bottom-color: transparent;
+      border-left-color: transparent;
+      border-right-color: $color;
+      border-top-color: $color;
+    }
+    &:before {
+      border-bottom-color: darken($color, 30%);
+      border-left-color: transparent;
+      border-right-color: darken($color, 30%);
+      border-top-color: transparent;
+    }
+  }
+  &.active {
+    h2 {
+      &:before {
+        border-bottom-color: $color;
+        border-left-color: transparent;
+        border-right-color: $color;
+        border-top-color: transparent;
+      }
+      &:after {
+        border-bottom-color: transparent;
+        border-left-color: transparent;
+        border-right-color: darken($color, 30%);
+        border-top-color: darken($color, 30%);
+      }
+    }
+  }
+
+  .btn-action {
+    background-color: $color;
+    &:hover {
+      background-color: darken($color, 20%);
+    }
+  }
+
+  .card-footer {
+    h4 {
+      color: darken($color, 30%);
+    }
+
+    a {
+      background-color: darken($color, 20%);
+      color: $white;
+
+			&:hover {
+        background-color: darken($color, 50%);
+      }
+    }
+  }
+  &.active {
+    .card-content {
+      // background-color: lighten($color, 40%);
+      background-color: lighten($color, 55%);
+    }
+
+    .card-footer {
+      background-color: lighten($color, 10%);
+    }
+  }
+}
+
+.green {
+  @include card-color($color-accent2);
+}
+
+.dark-blue {
+  @include card-color($midnight);
+}
+
+// Card adjustments for Past Postdocs section
+.past-postdocs {
+	.card {
+		height: 0;
+		padding-bottom: calc(100% - 16px);
+
+		&.active {
+			.description {
+				padding-top: 5em;
+			}
+
+			.card-footer {
+				top: calc(100% - 1em);
+			}
+		}
+	}
+}
