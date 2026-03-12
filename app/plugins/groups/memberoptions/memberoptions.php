@@ -201,7 +201,7 @@ class plgGroupsMemberOptions extends \Hubzero\Plugin\Plugin
 		$row->set('gidNumber', $gidNumber);
 		$row->set('userid', $userid);
 		$row->set('optionname', 'receive-forum-email');
-		$row->set('optionvalue', 1);
+		$row->set('optionvalue', (int)$autosubscribe);
 		$row->save();
 	}
 }

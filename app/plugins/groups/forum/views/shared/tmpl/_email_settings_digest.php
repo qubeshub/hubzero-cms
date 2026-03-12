@@ -28,7 +28,7 @@ $base = $this->base;
 			<?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_POSTS_INTERVAL'); ?>
 		</div>
 		<div>
-			<input type="radio" name="recvpostemail" class="edit-forum-options-immediate" value="1"<?php if ($this->recvEmailOptionValue == 1) { echo ' checked="checked"'; } ?><?php if ($this->recvEmailOptionValue == 0) { echo ' disabled="disabled"'; } ?> />
+			<input type="radio" name="recvpostemail" class="edit-forum-options-immediate" value="1"<?php if ($this->recvEmailOptionValue <= 1) { echo ' checked="checked"'; } ?><?php if ($this->recvEmailOptionValue == 0) { echo ' disabled="disabled"'; } ?> />
 			<label>
 				<?php echo Lang::txt('PLG_GROUPS_FORUM_EMAIL_POSTS_IMMEDIATELY'); ?>
 			</label>

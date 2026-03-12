@@ -280,6 +280,72 @@
 		text-align: right;
 	}
 
+	/* Group edit page: default forum subscription options */
+	/* Override site-template float/positioning on the toggle checkbox and its label */
+	#discussion_email_autosubscribe_settings {
+		margin: 0.5em 2em;
+	}
+
+	#discussion_email_autosubscribe_settings .form-group {
+		display: flex;
+    	align-items: center;
+    	gap: 10px;
+	}
+
+	#discussion_email_autosubscribe_settings .form-group input,
+	#discussion_email_autosubscribe_settings .form-group select {
+		width: unset;
+	}
+
+	#discussion_email_autosubscribe_settings .form-group input,
+	#discussion_email_autosubscribe_settings .form-group label {
+		padding: unset;
+	}
+	
+	#discussion_email_autosubscribe_toggle {
+		float: none;
+		display: inline-block;
+		vertical-align: middle;
+		width: auto;
+		margin: 0 0.35em 0 0;
+	}
+	label[for="discussion_email_autosubscribe_toggle"] {
+		display: inline !important;
+		padding-left: 0 !important;
+		vertical-align: middle;
+		font-weight: normal;
+	}
+
+	/* Sub-options panel */
+	#discussion_email_subscribe_options {
+		margin: 0.5em 0 0.5em 0;
+		padding: 0.5em 1em;
+		border-left: 3px solid #ddd;
+	}
+	#discussion_email_subscribe_options > div {
+		margin: 0.4em 0;
+	}
+	/* Override site-template float on radio inputs */
+	#discussion_email_autosubscribe_immediate,
+	#discussion_email_autosubscribe_digest {
+		float: none;
+		display: inline-block;
+		vertical-align: middle;
+		width: auto;
+		margin: 0 0.35em 0 0;
+	}
+	#discussion_email_subscribe_options label {
+		display: inline !important;
+		padding-left: 0 !important;
+		vertical-align: middle;
+	}
+	#discussion_email_autosubscribe_frequency {
+		display: inline-block;
+		width: auto;
+		margin: 0 0.25em;
+		vertical-align: middle;
+	}
+
 /* Forum settings dialog */
 	.edit-forum-options-panel {
 		display: none;
