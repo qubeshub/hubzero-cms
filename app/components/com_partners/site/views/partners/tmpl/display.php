@@ -57,7 +57,10 @@ Pathway::append(
 
 <!-- Need to add checks if metadata is available before displaying -->
 <section class="main section">
-		<p>Please also visit the <a href="/community/groups/bioquest/about/financials">BioQUEST Funders page</a>.</p>
+		<p>BioQUEST collaborates with funded projects and organizations that share our commitment to STEM education reform, open educational resources, faculty development, and community-driven innovation.</p>
+		<p>The projects below represent current and past partners that have worked with BioQUEST and the QUBES platform. These collaborations may include QUBES platform group hosting, project dissemination, open educational resource support, Faculty Mentoring Network hosting, workshop support, and other BioQUEST services.</p>
+		<p>Select a logo below to learn more about each project.</p>
+		<p>To learn more about organizations that have directly supported BioQUEST-led projects, programs, infrastructure, and organizational work, please visit our <a href="/community/groups/bioquest/about/financials">Funders and Financials page</a>.</p>
 		<form class="section-inner" action="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller); ?>" method="get">
 		<div class="subject">
 			<div class="cards">

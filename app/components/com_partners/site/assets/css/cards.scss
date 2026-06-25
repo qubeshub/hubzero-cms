@@ -8,6 +8,10 @@
 * {
 	box-sizing: border-box;
 }
+section.main {
+	font-size: 1.2em;
+	padding-top: 30px;
+}
 .cards {
 	display: flex;
 	flex-flow: row wrap;
