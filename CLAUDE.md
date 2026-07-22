@@ -95,3 +95,6 @@ git checkout --track -b fix-core-bug upstream/2.4-main
 git push -u origin fix-core-bug
 # Open a PR to upstream
 ```
+
+## Session Startup
+- On initialization, always execute the `load-branch-context` skill to fetch localized, branch-specific instructions before answering questions.
