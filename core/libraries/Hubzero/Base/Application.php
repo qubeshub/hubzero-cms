@@ -64,7 +64,7 @@ class Application extends Container
 	 * @param   object  $response  Response object
 	 * @return  void
 	 */
-	public function __construct($client = '', Request $request = null, Response $response = null)
+	public function __construct($client = '', ?Request $request = null, ?Response $response = null)
 	{
 		$this->startms = microtime(true);
 
@@ -485,6 +485,13 @@ class Application extends Container
 	 */
 	public function run()
 	{
+		// FrankenPHP requires output buffering so that headers (redirects,
+		// cookies, sessions) can be sent at any point during the request.
+		if (php_sapi_name() === 'frankenphp')
+		{
+			ob_start();
+		}
+
 		// Boot the application
 		//
 		// This allows service providers to finish performing any
@@ -537,7 +544,13 @@ class Application extends Container
 		while(ob_get_level())
 			ob_end_flush();
 
-		flush();
+		// Guard against flushing after the response is complete.
+		// FrankenPHP's Go handler finishes before PHP destructors run,
+		// so an unconditional flush() causes a panic in go_sapi_flush.
+		if (!headers_sent())
+		{
+			flush();
+		}
 
 		if (function_exists('fastcgi_finish_request'))
 		{

@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Groups · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Hub groups are communities that users build inside the hub. A group has its own address at , its own pages, and its own forum, wiki, blog, calendar, file space…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/users/groups/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Groups</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#what-you-actually-do-on-this-screen">What you actually do on this screen</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-a-change-here-does-and-who-notices">What a change here does, and who notices</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-group-list">The group list</a></li>
+<li class="toc__item toc__item--l3"><a href="#group-types">Group types</a></li>
+<li class="toc__item toc__item--l2"><a href="#creating-a-group">Creating a group</a></li>
+<li class="toc__item toc__item--l3"><a href="#worked-example-a-group-for-the-workshop-cohort">Worked example: a group for the workshop cohort</a></li>
+<li class="toc__item toc__item--l2"><a href="#editing-a-group">Editing a group</a></li>
+<li class="toc__item toc__item--l2"><a href="#publishing-unpublishing-and-archiving">Publishing, unpublishing and archiving</a></li>
+<li class="toc__item toc__item--l2"><a href="#approving-a-group">Approving a group</a></li>
+<li class="toc__item toc__item--l2"><a href="#deleting-a-group">Deleting a group</a></li>
+<li class="toc__item toc__item--l2"><a href="#membership">Membership</a></li>
+<li class="toc__item toc__item--l2"><a href="#roles">Roles</a></li>
+<li class="toc__item toc__item--l2"><a href="#configuring-groups">Configuring groups</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Users</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Groups</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Groups</h1>
+        </header>
+        
+        <div class="prose">
+<p>Hub groups are communities that users build inside the hub. A group has its
+own address at <code>/groups/&lt;alias&gt;</code>, its own pages, and its own forum, wiki,
+blog, calendar, file space and member list. Users create and run groups
+themselves; from the administrator interface you approve them, configure how
+they behave, correct their membership and delete the ones that should not
+exist.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> A hub group is not an access group. Access groups are the
+permission buckets described in <a href="../accessgroups/index.html">Access Groups</a>, and
+the two systems are unrelated. See the
+<a href="../index.html#two-different-things-are-called-a-group">section introduction</a>.
+Putting somebody in a hub group grants them nothing on the rest of the hub.
+It gives them the group's own pages, forum, wiki and files, and stops there.</p>
+</aside>
+<h2 id="what-you-actually-do-on-this-screen">What you actually do on this screen</h2>
+<p>Groups largely run themselves. Users create them, users manage their own
+membership, and a hub can go months with nobody opening this screen. You come
+here for four things, in rough order of how often:</p>
+<ul>
+<li><strong>Approving a group</strong> somebody created, when automatic approval is off.</li>
+<li><strong>Rescuing a group</strong> whose only manager has left the hub, by promoting
+somebody else on its membership screen.</li>
+<li><strong>Deleting a group</strong> that should not exist — a duplicate, an abandoned test,
+something a spammer created.</li>
+<li><strong>Creating a group that users cannot create for themselves</strong>: a super group,
+a group on somebody's behalf, or a group that has to exist before its members
+do.</li>
+</ul>
+<p>Everything else on the screen — the type, the join policy, the discoverability
+— is a group's own setting that its managers control from the site. Changing
+one from here is an intervention in somebody else's group, and it takes effect
+without telling them.</p>
+<h2 id="what-a-change-here-does-and-who-notices">What a change here does, and who notices</h2>
+<ul>
+<li><strong>Membership changes take effect immediately.</strong> Someone removed from a group
+loses the group's pages, forum and files on their next page load. They are
+not told, and they will read it as the hub being broken.</li>
+<li><strong>Unpublishing is the reversible way to take a group out of circulation.</strong> The
+group and everything in it survive; publish it again and it comes back. Use
+this while you work out whether a group should really go.</li>
+<li><strong>Deleting is not reversible and takes the content with it.</strong> See <a href="#deleting-a-group">Deleting a
+group</a> before you use it, and prefer unpublishing.</li>
+<li><strong>Approving and unapproving are both reversible</strong> and change only whether the
+group is listed and usable.</li>
+</ul>
+<p>Reach the screen at <strong>Users</strong> → <strong>Groups</strong>, or directly at
+<code>/administrator/index.php?option=com_groups</code>. Within the component the
+sub-navigation offers:</p>
+<table>
+<thead>
+<tr>
+<th>Entry</th>
+<th>What it manages</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Groups</strong></td>
+<td>The group list, the default screen</td>
+</tr>
+<tr>
+<td><strong>Import</strong></td>
+<td>CSV import of groups and members, with import hooks. Super User only</td>
+</tr>
+<tr>
+<td><strong>Custom Fields</strong></td>
+<td>Extra fields shown on the group form. Super User only</td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-group-list">The group list</h2>
+<p>The list shows <strong>Group ID</strong>, <strong>Name</strong>, <strong>Alias</strong>, <strong>Type</strong>, <strong>Published</strong>,
+<strong>Approved</strong>, a member count and a page count. The alias is the segment used
+in the group's URL. Selecting the name or the alias opens the group for
+editing; the member count opens the membership screen for that group; the
+page count opens its page list.</p>
+<p>Filter with the search box and the <strong>Type</strong>, <strong>Discoverability</strong>, <strong>Join
+Policy</strong> and <strong>State</strong> menus.</p>
+<p>The toolbar carries <strong>Publish</strong>, <strong>Unpublish</strong>, <strong>Archive</strong>, <strong>New</strong>,
+<strong>Edit</strong>, <strong>Delete</strong> and <strong>Options</strong>. <strong>Update Groups Code</strong> appears as well
+when GitLab repository management is switched on. Each button is gated on the
+matching permission from
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/components/com_groups/config/access.xml"><code>config/access.xml</code></a>,
+so a manager without <code>core.delete</code> does not see <strong>Delete</strong>.</p>
+<p><strong>Published</strong> and <strong>Approved</strong> are also togglable in place: select the icon
+in either column to flip that group's state.</p>
+<h3 id="group-types">Group types</h3>
+<p>The <strong>Type</strong> column and the type menu on the group form use these values,
+set in
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/components/com_groups/admin/views/manage/tmpl/edit.php"><code>admin/views/manage/tmpl/edit.php</code></a>:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hub</strong></td>
+<td>An ordinary group, the kind users create for themselves</td>
+</tr>
+<tr>
+<td><strong>Super</strong></td>
+<td>A group with its own web space, template and code. See <a href="../supergroups/index.html">Super Groups</a></td>
+</tr>
+<tr>
+<td><strong>System</strong></td>
+<td>Created and owned by the software. Offered only to a Super User</td>
+</tr>
+<tr>
+<td><strong>Project</strong></td>
+<td>Backs a project in <code>com_projects</code></td>
+</tr>
+<tr>
+<td><strong>Course</strong></td>
+<td>Backs a course in <code>com_courses</code></td>
+</tr>
+</tbody>
+</table>
+<p>Only Hub and Super groups render on the site. <code>com_groups</code> returns a 404 for
+any other type.</p>
+<h2 id="creating-a-group">Creating a group</h2>
+<ol>
+<li>Go to <strong>Users</strong> → <strong>Groups</strong>.</li>
+<li>Select <strong>New</strong>.</li>
+<li>Fill in the form. <strong>Type</strong> and <strong>Alias</strong> are required, and the alias may
+contain only lowercase letters, digits and underscores. The alias cannot
+be changed once the group is saved.</li>
+<li>Select <strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>The form has two tabs. <strong>Details</strong> holds everything about the group;
+<strong>Files</strong> is a file browser into the group's own directory and is empty
+until the group has been saved once.</p>
+<p>The <strong>Details</strong> tab is divided into these areas:</p>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Details</strong></td>
+<td>Type, Published, Approve, Alias, Title, Group Logo, and any custom fields</td>
+</tr>
+<tr>
+<td><strong>Page Settings</strong></td>
+<td>Trusted content, page comments, page author display, and a template override</td>
+</tr>
+<tr>
+<td><strong>Membership</strong></td>
+<td>Membership Control, Join Policy, and the credentials text shown to applicants</td>
+</tr>
+<tr>
+<td><strong>Access</strong></td>
+<td>Discoverability, Plugin Access, and whether system users appear in the member list</td>
+</tr>
+<tr>
+<td><strong>Email Settings</strong></td>
+<td>Discussion email auto-subscription. Shown only when the component's email option <strong>Forum Outgoing Email</strong> is on</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Join Policy</strong> is the group's own setting, not a site setting, and its four
+values are:</p>
+<table>
+<thead>
+<tr>
+<th>Policy</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Public</strong></td>
+<td>Any site member can join</td>
+</tr>
+<tr>
+<td><strong>Restricted</strong></td>
+<td>The user must request membership, and a manager approves it</td>
+</tr>
+<tr>
+<td><strong>Invite Only</strong></td>
+<td>The user must be invited by an existing group member</td>
+</tr>
+<tr>
+<td><strong>Closed</strong></td>
+<td>Membership cannot be changed from the site</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Discoverability</strong> is either <strong>Visible</strong> — the group is listed and
+searchable — or <strong>Hidden</strong>, in which case only members find it.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> New groups created here are <strong>not</strong> approved automatically. The
+<strong>Approve</strong> menu on the form defaults to <em>Unapproved</em>; set it yourself, or
+use the Approved column in the list afterwards. Automatic approval, the
+<code>auto_approve</code> option, governs groups created by users on the site, not
+groups created here.</p>
+</aside>
+<p>Creating a group is safe. Until it has members and content it is an empty
+shell, and unpublishing it puts it out of sight without losing anything.</p>
+<h3 id="worked-example-a-group-for-the-workshop-cohort">Worked example: a group for the workshop cohort</h3>
+<p>Continuing the scenario from the <a href="../index.html#a-worked-example">section
+introduction</a>, the forty visiting participants need
+somewhere to work together for the two weeks of the workshop.</p>
+<ol>
+<li>Go to <strong>Users</strong> → <strong>Groups</strong> and select <strong>New</strong>.</li>
+<li>Set <strong>Type</strong> to <strong>Hub</strong>. A super group is only needed if the workshop wants
+its own web space and code; see <a href="../supergroups/index.html">Super Groups</a>.</li>
+<li>Enter an <strong>Alias</strong> of <code>workshop2026</code> and a matching <strong>Title</strong>. Get the alias
+right the first time — it becomes the group's address and cannot be changed
+afterwards.</li>
+<li>Under <strong>Membership</strong>, set <strong>Join Policy</strong> to <strong>Invite Only</strong>, so that nobody
+outside the cohort can add themselves.</li>
+<li>Under <strong>Access</strong>, set <strong>Discoverability</strong> to <strong>Hidden</strong>, so the group does
+not appear in the site's group listings.</li>
+<li>Set <strong>Approve</strong> to <em>Approved</em> and <strong>Published</strong> to <em>Published</em>.</li>
+<li>Select <strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>The group now exists and is empty. The cohort's accounts are put into it by the
+<code>groups</code> column of the <a href="../memberimport/index.html">member import</a>, which is the one
+place that column is genuinely the right tool — the accounts do not exist yet,
+so there are no memberships for it to overwrite.</p>
+<p>Note what this group does <em>not</em> do. It gives the cohort a shared space; it does
+not give them access to restricted material elsewhere on the hub. That is a
+<a href="../accesslevels/index.html">viewing level</a> built on an
+<a href="../accessgroups/index.html">access group</a>, and it is set up separately.</p>
+<p>When the workshop ends, unpublish the group. Its discussions and files stay
+readable to you and recoverable; deleting it destroys them.</p>
+<h2 id="editing-a-group">Editing a group</h2>
+<ol>
+<li>Go to <strong>Users</strong> → <strong>Groups</strong>.</li>
+<li>Select the group's name or alias.</li>
+<li>Change what you need and select <strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>The alias field is read-only for an existing group.</p>
+<h2 id="publishing-unpublishing-and-archiving">Publishing, unpublishing and archiving</h2>
+<ol>
+<li>Go to <strong>Users</strong> → <strong>Groups</strong>.</li>
+<li>Tick the box beside one or more groups.</li>
+<li>Select <strong>Publish</strong>, <strong>Unpublish</strong> or <strong>Archive</strong>.</li>
+</ol>
+<p>Or select the icon in the group's <strong>Published</strong> column to toggle it directly.
+An archived group stays readable but its toolbar drops the management
+actions.</p>
+<h2 id="approving-a-group">Approving a group</h2>
+<p>Automatic approval is on by default, in the manifest and in the data a hub is
+installed with, so out of the box a user's new group works the moment they
+create it and nothing reaches you. That is the right default for a hub whose
+groups are its own community, and the wrong one for a hub that gets
+unsolicited signups: turn it off under <strong>Options</strong> → <strong>General</strong> and a group
+waits for you instead. Turning it off does not affect groups already approved.</p>
+<p>When automatic approval is off, a group a user creates on the site is saved
+unapproved and an email goes to the site administrator plus everyone listed
+in the <strong>Group reviewers</strong> option. To approve it, select the icon in the
+group's <strong>Approved</strong> column. Selecting it again unapproves the group.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Turning automatic approval off with nothing in <strong>Group
+reviewers</strong> means the notification goes only to the site administrator
+address. If nobody reads that mailbox, every group a user creates sits
+unapproved and unnoticed, and the users who created them have no way to
+chase it.</p>
+</aside>
+<h2 id="deleting-a-group">Deleting a group</h2>
+<ol>
+<li>Go to <strong>Users</strong> → <strong>Groups</strong>.</li>
+<li>Tick the box beside one or more groups.</li>
+<li>Select <strong>Delete</strong> and confirm.</li>
+</ol>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Deleting a group fires <code>groups.onGroupDelete</code> on every group
+plugin, which removes the group's blog entries, forum threads, wiki pages,
+announcements, collections, wish list and the rest along with it. There is
+no undo. The group's upload directory on disk is left behind, so for a
+super group you must clean up the files yourself.</p>
+</aside>
+<p>This is the most destructive button in this section, and there is nothing to
+distinguish it from any other delete button in the interface. What goes is not
+the group but years of somebody's discussion. If a group is dormant, unpublish
+it; if it is a duplicate, check which of the pair holds the content first; if
+somebody has asked you to delete their group, ask them whether they want the
+forum archived somewhere first, because you cannot get it back for them
+afterwards. Reserve <strong>Delete</strong> for groups that were never used — spam, tests,
+mistakes made minutes ago.</p>
+<h2 id="membership">Membership</h2>
+<p>Select a group's member count in the list to open its membership screen. The
+list can be filtered by status — Manager, Applicant, Invitee — and, when
+membership expiration is available, by term.</p>
+<p>What the toolbar offers depends on the filter:</p>
+<ul>
+<li><strong>Managers and members:</strong> <strong>Promote</strong>, <strong>Demote</strong>, <strong>Membership</strong> (set or
+clear an end date) and <strong>Delete</strong>.</li>
+<li><strong>Applicants:</strong> <strong>Approve</strong> and <strong>Deny</strong>.</li>
+<li><strong>Invitees:</strong> <strong>Uninvite</strong>.</li>
+</ul>
+<p><strong>New</strong> adds a member, and <strong>Assign role</strong> attaches a role to the selected
+members.</p>
+<p>Membership end dates are enforced by a cron job, not by the page. The screen
+prints a banner naming the last run, and an error banner if the job has not
+run in the last 24 hours; until it runs, an expired membership keeps its
+access.</p>
+<p>Two of these actions are worth pausing over.</p>
+<p><strong>Delete</strong> here removes somebody from the group, not from the hub. The account
+itself is untouched — this is the screen to use when a member has left a
+project but stays on the hub.</p>
+<p>The two ways of removing a manager do not behave alike. <strong>Demote</strong> refuses to
+act on the last remaining manager: it answers <em>Cannot remove all managers. A
+group must have at least one manager.</em> and does nothing. <strong>Delete</strong> carries no
+such check, so ticking the last manager and pressing <strong>Delete</strong> succeeds and
+leaves the group with nobody able to run it. The site gives a group's members
+no way out of that; promoting somebody from this screen is then the only route
+back. Check the <strong>Managers</strong> filter before you delete anybody from it.</p>
+<h2 id="roles">Roles</h2>
+<p>A role is a named set of extra permissions inside one group. A role carries
+a name and any of three permissions:</p>
+<ul>
+<li><strong>Invite New Members</strong></li>
+<li><strong>Edit Group Settings</strong></li>
+<li><strong>Create/Edit Group Pages &amp; Categories</strong></li>
+</ul>
+<p>Members holding a role can do those things without being made a manager.</p>
+<h2 id="configuring-groups">Configuring groups</h2>
+<ol>
+<li>Go to <strong>Users</strong> → <strong>Groups</strong>.</li>
+<li>Select <strong>Options</strong>.</li>
+<li>Change what you need and select <strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>The dialog has these sections:</p>
+<table>
+<thead>
+<tr>
+<th>Section</th>
+<th>What it sets</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>General</strong></td>
+<td>Whether groups users create are approved automatically, and the reviewer addresses notified when they are not</td>
+</tr>
+<tr>
+<td><strong>Intro Page</strong></td>
+<td>Which lists the group landing page shows: my groups, interesting groups, popular groups, featured groups</td>
+</tr>
+<tr>
+<td><strong>Membership &amp; Access</strong></td>
+<td>The default join policy and discoverability for new groups, system user display, the invitation message, and membership expiration</td>
+</tr>
+<tr>
+<td><strong>Email</strong></td>
+<td>Incoming comment processing, forum outgoing email, auto-subscription, and the forum digest</td>
+</tr>
+<tr>
+<td><strong>Upload</strong></td>
+<td>The group file path and whether uploads are virus scanned</td>
+</tr>
+<tr>
+<td><strong>Pages</strong></td>
+<td>Page approvers, page depth, comments, author display, and whether groups may use modules</td>
+</tr>
+<tr>
+<td><strong>Super Groups</strong></td>
+<td>Super group components, the filesystem owner for group assets, and GitLab repository management</td>
+</tr>
+<tr>
+<td><strong>Permissions</strong></td>
+<td>The <code>com_groups</code> access rules for each access group</td>
+</tr>
+</tbody>
+</table>
+<p>Every parameter, its type and its default are listed in the generated
+<a href="../../../reference/configuration/components/groups/index.html">Groups configuration reference</a>.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> <strong>Allow forum digest?</strong> only permits the digest. What sends it is
+the <code>emailGroupForumDigest</code> job in the <strong>Cron - Forum</strong> plugin, which you
+schedule under <strong>Components</strong> → <strong>Cron</strong>. Turning the option on without
+that job sends nothing. Schedule it no more than once a day; it has no
+queue, so a second run resends the same digest.</p>
+</aside>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../memberimportarchive/index.html" rel="prev"><span>Previous</span>Member import (archive)</a><a class="pager__next" href="../accessgroups/index.html" rel="next"><span>Next</span>Access Groups</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/06-users/05-groups.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

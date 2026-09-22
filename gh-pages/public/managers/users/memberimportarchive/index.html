@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Member import (archive) · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Why the old member import walkthrough no longer applies, and where the current one is.">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/users/memberimportarchive/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Member import (archive)</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#what-changed">What changed</a></li>
+<li class="toc__item toc__item--l2"><a href="#delivering-passwords">Delivering passwords</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Users</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Member import (archive)</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Member import (archive)</h1>
+        </header>
+        
+        <div class="prose">
+<p>This page carried an older walkthrough of the member importer, built around a
+fixed table of CSV columns. It is kept because it is linked from elsewhere.
+Everything you need is now in <a href="../memberimport/index.html">Member import</a>, checked
+against the code in this release.</p>
+<p>Read the list below if you have an old import file, an old set of notes, or a
+procedure someone wrote down before this release. Each item is somewhere the
+old instructions would lead you into an import that does not do what you
+expect. If you are starting fresh, go straight to
+<a href="../memberimport/index.html">Member import</a> instead.</p>
+<h2 id="what-changed">What changed</h2>
+<p><strong>The column list was never fixed, and is now clearly not.</strong> The old page
+printed a table of thirty-odd columns — <code>uidNumber</code>, <code>mailPreferenceOption</code>,
+<code>nativeTribe</code> and the rest — as though that were the schema. It is not. The
+sample file is generated when you press <strong>Sample import file</strong>, from the
+accounts table plus every field currently in your hub's profile builder plus
+the <code>groups</code> and <code>projects</code> columns. Two hubs with different profile schemas
+get different sample files. Always download a fresh one rather than reusing a
+column list.</p>
+<p><strong>CSV is not the only format.</strong> The importer sniffs the file's MIME type and
+picks a reader; CSV, Excel, JSON and XML all work. The old page's &quot;the import
+only accepts CSV files&quot; is wrong.</p>
+<p><strong>Columns are mapped, not matched by name.</strong> After a file is uploaded the
+importer shows a <strong>Field Mapping</strong> screen with its guess for each column and
+lets you correct it. Column names close to the field name — <code>lname</code>,
+<code>userPassword</code>, <code>emailConfirmed</code> — are recognised automatically.</p>
+<p><strong>The import mode labels changed.</strong> They now read <strong>Overwrite all fields</strong> and
+<strong>Modify only non-empty fields</strong>. The old page called them <em>Update</em> and
+<em>Patch</em>, and described Update as &quot;when creating new members&quot;, which was never
+what it meant: the modes decide how a record that matches an existing account
+is merged.</p>
+<p><strong>The &quot;Email new member&quot; parameter does not send a password.</strong> It sends the
+standard account confirmation email, which carries the username and a
+confirmation link. The old page said it delivered the login and password in
+plain text.</p>
+<p><strong>The &quot;Approved&quot; parameter has no effect</strong> in this release. Whether an imported
+account is approved comes from the record's <code>approved</code> column.</p>
+<h2 id="delivering-passwords">Delivering passwords</h2>
+<p>The restricted-data procedure from the old page still holds and has been moved
+into the current chapter, corrected: see
+<a href="../memberimport/index.html#delivering-passwords-safely">Delivering passwords safely</a>.
+One detail there is worth repeating, because it makes the old page's third step
+unnecessary — the importer already expires every password it sets, so a new
+account's owner is forced to change it at first login without anyone editing
+the account.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../memberimport/index.html" rel="prev"><span>Previous</span>Member import</a><a class="pager__next" href="../groups/index.html" rel="next"><span>Next</span>Groups</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/06-users/04-memberimportarchive.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

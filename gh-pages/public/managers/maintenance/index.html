@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daily Maintenance · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="The work a hub needs to keep running: approving what users submit, moving tools through the publishing pipeline, answering support tickets, posting site…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/maintenance/">
+  <link rel="icon" href="../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../index.html">
+      <img class="brand__mark" src="../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../search-index.json" data-base="../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../docs/index.html">About</a>
+      <a href="../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link is-active" href="index.html" aria-current="page">Daily Maintenance</a></summary><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#the-rhythm">The rhythm</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-dashboard">The dashboard</a></li>
+<li class="toc__item toc__item--l2"><a href="#in-this-section">In this section</a></li>
+</ol><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Daily Maintenance</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Daily Maintenance</h1>
+        </header>
+        
+        <div class="prose">
+<p>The work a hub needs to keep running: approving what users submit, moving
+tools through the publishing pipeline, answering support tickets, posting site
+notices, and keeping the scheduled jobs running.</p>
+<p>Nobody does all of this every day. On a working hub it settles into a rhythm,
+and knowing the rhythm is most of the job — a manager who checks the same
+handful of screens on a Monday morning almost never has to firefight on a
+Friday.</p>
+<h2 id="the-rhythm">The rhythm</h2>
+<p><strong>Every day, if the hub takes submissions.</strong> Open the control panel and read
+the counts. If anything is waiting — pending resources, pending publications,
+new support tickets, tools needing an administrator — clear it or assign it.
+A submission left in a queue looks to the submitter like the hub ignoring
+them, and they will not ask twice.</p>
+<p><strong>Once a week.</strong> Work through the rest:</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Where</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Support queue, oldest first</td>
+<td><strong>Components → Support</strong>, filter <code>status:open</code></td>
+<td>Old tickets are the ones that turn into complaints</td>
+</tr>
+<tr>
+<td>Unassigned tickets</td>
+<td><strong>Components → Support</strong>, filter <code>owner:none</code></td>
+<td>An unassigned ticket is nobody's work</td>
+</tr>
+<tr>
+<td>Abuse reports</td>
+<td><strong>Components → Support → Abuse</strong>, <strong>Outstanding</strong></td>
+<td>These are usually spam, and spam breeds</td>
+</tr>
+<tr>
+<td>Cron jobs actually running</td>
+<td><strong>Components → Cron</strong></td>
+<td>A <strong>Last Run</strong> far older than the job's schedule means nothing scheduled is happening at all. See <a href="cron/index.html">Scheduled Tasks</a></td>
+</tr>
+<tr>
+<td>Stuck records</td>
+<td><strong>Site → Maintenance → Global Check-in</strong></td>
+<td>Locks never expire on their own</td>
+</tr>
+</tbody>
+</table>
+<p><strong>After an incident</strong> — a spam wave, a broken deployment, an outage:</p>
+<ol>
+<li>Post a notice, if visitors can see the problem. <a href="notices/index.html">Site Notices</a>.</li>
+<li>Fix the cause.</li>
+<li>Clear whatever the incident left behind: trashed content, abuse reports,
+accounts, stuck check-outs.</li>
+<li>Take the notice down. It has to come down by hand, or by a <strong>Finish
+Publishing</strong> date you set when you posted it.</li>
+</ol>
+<p><strong>Never on a Friday afternoon.</strong> Anything that cannot be tested first: URL
+rewriting, a template change, a permissions change on a live component. Those
+belong on a morning when you can watch what happens.</p>
+<h2 id="the-dashboard">The dashboard</h2>
+<p>The first screen after you log in to <code>/administrator</code> is the <strong>Control Panel</strong>,
+served by <code>com_cpanel</code>. It has no content of its own. It renders every
+administrator module published in the <strong>cpanel</strong> position, one collapsible
+panel per module:</p>
+<p><img src="../media/maintenance-dashboard.png" alt="The administrative dashboard, showing one collapsible panel per module published in the cpanel position" /></p>
+<pre><code class="language-php">echo Html::sliders('start', 'panel-sliders', array('useCookie' =&gt; '1'));
+
+$modules = Module::byPosition('cpanel');
+
+foreach ($modules as $module)
+{
+	$output = Module::render($module);
+
+	$params = new Hubzero\Config\Registry($module-&gt;params);
+
+	if ($params-&gt;get('automatic_title', '0') == '0')
+	{
+		echo Html::sliders('panel', $module-&gt;title, 'cpanel-panel-' . $module-&gt;name);
+	}
+	elseif (method_exists('mod' . $module-&gt;name . 'Helper', 'getTitle'))
+	{
+		echo Html::sliders('panel', call_user_func_array(array('mod' . $module-&gt;name . 'Helper', 'getTitle'), array($params)), 'cpanel-panel-' . $module-&gt;name);
+	}
+	else
+	{
+		echo Html::sliders('panel', Lang::txt('MOD_' . $module-&gt;name . '_TITLE'), 'cpanel-panel-' . $module-&gt;name);
+	}
+	echo $output;
+}
+
+echo Html::sliders('end');
+</code></pre>
+<p>So what the dashboard shows depends entirely on which modules the hub
+publishes there. A fresh install ships only two panels — <strong>Popular Articles</strong>
+and <strong>Recently Added Articles</strong>. The panels a working hub usually adds are:</p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>What its panel shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mod_resources</code></td>
+<td>Resources by state: published, unpublished, pending, draft, removed</td>
+</tr>
+<tr>
+<td><code>mod_tools</code></td>
+<td>Tool contributions by pipeline state</td>
+</tr>
+<tr>
+<td><code>mod_supporttickets</code></td>
+<td>Open, new, and unassigned support tickets</td>
+</tr>
+<tr>
+<td><code>mod_supportactivity</code></td>
+<td>Recent support activity</td>
+</tr>
+<tr>
+<td><code>mod_answers</code></td>
+<td>Questions asked and closed</td>
+</tr>
+<tr>
+<td><code>mod_wishlist</code></td>
+<td>Wishes pending, accepted, granted, rejected, withdrawn, removed</td>
+</tr>
+<tr>
+<td><code>mod_groups</code></td>
+<td>Groups by type and groups pending approval</td>
+</tr>
+<tr>
+<td><code>mod_members</code></td>
+<td>New, confirmed, and approved members</td>
+</tr>
+<tr>
+<td><code>mod_users</code></td>
+<td>Pending new users awaiting approval</td>
+</tr>
+<tr>
+<td><code>mod_courses</code></td>
+<td>Course activity needing attention</td>
+</tr>
+</tbody>
+</table>
+<p>Each count links to the matching list in the component, so the dashboard is a
+set of jump-off points rather than a report.</p>
+<p>That is the useful way to think about it: the dashboard is a to-do list, and
+a hub with the right panels on it is one where the daily check is a
+ten-second glance. A hub with only the two shipped panels shows you popular
+articles and nothing you actually need to act on, which is why the first
+thing most managers do is add the panels below.</p>
+<p>To add or remove a panel, go to <strong>Extensions → Module Manager</strong>, set the
+<strong>Client</strong> filter to <strong>Administrator</strong>, then edit the module and set its
+<strong>Position</strong> to <code>cpanel</code>. The position and type filters only list what the
+selected client offers, so administrator modules are invisible while the
+filter is on <strong>Site</strong>.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> <code>mod_tools</code> counts tools in the <strong>Installed</strong> state but has no
+panel cell for it, so that count is never displayed. Its links also use a
+<code>status</code> query parameter where the pipeline screen reads <code>state</code>, so
+clicking a count opens the full list unfiltered. Both are recorded in
+a record kept with the project.</p>
+</aside>
+<h2 id="in-this-section">In this section</h2>
+<ul>
+<li><a href="approvingcontent/index.html">Approving Content</a> — the pending queues for
+resources and publications, and how to stop them existing at all.</li>
+<li><a href="tools/index.html">Tools</a> — the tool contribution pipeline, from a developer's
+registration form to a launchable tool. Only for hubs that host tools.</li>
+<li><a href="tickets/index.html">Support Tickets</a> — working the ticket queue and the abuse
+reports.</li>
+<li><a href="notices/index.html">Site Notices</a> — the maintenance banner, and why it is a
+module rather than a component.</li>
+<li><a href="cron/index.html">Scheduled Tasks</a> — the jobs behind digests, mailings, search
+indexing and expiries. Read this one early: several features on a hub do
+nothing at all until a job is created for them, and only three jobs exist
+on a new hub.</li>
+</ul>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../advancedsetup/index.html" rel="prev"><span>Previous</span>Integrations</a><a class="pager__next" href="approvingcontent/index.html" rel="next"><span>Next</span>Approving Content</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/03-maintenance/README.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Elements and typography · Developers · Hubzero Documentation</title>
+  <meta name="description" content="The classes shared between the templates and the components. Component views emit this markup and expect your template to style it, so these are the ones you…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/developers/templates/elements/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Developers</a>
+        <nav aria-label="Developers contents">
+<ul class="tree">
+<li class="tree__section"><details><summary><a class="tree__link" href="../../getting-started/index.html">Getting started</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/releasenotes/index.html">Release notes</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/fileaccess/index.html">Accessing files</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/databaseaccess/index.html">Direct database access</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/upgrade/index.html">Upgrade guide</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/browsersupport/index.html">Browser support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/devenvironment/index.html">Development environment</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tutorials/index.html">Video tutorials</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../foundation/index.html">Foundation</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/structure/index.html">Application structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/constants/index.html">Constants</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/autoloading/index.html">Autoloading</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/extensions/index.html">Extensions</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/facades/index.html">Facades</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/providers/index.html">Service providers</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../services/index.html">Services</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../services/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/filesystem/index.html">Filesystem</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/session/index.html">Session</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/server/index.html">Server</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../basics/index.html">The basics</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../basics/requests/index.html">Requests</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/responses/index.html">Responses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/config/index.html">Config</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/user/index.html">Users &amp; profiles</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/debugging/index.html">Debugging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/cron/index.html">Scheduled tasks</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/dates/index.html">Dates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/redirect/index.html">Redirect</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../database/index.html">Database</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extreqs/index.html">Requirements</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/parameters/index.html">Parameters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/deployext/index.html">Deploying extensions</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../modules/index.html">Modules</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../modules/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/models/index.html">Models</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/routing/index.html">Routing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/packaging/index.html">Packaging</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../plugins/index.html">Plugins</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Templates</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../designing/index.html">Designing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../layouts/index.html">Page layouts</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../css/index.html">Cascading style sheets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../javascript/index.html">JavaScript</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../overrides/index.html">Output overrides</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../socicons/index.html">Socicons</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../fontcons/index.html">Fontcons</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Elements and typography</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#why-this-is-a-contract-and-not-a-suggestion">Why this is a contract and not a suggestion</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-grid">The grid</a></li>
+<li class="toc__item toc__item--l3"><a href="#fraction-classes">Fraction classes</a></li>
+<li class="toc__item toc__item--l3"><a href="#collapsing">Collapsing</a></li>
+<li class="toc__item toc__item--l2"><a href="#sections-and-asides">Sections and asides</a></li>
+<li class="toc__item toc__item--l2"><a href="#notifications">Notifications</a></li>
+<li class="toc__item toc__item--l2"><a href="#buttons">Buttons</a></li>
+<li class="toc__item toc__item--l3"><a href="#states">States</a></li>
+<li class="toc__item toc__item--l3"><a href="#variants">Variants</a></li>
+<li class="toc__item toc__item--l3"><a href="#icons">Icons</a></li>
+<li class="toc__item toc__item--l3"><a href="#groups">Groups</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../accessibility/index.html">Accessibility</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../muse/index.html">Muse</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../supergroups/index.html">Super Groups</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/templating-system/index.html">Templating system</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/page-templates/index.html">Page templates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/custom-macros/index.html">Custom macros</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/php-pages/index.html">PHP pages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/databases/index.html">Databases</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/components/index.html">Components</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups-gitlab/index.html">Super groups with GitLab</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../testing/index.html">Testing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../api/index.html">REST API</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../aws/index.html">AWS</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../contributing/index.html">Contributing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../conventions/index.html">Conventions</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Developers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Templates</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Elements and typography</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Developers</p>
+          <h1>Elements and typography</h1>
+        </header>
+        
+        <div class="prose">
+<p>The classes shared between the templates and the components. Component views
+emit this markup and expect your template to style it, so these are the ones
+you cannot rename.</p>
+<h2 id="why-this-is-a-contract-and-not-a-suggestion">Why this is a contract and not a suggestion</h2>
+<p>A template is written once and then wraps markup written by other people, most
+of it years earlier. The only thing keeping those two halves compatible is this
+set of class names. <code>com_bookings</code> prints <code>&lt;div class=&quot;col span4&quot;&gt;</code> and
+<code>&lt;p class=&quot;error&quot;&gt;</code> without knowing which template will draw them; your template
+supplies the rules without knowing what will use them.</p>
+<p>That gives you two jobs and one prohibition:</p>
+<ul>
+<li><strong>Style all of it.</strong> A template that never defines <code>.aside</code> leaves every
+component page without its sidebar. That failure is silent and looks like a
+bug in the component.</li>
+<li><strong>Restyle freely.</strong> Colours, spacing, type — none of that is fixed.</li>
+<li><strong>Do not rename any of it.</strong> There is no alias layer. Renaming <code>.subject</code>
+breaks every component at once.</li>
+</ul>
+<p>When you write markup of your own — in a layout, or in an
+<a href="../overrides/index.html">override</a> — use these classes rather than inventing new ones,
+so a later template can restyle your page along with everything else.</p>
+<p>The sources are in <a href="https://github.com/hubzero/hubzero-cms/tree/2.4-main/core/assets/less"><code>core/assets/less</code></a>, with compiled
+equivalents in <a href="https://github.com/hubzero/hubzero-cms/tree/2.4-main/core/assets/css"><code>core/assets/css</code></a> for anything not
+written in LESS:</p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>LESS</th>
+<th>Compiled CSS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Grid</td>
+<td><code>grid.less</code></td>
+<td><code>columns.css</code></td>
+</tr>
+<tr>
+<td>Buttons</td>
+<td><code>buttons.less</code></td>
+<td><code>buttons.css</code></td>
+</tr>
+<tr>
+<td>Notifications</td>
+<td><code>notifications.less</code></td>
+<td><code>notifications.css</code></td>
+</tr>
+<tr>
+<td>Pagination</td>
+<td><code>pagination.less</code></td>
+<td><code>pagination.css</code></td>
+</tr>
+<tr>
+<td>Tabs</td>
+<td><code>tabs.less</code></td>
+<td><code>tabs.css</code></td>
+</tr>
+<tr>
+<td>Layout</td>
+<td><code>layout.less</code></td>
+<td><code>layout.css</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>core/assets/less/site.less</code> imports the whole set in the right order and is
+the shortest way to pick them all up.</p>
+<h2 id="the-grid">The grid</h2>
+<p>Twelve fluid columns. A <code>.grid</code> wrapper, <code>.col</code> on each child, and a <code>.span{n}</code>
+saying how wide it is:</p>
+<pre><code class="language-html">&lt;div class=&quot;grid&quot;&gt;
+	&lt;div class=&quot;col span3&quot;&gt;…&lt;/div&gt;
+	&lt;div class=&quot;col span3&quot;&gt;…&lt;/div&gt;
+	&lt;div class=&quot;col span3&quot;&gt;…&lt;/div&gt;
+	&lt;div class=&quot;col span3 omega&quot;&gt;…&lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<ul>
+<li>Every column needs <code>.col</code>. That is what floats it and gives it the gutter.</li>
+<li>The last column in a row needs <code>.omega</code>, which removes the trailing gutter.
+Without it the row overflows.</li>
+<li>Columns are percentages of the container, so a grid nests inside a column of
+another grid with no extra work.</li>
+<li>No clearing element is needed; <code>.grid</code> clears itself.</li>
+</ul>
+<p><code>.span1</code> through <code>.span12</code> exist, and <code>.offset1</code> through <code>.offset12</code> push a
+column to the right by that many columns:</p>
+<pre><code class="language-html">&lt;div class=&quot;grid&quot;&gt;
+	&lt;div class=&quot;col span3 offset3&quot;&gt;…&lt;/div&gt;
+	&lt;div class=&quot;col span3&quot;&gt;…&lt;/div&gt;
+	&lt;div class=&quot;col span3 omega&quot;&gt;…&lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+<h3 id="fraction-classes">Fraction classes</h3>
+<p>Aliases for the common widths, easier to read than counting:</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Equivalent</th>
+<th>Offset alias</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.span-whole</code></td>
+<td><code>.span12</code></td>
+<td><code>.offset-whole</code></td>
+</tr>
+<tr>
+<td><code>.span-three-quarters</code></td>
+<td><code>.span9</code></td>
+<td><code>.offset-three-quarters</code></td>
+</tr>
+<tr>
+<td><code>.span-two-thirds</code></td>
+<td><code>.span8</code></td>
+<td><code>.offset-two-thirds</code></td>
+</tr>
+<tr>
+<td><code>.span-half</code></td>
+<td><code>.span6</code></td>
+<td><code>.offset-half</code></td>
+</tr>
+<tr>
+<td><code>.span-third</code></td>
+<td><code>.span4</code></td>
+<td><code>.offset-third</code></td>
+</tr>
+<tr>
+<td><code>.span-quarter</code></td>
+<td><code>.span3</code></td>
+<td><code>.offset-quarter</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="collapsing">Collapsing</h3>
+<p><code>grid.less</code> rearranges rows as the viewport narrows. The rules count the
+columns in the row with <code>:nth-last-child</code>, so what happens depends on how many
+children the <code>.grid</code> has, not on their <code>.span</code> classes:</p>
+<table>
+<thead>
+<tr>
+<th>Breakpoint</th>
+<th>A row of six</th>
+<th>A row of four</th>
+<th>A row of three</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>@break6</code> — 1023px</td>
+<td>Three across, two rows</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@break4</code> — 1000px</td>
+<td>—</td>
+<td>Two across, two rows</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>@break3</code> — 900px</td>
+<td>Two across, three rows</td>
+<td>Two across</td>
+<td>Full width</td>
+</tr>
+<tr>
+<td><code>@break2</code> — 500px</td>
+<td>Full width</td>
+<td>Full width</td>
+<td>Full width</td>
+</tr>
+</tbody>
+</table>
+<p>Two escape hatches, both on the <code>.grid</code>:</p>
+<ul>
+<li><code>.nobreak</code> — never rearrange. Every rule above is written
+<code>.grid:not(.nobreak)</code>.</li>
+<li><code>.break6</code>, <code>.break4</code>, <code>.break3</code> — go straight to full-width columns at that
+breakpoint instead of rearranging.</li>
+</ul>
+<p>The breakpoints are variables in
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/assets/less/variables.less"><code>core/assets/less/variables.less</code></a>, so
+a LESS template can move them.</p>
+<h2 id="sections-and-asides">Sections and asides</h2>
+<p>Most component pages are a main column with a narrower one beside it. The
+markup is:</p>
+<pre><code class="language-html">&lt;section class=&quot;section&quot;&gt;
+	&lt;div class=&quot;section-inner&quot;&gt;
+		&lt;div class=&quot;aside&quot;&gt;
+			Secondary navigation, metadata, related items …
+		&lt;/div&gt;
+		&lt;div class=&quot;subject&quot;&gt;
+			The main content …
+		&lt;/div&gt;
+	&lt;/div&gt;
+&lt;/section&gt;
+</code></pre>
+<p><code>.aside</code> must come <strong>before</strong> <code>.subject</code> in the source. The rules that size
+them are written <code>.aside + .subject</code>, so reversing the order leaves the layout
+broken. If that is a semantic problem for your page, use the grid instead.</p>
+<p>Unlike the grid, <code>.aside</code> has a fixed width and <code>.subject</code> takes what is left.</p>
+<aside class="admonition admonition--important">
+<p><strong>Important:</strong> <code>.section</code>, <code>.section-inner</code>, <code>.aside</code> and <code>.subject</code> are
+<strong>not</strong> in <code>core/assets/less</code>. They are styled by each template —
+<code>kimera/less/_sections.less</code> is the reference — and <code>core/assets/less/layout.less</code>
+only carries a few responsive rules for them. A new template must supply
+these itself or every component page loses its sidebar. Copy
+<code>_sections.less</code> when you copy the template.</p>
+</aside>
+<h2 id="notifications">Notifications</h2>
+<p>Five classes, all styled the same way and differing only in colour and the
+icon in the <code>:before</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.passed</code></td>
+<td>Success</td>
+</tr>
+<tr>
+<td><code>.info</code></td>
+<td>Information</td>
+</tr>
+<tr>
+<td><code>.help</code></td>
+<td>Help</td>
+</tr>
+<tr>
+<td><code>.warning</code></td>
+<td>Warning</td>
+</tr>
+<tr>
+<td><code>.error</code></td>
+<td>Error</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-html">&lt;p class=&quot;passed&quot;&gt;Your changes have been saved.&lt;/p&gt;
+&lt;p class=&quot;error&quot;&gt;That file is too large.&lt;/p&gt;
+</code></pre>
+<p>The messages the application queues render through
+<code>&lt;jdoc:include type=&quot;message&quot; /&gt;</code> as a definition list inside
+<code>#system-message</code>, and its <code>dd</code> elements pick up the same styling. Its <code>dt</code>
+elements are hidden by the stylesheet; they carry the message type for
+assistive technology, so do not remove them from the layout.</p>
+<p><code>Hubzero.renderMessages()</code> in <code>core.js</code> writes the same structure from
+JavaScript. See <a href="../javascript/index.html">JavaScript</a>.</p>
+<h2 id="buttons">Buttons</h2>
+<p><code>.btn</code> on a link, a <code>&lt;button&gt;</code> or an <code>&lt;input type=&quot;submit&quot;&gt;</code>:</p>
+<pre><code class="language-html">&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;Link&lt;/a&gt;
+&lt;button class=&quot;btn&quot;&gt;Button&lt;/button&gt;
+&lt;input type=&quot;submit&quot; class=&quot;btn&quot; value=&quot;Submit&quot; /&gt;
+</code></pre>
+<h3 id="states">States</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.active</code></td>
+<td>Pressed. <code>:active</code> gets the same styling</td>
+</tr>
+<tr>
+<td><code>.disabled</code></td>
+<td>65% opacity, <code>cursor: not-allowed</code>, <code>pointer-events: none</code>. The <code>disabled</code> attribute does the same</td>
+</tr>
+</tbody>
+</table>
+<h3 id="variants">Variants</h3>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.btn-primary</code></td>
+<td>The emphasised action. One per form</td>
+</tr>
+<tr>
+<td><code>.btn-secondary</code></td>
+<td><strong>Smaller</strong>, not a colour change — this is the size modifier</td>
+</tr>
+<tr>
+<td><code>.btn-success</code></td>
+<td>Green</td>
+</tr>
+<tr>
+<td><code>.btn-info</code></td>
+<td>Blue</td>
+</tr>
+<tr>
+<td><code>.btn-warning</code></td>
+<td>Orange</td>
+</tr>
+<tr>
+<td><code>.btn-danger</code> / <code>.btn-error</code></td>
+<td>Red. The two are identical</td>
+</tr>
+</tbody>
+</table>
+<h3 id="icons">Icons</h3>
+<p>Add any <code>.icon-*</code> class from <a href="../fontcons/index.html">Fontcons</a> and the glyph is
+rendered in a tinted block at the left edge of the button, with the padding
+adjusted for it:</p>
+<pre><code class="language-html">&lt;a class=&quot;btn btn-danger icon-danger&quot; href=&quot;#&quot;&gt;Delete&lt;/a&gt;
+&lt;a class=&quot;btn icon-prev&quot; href=&quot;#&quot;&gt;Previous&lt;/a&gt;
+</code></pre>
+<p>Add <code>.opposite</code> to move the glyph to the right edge instead — what you want for
+a &quot;next&quot; control:</p>
+<pre><code class="language-html">&lt;a class=&quot;btn icon-next opposite&quot; href=&quot;#&quot;&gt;Next&lt;/a&gt;
+</code></pre>
+<h3 id="groups">Groups</h3>
+<p><code>.btn-group</code> joins buttons into one control, squaring off the inner corners:</p>
+<pre><code class="language-html">&lt;div class=&quot;btn-group&quot;&gt;
+	&lt;a class=&quot;btn icon-prev&quot; href=&quot;#&quot;&gt;Previous&lt;/a&gt;
+	&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;All&lt;/a&gt;
+	&lt;a class=&quot;btn icon-next opposite&quot; href=&quot;#&quot;&gt;Next&lt;/a&gt;
+&lt;/div&gt;
+</code></pre>
+<p>Add <code>.dropdown</code> and a toggle for a menu:</p>
+<pre><code class="language-html">&lt;div class=&quot;btn-group dropdown&quot;&gt;
+	&lt;a class=&quot;btn&quot; href=&quot;#&quot;&gt;Actions&lt;/a&gt;
+	&lt;span class=&quot;btn dropdown-toggle&quot;&gt;&lt;/span&gt;
+	&lt;ul class=&quot;dropdown-menu&quot;&gt;
+		&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Edit&lt;/a&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Duplicate&lt;/a&gt;&lt;/li&gt;
+		&lt;li class=&quot;divider&quot;&gt;&lt;/li&gt;
+		&lt;li&gt;&lt;a href=&quot;#&quot;&gt;Delete&lt;/a&gt;&lt;/li&gt;
+	&lt;/ul&gt;
+&lt;/div&gt;
+</code></pre>
+<ul>
+<li><code>.dropup</code> instead of <code>.dropdown</code> opens the menu upwards.</li>
+<li><code>.btn-group.btn-secondary</code> makes the whole group the smaller size.</li>
+<li><code>.divider</code> on an empty <code>&lt;li&gt;</code> draws a rule between groups of items.</li>
+<li>The menu opens on hover as well as on click — <code>.btn-group:hover .dropdown-menu</code>
+— so it needs no script.</li>
+</ul>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 91d03d0a23</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../fontcons/index.html" rel="prev"><span>Previous</span>Fontcons</a><a class="pager__next" href="../accessibility/index.html" rel="next"><span>Next</span>Accessibility</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/developers/11-templates/13-elements.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

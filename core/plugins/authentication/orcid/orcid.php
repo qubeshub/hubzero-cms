@@ -18,6 +18,22 @@ class plgAuthenticationOrcid extends \Hubzero\Plugin\OauthClient
 	protected $_autoloadLanguage = true;
 
 	/**
+	 * Derive a login-safe username hint from an ORCID iD.
+	 *
+	 * The result is always lowercase alphanumeric + underscore, always
+	 * unique per ORCID iD, and always a valid login name. Callers that
+	 * want a user-friendly editable value should let the user override
+	 * on the registration form.
+	 *
+	 * @param   string  $orcidId  ORCID iD in canonical form, e.g. "0000-0002-6885-6310"
+	 * @return  string            Login-safe hint, e.g. "u0000_0002_6885_6310"
+	 */
+	public static function suggestUsername($orcidId)
+	{
+		return strtolower(str_replace('-', '_', 'u' . $orcidId));
+	}
+
+	/**
 	 * Perform logout
 	 *
 	 * @return  void
@@ -206,12 +222,46 @@ class plgAuthenticationOrcid extends \Hubzero\Plugin\OauthClient
 			$response->status        = \Hubzero\Auth\Status::SUCCESS;
 			$response->fullname      = $orcid->fullName();
 			$response->authoritative = $this->params->get('authoritative', false);
-			$response->username      = strtolower( str_replace('-','_','u' . $username));
+			$response->username      = self::suggestUsername($username);
 			$response->email         = $orcid->email();
 			$response->orcid         = $orcid->id();
 
+			// A link row can exist with no user_id — it is created at the start
+			// of login, before any account exists, and stays unlinked if the
+			// member never finishes registering. That is correct for someone
+			// genuinely new. But when an account for this ORCID iD already
+			// exists, treating them as new is a dead end: they are handed a
+			// "-<id>@invalid" placeholder and sent to registration, where their
+			// own email is already taken by the very account they are trying to
+			// reach, and (with the username field locked to the derived name)
+			// so is their username. Five members reached that state.
+			//
+			// The link row is the ORCID iD -> account mapping, and it is already
+			// immune to anything we rename internally. This only repairs a row
+			// that has lost its user_id: fall back to the username derived from
+			// the iD, which is how these accounts were named. An account since
+			// renamed can't be recovered here — that needs the link repaired
+			// directly, rather than this plugin reaching into profile data it
+			// has no business reading.
+			if (!$hzal->user_id)
+			{
+				$existing = \Hubzero\User\User::oneByUsername(self::suggestUsername($username));
+
+				if ($existing && $existing->get('id'))
+				{
+					$hzal->set('user_id', $existing->get('id'));
+				}
+			}
+
 			if ($hzal->user_id)
 			{
+				// Resolve to the linked account's real username. Otherwise the
+				// response keeps the ORCID-iD-derived "u..." username set above,
+				// which matches no account, so the login establishes no user and
+				// xusers throws E_HUBZERO_USER_PLUGIN_FAILED (ticket #649). This
+				// mirrors plg_authentication_google.
+				$response->username = User::getInstance($hzal->user_id)->get('username');
+
 				// If we have a real user, drop the authenticator cookie
 				// Set cookie with login preference info
 				$prefs = array(
@@ -230,10 +280,14 @@ class plgAuthenticationOrcid extends \Hubzero\Plugin\OauthClient
 				$response->username = '-' . $hzal->id;
 				$response->email    = $response->username . '@invalid';
 
-				// Also set a suggested username for their hub account
-				$sub_email    = explode('@', $orcid->email(), 2);
-				$tmp_username = $sub_email[0];
-				Session::set('auth_link.tmp_username', $tmp_username);
+				// Suggest a username derived from the ORCID iD. Other auth
+				// plugins use the email local-part, but that is often invalid
+				// for login (contains '+', '.', uppercase, etc.) and ORCID's
+				// public API often returns no email at all. The ORCID-iD form
+				// is always present, always unique, and always a valid login
+				// name; on hubs where the username field is user-editable at
+				// registration, the user can still change it before submit.
+				Session::set('auth_link.tmp_username', self::suggestUsername($username));
 			}
 
 			$hzal->update();

@@ -50,6 +50,12 @@ function get_dd($db_id, $dv_id = false, $version = false)
 		$sql = 'SELECT data_definition FROM `#__project_databases` WHERE `database_name` = ' . $db->quote($name);
 		$db->setQuery($sql);
 		$database = $db->loadAssoc();
+
+		if ($database === null)
+		{
+			return null;
+		}
+
 		$dd = json_decode($database['data_definition'] ?? '', true);
 	}
 	else
@@ -58,6 +64,12 @@ function get_dd($db_id, $dv_id = false, $version = false)
 			' AND version=' . $db->quote($version);
 		$db->setQuery($sql);
 		$ver = $db->loadAssoc();
+
+		if ($ver === null)
+		{
+			return null;
+		}
+
 		$dd = json_decode($ver['data_definition'], true);
 
 		// Check publication state

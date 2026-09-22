@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Release notes · Developers · Hubzero Documentation</title>
+  <meta name="description" content="Where to find what changed in a release, and the one historic change that still explains most of what you read in the framework. Read it for one of two…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/developers/getting-started/releasenotes/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Developers</a>
+        <nav aria-label="Developers contents">
+<ul class="tree">
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Getting started</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Release notes</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#where-release-notes-live">Where release notes live</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-2-0-namespacing">The 2.0 namespacing</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-went-away">What went away</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-arrived">What arrived</a></li>
+<li class="toc__item toc__item--l2"><a href="#older-legacy-names">Older legacy names</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../fileaccess/index.html">Accessing files</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../databaseaccess/index.html">Direct database access</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../upgrade/index.html">Upgrade guide</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../browsersupport/index.html">Browser support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../devenvironment/index.html">Development environment</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tutorials/index.html">Video tutorials</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../foundation/index.html">Foundation</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/structure/index.html">Application structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/constants/index.html">Constants</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/autoloading/index.html">Autoloading</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/extensions/index.html">Extensions</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/facades/index.html">Facades</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/providers/index.html">Service providers</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../services/index.html">Services</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../services/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/filesystem/index.html">Filesystem</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/session/index.html">Session</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/server/index.html">Server</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../basics/index.html">The basics</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../basics/requests/index.html">Requests</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/responses/index.html">Responses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/config/index.html">Config</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/user/index.html">Users &amp; profiles</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/debugging/index.html">Debugging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/cron/index.html">Scheduled tasks</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/dates/index.html">Dates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/redirect/index.html">Redirect</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../database/index.html">Database</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extreqs/index.html">Requirements</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/parameters/index.html">Parameters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/deployext/index.html">Deploying extensions</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../modules/index.html">Modules</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../modules/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/models/index.html">Models</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/routing/index.html">Routing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/packaging/index.html">Packaging</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../plugins/index.html">Plugins</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../templates/index.html">Templates</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../templates/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/designing/index.html">Designing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/layouts/index.html">Page layouts</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/css/index.html">Cascading style sheets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/javascript/index.html">JavaScript</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/overrides/index.html">Output overrides</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/socicons/index.html">Socicons</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/fontcons/index.html">Fontcons</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/elements/index.html">Elements and typography</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/accessibility/index.html">Accessibility</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../muse/index.html">Muse</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../supergroups/index.html">Super Groups</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/templating-system/index.html">Templating system</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/page-templates/index.html">Page templates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/custom-macros/index.html">Custom macros</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/php-pages/index.html">PHP pages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/databases/index.html">Databases</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/components/index.html">Components</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups-gitlab/index.html">Super groups with GitLab</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../testing/index.html">Testing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../api/index.html">REST API</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../aws/index.html">AWS</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../contributing/index.html">Contributing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../conventions/index.html">Conventions</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Developers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Getting started</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Release notes</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Developers</p>
+          <h1>Release notes</h1>
+        </header>
+        
+        <div class="prose">
+<p>Where to find what changed in a release, and the one historic change that
+still explains most of what you read in the framework.</p>
+<p>Read it for one of two reasons: you want to know what a version number means
+and where the record is, or you are staring at a class name in an old
+extension that no longer exists anywhere. The tables below are the second
+answer. They describe what code <em>was</em>; nothing new should be written to
+either column's left-hand side.</p>
+<h2 id="where-release-notes-live">Where release notes live</h2>
+<p>This page is not a changelog, and no changelog is published yet. The
+authoritative record of what changed is the repository itself: the tags
+and commit history on
+<a href="https://github.com/hubzero/hubzero-cms">hubzero/hubzero-cms</a>. Each release
+line has its own <code>X.Y-main</code> branch; <code>2.4-main</code> is the current one, and a
+release is cut from it. Upgrade steps for a running hub are being
+rewritten alongside the new web installer; see
+<a href="../../../managers/installing/index.html">Installing a hub</a>.</p>
+<p>The running version is the <code>HVERSION</code> constant, defined in
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/bootstrap/app.php"><code>core/bootstrap/app.php</code></a> and shown in
+the administrator's <strong>System Information</strong> screen and the <code>mod_version</code>
+module.</p>
+<pre><code class="language-php">define('HVERSION', '2.4.1');
+</code></pre>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> <code>Hubzero\Version\Version::VERSION</code> is a second, stale version
+string. It reads <code>2.1.0</code> and is only used by <code>muse repository --version</code>,
+which therefore reports the wrong version. Use <code>HVERSION</code>.</p>
+</aside>
+<h2 id="the-2-0-namespacing">The 2.0 namespacing</h2>
+<p>The change that most affects code you read today happened at 2.0, when the
+framework library was namespaced. Extensions written before that use
+underscored class names that no longer exist. The rule is mechanical:
+<code>Hubzero_User_Profile</code> became <code>Hubzero\User\Profile</code>.</p>
+<p>Anything still calling the old names needs the table below. Where a class
+also moved, the new name is not a straight translation:</p>
+<table>
+<thead>
+<tr>
+<th>Removed</th>
+<th>Now</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Hubzero_Group</code></td>
+<td><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/User/Group.php"><code>Hubzero\User\Group</code></a></td>
+</tr>
+<tr>
+<td><code>Hubzero_Group_Helper</code></td>
+<td><code>Hubzero\User\Group\Helper</code></td>
+</tr>
+<tr>
+<td><code>Hubzero_Group_InviteEmail</code></td>
+<td><code>Hubzero\User\Group\InviteEmail</code></td>
+</tr>
+<tr>
+<td><code>Hubzero_Geo</code></td>
+<td><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Geocode/Geocode.php"><code>Hubzero\Geocode\Geocode</code></a></td>
+</tr>
+<tr>
+<td><code>Hubzero\ItemList</code></td>
+<td><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Base/ItemList.php"><code>Hubzero\Base\ItemList</code></a></td>
+</tr>
+<tr>
+<td><code>Hubzero\Model</code></td>
+<td><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Base/Model.php"><code>Hubzero\Base\Model</code></a></td>
+</tr>
+<tr>
+<td><code>Hubzero\Object</code></td>
+<td><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Base/Obj.php"><code>Hubzero\Base\Obj</code></a></td>
+</tr>
+<tr>
+<td><code>Hubzero_Document</code></td>
+<td><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Document/Assets.php"><code>Hubzero\Document\Assets</code></a></td>
+</tr>
+<tr>
+<td><code>Hubzero_Component</code></td>
+<td><code>Hubzero\Component\SiteController</code> or <code>Hubzero\Component\AdminController</code></td>
+</tr>
+<tr>
+<td><code>Hubzero_Api_Controller</code></td>
+<td><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Component/ApiController.php"><code>Hubzero\Component\ApiController</code></a></td>
+</tr>
+<tr>
+<td><code>Hubzero_Browser</code></td>
+<td><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Browser/Detector.php"><code>Hubzero\Browser\Detector</code></a></td>
+</tr>
+<tr>
+<td><code>Hubzero_Ldap</code></td>
+<td><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Utility/Ldap.php"><code>Hubzero\Utility\Ldap</code></a></td>
+</tr>
+</tbody>
+</table>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The 2.0 notes said the object base class became
+<code>Hubzero\Base\Object</code>. It did not stay there. <code>Object</code> became a reserved
+word in PHP 7, so the class is <code>Hubzero\Base\Obj</code>. An empty
+<code>core/libraries/Hubzero/Base/Object.php</code> is still in the tree and declares
+nothing.</p>
+</aside>
+<p>The view helpers were split across three utility classes:</p>
+<table>
+<thead>
+<tr>
+<th>Removed</th>
+<th>Now</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Hubzero_View_Helper_Html::niceidformat()</code></td>
+<td><code>Hubzero\Utility\Str::pad()</code></td>
+</tr>
+<tr>
+<td><code>Hubzero_View_Helper_Html::formatSize()</code></td>
+<td><code>Hubzero\Utility\Number::formatBytes()</code></td>
+</tr>
+<tr>
+<td><code>Hubzero_View_Helper_Html::shortenText()</code></td>
+<td><code>Hubzero\Utility\Str::truncate()</code></td>
+</tr>
+<tr>
+<td><code>Hubzero_View_Helper_Html::purifyText()</code></td>
+<td><code>Hubzero\Utility\Sanitize::stripAll()</code></td>
+</tr>
+<tr>
+<td><code>Hubzero_View_Helper_Html::str_highlight()</code></td>
+<td><code>Hubzero\Utility\Str::highlight()</code></td>
+</tr>
+<tr>
+<td><code>Hubzero_View_Helper_Html::timeAgo()</code></td>
+<td><code>Date::of($date)-&gt;relative()</code></td>
+</tr>
+</tbody>
+</table>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The 2.0 notes named <code>Hubzero\Utility\String</code>. That class was
+renamed to <a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Utility/Str.php"><code>Hubzero\Utility\Str</code></a>
+when <code>String</code> became a reserved word in PHP 7. <code>timeAgo()</code> was documented
+as <code>JHTML::_('date.relative', $date)</code>; there is no <code>date</code> HTML builder, and
+the method is <a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Utility/Date.php"><code>Hubzero\Utility\Date::relative()</code></a>.</p>
+</aside>
+<p>The browser detector's accessors were shortened at the same time, and the
+short names are what the class has today:</p>
+<table>
+<thead>
+<tr>
+<th>Removed</th>
+<th>Now</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>getBrowser()</code></td>
+<td><code>name()</code></td>
+</tr>
+<tr>
+<td><code>getBrowserVersion()</code></td>
+<td><code>version()</code></td>
+</tr>
+<tr>
+<td><code>getBrowserMajorVersion()</code></td>
+<td><code>major()</code></td>
+</tr>
+<tr>
+<td><code>getBrowserMinorVersion()</code></td>
+<td><code>minor()</code></td>
+</tr>
+<tr>
+<td><code>getOs()</code></td>
+<td><code>platform()</code></td>
+</tr>
+<tr>
+<td><code>getOsVersion()</code></td>
+<td><code>platformVersion()</code></td>
+</tr>
+<tr>
+<td><code>getUserAgent()</code></td>
+<td><code>agent()</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="what-went-away">What went away</h2>
+<ul>
+<li><strong><code>ximport()</code>.</strong> Namespaced classes are autoloaded, so the old manual
+import function was deprecated at 2.0 and no longer exists anywhere in the
+tree. Delete the calls; nothing replaces them.</li>
+</ul>
+<h2 id="what-arrived">What arrived</h2>
+<p>These are all still current, and each has its own chapter:</p>
+<ul>
+<li><strong>Sub-views.</strong> <code>$this-&gt;view('layout')</code> loads a view from inside a view.
+See <a href="../../components/views/index.html">Component views</a>.</li>
+<li><strong>Asset helpers.</strong> <code>$this-&gt;css()</code> and <code>$this-&gt;js()</code> push a stylesheet or
+script to the document from a view, and chain. The signature has changed
+since 2.0 — see <a href="../../components/assets/index.html">Component assets</a>.</li>
+<li><strong>Geocoding.</strong> <a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Geocode/Geocode.php"><code>Hubzero\Geocode\Geocode</code></a>
+fires a plugin event and any plugin in the <code>geocode</code> group may answer.
+Sixteen ship in <code>core/plugins/geocode</code>, several of which need an account
+with the service before they return anything.</li>
+</ul>
+<h2 id="older-legacy-names">Older legacy names</h2>
+<p>An extension written against the pre-Hubzero class names rather than against
+Hubzero 1.x needs a different table. That is the
+<a href="../upgrade/index.html">Upgrade guide</a>.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 348f0057c2</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../index.html" rel="prev"><span>Previous</span>Getting started</a><a class="pager__next" href="../fileaccess/index.html" rel="next"><span>Next</span>Accessing files</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/developers/01-getting-started/01-releasenotes.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

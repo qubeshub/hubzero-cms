@@ -15,6 +15,8 @@ use Route;
 use Lang;
 use Date;
 use User;
+use Component;
+use Filesystem;
 
 require_once __DIR__ . DS . 'vote.php';
 require_once __DIR__ . DS . 'comment.php';
@@ -143,7 +145,7 @@ class Article extends Relational implements \Hubzero\Search\Searchable
 		$month = intval(substr($d, 5, 2));
 		$day   = intval(substr($d, 8, 2));
 
-		switch ($this->param('comments_close', 'never'))
+		switch ($this->param('close_comments', 'never'))
 		{
 			case 'day':
 				$dt = mktime(0, 0, 0, $month, ($day+1), $year);

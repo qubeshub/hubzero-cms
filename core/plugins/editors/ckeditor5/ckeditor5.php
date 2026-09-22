@@ -28,59 +28,84 @@ class plgEditorCkeditor5 extends \Hubzero\Plugin\Plugin
 	 */
 	public function onInit()
 	{
-		// Add ckeditor
-		Document::addScript(str_replace('/administrator', '', Request::base(true)) . '/' . $this->_basePath . 'js/ckeditor.js' );
+		$bundle = __DIR__ . '/assets/js/ckeditor.js';
+
+		// Version the bundle by its mtime, as the CKEditor 4 plugin does, so a
+		// rebuilt editor is not shadowed by a browser cache
+		$version = file_exists($bundle) ? '?v=' . filemtime($bundle) : '';
+
+		Document::addScript(
+			str_replace('/administrator', '', Request::base(true))
+			. '/' . $this->_basePath . 'js/ckeditor.js' . $version
+		);
 	}
 
 	/**
 	 * Copy editor content to form field.
 	 *
-	 * Not applicable in this editor.
+	 * The bundle also syncs on form submit, so this is for callers that need
+	 * the textarea populated before then.
 	 *
-	 * @return  void
+	 * @return  string
 	 */
 	public function onSave()
 	{
+		return "if (window.HUB && HUB.Editor) { HUB.Editor.updateAllElements(); }\n";
+	}
+
+	/**
+	 * Encode a value for embedding in an inline <script> block
+	 *
+	 * The hex flags keep quotes, ampersands and angle brackets out of the
+	 * output, so the result is safe both inside the script and if the script
+	 * ends up in an HTML attribute.
+	 *
+	 * @param   mixed   $value
+	 * @return  string
+	 */
+	private function _js($value)
+	{
+		return json_encode(
+			$value,
+			JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT
+		);
 	}
 
 	/**
 	 * Get the editor content.
-	 * 
-	 * Not applicable in this editor
 	 *
-	 * @param   string $id The id of the editor field.
+	 * @param   string  $id  The id of the editor field.
 	 * @return  string
 	 */
 	public function onGetContent($id)
 	{
-		return "";
+		return 'getEditorContent(' . $this->_js($id) . ");\n";
 	}
 
 	/**
 	 * Set the editor content.
-	 * 
-	 * Not applicable in this editor
 	 *
-	 * @param   string $id   The id of the editor field.
-	 * @param   string $html The content to set.
+	 * @param   string  $id    The id of the editor field.
+	 * @param   string  $html  The content to set.
 	 * @return  string
 	 */
 	public function onSetContent($id, $html)
 	{
-		return "";
+		return 'setEditorContent(' . $this->_js($id) . ', ' . $this->_js($html) . ");\n";
 	}
 
 	/**
 	 * Inserts text
-	 * 
-	 * Not applicable in this editor
 	 *
-	 * @param	string	$id
-	 * @return	string
+	 * jInsertEditorText() is provided by the editor abstraction layer, which is
+	 * loaded ahead of every editor plugin.
+	 *
+	 * @param   string  $id
+	 * @return  bool
 	 */
 	public function onGetInsertMethod($id)
 	{
-		return "";
+		return true;
 	}
 
 	/**
@@ -110,6 +135,57 @@ class plgEditorCkeditor5 extends \Hubzero\Plugin\Plugin
 		$col = $col ?: 35;
 		$row = $row ?: 10;
 
+		// Optional image-upload wiring: a caller may pass an 'uploadUrl' (and a
+		// 'token' form-field name for CSRF) in $params to enable the editor's
+		// image-upload button. Pulled out here so they don't leak into the
+		// <textarea> attributes below.
+		$uploadUrl  = isset($params['uploadUrl']) ? $params['uploadUrl'] : '';
+		$tokenField = isset($params['token']) ? $params['token'] : '';
+		unset($params['uploadUrl'], $params['token']);
+
+		// Optional file-browser wiring: callers pass the same fileBrowser* keys
+		// the CKEditor 4 plugin reads. Pulled out here for the same reason.
+		$browseUrl = '';
+		foreach (array('fileBrowserImageBrowseUrl', 'fileBrowserBrowseUrl') as $key)
+		{
+			if (!empty($params[$key]))
+			{
+				$browseUrl = $params[$key];
+				break;
+			}
+		}
+		$browseWidth  = isset($params['fileBrowserWindowWidth']) ? intval($params['fileBrowserWindowWidth']) : 1200;
+		$browseHeight = isset($params['fileBrowserWindowHeight']) ? intval($params['fileBrowserWindowHeight']) : 600;
+		unset(
+			$params['fileBrowserBrowseUrl'],
+			$params['fileBrowserImageBrowseUrl'],
+			$params['fileBrowserImageBrowseLinkUrl'],
+			$params['fileBrowserUploadUrl'],
+			$params['fileBrowserImageUploadUrl'],
+			$params['fileBrowserWindowWidth'],
+			$params['fileBrowserWindowHeight']
+		);
+
+		// The remaining behavioural parameters the CKEditor 4 plugin honours.
+		// Like the file browser keys above, they are pulled out here so they
+		// stop being rendered as <textarea> attributes.
+		$startInSource    = (isset($params['startupMode']) && $params['startupMode'] == 'source');
+		$sourceViewButton = !isset($params['sourceViewButton']) || $params['sourceViewButton'];
+		$allowScriptTags  = !empty($params['allowScriptTags']);
+		$editorHeight     = isset($params['height']) ? $params['height'] : '';
+		$mentions  = (isset($params['mentions']) && is_array($params['mentions'])) ? $params['mentions'] : array();
+		// Not 'wordcount': the CKEditor 4 plugin reads that key, and a caller
+		// asking this editor for a limit must not silently reconfigure that one.
+		$limits = (isset($params['limits']) && is_array($params['limits'])) ? $params['limits'] : array();
+		unset(
+			$params['startupMode'],
+			$params['sourceViewButton'],
+			$params['allowScriptTags'],
+			$params['allowPhpTags'],
+			$params['mentions'],
+			$params['limits']
+		);
+
 		if (!isset($params['class']))
 		{
 			$params['class'] = array();
@@ -133,14 +209,79 @@ class plgEditorCkeditor5 extends \Hubzero\Plugin\Plugin
 			$params['height'] = intval($row) . 'em';
 		}
 
-		// Fix script and php protected source
-		$config = "{ }";
+		// Editor options (image upload is enabled only when an uploadUrl is given)
+		$opts = array();
+		if ($uploadUrl !== '')
+		{
+			$opts['uploadUrl'] = $uploadUrl;
+		}
+		if ($tokenField !== '')
+		{
+			$opts['tokenField'] = $tokenField;
+		}
+		if ($browseUrl !== '')
+		{
+			$opts['fileBrowser'] = array(
+				'url'    => $browseUrl,
+				'width'  => $browseWidth,
+				'height' => $browseHeight
+			);
+		}
+		if ($startInSource)
+		{
+			$opts['startInSource'] = true;
+		}
+		if (!$sourceViewButton)
+		{
+			$opts['sourceViewButton'] = false;
+		}
+		if ($allowScriptTags)
+		{
+			$opts['allowScriptTags'] = true;
+		}
+		if ($editorHeight !== '')
+		{
+			$opts['minHeight'] = $editorHeight;
+		}
+		if ($mentions)
+		{
+			$opts['mentions'] = array_values($mentions);
+		}
+		if ($limits)
+		{
+			$opts['wordCount'] = $limits;
+		}
 
-		// Script to actually make ckeditor
-		$script = '<script type="text/javascript">';
-		$script .= 'ClassicEditor';
-		$script .= '.create(document.querySelector("#'.$id.'"), '.$config.')';
-		$script .= '.catch( error => { console.error( error ); } );';
+		// The 'minimal' and 'images' class markers select a cut-down toolbar,
+		// as they do for the CKEditor 4 plugin
+		if (in_array('minimal', $params['class']))
+		{
+			$opts['minimal'] = true;
+
+			if (in_array('images', $params['class']))
+			{
+				$opts['images'] = true;
+			}
+		}
+		$optsJson = $this->_js($opts ? $opts : new \stdClass());
+		$idJson   = $this->_js($id);
+
+		// Script to actually make ckeditor (deferred until the element exists).
+		// The created instance is registered with HUB.Editor so application code
+		// can read and write it without knowing which editor is running.
+		$script  = '<script type="text/javascript">';
+		$script .= '(function(){var f=function(){if(!window.HubEditor){return;}';
+		$script .= 'HubEditor.create(document.getElementById('.$idJson.'), '.$optsJson.')';
+		$script .= '.then(function(editor){if(!window.HUB||!HUB.Editor){return;}';
+		$script .= 'HUB.Editor.register('.$idJson.',{';
+		$script .= 'getData:function(){return editor.getData();},';
+		$script .= 'setData:function(html){editor.setData(html);},';
+		$script .= 'updateElement:function(){editor.updateSourceElement();},';
+		$script .= 'instance:editor});';
+		$script .= 'editor.on("destroy",function(){HUB.Editor.unregister('.$idJson.');});';
+		$script .= '})';
+		$script .= '.catch(function(e){console.error(e);});};';
+		$script .= 'if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",f);}else{f();}})();';
 		$script .= '</script>';
 
 		$params['class'] = implode(' ', $params['class']);

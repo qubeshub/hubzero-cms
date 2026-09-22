@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Content · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="An article is a page of written content that the hub stores and serves itself: the About page, the terms of use, a policy statement, a short explanation of how…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/content/">
+  <link rel="icon" href="../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../index.html">
+      <img class="brand__mark" src="../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../search-index.json" data-base="../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../docs/index.html">About</a>
+      <a href="../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../menus/index.html">Menus</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link is-active" href="index.html" aria-current="page">Content</a></summary><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#what-an-article-is-not">What an article is not</a></li>
+<li class="toc__item toc__item--l2"><a href="#content-is-not-layout">Content is not layout</a></li>
+<li class="toc__item toc__item--l2"><a href="#where-articles-appear">Where articles appear</a></li>
+<li class="toc__item toc__item--l2"><a href="#in-this-section">In this section</a></li>
+</ol><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Content</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Content</h1>
+        </header>
+        
+        <div class="prose">
+<p>An <strong>article</strong> is a page of written content that the hub stores and serves
+itself: the About page, the terms of use, a policy statement, a short
+explanation of how the community works. Articles are the hub's own pages, as
+opposed to the resources, wiki pages, group pages, and publications that
+members create.</p>
+<p>Every hub needs a handful of these and almost none needs more. A hub that
+opens to the public wants an About page, a contact page, a citation or
+acknowledgement page the funder asks for, and a page of terms. That is the
+whole job for most managers: half a dozen pages, written once, edited twice a
+year. If your hub already has those and nobody has complained about them, you
+can skip this section and come back when something needs changing.</p>
+<p>Articles live in the <strong>Content</strong> menu of the administrator interface, which
+holds three screens:</p>
+<table>
+<thead>
+<tr>
+<th>Menu entry</th>
+<th>Screen</th>
+<th>Chapter</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Article Manager</strong></td>
+<td>The list of articles and the article editor.</td>
+<td><a href="articlemanager/index.html">Article Manager</a></td>
+</tr>
+<tr>
+<td><strong>Category Manager</strong></td>
+<td>The categories articles are filed under.</td>
+<td><a href="categories/index.html">Categories</a></td>
+</tr>
+<tr>
+<td><strong>Media Manager</strong></td>
+<td>The shared image and file library the editor's image button browses.</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Add New Article</strong> and <strong>Add New Category</strong> appear under their managers when
+you may create one.</p>
+<p>Nothing on these screens is dangerous by accident, with one exception, and it
+is worth knowing before you open anything: <strong>Delete</strong> on the article list and
+the category list does not delete. It sets a state. Elsewhere in the
+administrator interface a button with the same wording erases the row for
+good. <a href="states/index.html">States, deleting and check-out</a> says which is which, and it
+is the chapter to read before you press a delete button anywhere on this hub.</p>
+<p><img src="../media/content-backendcontent.png" alt="The Content menu in the administrator interface, open over the control panel" /></p>
+<h2 id="what-an-article-is-not">What an article is not</h2>
+<p>Managers who arrive here from another job often assume this is where the hub's
+content lives. It is not. Datasets, tools and their documentation are
+resources. Formally released datasets are publications. Pages members write
+and revise themselves are wiki pages. Group material belongs to the group.
+Questions, forum threads, blog entries, support tickets, knowledge base
+entries and courses each have their own component, their own permissions and
+their own chapter in <a href="../components/index.html">Components</a>.</p>
+<p>The test is simple: if you type it once and visitors only read it, it is an
+article. If it has authors, versions, tags, ratings or a review step, it is
+not, and building it as an article throws all of that away.</p>
+<h2 id="content-is-not-layout">Content is not layout</h2>
+<p>What you type into an article is content, not presentation. The template
+supplies the typography, the colours, and the page furniture; the article
+supplies the words. Styling individual articles by hand fights the template
+and breaks the next time the template changes. If a page needs a look the
+template does not give it, change the template — see
+<a href="../extensions/templates/index.html">Templates</a>.</p>
+<h2 id="where-articles-appear">Where articles appear</h2>
+<p>An article has no URL of its own until something points at it. The two ways
+to reach one are:</p>
+<ul>
+<li><strong>A menu item.</strong> A menu item of type <strong>Articles → Single Article</strong> carries
+its own alias, and that alias — plus the aliases of its parents — is the
+URL. This is how the pages shipped with a hub work: the sample <strong>Terms of
+Use</strong> article is reached at <code>/about/terms</code> because a menu item with that
+path points at it.</li>
+<li><strong>The article's own category path.</strong> With no menu item, the hub matches a
+URL against category path plus article alias.</li>
+</ul>
+<p>Both are explained in <a href="urls/index.html">URLs</a>, along with redirects.</p>
+<h2 id="in-this-section">In this section</h2>
+<ul>
+<li><a href="articlemanager/index.html">Article Manager</a> — what articles are for, a worked
+example that publishes an About page end to end, the article list, the
+editor, categories, and the publishing workflow.</li>
+<li><a href="categories/index.html">Categories</a> — the shared category manager, which serves
+articles, user notes, the knowledge base, and events.</li>
+<li><a href="urls/index.html">URLs</a> — how an article's address is built, and how to redirect
+one address to another.</li>
+<li><a href="states/index.html">States, deleting and check-out</a> — what published, unpublished,
+archived and trashed store, which delete buttons are permanent, and why a
+record gets stuck checked out. This one is not about articles alone. It
+explains behaviour you will meet on every list screen in the administrator
+interface, and it is the most useful page in this section.</li>
+</ul>
+<p>Every option on the Article Manager's <strong>Options</strong> screen is listed in the
+<a href="../../reference/configuration/components/content/index.html">Content configuration reference</a>.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../menus/index.html" rel="prev"><span>Previous</span>Menus</a><a class="pager__next" href="articlemanager/index.html" rel="next"><span>Next</span>Article Manager</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/08-content/README.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

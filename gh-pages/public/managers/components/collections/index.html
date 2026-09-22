@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Collections · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Collections are a Pinterest-style scrapbook. A hub user makes a collection, then pins content from around the hub into it as posts. Members and groups own…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/components/collections/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Collections</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#the-data-model">The data model</a></li>
+<li class="toc__item toc__item--l2"><a href="#collections-2">Collections</a></li>
+<li class="toc__item toc__item--l2"><a href="#posts">Posts</a></li>
+<li class="toc__item toc__item--l2"><a href="#items">Items</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-collect-button">The Collect button</a></li>
+<li class="toc__item toc__item--l2"><a href="#options">Options</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Components</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Collections</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Collections</h1>
+        </header>
+        
+        <div class="prose">
+<p>Collections are a Pinterest-style scrapbook. A hub user makes a collection,
+then pins content from around the hub into it as posts. Members and groups
+own collections; the administrator interface exists to inspect and clean up
+what they have made, not to build collections for them. The user's side is
+described in the <a href="../../../users/collections/index.html">Collections chapter</a> of the Hub
+users book.</p>
+<p>Most hubs never need this screen. Collections is a member convenience: it
+gives people somewhere to keep the hub's content they want to come back to,
+and it gives a group a board it can point newcomers at. Nothing else depends
+on it, no catalogue is built from it, and turning it off breaks nothing. You
+will open the administrator screens for one reason — someone reported a
+post, or a member deleted an account and left a board nobody can reach — and
+then you will close them again.</p>
+<p>It is not curation and it is not the catalogue. A collection is one member's
+or one group's board; it does not decide what appears in
+<a href="../resources/index.html">Resources</a>, what is featured, or what a search returns.
+Pinning something copies nothing and changes nothing about the original.</p>
+<p>Go to <strong>Components → Collections</strong>. Three submenu links sit at the top:</p>
+<ul>
+<li><strong>Collections</strong> — the scrapbooks themselves.</li>
+<li><strong>Posts</strong> — one pinning of an item into a collection.</li>
+<li><strong>Items</strong> — the underlying pieces of content that get pinned.</li>
+</ul>
+<p>Every screen needs <code>core.manage</code> on <code>com_collections</code>.</p>
+<h2 id="the-data-model">The data model</h2>
+<p>Three tables, three screens:</p>
+<table>
+<thead>
+<tr>
+<th>Screen</th>
+<th>What a row is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Items</strong></td>
+<td>A piece of content: a title, a description, a URL, tags, and any files or links attached to it</td>
+</tr>
+<tr>
+<td><strong>Posts</strong></td>
+<td>One item placed in one collection. The same item can be posted to many collections; only the first post is the <em>original</em></td>
+</tr>
+<tr>
+<td><strong>Collections</strong></td>
+<td>A named board belonging to a member or a group</td>
+</tr>
+</tbody>
+</table>
+<p>Deleting a collection deletes its posts. Deleting an item deletes every post
+of that item, along with its votes, comments and attached files. Deleting a
+post leaves the item alone.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Deleting an item reaches into other people's boards. The same
+item can be posted to many collections, and removing it removes it from
+all of them, with the comments and votes those members left. If a single
+board is the problem, delete the post, not the item.</p>
+</aside>
+<h2 id="collections-2">Collections</h2>
+<p>Use this screen to take a board off the site. Setting <strong>State</strong> to
+unpublished is the reversible way to do it, and it is what to reach for when
+a complaint arrives and you have not yet decided whether it is justified.
+<strong>Delete</strong> is not reversible and takes the posts with it.</p>
+<p>The list shows <strong>ID</strong>, <strong>Title</strong>, <strong>State</strong>, <strong>Access</strong>, <strong>Owner</strong>, and
+<strong>Posts</strong>, all sortable. Filters above it are a <strong>Search</strong> box, a <strong>State</strong>
+drop-down (<em>All States</em>, Unpublished, Published, Trashed) and an <strong>Access</strong>
+drop-down (<em>Public</em>, <em>Registered</em>, <em>Private</em>). The count in the <strong>Posts</strong>
+column links to the Posts screen filtered to that collection.</p>
+<p>The <strong>State</strong> and <strong>Access</strong> cells are buttons for anyone with
+<code>core.edit.state</code>. Clicking <strong>State</strong> toggles published and unpublished;
+clicking <strong>Access</strong> cycles Public → Registered → Private → Public.</p>
+<p>The toolbar carries <strong>Publish</strong>, <strong>Unpublish</strong>, <strong>New</strong>, <strong>Edit</strong>,
+<strong>Delete</strong>, and — for <code>core.admin</code> — <strong>Options</strong>.</p>
+<p>The edit form has two fieldsets:</p>
+<p><strong>Details</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Owner type</strong></td>
+<td>Required. <strong>member</strong> or <strong>group</strong>. The <em>site</em> option is commented out in the template and cannot be chosen</td>
+</tr>
+<tr>
+<td><strong>Owner ID</strong></td>
+<td>Required. The numeric member or group ID. Usernames and group aliases are not accepted</td>
+</tr>
+<tr>
+<td><strong>Title</strong></td>
+<td>Required</td>
+</tr>
+<tr>
+<td><strong>Alias</strong></td>
+<td>Letters, numbers and dashes. Generated from the title when left empty</td>
+</tr>
+<tr>
+<td><strong>Description</strong></td>
+<td>Free text</td>
+</tr>
+<tr>
+<td><strong>Layout of posts</strong></td>
+<td><strong>Grid</strong> or <strong>List</strong></td>
+</tr>
+<tr>
+<td><strong>How posts are sorted</strong></td>
+<td><strong>Created date (newest to oldest)</strong> or <strong>Defined ordering</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The right-hand column shows read-only counts: creator, created date, likes,
+posts, and followers.</p>
+<p><strong>Publishing</strong> holds <strong>State</strong> and <strong>Access</strong>.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> <strong>Owner ID</strong> is not validated against anything. Typing an ID that
+does not exist saves a collection nobody can reach.</p>
+</aside>
+<h2 id="posts">Posts</h2>
+<p>A post joins an item to a collection. The list shows <strong>ID</strong>, <strong>Description</strong>,
+<strong>Posted</strong>, <strong>Poster</strong>, <strong>Item</strong>, <strong>Collection</strong>, and <strong>Original</strong>. Arriving
+from a collection's post count filters the list and hides the <strong>Collection</strong>
+column.</p>
+<p>The edit form asks for the <strong>Item ID</strong> and the <strong>Collection ID</strong> — both
+numeric and both required — a <strong>Description</strong>, and, under <strong>Publishing</strong>, the
+<strong>Original</strong> flag. Use it to move a post between collections or to correct a
+mis-typed item; it is not a way to compose new content.</p>
+<h2 id="items">Items</h2>
+<p>Items are where a correction usually belongs. Suppose a member pinned a
+dataset and typed a description that names the wrong principal
+investigator: fixing it here fixes it in every board the item appears in,
+and leaves each member's board otherwise untouched.</p>
+<p>The list shows <strong>ID</strong>, <strong>Description</strong>, <strong>Created</strong>, <strong>Creator</strong>, <strong>Type</strong>,
+and <strong>Posts</strong>. Filters are a <strong>Search</strong> box and a <strong>Filter by type</strong>
+drop-down built from the types actually present in the table.</p>
+<p>To edit an item:</p>
+<ol>
+<li>Go to <strong>Components → Collections</strong> and open the <strong>Items</strong> screen.</li>
+<li>Find the item. The <strong>Description</strong> column holds the link — the first 75
+characters of the item's description, or <em>(none)</em> when it has none.</li>
+<li>Click it, or tick the row and press <strong>Edit</strong>.</li>
+<li>Change what you need and press <strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>The edit form carries <strong>Title</strong>, <strong>URL</strong>, <strong>Description</strong>, and <strong>Tags</strong>, an
+attachment area that takes files and links, a read-only panel of ID, type,
+type ID, creator, created and modified dates, a <strong>Publishing</strong> fieldset with
+<strong>State</strong> and <strong>Access</strong>, and a list of every post that references the item.</p>
+<h2 id="the-collect-button">The Collect button</h2>
+<p>Users do not pin content from the administrator interface. They use the
+<code>mod_collect</code> module, which draws a <strong>Collect</strong> button on a content page and
+posts the page into one of the user's collections.</p>
+<p>The button is the only way anyone collects anything, so a hub that has
+enabled the component and sees no collections being made has usually not
+placed the module.</p>
+<p>The install enables the <code>mod_collect</code> extension but creates no module
+instance for it, so on a stock hub the button appears nowhere. To place it:</p>
+<ol>
+<li>Go to <strong>Extensions → Modules</strong>.</li>
+<li>Press <strong>New</strong> and choose <strong>mod_collect</strong>.</li>
+<li>Give it a <strong>Position</strong> that the template renders on content pages, set
+<strong>Status</strong> to <strong>Published</strong>, and select <strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>The module renders nothing for a guest, and nothing on a page it has no
+adapter for. The nine content types it can collect are:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Collectible on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Blog</td>
+<td>A single blog entry</td>
+</tr>
+<tr>
+<td>Content</td>
+<td>A single article</td>
+</tr>
+<tr>
+<td>Courses</td>
+<td>A course page</td>
+</tr>
+<tr>
+<td>Forum</td>
+<td>A single thread</td>
+</tr>
+<tr>
+<td>Knowledge base</td>
+<td>A single article</td>
+</tr>
+<tr>
+<td>Publications</td>
+<td>A single publication</td>
+</tr>
+<tr>
+<td>Resources</td>
+<td>A single resource</td>
+</tr>
+<tr>
+<td>Wiki</td>
+<td>A wiki page</td>
+</tr>
+<tr>
+<td>Wishlist</td>
+<td>A single wish</td>
+</tr>
+</tbody>
+</table>
+<p>Collecting stores a post with a link back to the original, so the original
+content is untouched.</p>
+<h2 id="options">Options</h2>
+<p>Press <strong>Options</strong> in the toolbar of the <strong>Collections</strong> screen. Two settings,
+both listed in the
+<a href="../../../reference/configuration/components/collections/index.html">generated parameter reference</a>:</p>
+<ul>
+<li><strong>Upload path</strong> — where files attached to items are stored. Default
+<code>/site/collections</code>. Leave it alone unless you are moving the hub's file
+storage; changing it does not move the files already there.</li>
+<li><strong>Allow comments</strong> — whether users may comment on posts. Default <strong>Yes</strong>,
+which is sensible for a small hub and the first thing to turn off if
+collections start attracting spam. Existing comments stay in the database;
+they stop being displayed.</li>
+</ul>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 009ec973b7</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../citations/index.html" rel="prev"><span>Previous</span>Citations</a><a class="pager__next" href="../courses/index.html" rel="next"><span>Next</span>Courses</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/09-components/09-collections.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

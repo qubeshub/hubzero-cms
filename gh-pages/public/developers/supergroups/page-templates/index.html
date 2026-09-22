@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page templates · Developers · Hubzero Documentation</title>
+  <meta name="description" content="Most of a super group&#x27;s pages render through the same template file. When one page, or a family of pages, needs a different layout, put a second file in the…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/developers/supergroups/page-templates/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Developers</a>
+        <nav aria-label="Developers contents">
+<ul class="tree">
+<li class="tree__section"><details><summary><a class="tree__link" href="../../getting-started/index.html">Getting started</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/releasenotes/index.html">Release notes</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/fileaccess/index.html">Accessing files</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/databaseaccess/index.html">Direct database access</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/upgrade/index.html">Upgrade guide</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/browsersupport/index.html">Browser support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/devenvironment/index.html">Development environment</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tutorials/index.html">Video tutorials</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../foundation/index.html">Foundation</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/structure/index.html">Application structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/constants/index.html">Constants</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/autoloading/index.html">Autoloading</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/extensions/index.html">Extensions</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/facades/index.html">Facades</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/providers/index.html">Service providers</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../services/index.html">Services</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../services/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/filesystem/index.html">Filesystem</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/session/index.html">Session</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/server/index.html">Server</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../basics/index.html">The basics</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../basics/requests/index.html">Requests</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/responses/index.html">Responses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/config/index.html">Config</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/user/index.html">Users &amp; profiles</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/debugging/index.html">Debugging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/cron/index.html">Scheduled tasks</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/dates/index.html">Dates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/redirect/index.html">Redirect</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../database/index.html">Database</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extreqs/index.html">Requirements</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/parameters/index.html">Parameters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/deployext/index.html">Deploying extensions</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../modules/index.html">Modules</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../modules/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/models/index.html">Models</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/routing/index.html">Routing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/packaging/index.html">Packaging</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../plugins/index.html">Plugins</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../templates/index.html">Templates</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../templates/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/designing/index.html">Designing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/layouts/index.html">Page layouts</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/css/index.html">Cascading style sheets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/javascript/index.html">JavaScript</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/overrides/index.html">Output overrides</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/socicons/index.html">Socicons</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/fontcons/index.html">Fontcons</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/elements/index.html">Elements and typography</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/accessibility/index.html">Accessibility</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../muse/index.html">Muse</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Super Groups</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../templating-system/index.html">Templating system</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Page templates</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#where-the-files-go">Where the files go</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-four-ways">The four ways</a></li>
+<li class="toc__item toc__item--l3"><a href="#a-template-named-after-the-page">A template named after the page</a></li>
+<li class="toc__item toc__item--l3"><a href="#a-named-template-several-pages-can-share">A named template several pages can share</a></li>
+<li class="toc__item toc__item--l2"><a href="#choosing-one">Choosing one</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-the-file-receives">What the file receives</a></li>
+<li class="toc__item toc__item--l2"><a href="#include-tags-inside-a-page-s-content">Include tags inside a page&#x27;s content</a></li>
+<li class="toc__item toc__item--l2"><a href="#overriding-the-wrapper">Overriding the wrapper</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../custom-macros/index.html">Custom macros</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../php-pages/index.html">PHP pages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../databases/index.html">Databases</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/index.html">Components</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups-gitlab/index.html">Super groups with GitLab</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../testing/index.html">Testing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../api/index.html">REST API</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../aws/index.html">AWS</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../contributing/index.html">Contributing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../conventions/index.html">Conventions</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Developers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Super Groups</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Page templates</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Developers</p>
+          <h1>Page templates</h1>
+        </header>
+        
+        <div class="prose">
+<p>Most of a super group's pages render through the same template file. When one
+page, or a family of pages, needs a different layout, put a second file in the
+group's <code>template/</code> directory and the renderer picks it up.</p>
+<p>The Coastal Resilience Center has one page like that. Its field-site pages —
+one per instrumented site, a dozen of them and growing — need the map to run
+the full width, with no sidebar. Every other page is fine in <code>index.php</code>. That
+is exactly what page templates are for: a layout variation for some pages,
+not a second design.</p>
+<p>The mechanism is the candidate list in
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/components/com_groups/helpers/template.php"><code>Components\Groups\Helpers\Template::_fetch()</code></a>,
+described in <a href="../templating-system/index.html#how-the-file-is-chosen">Templating system</a>.
+This chapter is about the four ways a page can claim a file of its own.</p>
+<h2 id="where-the-files-go">Where the files go</h2>
+<pre><code>app/site/groups/&lt;gidNumber&gt;/template/
+</code></pre>
+<p>All of them sit directly in <code>template/</code>, beside <code>index.php</code>. Subdirectories
+are not searched.</p>
+<p>Put them there on the server, or through the group's
+<a href="../../supergroups-gitlab/index.html">repository</a>. The group's file browser
+reaches only <code>uploads</code>, for every group, so there is no way to upload a
+template file from the site.</p>
+<h2 id="the-four-ways">The four ways</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Applies to</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;name&gt;.php</code> with a <strong>Template Name</strong> header</td>
+<td>Any page whose <strong>Template</strong> setting names it</td>
+</tr>
+<tr>
+<td><code>page-&lt;alias&gt;.php</code></td>
+<td>The one page with that alias</td>
+</tr>
+<tr>
+<td><code>page-&lt;id&gt;.php</code></td>
+<td>The one page with that numeric id</td>
+</tr>
+<tr>
+<td><code>page.php</code></td>
+<td>Every group page that has not claimed one of the above</td>
+</tr>
+</tbody>
+</table>
+<p>They are tried in that order, then <code>default.php</code>, then <code>index.php</code>. The first
+file that exists wins.</p>
+<p>Which to use is a question of how many pages share the layout:</p>
+<ul>
+<li><strong>One page, once.</strong> <code>page-&lt;alias&gt;.php</code>. Nothing to configure.</li>
+<li><strong>Several pages, and the list will grow.</strong> A named template. The centre's
+dozen field sites all point at one file, and adding the thirteenth is a
+drop-down on the page form, not a deploy.</li>
+<li><strong>Every page except the plugin tabs.</strong> <code>page.php</code>.</li>
+</ul>
+<p><code>page.php</code> is worth calling out: it applies to group <em>pages</em> only. A plugin
+tab — Wiki, Calendar, Forum — has no active page, so it renders through
+<code>default.php</code> or <code>index.php</code> no matter what <code>page.php</code> contains. A template
+put in <code>page.php</code> and expected to frame the whole group is the commonest
+mistake here, and it shows up as the wiki looking wrong while the pages look
+right.</p>
+<h3 id="a-template-named-after-the-page">A template named after the page</h3>
+<p>The Field Sites index, alias <code>field-sites</code> and id 6, uses
+<code>page-field-sites.php</code> if that file exists, otherwise <code>page-6.php</code>. Nothing
+else is needed; the page does not have to be edited.</p>
+<p>Prefer the alias. The id is assigned by the database and means nothing to
+anyone reading the directory later.</p>
+<h3 id="a-named-template-several-pages-can-share">A named template several pages can share</h3>
+<p>A file becomes a named template by declaring a name in a comment near the top:</p>
+<pre><code class="language-php">&lt;?php // app/site/groups/1051/template/fieldsite.php
+/*
+Template Name: Field site
+*/
+</code></pre>
+<p><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/components/com_groups/helpers/view.php"><code>Components\Groups\Helpers\View::getPageTemplates()</code></a>
+reads every <code>.php</code> file in <code>template/</code> and matches <code>Template Name:</code> up to the
+end of the line, case-insensitively. Anything after the colon is the label.
+The file may be called whatever you like — the label is what the interface
+shows, and the filename is what gets stored on the page.</p>
+<p>Two files never appear in the list, whatever they declare: <code>index.php</code> and
+<code>default.php</code>.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The label is the array key, so two files declaring the same
+<strong>Template Name</strong> collapse to one entry and the last file read wins. If a
+template you just added is missing from the drop-down, check for a
+duplicate label before you check anything else.</p>
+</aside>
+<h2 id="choosing-one">Choosing one</h2>
+<p>The <strong>Template</strong> control is on the page's own edit form, in the <strong>Settings</strong>
+section, below <strong>Comments</strong>:</p>
+<ol>
+<li>On the group, choose <strong>Group Manager</strong> → <strong>Manage Group Pages</strong>.</li>
+<li>Select <strong>Manage Page</strong> on the page you want, or <strong>New Page</strong>.</li>
+<li>Under <strong>Settings</strong>, set <strong>Template</strong>.</li>
+<li>Select <strong>Save Page</strong>.</li>
+</ol>
+<p>The list holds <strong>- Default</strong> plus one entry per named template. Leaving it on
+<strong>- Default</strong> falls back to the <code>page-*</code> / <code>page.php</code> / <code>index.php</code> chain
+above.</p>
+<p><img src="../../media/page-templates-customtemplateselect.png" alt="The Template drop-down on the page edit form, listing a custom template" /></p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> That screenshot predates the current form. The <strong>Settings</strong>
+section now reads Category, Parent, Order, Comments, Template, and the home
+page override shown under the drop-down is no longer there. The <strong>Template</strong>
+control itself still looks and behaves as pictured.</p>
+</aside>
+<p>The control only exists on a super group's pages, and on the site form only
+when the template directory holds at least one named template. The
+administrator's page form at <strong>Users</strong> → <strong>Groups</strong> shows it for every super
+group, empty list or not. So the first named template you add is the one that
+makes the control appear at all — until then a manager sees no <strong>Template</strong>
+setting and reasonably concludes the feature is missing.</p>
+<h2 id="what-the-file-receives">What the file receives</h2>
+<p>A page template is loaded exactly as <code>index.php</code> is, so it sees the same four
+properties — <code>$this-&gt;group</code>, <code>$this-&gt;page</code>, <code>$this-&gt;tab</code> and
+<code>$this-&gt;content</code> — and may use every
+<a href="../templating-system/index.html#include-tags"><code>&lt;group:include&gt;</code> tag</a>. Most page
+templates are a copy of <code>index.php</code> with one part swapped out, so it is
+usually worth moving the shared header and footer into <code>template/includes/</code>
+and including them from both. The centre does that on the day it adds the
+second template, not the fourth: two copies of a header drift within a month.</p>
+<h2 id="include-tags-inside-a-page-s-content">Include tags inside a page's content</h2>
+<p>The tags a <em>template</em> may use are not the tags a <em>page</em> may use. Content
+written in the page editor is rendered by a plain
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/components/com_groups/helpers/document.php"><code>Components\Groups\Helpers\Document</code></a>,
+whose allowed list is only:</p>
+<ul>
+<li><code>&lt;group:include type=&quot;modules&quot; position=&quot;{position}&quot; /&gt;</code></li>
+<li><code>&lt;group:include type=&quot;module&quot; title=&quot;{title}&quot; /&gt;</code></li>
+<li><code>&lt;group:include type=&quot;script&quot; base=&quot;&quot; source=&quot;{path}&quot; /&gt;</code></li>
+<li><code>&lt;group:include type=&quot;stylesheet&quot; base=&quot;&quot; source=&quot;{path}&quot; /&gt;</code></li>
+</ul>
+<p><code>content</code>, <code>menu</code>, <code>toolbar</code> and <code>googleanalytics</code> are template-only; used in
+page content they render as an HTML comment saying the include is not allowed
+there. That comment is the whole error message — the page renders, the region
+is blank, and nothing is logged. <code>base</code> works as it does in a template:
+<code>template</code> resolves under <code>template/assets/js</code> or <code>template/assets/css</code>,
+anything else is a path segment under the group directory, and an omitted
+<code>base</code> looks in <code>uploads</code>.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> The attribute for a position is <code>position</code>. Older
+documentation spelled it <code>postion</code> and paired <code>type=&quot;modules&quot;</code> with a
+<code>title</code>, which matches no renderer.</p>
+</aside>
+<h2 id="overriding-the-wrapper">Overriding the wrapper</h2>
+<p>Whatever renders the page body, com_groups wraps it in its own view. A super
+group can replace that wrapper by dropping a file of the same name into
+<code>template/pages/</code>; that directory is searched before the component's own.</p>
+<p>The wrapper is
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/components/com_groups/site/views/pages/tmpl/_view.php"><code>site/views/pages/tmpl/_view.php</code></a>.
+It emits <code>&lt;div class=&quot;group-page page-&lt;alias&gt;&quot;&gt;</code> around the content and, below
+it, the byline and the comment thread. Overriding it is the way to change
+those without touching core.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> The in-page <strong>Edit Page</strong> control lives inside that byline
+block, and the block is drawn only when the page's <strong>Author Details</strong>
+setting is on — which is not the default. Copy the wrapper without reading
+it and you can remove a manager's only in-page route to the editor.</p>
+</aside>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 91d03d0a23</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../templating-system/index.html" rel="prev"><span>Previous</span>Templating system</a><a class="pager__next" href="../custom-macros/index.html" rel="next"><span>Next</span>Custom macros</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/developers/13-supergroups/02-page_templates.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

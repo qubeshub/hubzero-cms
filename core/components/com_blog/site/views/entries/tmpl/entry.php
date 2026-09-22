@@ -190,7 +190,6 @@ $first = $this->archive->entries(array(
 
 			<div class="container blog-entries-years">
 				<h4><?php echo Lang::txt('COM_BLOG_ENTRIES_BY_YEAR'); ?></h4>
-				<ol>
 				<?php
 				if ($first->get('id'))
 				{
@@ -200,6 +199,9 @@ $first = $this->archive->entries(array(
 					$start = intval(substr($first->get('publish_up'), 0, 4));
 					$now = Date::of('now')->format("Y");
 					//$mon = date("m");
+				?>
+				<ol>
+				<?php
 					for ($i=$now, $n=$start; $i >= $n; $i--)
 					{
 						?>
@@ -243,10 +245,11 @@ $first = $this->archive->entries(array(
 						</li>
 						<?php
 					}
-				} else { ?>
+				?>
+				</ol>
+				<?php } else { ?>
 					<p><?php echo Lang::txt('COM_BLOG_NO_ENTRIES_FOUND'); ?></p>
 				<?php } ?>
-				</ol>
 			</div><!-- / .blog-entries-years -->
 
 			<div class="container blog-popular-entries">
@@ -318,6 +321,7 @@ $first = $this->archive->entries(array(
 					<img src="<?php echo User::picture(User::isGuest() ? 1 : 0); ?>" alt="" />
 				</p>
 				<fieldset>
+					<legend class="sr-only"><?php echo Lang::txt('COM_BLOG_POST_COMMENT'); ?></legend>
 					<?php
 					$replyto = $this->row->comments()
 						->whereEquals('id', Request::getInt('reply', 0))
@@ -374,8 +378,8 @@ $first = $this->archive->entries(array(
 					<?php } ?>
 
 					<?php if (!User::isGuest()) { ?>
-						<label id="comment-anonymous-label">
-							<input class="option" type="checkbox" name="comment[anonymous]" id="comment-anonymous" value="1" />
+						<label for="comment-anonymous-0">
+							<input class="option" type="checkbox" name="comment[anonymous]" id="comment-anonymous-0" value="1" />
 							<?php echo Lang::txt('COM_BLOG_POST_ANONYMOUS'); ?>
 						</label>
 

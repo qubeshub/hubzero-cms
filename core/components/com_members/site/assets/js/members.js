@@ -24,7 +24,7 @@ jQuery(document).ready(function($){
 	if (el.length) {
 		el.addClass('js');
 
-		var select = $("<select />").on('change', function() {
+		var select = $("<select />", {"aria-label": "Member navigation"}).on('change', function() {
 			window.location = $(this).find("option:selected").val();
 		});
 
@@ -139,6 +139,8 @@ jQuery(document).ready(function($){
 $(function(){
 	if ($(".rorApiAvailable")[0]){
 		$("#profile_organization").autocomplete({
+			delay: 400,
+			minLength: 3,
 			source: function(req, resp){
 				var rorURL = "index.php?option=com_members&controller=profiles&task=getOrganizations&term=" + $("#profile_organization").val();
 

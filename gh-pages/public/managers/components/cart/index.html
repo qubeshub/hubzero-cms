@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cart · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="The Cart component is the transaction half of the hub&#x27;s online store. It holds the shopper&#x27;s basket, the checkout, and the order record; the catalogue of…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/components/cart/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Cart</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#software-downloads">Software Downloads</a></li>
+<li class="toc__item toc__item--l3"><a href="#all-downloads">All downloads</a></li>
+<li class="toc__item toc__item--l3"><a href="#downloads-by-sku">Downloads by SKU</a></li>
+<li class="toc__item toc__item--l3"><a href="#marking-a-download-inactive">Marking a download inactive</a></li>
+<li class="toc__item toc__item--l2"><a href="#orders">Orders</a></li>
+<li class="toc__item toc__item--l3"><a href="#all-orders">All orders</a></li>
+<li class="toc__item toc__item--l3"><a href="#viewing-an-order">Viewing an order</a></li>
+<li class="toc__item toc__item--l3"><a href="#items-ordered">Items ordered</a></li>
+<li class="toc__item toc__item--l2"><a href="#options">Options</a></li>
+<li class="toc__item toc__item--l2"><a href="#a-note-on-permissions">A note on permissions</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Components</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Cart</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Cart</h1>
+        </header>
+        
+        <div class="prose">
+<p>The Cart component is the transaction half of the hub's online store. It holds
+the shopper's basket, the checkout, and the order record; the catalogue of
+products and SKUs lives in the <a href="../storefront/index.html">Storefront</a> component. In the
+administrator interface Cart is a set of reports: what has been ordered, and
+what has been downloaded.</p>
+<p>Like Storefront, Cart is disabled on a new hub, and most hubs leave it that
+way. The two go together: the storefront's product pages call into Cart to
+add an item, and Cart's screens read the catalogue back out of Storefront, so
+enabling one without the other gives you a store nobody can buy from or a set
+of reports with nothing to report on. Enable both or neither, under
+<strong>Extensions → Extension Manager → Manage</strong>. See
+<a href="../storefront/index.html">Storefront</a> for how the hub's four money-handling
+components fit together.</p>
+<p>Two things bring a manager here once the store is running. A buyer says they
+have run out of downloads and wants another; or someone asks what was sold
+last quarter. Both are below.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> This is not an order management system. There is no order status,
+no fulfilment step, no cancellation and no refund. A completed order is a
+record you can correct, not a workflow you can advance. Anything that
+should have been decided before the sale — who may buy, at what price —
+belongs in <a href="../storefront/index.html">Storefront</a>.</p>
+</aside>
+<p>Go to <strong>Components → Shopping Cart</strong>. Two submenu links sit at the top:</p>
+<ul>
+<li><strong>Software Downloads</strong></li>
+<li><strong>Orders</strong></li>
+</ul>
+<p>Every screen needs <code>core.manage</code> on <code>com_cart</code>.</p>
+<h2 id="software-downloads">Software Downloads</h2>
+<p>Cart records a row every time someone downloads a purchased software SKU. Two
+reports read those rows.</p>
+<h3 id="all-downloads">All downloads</h3>
+<p>The default screen. Its columns are <strong>Product</strong>, <strong>Downloaded by</strong>, <strong>User
+Info</strong>, <strong>EULA</strong>, <strong>Downloaded</strong>, <strong>IP</strong>, and <strong>Status</strong>. Product, Downloaded
+by, Downloaded and Status are sortable.</p>
+<p>Above the table are a <strong>Search</strong> box, an <strong>All SKUs</strong> drop-down, and <strong>From</strong>
+and <strong>To</strong> date fields with an <strong>Update</strong> button. The date window defaults to
+the last month. Clicking a user's name, a product, or a SKU in the table adds
+that as a filter; a <strong>Clear</strong> button in the table header removes it.</p>
+<p><strong>Download CSV</strong> in the toolbar exports the current date range and sort as
+<code>cart-downloads-&lt;date&gt;(&lt;from&gt;-&lt;to&gt;).csv</code>, with the columns Downloaded,
+Product, SKU, User, Username, User ID, User Details, EULA, IP, and Status.
+The export is written in chunks of 5000 rows, so a large report streams
+rather than exhausting memory.</p>
+<h3 id="downloads-by-sku">Downloads by SKU</h3>
+<p>A roll-up: one row per SKU, with <strong>Product</strong>, <strong>SKU</strong>, and <strong>Downloaded</strong> —
+the number of download records in the date window. It has its own search and
+date filters and its own <strong>Download CSV</strong> button.</p>
+<h3 id="marking-a-download-inactive">Marking a download inactive</h3>
+<p>This is the one repair Cart offers, and it is the reason most managers open
+the component. A member bought a code, downloaded it, lost the machine, and
+has hit the per-user download limit. Marking their old download record
+<em>Inactive</em> takes it out of the count and gives them the download back.</p>
+<p>Click the icon in a row's <strong>Status</strong> column to flip that record between
+<em>Active</em> and <em>Inactive</em>.</p>
+<p>Working through the example: filter the list by clicking the member's name
+in the table, widen the <strong>From</strong> date if the download is older than a month —
+the window defaults to the last month, so an old record simply is not
+there — find the row, and click its <strong>Status</strong>. The change takes effect on
+their next attempt; nothing is emailed and no order is altered. It is
+reversible: click the status again to make it active once more.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> The <strong>Publish</strong> and <strong>Unpublish</strong> buttons in the toolbar do
+not work. They post the tasks <code>publish</code> and <code>unpublish</code>, which the
+downloads controller does not implement — it has <code>active</code> and <code>inactive</code>
+instead — so an unknown task falls through to the default and the list
+simply redraws. Use the per-row <strong>Status</strong> link, one record at a time.</p>
+</aside>
+<p>This matters when a SKU carries download limits. Cart counts only <em>active</em>
+download records against a limit, so marking an old record inactive gives the
+user another download. There are three limits, all set on the SKU or product
+in Storefront under <strong>Software</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Where</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Downloads Limit per Single User</strong></td>
+<td>SKU</td>
+<td>How many active downloads one account may have of this SKU</td>
+</tr>
+<tr>
+<td><strong>Total Downloads Limit</strong></td>
+<td>SKU</td>
+<td>How many active downloads exist of this SKU across all users</td>
+</tr>
+<tr>
+<td><strong>Total Downloads Limit</strong></td>
+<td>Product</td>
+<td>The same, counted across every SKU of the product</td>
+</tr>
+</tbody>
+</table>
+<p>A limit of <code>0</code> or empty means no limit.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> A download record keeps the status it had when it was written.
+Changing a status now does not rewrite the history shown for earlier
+downloads.</p>
+</aside>
+<h2 id="orders">Orders</h2>
+<h3 id="all-orders">All orders</h3>
+<p>One row per completed transaction: <strong>Order ID</strong>, <strong>Order total</strong>, <strong>Items
+ordered</strong>, <strong>Order placed</strong>, <strong>Purchased by</strong>, and <strong>Payment method</strong>. Order
+ID, Order placed, Purchased by and Payment method are sortable.</p>
+<p>The filters are a <strong>Search</strong> box, an <strong>Order notes</strong> drop-down (<em>All notes</em> or
+<em>Only nonempty notes</em>), and the <strong>From</strong>/<strong>To</strong> date window. <strong>Download CSV</strong>
+in the toolbar exports the list.</p>
+<p>Click an order ID to open it.</p>
+<h3 id="viewing-an-order">Viewing an order</h3>
+<p>The order view shows <strong>Order Details</strong>, <strong>Shipping info</strong>, <strong>Payment info</strong>,
+<strong>Items Ordered</strong>, <strong>Notes/Comments</strong>, and a <strong>Changelog</strong> listing every
+administrative edit with who made it and when.</p>
+<p><strong>Edit</strong> on the order view opens a form that can change:</p>
+<ul>
+<li>the payment details string,</li>
+<li>the price and quantity of each item ordered,</li>
+<li>the checkout notes on each item, and</li>
+<li>the order's own notes.</li>
+</ul>
+<p>Saving records the difference in the order's changelog. Nothing else about a
+completed order can be changed from here — there is no order status field and
+no way to add or remove items.</p>
+<h3 id="items-ordered">Items ordered</h3>
+<p>A line-item report across all orders: <strong>SKU ID</strong>, <strong>Product</strong>, <strong>QTY</strong>,
+<strong>Price</strong>, <strong>Order ID</strong>, <strong>Order placed</strong>, and <strong>Purchased by</strong>. It has the
+same search and date filters, and its own <strong>Download CSV</strong> button.</p>
+<h2 id="options">Options</h2>
+<p>Press <strong>Options</strong> in the toolbar of any Cart screen. The full list is in the
+<a href="../../../reference/configuration/components/cart/index.html">generated parameter reference</a>;
+the ones that matter day to day are:</p>
+<ul>
+<li><strong>Send notifications to</strong> — a comma-separated list of addresses that get an
+<code>ORDER NOTIFICATION</code> mail on every new order. Leave it empty and no
+notification is sent.</li>
+<li><strong>Send order info from</strong> — the address the shopper's order confirmation
+appears to come from. Must be a valid address or the site's <code>mailfrom</code> is
+used instead.</li>
+<li><strong>Store administrator ID</strong> — the numeric user ID that receives payment
+processing error mail.</li>
+<li><strong>Transaction TTL</strong> — minutes a pending transaction holds its inventory
+before the items are released back to stock. Default 120.</li>
+<li>The <strong>Payment</strong> fieldset holds the payment provider name, environment, site
+ID, and validation key. Two providers ship with the component: <code>DUMMY AUTO PAYMENT</code> and <code>UPAY</code>.</li>
+</ul>
+<h2 id="a-note-on-permissions">A note on permissions</h2>
+<p>Reaching any Cart screen needs <code>core.manage</code> on <code>com_cart</code>. Beyond that, the
+component's permission handling is thin:</p>
+<ul>
+<li>The toolbar buttons are hidden by checks against the asset names
+<code>com_cart.download</code>, <code>com_cart.orders</code>, and <code>com_cart.order</code>. Only
+<code>download</code> is declared in <code>config/access.xml</code>, and none of the three has a
+permissions form of its own, so in practice all three inherit the
+component-level rules on the <strong>Options → Permissions</strong> tab.</li>
+<li>The controllers themselves do not repeat those checks. A user who can reach
+the component can activate a download or save an order edit by posting
+directly, whatever the toolbar shows.</li>
+</ul>
+<p>Grant <code>core.manage</code> on <code>com_cart</code> only to people you would also let edit
+orders.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 009ec973b7</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../cache/index.html" rel="prev"><span>Previous</span>Cache</a><a class="pager__next" href="../checkin/index.html" rel="next"><span>Next</span>Check-in</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/09-components/06-cart.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

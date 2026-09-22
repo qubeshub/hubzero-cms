@@ -1,0 +1,66 @@
+{
+ "site_name": "Hubzero",
+ "site_title": "Hubzero Documentation",
+ "site_tagline": "Documentation for building, running, and extending a hub.",
+ "site_description": "Hubzero is an open source platform for scientific collaboration websites. These books cover installing and administering a hub, using one, and developing components, plugins, modules, and templates for the Hubzero CMS.",
+ "site_url": "https://hubzero.github.io/hubzero-cms",
+ "github_href": "https://github.com/hubzero/hubzero-cms",
+ "blob_ref": "2.4-main",
+ "version": "2.4",
+ "copyright": "Purdue University",
+ "books": [
+  {
+   "slug": "managers",
+   "title": "Hub managers",
+   "dir": "docs/managers",
+   "audience": "Run a hub",
+   "summary": "Installing a hub, then running it: configuration, members and access, content, extensions, and maintenance."
+  },
+  {
+   "slug": "users",
+   "title": "Hub users",
+   "dir": "docs/users",
+   "audience": "Use a hub",
+   "summary": "Using a hub: your profile, groups and projects, publications, resources, the wiki, forums, and courses."
+  },
+  {
+   "slug": "tools",
+   "title": "Tools",
+   "dir": "docs/tools",
+   "audience": "Use a hub",
+   "summary": "Publishing and running simulation tools: invoke scripts, the submit command, Jupyter, and administration."
+  },
+  {
+   "slug": "developers",
+   "title": "Developers",
+   "dir": "docs/developers",
+   "audience": "Build on Hubzero",
+   "summary": "Components, plugins, modules, templates, the framework libraries, the API, and contributing a change."
+  },
+  {
+   "slug": "reference",
+   "title": "Reference",
+   "dir": "docs/reference",
+   "audience": "Reference",
+   "summary": "Generated from the source tree: configuration parameters, REST endpoints, console commands, and events."
+  }
+ ],
+ "pages": [
+  {
+   "slug": "docs",
+   "source": "docs/README.md",
+   "title": "About Hubzero",
+   "index": true
+  },
+  {
+   "slug": "style",
+   "source": "docs/STYLE.md",
+   "title": "Writing guide"
+  },
+  {
+   "slug": "license",
+   "source": "docs/LICENSE.md",
+   "title": "License"
+  }
+ ]
+}

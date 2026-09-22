@@ -37,24 +37,21 @@ if ($label == 'none') {
 <header id="content-header">
 	<h2><?php echo $this->title; ?></h2>
 
+	<?php
+	$importLinks = array();
+	if ($this->allow_import == 1 || ($this->allow_import == 2 && $this->isAdmin)) {
+		$importLinks[] = '<li><a class="btn icon-add" href="' . Route::url('index.php?option=com_citations&task=add') . '">' . Lang::txt('COM_CITATIONS_SUBMIT_CITATION') . '</a></li>';
+	}
+	if ($this->allow_bulk_import == 1 || ($this->allow_bulk_import == 2 && $this->isAdmin)) {
+		$importLinks[] = '<li><a class="btn icon-upload" href="' . Route::url('index.php?option='.$this->option.'&task=import') . '">' . Lang::txt('COM_CITATIONS_IMPORT_CITATION') . '</a></li>';
+	}
+	if (!empty($importLinks)) : ?>
 	<div id="content-header-extra">
 		<ul id="useroptions">
-			<?php if ($this->allow_import == 1 || ($this->allow_import == 2 && $this->isAdmin)) : ?>
-				<li>
-					<a class="btn icon-add" href="<?php echo Route::url('index.php?option=com_citations&task=add'); ?>">
-						<?php echo Lang::txt('COM_CITATIONS_SUBMIT_CITATION'); ?>
-					</a>
-				</li>
-			<?php endif; ?>
-			<?php if ($this->allow_bulk_import == 1 || ($this->allow_bulk_import == 2 && $this->isAdmin)) : ?>
-				<li>
-					<a class="btn icon-upload" href="<?php echo Route::url('index.php?option='.$this->option.'&task=import'); ?>">
-						<?php echo Lang::txt('COM_CITATIONS_IMPORT_CITATION'); ?>
-					</a>
-				</li>
-			<?php endif; ?>
+			<?php echo implode("\n\t\t\t", $importLinks); ?>
 		</ul>
 	</div>
+	<?php endif; ?>
 </header>
 
 <form action="<?php echo Route::url('index.php?option='.$this->option.'&task=browse'); ?>" id="citeform" method="get" class="<?php if ($batch_download) { echo " withBatchDownload"; } ?>">
@@ -66,7 +63,7 @@ if ($label == 'none') {
 					<fieldset class="entry-search">
 						<legend><?php echo Lang::txt('COM_CITATIONS_SEARCH_CITATIONS'); ?></legend>
 						<label for="entry-search-field"><?php echo Lang::txt('COM_CITATIONS_BROWSE_SEARCH_HELP'); ?></label>
-						<input type="text" name="search" id="entry-search-field" value="<?php echo $this->escape($this->filters['search']); ?>" placeholder="<?php echo Lang::txt('COM_CITATIONS_SEARCH_CITATIONS_PLACEHOLDER'); ?>" />
+						<input type="text" name="search" id="entry-search-field" value="<?php echo $this->escape($this->filters['search']); ?>" placeholder="<?php echo Lang::txt('COM_CITATIONS_SEARCH_CITATIONS_PLACEHOLDER'); ?>" aria-label="<?php echo Lang::txt('COM_CITATIONS_SEARCH_CITATIONS_PLACEHOLDER'); ?>" />
 					</fieldset>
 				</div><!-- /.container .data-entry -->
 				<div class="container">
@@ -116,15 +113,12 @@ if ($label == 'none') {
 								<tr>
 									<?php if ($batch_download) : ?>
 										<th class="batch">
-											<input type="checkbox" class="checkall-download" />
+											<input type="checkbox" class="checkall-download" aria-label="Select all citations for download" />
 										</th>
 									<?php endif; ?>
 									<th colspan="2"><?php echo Lang::txt('COM_CITATIONS'); ?></th>
 								</tr>
-								<?php if ($this->isAdmin) : ?>
-									<tr class="hidden"></tr>
-								<?php endif; ?>
-							</thead>
+								</thead>
 							<tbody>
 								<?php $x = 0; ?>
 								<?php foreach ($this->citations as $cite) : ?>
@@ -132,7 +126,7 @@ if ($label == 'none') {
 										<?php $citeId = $cite->id; ?>
 										<?php if ($batch_download) : ?>
 											<td class="batch">
-												<input type="checkbox" class="download-marker" name="download_marker[]" id="download_marker<?php echo $citeId; ?>" value="<?php echo $citeId; ?>" />
+												<input type="checkbox" class="download-marker" name="download_marker[]" id="download_marker<?php echo $citeId; ?>" value="<?php echo $citeId; ?>" aria-label="Select citation <?php echo (int) $citeId; ?>" />
 											</td>
 										<?php endif; ?>
 										<?php if ($label != "none") : ?>
@@ -261,13 +255,12 @@ if ($label == 'none') {
 						}
 						echo $pageNav->render();
 					?>
-					<div class="clearfix"></div>
 				</div><!-- /.container -->
 			</div><!-- /.subject -->
 			<div class="aside">
 			<?php if ($batch_download) : ?>
 				<fieldset id="download-batch">
-					<strong><?php echo Lang::txt('COM_CITATIONS_EXPORT_MULTIPLE'); ?></strong>
+					<legend><?php echo Lang::txt('COM_CITATIONS_EXPORT_MULTIPLE'); ?></legend>
 					<p><?php echo Lang::txt('COM_CITATIONS_EXPORT_MULTIPLE_DESC'); ?></p>
 
 					<input type="submit" name="download" class="download" value="<?php echo Lang::txt('COM_CITATIONS_ENDNOTE'); ?>" />
@@ -277,6 +270,7 @@ if ($label == 'none') {
 			<?php endif; ?>
 
 			<fieldset>
+				<legend class="sr-only">Filter citations</legend>
 				<label for="type">
 					<?php echo Lang::txt('COM_CITATIONS_TYPE'); ?>
 					<select name="type" id="type">
@@ -296,6 +290,10 @@ if ($label == 'none') {
 						<?php else: ?>
 							<input type="text" name="tag" id="actags" value="<?php echo $this->escape($this->filters['tag']); ?>" />
 						<?php endif; ?>
+				</label>
+				<label for="ackeywords">
+					<?php echo Lang::txt('COM_CITATIONS_KEYWORDS'); ?>:
+					<input type="text" name="keyword" id="ackeywords" value="<?php echo $this->escape($this->filters['keyword']); ?>" />
 				</label>
 				<label for="author">
 					<?php echo Lang::txt('COM_CITATIONS_AUTHORED_BY'); ?>

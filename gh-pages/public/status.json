@@ -1,0 +1,54 @@
+{
+ "books": [
+  {
+   "slug": "managers",
+   "title": "Hub managers",
+   "pages": 90,
+   "counts": {
+    "rewritten": 89,
+    "draft": 1
+   }
+  },
+  {
+   "slug": "users",
+   "title": "Hub users",
+   "pages": 34,
+   "counts": {
+    "rewritten": 34
+   }
+  },
+  {
+   "slug": "tools",
+   "title": "Tools",
+   "pages": 34,
+   "counts": {
+    "draft": 1,
+    "rewritten": 10,
+    "reviewed": 23
+   }
+  },
+  {
+   "slug": "developers",
+   "title": "Developers",
+   "pages": 101,
+   "counts": {
+    "rewritten": 101
+   }
+  },
+  {
+   "slug": "reference",
+   "title": "Reference",
+   "pages": 154,
+   "counts": {
+    "rewritten": 1,
+    "generated": 153
+   }
+  }
+ ],
+ "totals": {
+  "rewritten": 235,
+  "draft": 2,
+  "reviewed": 23,
+  "generated": 153
+ }
+}

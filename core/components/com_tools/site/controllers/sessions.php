@@ -7,6 +7,7 @@
 
 namespace Components\Tools\Site\Controllers;
 
+use Components\Tools\Helpers\Utils;
 use Hubzero\Component\SiteController;
 use Document;
 use Pathway;
@@ -17,6 +18,10 @@ use Route;
 use Lang;
 use User;
 use App;
+use Date;
+use Event;
+use Log;
+use Plugin;
 
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'middleware.php';
 require_once dirname(dirname(__DIR__)) . DS . 'helpers' . DS . 'vnc.php';
@@ -356,7 +361,7 @@ class Sessions extends SiteController
 						}
 
 						// Fail if $value doesn't start with '/'
-						if ($value[0] != '/')
+						if (!isset($value[0]) || $value[0] != '/')
 						{
 							break;
 						}
@@ -381,7 +386,11 @@ class Sessions extends SiteController
 							break;
 						}
 
-						// Fail if $value isn't prefixed with a whitelisted directory
+						// Fail if $value isn't prefixed with a whitelisted directory.
+						// $match must be cleared for every parameter: left over from
+						// an earlier line it would pass an unwhitelisted path.
+						unset($match);
+
 						foreach ($params_whitelist as $wl)
 						{
 							if (empty($wl))
@@ -635,21 +644,26 @@ class Sessions extends SiteController
 			{
 				if ($zone->exists())
 				{
-					$toolparams .= ' zone=' . $zone->get('zone');
+					$toolparams .= ' zone=' . escapeshellarg($zone->get('zone'));
 					$app->zone_id = $zone->get('id');
 				}
 			}
 		}
 
 		// We've passed all checks so let's actually start the session
-		$status = $this->middleware("start user=" . User::get('username') . " ip=" . $app->ip . " app=" . $app->name . " version=" . $app->version . $toolparams, $output);
-		if ($this->getError())
+		$status = Utils::middleware(
+			"start user=" . escapeshellarg(User::get('username')) .
+			" ip=" . escapeshellarg($app->ip) .
+			" app=" . escapeshellarg($app->name) .
+			" version=" . escapeshellarg($app->version) .
+			$toolparams,
+			$output
+		);
+		if (!$status)
 		{
-			//App::abort(500, $this->getError());
-			//return;
 			App::redirect(
 				Route::url($this->config->get('stopRedirect', 'index.php?option=com_members&task=myaccount')),
-				Lang::txt('COM_TOOLS_ERROR_SESSION_INVOKE_FAILED'),
+				isset($output->user_message) ? $output->user_message : 'no reason given',
 				'error'
 			);
 			return;
@@ -733,20 +747,7 @@ class Sessions extends SiteController
 		}
 
 		// Stop the old session
-		$status = $this->middleware("stop $id", $output);
-		if ($status == 0)
-		{
-			$msg = '<p>Stopping ' . $id;
-			if (is_array($output))
-			{
-				$msg .= '<br />';
-				foreach ($output as $line)
-				{
-					$msg .= $line . "\n";
-				}
-			}
-			$msg .= '</p>'."\n";
-		}
+		$status = Utils::middleware("stop $id", $output);
 
 		// Get tool params
 		$toolparams = '';
@@ -761,17 +762,24 @@ class Sessions extends SiteController
 			$mwz = $middleware->zone($zone);
 			if ($mwz->exists())
 			{
-				$toolparams .= ' zone=' . $mwz->get('zone');
+				$toolparams .= ' zone=' . escapeshellarg($mwz->get('zone'));
 			}
 		}
 
 		// We've passed all checks so let's actually start the new session
-		$status = $this->middleware("start user=" . User::get('username') . " ip=" . Request::ip() . " app=" . $session->app() . " version=" . $session->app('version') . $toolparams, $output);
-		if ($this->getError())
+		$status = Utils::middleware(
+			"start user=" . escapeshellarg(User::get('username')) .
+			" ip=" . escapeshellarg(Request::ip()) .
+			" app=" . escapeshellarg($session->app()) .
+			" version=" . escapeshellarg($session->app('version')) .
+			$toolparams,
+			$output
+		);
+		if (!$status)
 		{
 			App::redirect(
 				Route::url($this->config->get('stopRedirect', 'index.php?option=com_members&task=myaccount')),
-				Lang::txt('COM_TOOLS_ERROR_SESSION_INVOKE_FAILED'),
+				isset($output->user_message) ? $output->user_message : 'no reason given',
 				'error'
 			);
 			return;
@@ -1153,11 +1161,11 @@ class Sessions extends SiteController
 		// Build the view command
 		if ($this->config->get('access-manage-session'))
 		{
-			$command = "view user=" . $row->username . " ip=" . $app->ip . " sess=" . $app->sess;
+			$command = "view user=" . escapeshellarg($row->username) . " ip=" . escapeshellarg($app->ip) . " sess=" . (int)$app->sess;
 		}
 		else
 		{
-			$command = "view user=" . User::get('username') . " ip=" . $app->ip . " sess=" . $app->sess;
+			$command = "view user=" . escapeshellarg(User::get('username')) . " ip=" . escapeshellarg($app->ip) . " sess=" . (int)$app->sess;
 		}
 
 		// Check if we have access to run this tool.
@@ -1185,7 +1193,17 @@ class Sessions extends SiteController
 		Event::trigger('mw.onBeforeSessionStart', array($toolname, $tv->revision));
 
 		// Call the view command
-		$status = $this->middleware($command, $output);
+		$status = Utils::middleware($command, $output);
+
+		if (!$status)
+		{
+			App::redirect(
+				Route::url($this->config->get('stopRedirect', 'index.php?option=com_members&task=myaccount')),
+				isset($output->user_message) ? $output->user_message : 'no reason given',
+				'error'
+			);
+			return;
+		}
 
 		// If weber_auth is defined, set a cookie for it.
 		if (isset($output->weber_auth))
@@ -1456,7 +1474,7 @@ class Sessions extends SiteController
 		}
 
 		// Incoming
-		$sess = Request::getString('sess', '');
+		$sess = Request::getInt('sess', 0);
 		$rtrn = base64_decode(Request::getString('return', '', 'method', 'base64'));
 
 		$rediect = $this->config->get('stopRedirect', 'index.php?option=com_members&task=myaccount');
@@ -1499,22 +1517,15 @@ class Sessions extends SiteController
 		Event::trigger('mw.onBeforeSessionStop', array($ms->appname));
 
 		// Stop the session
-		$status = $this->middleware("stop $sess", $output);
-		if ($status == 0)
+		$status = Utils::middleware("stop $sess", $output);
+		if ($status)
 		{
-			echo '<p>Stopping ' . $sess . '<br />';
-			if (is_array($output))
+			echo '<p>Stopping ' . $sess;
+			if (isset($output->user_message))
 			{
-				foreach ($output as $line)
-				{
-					echo $line . "\n";
-				}
+				echo ': ' . htmlspecialchars($output->user_message);
 			}
-			else if (is_string($output))
-			{
-				echo $output . "\n";
-			}
-			echo '</p>'."\n";
+			echo '</p>' . "\n";
 		}
 
 		// Trigger any events that need to be called after session stop
@@ -1712,96 +1723,6 @@ class Sessions extends SiteController
 	 * @param   array    &$output
 	 * @return  integer  Session ID
 	 */
-	public function middleware($comm, &$output)
-	{
-		$retval = true; // Assume success.
-
-		$comm = escapeshellcmd($comm);
-		$dbname = \App::get('config')->get('database.db');
-
-		$cmd = "/bin/sh " . dirname(dirname(__DIR__)) . "/scripts/mw $comm dbname=$dbname 2>&1 </dev/null";
-
-		exec($cmd, $results, $status);
-
-		// Check exec status
-		if ($status != 0)
-		{
-			// Uh-oh. Something went wrong...
-			$retval = false;
-			if (isset($results[0]))
-			{
-				$this->setError($results[0]);
-			}
-		}
-
-		if (is_array($results))
-		{
-			$results = implode('', $results);
-		}
-		$results = trim($results);
-
-		try
-		{
-			$output = @json_decode($results);
-
-			if ($output === null && json_last_error() !== JSON_ERROR_NONE)
-			{
-				throw new \Exception(Lang::txt('COM_TOOLS_ERROR_BAD_DATA'));
-			}
-		}
-		catch (\Exception $e)
-		{
-			$output = new stdClass();
-
-			// If it's a new session, catch the session number...
-			if ($retval && preg_match("/^Session is ([0-9]+)/", $results, $sess))
-			{
-				$retval = $sess[1];
-				$output->session = $sess[1];
-			}
-			else
-			{
-				$patterns = array(
-					'id' => 'applet id=(["\'])(?:(?=(\\?))\2.)*?\1',
-					'code' => 'code=(["\'])(?:(?=(\\?))\2.)*?\1',
-					'archive' => 'archive=(["\'])(?:(?=(\\?))\2.)*?\1',
-					'class' => 'class=(["\'])(?:(?=(\\?))\2.)*?\1',
-					'height' => 'height=\"(\d+)\"',
-					'width' => 'width=\"(\d+)\"',
-					'height' => 'height=\"(\d+)\"',
-					'port' => '<param name=\"PORT\" value=\"?(\d+)\"?>',
-					'host' => '<param name=\"HOST\" value=\"?([^>]+)\"?>',
-					'encpassword' => '<param name=\"ENCPASSWORD\" value=\"?([^>]+)\"?>',
-					'name' => '<param name=\"name\" value=\"?([^>]+)\"?>',
-					'connect' => '<param name=\"CONNECT\" value=\"?([^>]+)\"?>',
-					'encoding' => '<param name=\"ENCODING\" value=\"?([^>]+)\"?>',
-					'show_local_cursor' => '<param name=\"ShowLocalCursor\" value=\"?([^>]+)\"?>',
-					'trust_all_vnc_certs' => '<param name=\"trustAllVncCerts\" value=\"?([^>]+)\"?>',
-					'offer_relogin' => '<param name=\"Offer relogin\" value=\"?([^>]+)\"?>',
-					'disable_ssl' => '<param name=\"DisableSSL\" value=\"?([^>]+)\"?>',
-					'permissions' => '<param name=\"permissions\" value=\"?([^>]+)\"?>',
-					'view_only' => '<param name=\"View Only\" value=\"?([^>]+)\"?>',
-					'show_controls' => '<param name=\"Show Controls\" value=\"?([^>]+)\"?>',
-					'debug' => '<param name=\"Debug\" value=\"?([^>]+)\"?>'
-				);
-				foreach ($patterns as $key => $pattern)
-				{
-					if (preg_match("/$pattern/i", $results, $param))
-					{
-						$output->$key = trim($param[1], '"');
-					}
-				}
-			}
-		}
-
-		if ($output == null || (is_object($output) && count(get_object_vars($output)) <= 0))
-		{
-			$retval = false;
-		}
-
-		return $retval;
-	}
-
 	/**
 	 * Authorization checks
 	 *
@@ -1871,7 +1792,7 @@ class Sessions extends SiteController
 		switch ($exportcontrol)
 		{
 			case 'us':
-				if ($country != 'us')
+				if ($country != 'us' && !\Hubzero\Geocode\Geocode::is_iplocation($ip, 'pu'))
 				{
 					$this->setError(Lang::txt('COM_TOOLS_ERROR_ACCESS_DENIED_EXPORT_USA_ONLY'));
 					Log::debug("mw::_getToolExportControl($exportcontrol) FAILED US export control check");

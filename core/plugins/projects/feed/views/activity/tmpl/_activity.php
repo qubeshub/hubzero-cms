@@ -8,6 +8,12 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
+// Skip rendering if the activity log is missing
+if (!$this->activity->log || !$this->activity->log->get('id'))
+{
+	return;
+}
+
 $class       = $this->activity->log->details->get('class', 'activity');
 $commentable = (!$this->activity->log->get('parent'));
 $deletable   = $this->model->access('manager');
@@ -15,6 +21,12 @@ $showProject = isset($this->showProject) ? $this->showProject : false;
 $edit        = isset($this->edit) ? $this->edit : true;
 
 $creator = User::getInstance($this->activity->log->get('created_by'));
+
+// Skip rendering if both the creator and description are missing
+if (!$creator->get('id') && !trim($this->activity->log->get('description')))
+{
+	return;
+}
 
 $new = false;
 if ($this->model->member())
@@ -25,6 +37,7 @@ if ($this->model->member())
 $recorded = $this->activity->get('created');
 
 $name = Lang::txt('JANONYMOUS');
+$nameText = $name;
 
 $online = false;
 
@@ -33,6 +46,7 @@ if (!$this->activity->log->get('anonymous'))
 {
 	// Get their full name
 	$name = $this->escape(stripslashes($creator->get('name', Lang::txt('PLG_PROJECTS_ACTIVITY_UNKNOWN'))));
+	$nameText = $name;
 
 	// Can we see their profile?
 	if (in_array($creator->get('access'), User::getAuthorisedViewLevels()))
@@ -51,18 +65,18 @@ if (!$this->activity->log->get('anonymous'))
 	<div class="activity-actor-picture<?php if ($online) { echo ' tooltips" title="' . Lang::txt('PLG_PROJECTS_FEED_ONLINE'); } ?>">
 		<?php if ($showProject) { ?>
 			<span class="user-img-wrap">
-				<img class="project-image" src="<?php echo Route::url($this->model->link('thumb')); ?>" alt="" />
+				<img class="project-image" src="<?php echo Route::url($this->model->link('thumb')); ?>" alt="<?php echo $this->escape($this->model->get('title')); ?>" />
 				<?php if ($online) { ?>
 					<span class="online"><?php echo Lang::txt('PLG_PROJECTS_FEED_ONLINE'); ?></span>
 				<?php } ?>
 			</span>
 		<?php } else { ?>
-			<a class="user-img-wrap" href="<?php echo Route::url($creator->link()); ?>">
+			<span class="user-img-wrap">
 				<img src="<?php echo $creator->picture(); ?>" alt="" />
 				<?php if ($online) { ?>
 					<span class="online"><?php echo Lang::txt('PLG_PROJECTS_FEED_ONLINE'); ?></span>
 				<?php } ?>
-			</a>
+			</span>
 		<?php } ?>
 	</div><!-- / .activity-actor-picture -->
 
@@ -71,7 +85,7 @@ if (!$this->activity->log->get('anonymous'))
 			<div class="activity-details">
 				<?php if ($showProject) { ?>
 					<span class="project-name">
-						<a href="<?php echo Route::url($this->model->link()); ?>"><?php echo \Hubzero\Utility\Str::truncate($this->model->get('title'), 65); ?></a>
+						<a href="<?php echo Route::url($this->model->link()); ?>" aria-label="<?php echo $this->escape($this->model->get('title')) . ' (' . $this->escape($this->model->get('alias')) . ')'; ?>"><?php echo \Hubzero\Utility\Str::truncate($this->model->get('title'), 65); ?></a>
 					</span>
 				<?php } ?>
 				<span class="activity-actor"><?php echo $name; ?></span>
@@ -202,19 +216,22 @@ if (!$this->activity->log->get('anonymous'))
 				</div>
 			</div><!-- / .activity-event -->
 
-			<?php if ($commentable || $deletable || $edit) { ?>
+			<?php
+			// Pre-compute which activity options are actually available
+			$canComment = $edit && $commentable && $this->model->access('content');
+			$canEdit    = $edit && in_array($class, array('blog', 'quote')) && $this->model->access('manager');
+			?>
+			<?php if ($canComment || $canEdit || $deletable) { ?>
 				<div class="activity-options">
 					<ul>
-						<?php if ($edit && $commentable) { ?>
-							<?php if ($this->model->access('content')) { ?>
-								<li>
-									<a class="icon-reply reply tooltips" href="#commentform_<?php echo $this->activity->log->get('id'); ?>" id="addc_<?php echo $this->activity->log->get('id'); ?>" title="<?php echo Lang::txt('COM_PROJECTS_COMMENT'); ?>" data-inactive="<?php echo Lang::txt('COM_PROJECTS_COMMENT'); ?>" data-active="<?php echo Lang::txt('JCANCEL'); ?>"><!--
-										--><?php echo Lang::txt('COM_PROJECTS_COMMENT'); ?><!--
-									--></a>
-								</li>
-							<?php } ?>
+						<?php if ($canComment) { ?>
+							<li>
+								<a class="icon-reply reply tooltips" href="#commentform_<?php echo $this->activity->log->get('id'); ?>" id="addc_<?php echo $this->activity->log->get('id'); ?>" title="<?php echo Lang::txt('COM_PROJECTS_COMMENT'); ?>" data-inactive="<?php echo Lang::txt('COM_PROJECTS_COMMENT'); ?>" data-active="<?php echo Lang::txt('JCANCEL'); ?>"><!--
+									--><?php echo Lang::txt('COM_PROJECTS_COMMENT'); ?><!--
+								--></a>
+							</li>
 						<?php } ?>
-						<?php if ($edit && in_array($class, array('blog', 'quote')) && $this->model->access('manager')) { ?>
+						<?php if ($canEdit) { ?>
 							<li>
 								<a class="icon-edit edit tooltips" data-form="activity-form<?php echo $this->activity->log->get('id'); ?>" data-content="activity-event-content<?php echo $this->activity->log->get('id'); ?>" href="<?php echo Route::url($this->model->link('feed') . '&action=edit&activity=' . $this->activity->log->get('id'));  ?>" title="<?php echo Lang::txt('JACTION_EDIT'); ?>" data-inactive="<?php echo Lang::txt('JACTION_EDIT'); ?>" data-active="<?php echo Lang::txt('JCANCEL'); ?>"><!--
 									--><?php echo Lang::txt('JACTION_EDIT'); ?><!--
@@ -231,7 +248,7 @@ if (!$this->activity->log->get('anonymous'))
 					</ul>
 				</div><!-- / .activity-options -->
 
-				<?php if ($edit && in_array($class, array('blog', 'quote')) && $this->model->access('manager')) { ?>
+				<?php if ($canEdit) { ?>
 					<div class="commentform editcomment hidden" id="activity-form<?php echo $this->activity->log->get('id'); ?>">
 						<form method="post" action="<?php echo Route::url($this->model->link()); ?>">
 							<fieldset>

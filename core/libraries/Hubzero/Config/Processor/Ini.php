@@ -45,6 +45,8 @@ class Ini extends Base
 	 */
 	public function parse($path)
 	{
+		$this->assertReadable($path);
+
 		$data = parse_ini_file($path, true, INI_SCANNER_RAW);
 
 		if (!$data)
@@ -72,7 +74,7 @@ class Ini extends Base
 			return false;
 		}
 
-		if (substr($data, 0, 1) == '{')
+		if (substr($data, 0, 1) == '{' || substr($data, 0, 2) == '[{')
 		{
 			return false;
 		}

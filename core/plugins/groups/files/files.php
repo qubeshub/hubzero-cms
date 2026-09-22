@@ -292,7 +292,7 @@ class plgGroupsFiles extends \Hubzero\Plugin\Plugin
 
 			if (isset($treeLevel['children']) && is_array($treeLevel['children']))
 			{
-				$nodeToggle   = '<a class="tree-folder-toggle" href="javascript:void(0);"></a>';
+				$nodeToggle   = '<a class="tree-folder-toggle" href="javascript:void(0);" aria-label="Toggle folder"></a>';
 				$childrenHtml = $this->_buildFolderTreeHtml($treeLevel['children']);
 			}
 
@@ -314,7 +314,7 @@ class plgGroupsFiles extends \Hubzero\Plugin\Plugin
 	 */
 	private function _buildFolderTreeSelect($tree)
 	{
-		$html  = '<select class="" name="folder">';
+		$html  = '<select class="" name="folder" aria-label="' . Lang::txt('Select folder') . '">';
 		if ($this->group->get('type') == 3)
 		{
 			$html .= '<option value="/">(root)</option>';

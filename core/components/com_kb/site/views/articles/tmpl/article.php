@@ -81,53 +81,55 @@ Document::setTitle(Lang::txt('COM_KB') . ': ' . $this->category->get('title') . 
 			</article><!-- / .container -->
 		</div><!-- / .subject -->
 		<aside class="aside">
-			<div class="container">
-				<h3><?php echo Lang::txt('COM_KB_CATEGORIES'); ?></h3>
-				<ul class="categories">
-					<li>
-						<a<?php if ($this->catid <= 0) { echo ' class="active"'; } ?> href="<?php echo Route::url('index.php?option=' . $this->option . '&section=all'); ?>">
-							<?php echo Lang::txt('COM_KB_ALL_ARTICLES'); ?>
-						</a>
-					</li>
-					<?php
-					$filters = array('state' => Components\Kb\Models\Category::STATE_PUBLISHED, 'access' => User::getAuthorisedViewLevels());
-
-					$categories = $this->archive->categories($filters);
-
-					foreach ($categories as $row) { ?>
-						<?php
-						if ($row->get('articles', 0) <= 0)
-						{
-							continue;
-						}
-						$children = $row->children($filters)->rows();
-						?>
+			<nav aria-label="<?php echo Lang::txt('COM_KB_CATEGORIES'); ?>">
+				<div class="container">
+					<h3><?php echo Lang::txt('COM_KB_CATEGORIES'); ?></h3>
+					<ul class="categories">
 						<li>
-							<a <?php if ($this->catid == $row->get('id')) { echo 'class="active" '; } ?> href="<?php echo Route::url($row->link()); ?>">
-								<?php echo $this->escape(stripslashes($row->get('title'))); ?> <span class="item-count"><?php echo $row->get('articles', 0); ?></span>
+							<a<?php if ($this->catid <= 0) { echo ' class="active" aria-current="page"'; } ?> href="<?php echo Route::url('index.php?option=' . $this->option . '&section=all'); ?>">
+								<?php echo Lang::txt('COM_KB_ALL_ARTICLES'); ?>
 							</a>
-							<?php if ($this->catid == $row->get('id') && count($children) > 0) { ?>
-								<ul class="categories">
-								<?php foreach ($children as $cat) { ?>
-									<li>
-										<a <?php if ($this->category->get('id') == $cat->get('id')) { echo 'class="active" '; } ?> href="<?php echo Route::url($cat->link()); ?>">
-											<?php echo $this->escape(stripslashes($cat->get('title'))); ?> <span class="item-count"><?php echo $cat->get('articles', 0); ?></span>
-										</a>
-									</li>
-								<?php } ?>
-								</ul>
-							<?php } ?>
 						</li>
-					<?php } ?>
-				</ul>
-			</div><!-- / .container -->
+						<?php
+						$filters = array('state' => Components\Kb\Models\Category::STATE_PUBLISHED, 'access' => User::getAuthorisedViewLevels());
+
+						$categories = $this->archive->categories($filters);
+
+						foreach ($categories as $row) { ?>
+							<?php
+							if ($row->get('articles', 0) <= 0)
+							{
+								continue;
+							}
+							$children = $row->children($filters)->rows();
+							?>
+							<li>
+								<a <?php if ($this->catid == $row->get('id')) { echo 'class="active" aria-current="page" '; } ?> href="<?php echo Route::url($row->link()); ?>">
+									<?php echo $this->escape(stripslashes($row->get('title'))); ?> <span class="item-count"><?php echo $row->get('articles', 0); ?></span>
+								</a>
+								<?php if ($this->catid == $row->get('id') && count($children) > 0) { ?>
+									<ul class="categories">
+									<?php foreach ($children as $cat) { ?>
+										<li>
+											<a <?php if ($this->category->get('id') == $cat->get('id')) { echo 'class="active" aria-current="page" '; } ?> href="<?php echo Route::url($cat->link()); ?>">
+												<?php echo $this->escape(stripslashes($cat->get('title'))); ?> <span class="item-count"><?php echo $cat->get('articles', 0); ?></span>
+											</a>
+										</li>
+									<?php } ?>
+									</ul>
+								<?php } ?>
+							</li>
+						<?php } ?>
+					</ul>
+				</div><!-- / .container -->
+			</nav>
 		</aside><!-- / .aside -->
 	</div><!-- / .section-inner -->
 </section><!-- / .main section -->
 
 <?php //if ($this->article->param('allow_comments')) { ?>
 <section class="below section" id="comments">
-	<div class="section-inner hz-layout-with-aside">
+	<div class="section-inner">
 		<div class="subject">
 			<h3 class="comments-title">
 				<?php echo Lang::txt('COM_KB_COMMENTS_ON_ENTRY'); ?>
@@ -195,9 +197,9 @@ Document::setTitle(Lang::txt('COM_KB') . ': ' . $this->category->get('title') . 
 							<blockquote cite="c<?php echo $replyto->get('id'); ?>">
 								<p>
 									<strong><?php echo $name; ?></strong>
-									<span class="comment-date-at"><?php echo Lang::txt('COM_KB_AT'); ?></span>
+									<span class="comment-date-at"><?php echo Lang::txt('COM_KB_DATETIME_AT'); ?></span>
 									<span class="time"><time datetime="<?php echo $replyto->created(); ?>"><?php echo $replyto->created('time'); ?></time></span>
-									<span class="comment-date-on"><?php echo Lang::txt('COM_KB_ON'); ?></span>
+									<span class="comment-date-on"><?php echo Lang::txt('COM_KB_DATETIME_ON'); ?></span>
 									<span class="date"><time datetime="<?php echo $replyto->created(); ?>"><?php echo $replyto->created('date'); ?></time></span>
 								</p>
 								<p>
@@ -230,7 +232,7 @@ Document::setTitle(Lang::txt('COM_KB') . ': ' . $this->category->get('title') . 
 
 						<?php if (!User::isGuest()) { ?>
 							<div class="form-group">
-								<label id="comment-anonymous-label" for="comment-anonymous">
+								<label class="comment-anonymous-label" for="comment-anonymous">
 									<input class="option" type="checkbox" name="comment[anonymous]" id="comment-anonymous" value="1" />
 									<?php echo Lang::txt('COM_KB_FIELD_ANONYMOUS'); ?>
 								</label>
@@ -265,7 +267,6 @@ Document::setTitle(Lang::txt('COM_KB') . ': ' . $this->category->get('title') . 
 				</fieldset>
 			</form>
 		</div><!-- / .subject -->
-		<aside class="aside">&nbsp;</aside>
 	</div><!-- / .section-inner -->
 </section><!-- / .below -->
 

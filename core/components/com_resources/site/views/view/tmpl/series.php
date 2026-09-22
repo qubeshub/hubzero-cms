@@ -208,7 +208,7 @@ if ($mode != 'preview')
 			->display();
 		?>
 		</div><!-- / .subject -->
-		<aside class="aside rankarea">
+		<aside class="aside rankarea" aria-label="<?php echo Lang::txt('Resource metadata'); ?>">
 			<?php
 			// Show metadata
 			if ($this->model->params->get('show_metadata', 1))
@@ -244,8 +244,8 @@ if ($mode != 'preview')
 					->display();
 				?>
 			</div><!-- / .subject -->
-			<aside class="aside extracontent">
 			<?php
+			$asideContent = '';
 			// Show related content
 			$out = Event::trigger('resources.onResourcesSub', array($this->model, $this->option, 1));
 			if (count($out) > 0)
@@ -254,17 +254,21 @@ if ($mode != 'preview')
 				{
 					if (isset($ou['html']))
 					{
-						echo $ou['html'];
+						$asideContent .= $ou['html'];
 					}
 				}
 			}
 			// Show what's popular
 			if ($this->tab == 'about')
 			{
-				echo \Hubzero\Module\Helper::renderModules('extracontent');
+				$asideContent .= \Hubzero\Module\Helper::renderModules('extracontent');
 			}
-			?>
-		</aside><!-- / .aside extracontent -->
+
+			if (trim($asideContent) !== '') : ?>
+			<aside class="aside extracontent" aria-label="<?php echo Lang::txt('Related content'); ?>">
+				<?php echo $asideContent; ?>
+			</aside><!-- / .aside extracontent -->
+			<?php endif; ?>
 		</div>
 	</section>
 
@@ -274,10 +278,12 @@ if ($mode != 'preview')
 	{
 		// Build the results
 		$sortbys = array(
-			'date'     => Lang::txt('COM_RESOURCES_DATE'),
-			'title'    => Lang::txt('COM_RESOURCES_TITLE'),
-			'author'   => Lang::txt('COM_RESOURCES_AUTHOR'),
-			'ordering' => Lang::txt('COM_RESOURCES_ORDERING')
+			'date'       => Lang::txt('COM_RESOURCES_DATE_OLDEST_FIRST'),
+			'date_desc'  => Lang::txt('COM_RESOURCES_DATE_NEWEST_FIRST'),
+			'users_desc' => Lang::txt('COM_RESOURCES_NUMBER_OF_USERS'),
+			'title'      => Lang::txt('COM_RESOURCES_TITLE'),
+			'author'     => Lang::txt('COM_RESOURCES_AUTHOR'),
+			'ordering'   => Lang::txt('COM_RESOURCES_ORDERING')
 		);
 		if ($this->model->params->get('show_ranking'))
 		{
@@ -299,11 +305,46 @@ if ($mode != 'preview')
 			$filters['sortby'] = $defaultsort;
 		}
 
+		$sortField = $filters['sortby'];
+		$sortDirection = 'asc';
+
+		switch ($filters['sortby'])
+		{
+			case 'date':
+				$sortField = 'created';
+			break;
+
+			case 'date_desc':
+				$sortField = 'created';
+				$sortDirection = 'desc';
+			break;
+
+			case 'users_desc':
+				$sortField = 'users';
+				$sortDirection = 'desc';
+			break;
+		}
+
 		// Get children
-		$children = $this->model->children()
+		$childrenQuery = $this->model->children()
 			->whereEquals('standalone', 1)
-			->whereEquals('published', Components\Resources\Models\Entry::STATE_PUBLISHED)
-			->order(($filters['sortby'] == 'date' ? 'created' : $filters['sortby']), 'asc')
+			->whereEquals('published', Components\Resources\Models\Entry::STATE_PUBLISHED);
+
+		if ($sortField == 'users')
+		{
+			include_once Component::path('com_resources') . DS . 'models' . DS . 'stat.php';
+
+			$statsTable = \Components\Resources\Models\Stat::blank()->getTableName();
+			$resourceTable = $this->model->getTableName();
+
+			$childrenQuery->select(
+				'(SELECT rs.users FROM ' . $statsTable . ' AS rs WHERE rs.resid=' . $resourceTable . '.id AND rs.period=14 ORDER BY rs.datetime DESC LIMIT 1)',
+				'users'
+			);
+		}
+
+		$children = $childrenQuery
+			->order($sortField, $sortDirection)
 			->limit($filters['limit'])
 			->start($filters['start'])
 			->rows();

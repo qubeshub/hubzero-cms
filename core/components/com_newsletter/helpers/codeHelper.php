@@ -15,6 +15,7 @@ require_once  "$componentPath/secrets/page_code.php";
 
 use Components\Newsletter\Models\Campaign;
 use Components\Newsletter\Models\Page;
+use Component;
 
 class CodeHelper
 {
@@ -43,7 +44,7 @@ class CodeHelper
 		$sql = "SELECT hash_access_code(?, ?)";
 		$database->prepare($sql)->bind($vars)->execute();
 
-		$hashMatches = ($code == $database->loadResult());
+		$hashMatches = hash_equals((string) $database->loadResult(), (string) $code);
 
 		// Is this access valid?
 		return ($hashMatches && $campNotExpired && $pageExists);

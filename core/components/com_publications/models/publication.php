@@ -17,6 +17,8 @@ use Event;
 use User;
 use Date;
 use Lang;
+use Config;
+use Request;
 
 // Include table classes
 require_once dirname(__DIR__) . DS . 'tables' . DS . 'publication.php';
@@ -886,7 +888,7 @@ class Publication extends Obj
 				}
 				if ($contributor->lastName || $contributor->firstName)
 				{
-					$name  = stripslashes($contributor->lastName);
+					$name  = (!empty($contributor->surname)) ? stripslashes($contributor->surname) : stripslashes($contributor->lastName);
 					if (strstr($contributor->firstName, ' '))
 					{
 						$parts = explode(' ', $contributor->firstName);
@@ -1312,7 +1314,7 @@ class Publication extends Obj
 		if (!empty($curatorGroups))
 		{
 			$common = array_intersect($usersgroups, $curatorGroups);
-			if (count($common) > 1)
+			if (count($common) > 0)
 			{
 				$this->params->set('access-curator-publication', true);
 			}

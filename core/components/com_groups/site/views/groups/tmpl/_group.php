@@ -51,44 +51,30 @@ if ($group->get('published') == 1 && !User::isGuest())
 
 $published = ($group->get('published')) ? true : false;
 ?>
-<div class="group <?php echo (!$published) ? 'notpublished' : ($group->get('published') == 2 ? 'archived' : 'published'); ?>" id="group<?php echo $group->get('gidNumber'); ?>"
+<div class="group <?php echo (!$published) ? 'notpublished' : ($group->get('published') == 2 ? 'archived' : 'published'); ?>" id="group<?php echo $group->get('gidNumber'); ?>" role="group" aria-label="<?php echo $this->escape(stripslashes($group->get('description'))); ?>"
 	data-id="<?php echo $group->get('gidNumber'); ?>"
 	data-status="<?php echo $this->escape($status); ?>"
 	data-title="<?php echo $this->escape(stripslashes($group->get('description')) . ' ' . $group->get('cn')); ?>">
 	<div class="group-contents">
+		<?php
+		$path = PATH_APP . '/site/groups/' . $group->get('gidNumber') . '/uploads/' . $group->get('logo');
+		$groupUrl = Route::url('index.php?option=' . $this->option . '&cn='. $group->get('cn'));
+		?>
 		<?php if ($published) : ?>
-			<a class="group-identity" href="<?php echo Route::url('index.php?option=' . $this->option . '&cn='. $group->get('cn')); ?>">
-		<?php else : ?>
-			<div class="group-identity">
-		<?php endif; ?>
-			<?php
-			$path = PATH_APP . '/site/groups/' . $group->get('gidNumber') . '/uploads/' . $group->get('logo');
-
-			if ($group->get('logo') && is_file($path)):
-			?>
-				<img src="<?php echo with(new Hubzero\Content\Moderator($path))->getUrl(); ?>" alt="<?php echo $this->escape(stripslashes($group->get('description'))); ?>" />
-			<?php else : ?>
-				<span><?php echo $this->escape(stripslashes($group->get('description'))); ?></span>
-			<?php endif; ?>
-		<?php if ($published) : ?>
-			</a>
-		<?php else : ?>
-			</div>
-		<?php endif; ?>
-
-		<div class="group-details">
-			<span class="group-alias"><?php echo $this->escape($group->get('cn')); ?></span>
-			<?php if ($published) : ?>
-				<a class="group-title" data-id="<?php echo $group->get('gidNumber'); ?>" href="<?php echo Route::url('index.php?option=' . $this->option . '&cn='. $group->get('cn')); ?>">
-					<?php echo $this->escape(Hubzero\Utility\Str::truncate(stripslashes($group->get('description')), 60)); ?>
-				</a>
-			<?php else : ?>
-				<span class="group-title">
-					<?php echo $this->escape(Hubzero\Utility\Str::truncate(stripslashes($group->get('description')), 60)); ?>
+			<a class="group-identity group-link" href="<?php echo $groupUrl; ?>">
+				<?php if ($group->get('logo') && is_file($path)): ?>
+					<img src="<?php echo with(new Hubzero\Content\Moderator($path))->getUrl(); ?>" alt="<?php echo $this->escape(stripslashes($group->get('description'))); ?>" />
+				<?php else : ?>
+					<span class="group-img-placeholder"><span class="sr-only"><?php echo $this->escape(stripslashes($group->get('description'))); ?></span></span>
+				<?php endif; ?>
+				<span class="group-details">
+					<span class="group-alias"><?php echo $this->escape($group->get('cn')); ?></span>
+					<span class="group-title" data-id="<?php echo $group->get('gidNumber'); ?>">
+						<?php echo $this->escape(Hubzero\Utility\Str::truncate(stripslashes($group->get('description')), 60)); ?>
+					</span>
 				</span>
-			<?php endif; ?>
-
-			<?php if ($published && $status) : ?>
+			</a>
+			<?php if ($status) : ?>
 				<span class="<?php echo $status; ?> group-membership-status">
 					<?php
 					switch ($status)
@@ -111,7 +97,21 @@ $published = ($group->get('published')) ? true : false;
 					?>
 				</span>
 			<?php endif; ?>
-		</div>
+		<?php else : ?>
+			<div class="group-identity">
+				<?php if ($group->get('logo') && is_file($path)): ?>
+					<img src="<?php echo with(new Hubzero\Content\Moderator($path))->getUrl(); ?>" alt="<?php echo $this->escape(stripslashes($group->get('description'))); ?>" />
+				<?php else : ?>
+					<span><span class="sr-only"><?php echo $this->escape(stripslashes($group->get('description'))); ?></span></span>
+				<?php endif; ?>
+			</div>
+			<div class="group-details">
+				<span class="group-alias"><?php echo $this->escape($group->get('cn')); ?></span>
+				<span class="group-title">
+					<?php echo $this->escape(Hubzero\Utility\Str::truncate(stripslashes($group->get('description')), 60)); ?>
+				</span>
+			</div>
+		<?php endif; ?>
 
 		<?php if (!$published) : ?>
 			<div class="group-meta">
@@ -196,7 +196,7 @@ $published = ($group->get('published')) ? true : false;
 								<?php echo Lang::txt('COM_GROUPS_INFO_JOIN_POLICY'); ?>
 							</div>
 							<div class="join-group">
-								<a class="btn btn-success" href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $group->get('cn') . '&task=join'); ?>"><?php echo Lang::txt('COM_GROUPS_TOOLBAR_JOIN'); ?></a>
+								<a class="btn btn-success" href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $group->get('cn') . '&task=join'); ?>" aria-label="<?php echo Lang::txt('COM_GROUPS_TOOLBAR_JOIN') . ': ' . $this->escape(stripslashes($group->get('description'))) . ' (' . $this->escape($group->get('cn')) . ')'; ?>"><?php echo Lang::txt('COM_GROUPS_TOOLBAR_JOIN'); ?></a>
 							</div>
 						</div>
 					<?php elseif ($group->get('join_policy') == 3) : ?>

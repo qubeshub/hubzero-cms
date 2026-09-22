@@ -53,59 +53,68 @@ Document::setTitle(Lang::txt('COM_KB') . ': ' . $this->category->get('title'));
 				</div><!-- / .container -->
 
 				<div class="container">
-					<nav class="entries-filters" aria-label="<?php echo Lang::txt('JGLOBAL_FILTER_AND_SORT_RESULTS'); ?>">
+					<nav class="entries-filters" aria-label="<?php echo Lang::txt('COM_KB_SORT_LABEL'); ?>">
 						<ul class="entries-menu">
 							<li>
-								<a<?php echo ($this->filters['sort'] == 'popularity') ? ' class="active"' : ''; ?> href="<?php echo Route::url($this->category->link() . '&sort=popularity'); ?>" title="<?php echo Lang::txt('COM_KB_SORT_BY_POPULAR'); ?>">
+								<a<?php echo ($this->filters['sort'] == 'popularity') ? ' class="active" aria-current="page"' : ''; ?> href="<?php echo Route::url($this->category->link() . '&sort=popularity'); ?>">
 									<?php echo Lang::txt('COM_KB_SORT_POPULAR'); ?>
 								</a>
 							</li>
 							<li>
-								<a<?php echo ($this->filters['sort'] == 'recent') ? ' class="active"' : ''; ?> href="<?php echo Route::url($this->category->link() . '&sort=recent'); ?>" title="<?php echo Lang::txt('COM_KB_SORT_BY_RECENT'); ?>">
+								<a<?php echo ($this->filters['sort'] == 'recent') ? ' class="active" aria-current="page"' : ''; ?> href="<?php echo Route::url($this->category->link() . '&sort=recent'); ?>">
 									<?php echo Lang::txt('COM_KB_SORT_RECENT'); ?>
 								</a>
 							</li>
 						</ul>
 					</nav>
 
+					<?php
+					$filters = array('state' => 1, 'access' => User::getAuthorisedViewLevels());
+
+					$categories = $this->archive->categories($filters);
+
+					if (!$this->category->get('id'))
+					{
+						$articles = $this->archive->articles();
+					}
+					else
+					{
+						$articles = $this->category->articles();
+					}
+
+					$articles->whereEquals('state', 1)
+							->whereIn('access', User::getAuthorisedViewLevels());
+
+					if (isset($this->filters['search']) && $this->filters['search'])
+					{
+						$articles->whereLike('title', $this->filters['search'], 1)
+							->orWhereLike('fulltxt', $this->filters['search'], 1)
+							->resetDepth();
+					}
+					if ($this->filters['sort'] == 'popularity')
+					{
+						$articles->order('helpful', 'desc');
+					}
+					else
+					{
+						$articles->order('modified', 'desc')
+								->order('created', 'desc');
+					}
+
+					$articles = $articles->paginated();
+
+					if ($articles->count() > 0) { ?>
 					<table class="articles entries">
+						<caption class="sr-only"><?php echo Lang::txt('COM_KB_ARTICLES'); ?></caption>
+						<thead class="sr-only">
+							<tr>
+								<th scope="col"><?php echo Lang::txt('COM_KB_COL_ID'); ?></th>
+								<th scope="col"><?php echo Lang::txt('COM_KB_COL_ARTICLE'); ?></th>
+								<th scope="col"><?php echo Lang::txt('COM_KB_COL_VOTES'); ?></th>
+							</tr>
+						</thead>
 						<tbody>
-						<?php
-						$filters = array('state' => 1, 'access' => User::getAuthorisedViewLevels());
-
-						$categories = $this->archive->categories($filters);
-
-						if (!$this->category->get('id'))
-						{
-							$articles = $this->archive->articles();
-						}
-						else
-						{
-							$articles = $this->category->articles();
-						}
-
-						$articles->whereEquals('state', 1)
-								->whereIn('access', User::getAuthorisedViewLevels());
-
-						if (isset($this->filters['search']) && $this->filters['search'])
-						{
-							$articles->whereLike('title', $this->filters['search'], 1)
-								->orWhereLike('fulltxt', $this->filters['search'], 1)
-								->resetDepth();
-						}
-						if ($this->filters['sort'] == 'popularity')
-						{
-							$articles->order('helpful', 'desc');
-						}
-						else
-						{
-							$articles->order('modified', 'desc')
-									->order('created', 'desc');
-						}
-
-						$articles = $articles->paginated();
-
-						foreach ($articles as $row)
+						<?php foreach ($articles as $row)
 						{
 							if (!$this->category->get('id'))
 							{
@@ -126,9 +135,9 @@ Document::setTitle(Lang::txt('COM_KB') . ': ' . $this->category->get('title'));
 							}
 							?>
 							<tr>
-								<th>
+								<td>
 									<span class="entry-identifier icon-file"><?php echo $row->get('id'); ?></span>
-								</th>
+								</td>
 								<td>
 									<a class="entry-title" href="<?php echo Route::url($row->link()); ?>"><?php echo $this->escape(stripslashes($row->get('title',''))); ?></a><br />
 									<span class="entry-details">
@@ -163,51 +172,53 @@ Document::setTitle(Lang::txt('COM_KB') . ': ' . $this->category->get('title'));
 						<?php } ?>
 						</tbody>
 					</table>
+					<?php } ?>
 					<?php
 					echo $articles
 							->pagination
 							->setAdditionalUrlParam('search', $this->filters['search'])
 							->setAdditionalUrlParam('sort', $this->filters['sort']);
 					?>
-					<div class="clearfix"></div>
 				</div><!-- / .container -->
 			</form>
 		</div><!-- / .subject -->
 		<aside class="aside">
-			<div class="container">
-				<h3><?php echo Lang::txt('COM_KB_CATEGORIES'); ?></h3>
-				<ul class="categories">
-					<li>
-						<a<?php if ($this->catid <= 0) { echo ' class="active"'; } ?> href="<?php echo Route::url('index.php?option=' . $this->option . '&section=all'); ?>">
-							<?php echo Lang::txt('COM_KB_ALL_ARTICLES'); ?>
-						</a>
-					</li>
-					<?php foreach ($categories as $row) { ?>
-						<?php
-						if ($row->get('articles', 0) <= 0)
-						{
-							continue;
-						}
-						?>
+			<nav aria-label="<?php echo Lang::txt('COM_KB_CATEGORIES'); ?>">
+				<div class="container">
+					<h3><?php echo Lang::txt('COM_KB_CATEGORIES'); ?></h3>
+					<ul class="categories">
 						<li>
-							<a <?php if ($this->catid == $row->get('id')) { echo 'class="active" '; } ?> href="<?php echo Route::url($row->link()); ?>">
-								<?php echo $this->escape(stripslashes($row->get('title'))); ?> <span class="item-count"><?php echo $row->get('articles', 0); ?></span>
+							<a<?php if ($this->catid <= 0) { echo ' class="active" aria-current="page"'; } ?> href="<?php echo Route::url('index.php?option=' . $this->option . '&section=all'); ?>">
+								<?php echo Lang::txt('COM_KB_ALL_ARTICLES'); ?>
 							</a>
-							<?php if ($this->catid == $row->get('id') && $row->children($filters)->total() > 0) { ?>
-								<ul class="categories">
-								<?php foreach ($row->children() as $cat) { ?>
-									<li>
-										<a <?php if ($this->category->get('id') == $cat->get('id')) { echo 'class="active" '; } ?> href="<?php echo Route::url($cat->link()); ?>">
-											<?php echo $this->escape(stripslashes($cat->get('title'))); ?> <span class="item-count"><?php echo $cat->get('articles', 0); ?></span>
-										</a>
-									</li>
-								<?php } ?>
-								</ul>
-							<?php } ?>
 						</li>
-					<?php } ?>
-				</ul>
-			</div><!-- / .container -->
+						<?php foreach ($categories as $row) { ?>
+							<?php
+							if ($row->get('articles', 0) <= 0)
+							{
+								continue;
+							}
+							?>
+							<li>
+								<a <?php if ($this->catid == $row->get('id')) { echo 'class="active" aria-current="page" '; } ?> href="<?php echo Route::url($row->link()); ?>">
+									<?php echo $this->escape(stripslashes($row->get('title'))); ?> <span class="item-count"><?php echo $row->get('articles', 0); ?></span>
+								</a>
+								<?php if ($this->catid == $row->get('id') && $row->children($filters)->total() > 0) { ?>
+									<ul class="categories">
+									<?php foreach ($row->children() as $cat) { ?>
+										<li>
+											<a <?php if ($this->category->get('id') == $cat->get('id')) { echo 'class="active" aria-current="page" '; } ?> href="<?php echo Route::url($cat->link()); ?>">
+												<?php echo $this->escape(stripslashes($cat->get('title'))); ?> <span class="item-count"><?php echo $cat->get('articles', 0); ?></span>
+											</a>
+										</li>
+									<?php } ?>
+									</ul>
+								<?php } ?>
+							</li>
+						<?php } ?>
+					</ul>
+				</div><!-- / .container -->
+			</nav>
 		</aside><!-- / .aside -->
 	</div><!-- / .section-inner -->
 </section><!-- / .main section -->

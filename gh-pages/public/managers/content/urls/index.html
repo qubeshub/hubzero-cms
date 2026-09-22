@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>URLs · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="How the hub turns an address into an article, and how to point an old address at a new one. An address matters more on a hub than on an ordinary site, because…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/content/urls/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">URLs</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#the-seo-settings">The SEO settings</a></li>
+<li class="toc__item toc__item--l2"><a href="#how-an-article-s-address-is-decided">How an article&#x27;s address is decided</a></li>
+<li class="toc__item toc__item--l3"><a href="#a-menu-item">A menu item</a></li>
+<li class="toc__item toc__item--l3"><a href="#the-category-path">The category path</a></li>
+<li class="toc__item toc__item--l2"><a href="#redirects">Redirects</a></li>
+<li class="toc__item toc__item--l2"><a href="#redirecting-with-a-menu-item">Redirecting with a menu item</a></li>
+</ol></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Content</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">URLs</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>URLs</h1>
+        </header>
+        
+        <div class="prose">
+<p>How the hub turns an address into an article, and how to point an old address
+at a new one.</p>
+<p>An address matters more on a hub than on an ordinary site, because hub
+addresses end up in places you cannot edit later: a methods section, a grant
+report, a data availability statement, a link in somebody else's paper. Once
+<code>/about/citing</code> is in print it has to keep working. This chapter is about
+knowing which address a page really has before you publish it, and about
+keeping an old one alive after you move things.</p>
+<p>Most managers need two things from it. The first is the rule that an
+article's URL comes from the menu item pointing at it, not from anything you
+typed on the article. The second is the Redirect Manager, for the day
+somebody reorganises the site.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> This is about articles. Resources, publications, groups, wiki
+pages and the rest build their addresses in their own components, and
+nothing here changes them. The Redirect Manager works on any address on the
+hub, though.</p>
+</aside>
+<h2 id="the-seo-settings">The SEO settings</h2>
+<p>Search engine friendly URLs are configured in <strong>Site → Global
+Configuration</strong>, on the <strong>Site</strong> tab, under <strong>SEO Settings</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Search Engine Friendly URLs</strong></td>
+<td>Yes</td>
+<td>Builds path-style URLs instead of query strings.</td>
+</tr>
+<tr>
+<td><strong>Search Engine Friendly Group URLs</strong></td>
+<td>No</td>
+<td>Nothing. The setting is stored but no code reads it.</td>
+</tr>
+<tr>
+<td><strong>Use URL rewriting</strong></td>
+<td>Yes</td>
+<td>Drops <code>index.php</code> from the path. Needs the web server's rewrite rules in place first.</td>
+</tr>
+<tr>
+<td><strong>Adds Suffix to URL</strong></td>
+<td>No</td>
+<td>Appends the document format, so a page ends in <code>.html</code>.</td>
+</tr>
+<tr>
+<td><strong>Unicode Aliases</strong></td>
+<td>No</td>
+<td>Lets aliases hold non-ASCII characters instead of transliterating them.</td>
+</tr>
+</tbody>
+</table>
+<p>These are also listed in the
+<a href="../../../reference/configuration/index.html">global configuration reference</a>.</p>
+<p>Leave these alone. The shipped values are the ones a hub wants: friendly URLs
+on, rewriting on, everything else off.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> <strong>Use URL rewriting</strong> is one of the few settings where the form's
+own default and the value a hub is installed with disagree. The field
+declares a default of <strong>No</strong>; the configuration the installer writes sets
+it to <strong>Yes</strong>. The stored value is what your hub is running, so a stock hub
+has rewriting on and serves addresses without <code>index.php</code> in them. Only a
+hub whose configuration was written some other way will see <strong>No</strong>.</p>
+</aside>
+<p>Rewriting is the one setting here that can take the site down. It works only
+while the web server has the matching rewrite rules; turn it on where they
+are missing and every page on the hub 404s. That is not an afternoon change
+on a live site. If you must change it, change it, load one page, and be ready
+to change it straight back.</p>
+<h2 id="how-an-article-s-address-is-decided">How an article's address is decided</h2>
+<p>Two things can give an article a URL, and the first one wins.</p>
+<h3 id="a-menu-item">A menu item</h3>
+<p>If any menu item points at the article, the article's URL is that menu item's
+route: its own alias, with the aliases of its parent menu items in front of
+it. This is how the pages that ship with a hub are addressed. The sample
+<strong>Terms of Use</strong> article is reached at <code>/about/terms</code> because a menu item
+with alias <code>terms</code>, nested under a menu item with alias <code>about</code>, points at
+it. The article's own alias, <code>terms</code>, and its category, <code>about</code>, play no part
+— they happen to match here, and often will not.</p>
+<p>Menu item routes are the addresses to publish and to link to. See
+<a href="../../menus/index.html">Menus</a>.</p>
+<h3 id="the-category-path">The category path</h3>
+<p>An article with no menu item is matched by its category path and its own
+alias:</p>
+<pre><code>/{category-path}/{article-alias}
+</code></pre>
+<p>The category path is the nested path of the category the article is in, so an
+article with alias <code>site</code> in a category <code>this</code> nested under a category
+<code>about</code> answers at <code>/about/this/site</code>. Only <strong>published</strong> articles are found
+this way.</p>
+<p>Two shorthands exist for a single-segment address, <code>/{alias}</code>:</p>
+<ul>
+<li>The article is in the <strong>Uncategorised</strong> category. This is the ordinary case
+for a page you want at the top level: file it under Uncategorised and it
+answers at <code>/{alias}</code>.</li>
+<li>Every segment of the article's category path is the same word as the
+article's alias. An article <code>about</code> in category <code>about</code> answers at
+<code>/about</code>. The code calls this out as supported for legacy reasons; do not
+build anything new on it.</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Category path</th>
+<th>Article alias</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>(Uncategorised)</em></td>
+<td><code>terms</code></td>
+<td><code>/terms</code></td>
+</tr>
+<tr>
+<td><code>about</code></td>
+<td><code>site</code></td>
+<td><code>/about/site</code></td>
+</tr>
+<tr>
+<td><code>about/this</code></td>
+<td><code>site</code></td>
+<td><code>/about/this/site</code></td>
+</tr>
+<tr>
+<td><code>about</code></td>
+<td><code>about</code></td>
+<td><code>/about</code></td>
+</tr>
+</tbody>
+</table>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Older Hubzero documentation described URLs as built from a
+<strong>section</strong>, a category, and an article, with segments collapsing when they
+shared an alias. Hubzero 2.4 has no sections. Categories nest instead, to
+any depth, and the path above is what the router matches.</p>
+</aside>
+<p>If nothing matches, the hub falls back to the component router, which
+addresses an article as <code>/content/article/{category-path}/{article-alias}</code>
+and a category as <code>/content/category/{path}</code>. Those addresses work, but they
+are ugly and no one should be given them.</p>
+<h2 id="redirects">Redirects</h2>
+<p>Suppose the hub has grown and the About material is being split up: the page
+that has answered at <code>/about</code> for three years becomes <code>/about/overview</code>, and
+a citation page moves in alongside it. The old address is in a funder report.
+A redirect is how you keep it working.</p>
+<p>The <strong>Redirect Manager</strong> is the supported way to send one address to another.
+Open it at <strong>Site → Maintenance → Routes</strong>.</p>
+<p>To catch that address:</p>
+<ol>
+<li>Go to <strong>Site → Maintenance → Routes</strong> and select <strong>New</strong>.</li>
+<li>Put the old address in <strong>Source URL</strong> — <code>/about</code>.</li>
+<li>Put the new one in <strong>Destination URL</strong> — <code>/about/overview</code>.</li>
+<li>Set <strong>Response Code</strong> to <strong>301 Moved Permanently</strong>, because the move is
+permanent and you want search engines and citation checkers to learn the
+new address.</li>
+<li>Save, and make sure the link is enabled. A link with no destination, or a
+disabled one, does nothing.</li>
+<li>Open <code>/about</code> in a browser. It should land on <code>/about/overview</code>.</li>
+</ol>
+<p>Redirects are entirely reversible: disable the link and the old address goes
+back to a 404. Nothing about a redirect touches the article itself.</p>
+<p>The manager depends on the <strong>System - Redirect</strong> plugin, and says at the top
+of the screen whether that plugin is enabled. With it on, every 404 the site
+serves is recorded as a link with no destination, so the manager doubles as a
+list of the broken addresses people are actually asking for.</p>
+<p>A link has:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Source URL</strong></td>
+<td>The address to catch. Required, and must be unique. The plugin matches the full URL, then the server-relative path with and without a leading slash.</td>
+</tr>
+<tr>
+<td><strong>Destination URL</strong></td>
+<td>Where to send them. Required to enable the link.</td>
+</tr>
+<tr>
+<td><strong>Response Code</strong></td>
+<td><strong>404 Not Found</strong>, <strong>301 Moved Permanently</strong>, or <strong>302 Found</strong>. A new link with a destination defaults to 302.</td>
+</tr>
+<tr>
+<td><strong>Comment</strong></td>
+<td>A note for whoever reads the list next.</td>
+</tr>
+</tbody>
+</table>
+<p>Enable a link and the redirect takes effect; disable it and the address goes
+back to a 404. The toolbar also archives, trashes, and — once you filter to
+<strong>Trashed</strong> — permanently deletes links. This screen is one of the well
+behaved ones: trashing is reversible and the permanent delete is a separate
+button you can only reach after filtering to <strong>Trashed</strong>. See
+<a href="../states/index.html">States, deleting and check-out</a> for why that is worth noticing. Checking several recorded 404s and
+using <strong>Update selected links to the following new URL</strong> sets the same
+destination on all of them at once.</p>
+<p>Its parameters are in the
+<a href="../../../reference/configuration/components/redirect/index.html">Redirect configuration reference</a>.</p>
+<h2 id="redirecting-with-a-menu-item">Redirecting with a menu item</h2>
+<p>A menu item of type <strong>External URL</strong> also acts as a redirect. When the
+requested path matches the menu item's own route exactly, the hub redirects
+to the item's <strong>Link</strong>, which may be another page on the hub.</p>
+<p>This is worth knowing because it works for paths that belong to a component
+rather than to an article. To move a group's audience from <code>/groups/mainclass</code>
+to <code>/groups/spring2016class</code>:</p>
+<ol>
+<li>Go to <strong>Menus → Menu Manager</strong> and open a menu that is not displayed
+anywhere — the <strong>Default</strong> menu on a stock hub.</li>
+<li>If the menu has no <strong>Groups</strong> item, add one: <strong>New</strong>, then <strong>Select</strong> next
+to <strong>Menu Item Type</strong>, then <strong>External URL</strong> under <strong>System Links</strong>. Set
+<strong>Menu Title</strong> to <code>Groups</code> and <strong>Link</strong> to <code>groups</code>. <strong>Save &amp; Close</strong>.</li>
+<li>Add a second <strong>External URL</strong> item with <strong>Menu Title</strong> <code>Mainclass</code> and
+<strong>Link</strong> <code>/groups/spring2016class</code>.</li>
+<li>Set its <strong>Parent Item</strong> to <strong>Groups</strong>, so its route becomes
+<code>groups/mainclass</code>. <strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>Requests for <code>/groups/mainclass</code> now land on <code>/groups/spring2016class</code>.</p>
+<aside class="admonition admonition--tip">
+<p><strong>Tip:</strong> Prefer the Redirect Manager. It records the redirect where the
+next administrator will look for it, gives you the response code, and does
+not put an entry into a menu that someone may later publish by accident.</p>
+</aside>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../states/index.html" rel="prev"><span>Previous</span>States, deleting and check-out</a><a class="pager__next" href="../../components/index.html" rel="next"><span>Next</span>Components</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/08-content/urls.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

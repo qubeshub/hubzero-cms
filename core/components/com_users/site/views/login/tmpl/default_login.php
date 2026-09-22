@@ -59,11 +59,14 @@ if ($primary != 'hubzero' && !isset($refl[$primary]))
 {
 	$primary = null;
 }
+
 ?>
 <?php if ($this->params->get('show_page_heading', 1)) : ?>
 	<header id="content-header">
 		<h2><?php echo $this->escape($this->params->get('page_heading')) ?></h2>
 	</header>
+<?php else : ?>
+	<h2 class="sr-only" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0"><?php echo Lang::txt('COM_USERS_LOGIN'); ?></h2>
 <?php endif; ?>
 
 <section class="main section">
@@ -128,19 +131,19 @@ if ($primary != 'hubzero' && !isset($refl[$primary]))
 						<?php else : ?>
 							<div class="label-input-pair username">
 								<label for="username"><?php echo Lang::txt('COM_USERS_LOGIN_USERNAME'); ?>:</label>
-								<input tabindex="1" type="text" name="username" id="username" class="username" placeholder="<?php echo strtolower(Lang::txt('COM_USERS_LOGIN_USERNAME')); ?>" />
+								<input type="text" name="username" id="username" class="username" placeholder="<?php echo strtolower(Lang::txt('COM_USERS_LOGIN_USERNAME')); ?>" required aria-required="true" />
 							</div>
 						<?php endif; ?>
 						<div class="label-input-pair">
 							<label for="password"><?php echo Lang::txt('COM_USERS_LOGIN_PASSWORD'); ?>:</label>
-							<input tabindex="2" type="password" name="passwd" id="password" class="passwd" placeholder="<?php echo strtolower(Lang::txt('COM_USERS_LOGIN_PASSWORD')); ?>" autocomplete="off" />
+							<input type="password" name="passwd" id="password" class="passwd" placeholder="<?php echo strtolower(Lang::txt('COM_USERS_LOGIN_PASSWORD')); ?>" autocomplete="off" required aria-required="true" />
 							<div class="spinner">
 								<div class="bounce1"></div>
 								<div class="bounce2"></div>
 								<div class="bounce3"></div>
 							</div>
 						</div>
-						<div class="input-error"></div>
+						<div class="input-error" role="alert"></div>
 					</div>
 					<div class="submission">
 						<input type="submit" value="<?php echo Lang::txt('COM_USERS_LOGIN'); ?>" class="login-submit btn btn-primary" />

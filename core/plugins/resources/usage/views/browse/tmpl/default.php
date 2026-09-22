@@ -40,6 +40,12 @@ switch ($this->params->get('defaultDataset', 'cumulative'))
 		break;
 }
 
+// The headline total is a cumulative running total for the cumulative dataset
+// ("X through Jun 2026"), but a per-period total for monthly/yearly ("X in Jun 2026").
+$periodWord = ($this->params->get('defaultDataset', 'cumulative') == 'cumulative')
+	? Lang::txt('PLG_RESOURCES_USAGE_THROUGH')
+	: Lang::txt('PLG_RESOURCES_USAGE_IN');
+
 if (intval($this->params->get('cache', 1)))
 {
 	if (!($results = Cache::get('resources.usage' . $this->resource->id . 'overview')))
@@ -140,12 +146,17 @@ $bars = array();
 					</a>
 				</li>
 			</ul>
+			<p class="usage-download">
+				<a href="<?php echo $base; ?>/index.php?option=com_resources&amp;id=<?php echo $this->resource->id; ?>&amp;active=usage&amp;action=download&amp;period=<?php echo $prd; ?>">
+					<?php echo Lang::txt('PLG_RESOURCES_USAGE_DOWNLOAD_CSV'); ?>
+				</a>
+			</p>
 			<div class="grid">
 			<div class="col span3">
-				<h4><?php echo Lang::txt('PLG_RESOURCES_USAGE_SIMULATION_USERS'); ?></h4>
-				<p class="total">
-					<strong id="users-overview-total"><?php echo number_format($current->users); ?></strong>
-					<span><?php echo Lang::txt('PLG_RESOURCES_USAGE_IN'); ?> <span id="users-overview-date"><time datetime="<?php echo $current->datetime; ?>"><?php echo Date::of($current->datetime)->toLocal(Lang::txt('DATE_FORMAT_HZ1')); ?></time></span></span>
+				<h4 id="sim-users-heading"><?php echo Lang::txt('PLG_RESOURCES_USAGE_SIMULATION_USERS'); ?></h4>
+			<p class="total" role="group" aria-labelledby="sim-users-heading">
+					<span class="total-value" id="users-overview-total"><?php echo number_format($current->users); ?></span>
+					<span><?php echo $periodWord; ?> <span id="users-overview-date"><time datetime="<?php echo $current->datetime; ?>"><?php echo Date::of($current->datetime)->toLocal(Lang::txt('DATE_FORMAT_HZ1')); ?></time></span></span>
 				</p>
 			</div><!-- / .col span3 -->
 			<div class="col span9 omega">
@@ -334,13 +345,26 @@ $bars = array();
 							<?php
 							$i++;
 						}
+						if ($i == 0) { ?>
+							<tr>
+								<td class="textual-data"><?php echo Lang::txt('PLG_RESOURCES_USAGE_NO_DATA_AVAILABLE_FOR_MONTH', $datetime); ?></td>
+								<td></td>
+							</tr>
+						<?php }
 					}
 					else
 					{
 					?>
 							<tr>
-								<td colspan="3" class="textual-data"><?php echo Lang::txt('PLG_RESOURCES_USAGE_NO_DATA_AVAILABLE_FOR_MONTH', $datetime); ?></td>
+								<td class="textual-data"><?php echo Lang::txt('PLG_RESOURCES_USAGE_NO_DATA_AVAILABLE_FOR_MONTH', $datetime); ?></td>
+								<td></td>
 							</tr>
+					<?php
+					}
+					if (empty($dataset) || $cls == 'even')
+					{
+					?>
+						<tr><td colspan="3" class="textual-data"><?php echo Lang::txt('PLG_RESOURCES_USAGE_NO_DATA_AVAILABLE'); ?></td></tr>
 					<?php
 					}
 					?>
@@ -461,12 +485,19 @@ $bars = array();
 								<?php
 								$i++;
 							}
+							if ($i == 0) { ?>
+								<tr>
+									<td class="textual-data"><?php echo Lang::txt('PLG_RESOURCES_USAGE_NO_DATA_AVAILABLE_FOR_MONTH', $datetime); ?></td>
+									<td></td>
+								</tr>
+							<?php }
 						}
 						else
 						{
 						?>
 							<tr>
-								<td colspan="3" class="textual-data"><?php echo Lang::txt('PLG_RESOURCES_USAGE_NO_DATA_AVAILABLE_FOR_MONTH', $datetime); ?></td>
+								<td class="textual-data"><?php echo Lang::txt('PLG_RESOURCES_USAGE_NO_DATA_AVAILABLE_FOR_MONTH', $datetime); ?></td>
+								<td></td>
 							</tr>
 						<?php
 						}
@@ -601,10 +632,10 @@ $bars = array();
 		<div id="runs-overview-wrap" class="usage-wrap">
 			<div class="grid">
 				<div class="col span3">
-					<h4><?php echo Lang::txt('PLG_RESOURCES_USAGE_SIMULATION_RUNS'); ?></h4>
-					<p class="total">
-						<strong id="runs-overview-total"><?php echo number_format($current->jobs); ?></strong>
-						<span><?php echo Lang::txt('PLG_RESOURCES_USAGE_IN'); ?> <span id="runs-overview-date"><time datetime="<?php echo $current->datetime; ?>"><?php echo Date::of($current->datetime)->toLocal(Lang::txt('DATE_FORMAT_HZ1')); ?></time></span></span>
+					<h4 id="sim-runs-heading"><?php echo Lang::txt('PLG_RESOURCES_USAGE_SIMULATION_RUNS'); ?></h4>
+				<p class="total" role="group" aria-labelledby="sim-runs-heading">
+						<span class="total-value" id="runs-overview-total"><?php echo number_format($current->jobs); ?></span>
+						<span><?php echo $periodWord; ?> <span id="runs-overview-date"><time datetime="<?php echo $current->datetime; ?>"><?php echo Date::of($current->datetime)->toLocal(Lang::txt('DATE_FORMAT_HZ1')); ?></time></span></span>
 					</p>
 				</div><!-- / .col span3 -->
 				<div class="col span9 omega">
@@ -660,14 +691,14 @@ $bars = array();
 						<caption><?php echo Lang::txt('PLG_RESOURCES_USAGE_TBL_1_CAPTION'); ?></caption>
 						<thead>
 							<tr>
-								<th scope="col" class="numerical-data"></th>
+								<td class="numerical-data"><span class="sr-only"><?php echo Lang::txt('PLG_RESOURCES_USAGE_COL_METRIC'); ?></span></td>
 								<th scope="col" class="numerical-data"><?php echo Lang::txt('PLG_RESOURCES_USAGE_COL_AVERAGE'); ?></th>
 								<th scope="col" class="numerical-data"><?php echo Lang::txt('PLG_RESOURCES_USAGE_COL_TOTAL'); ?></th>
 							</tr>
 						</thead>
 						<tbody>
 							<tr>
-								<th>
+								<th scope="row">
 									<?php echo Lang::txt('PLG_RESOURCES_USAGE_WALL_TIME'); ?>
 								</th>
 								<td>
@@ -678,7 +709,7 @@ $bars = array();
 								</td>
 							</tr>
 							<tr>
-								<th>
+								<th scope="row">
 									<?php echo Lang::txt('PLG_RESOURCES_USAGE_CPU_TIME'); ?>
 								</th>
 								<td>
@@ -689,7 +720,7 @@ $bars = array();
 								</td>
 							</tr>
 							<tr>
-								<th>
+								<th scope="row">
 									<?php echo Lang::txt('PLG_RESOURCES_USAGE_INTERACTION_TIME'); ?>
 								</th>
 								<td>
@@ -813,7 +844,7 @@ $bars = array();
 							},
 							tickDecimals: 0
 						},
-						yaxis: { min: 0, labelWidth: 25 }
+						yaxis: { min: 0, labelWidth: 25, tickDecimals: 0, minTickSize: 1 }
 					};
 
 
@@ -885,7 +916,7 @@ $bars = array();
 									return month_short[d.getUTCMonth()] + " '" + d.getUTCFullYear().toString().substr(2);//d.getUTCDate() + "/" + (d.getUTCMonth() + 1);
 								}
 							},
-							yaxis: { color: 'transparent', min: 0, autoscaleMargin: 0.1, labelWidth: 25 },
+							yaxis: { color: 'transparent', min: 0, autoscaleMargin: 0.1, labelWidth: 25, tickDecimals: 0, minTickSize: 1 },
 							selection: {
 								mode: "x",
 								color: '<?php echo $this->params->get("chart_color_selection", "rgba(0, 0, 0, 0.3)"); ?>',
@@ -1116,47 +1147,61 @@ $bars = array();
 		</div>
 	<?php } ?>
 
-<div class="customfields">
-	<?php
-		// Parse for <nb:field> tags
-		$type = $this->resource->type;
+<?php
+	// Parse for <nb:field> tags
+	$type = $this->resource->type;
 
-		$data = array();
-		preg_match_all("#<nb:(.*?)>(.*?)</nb:(.*?)>#s", $this->resource->fulltxt, $matches, PREG_SET_ORDER);
-		if (count($matches) > 0)
+	$data = array();
+	preg_match_all("#<nb:(.*?)>(.*?)</nb:(.*?)>#s", $this->resource->fulltxt, $matches, PREG_SET_ORDER);
+	if (count($matches) > 0)
+	{
+		foreach ($matches as $match)
 		{
-			foreach ($matches as $match)
+			$data[$match[1]] = str_replace('="/site', '="' . substr(PATH_APP, strlen(PATH_ROOT)) . '/site', $match[2]);
+		}
+	}
+	include_once Component::path('com_resources') . DS . 'models' . DS . 'elements.php';
+	$elements = new \Components\Resources\Models\Elements($data, $this->resource->type->customFields);
+	$schema = $elements->getSchema();
+	$tab = Request::getCmd('active', 'usage');  // The active tab (section)
+
+	$hasCustomFields = false;
+	if (is_object($schema))
+	{
+		if (!isset($schema->fields) || !is_array($schema->fields))
+		{
+			$schema->fields = array();
+		}
+		foreach ($schema->fields as $field)
+		{
+			if (isset($data[$field->name]) && $elements->display($field->type, $data[$field->name]) && isset($field->display) && $field->display == $tab)
 			{
-				$data[$match[1]] = str_replace('="/site', '="' . substr(PATH_APP, strlen(PATH_ROOT)) . '/site', $match[2]);
+				$hasCustomFields = true;
+				break;
 			}
 		}
-		include_once Component::path('com_resources') . DS . 'models' . DS . 'elements.php';
-		$elements = new \Components\Resources\Models\Elements($data, $this->resource->type->customFields);
-		$schema = $elements->getSchema();
-		$tab = Request::getCmd('active', 'usage');  // The active tab (section)
+	}
 
-		if (is_object($schema))
+	if ($hasCustomFields) :
+?>
+<div class="customfields">
+	<?php
+		foreach ($schema->fields as $field)
 		{
-			if (!isset($schema->fields) || !is_array($schema->fields))
+			if (isset($data[$field->name]))
 			{
-				$schema->fields = array();
-			}
-			foreach ($schema->fields as $field)
-			{
-				if (isset($data[$field->name]))
+				if ($elements->display($field->type, $data[$field->name]) && isset($field->display) && $field->display == $tab)
 				{
-					if ($elements->display($field->type, $data[$field->name]) && isset($field->display) && $field->display == $tab )
-					{
-						?>
-						<h4><?php echo $field->label; ?></h4>
-						<div class="resource-content">
-						<?php echo $elements->display($field->type, $data[$field->name]); ?>
-						</div>
-						<?php
-					}
+					?>
+					<h4><?php echo $field->label; ?></h4>
+					<div class="resource-content">
+					<?php echo $elements->display($field->type, $data[$field->name]); ?>
+					</div>
+					<?php
 				}
 			}
 		}
 	?>
 </div><!-- / .customfields -->
+<?php endif; ?>
 </form>

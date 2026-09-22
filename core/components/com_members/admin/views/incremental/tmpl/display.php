@@ -12,8 +12,9 @@ Toolbar::title(Lang::txt('COM_MEMBERS_REGISTRATION') . ': ' . Lang::txt('Increme
 Toolbar::save();
 
 $dbh = App::get('db');
-$dbh->setQuery('SELECT popover_text, award_per, test_group FROM `#__incremental_registration_options` ORDER BY added DESC LIMIT 1');
-list($popoverText, $awardPer, $testGroup) = $dbh->loadRow();
+$dbh->setQuery('SELECT popover_text, award_per, test_group, repeat_type FROM `#__incremental_registration_options` ORDER BY added DESC LIMIT 1');
+list($popoverText, $awardPer, $testGroup, $repeatType) = $dbh->loadRow();
+$repeatType = (int) $repeatType;
 $dbh->setQuery('SELECT hours FROM `#__incremental_registration_popover_recurrence` ORDER BY idx');
 $recur = $dbh->loadColumn();
 
@@ -174,12 +175,12 @@ $groupDefs = $groups->getAllGroups();
 
 		<div class="input-wrap">
 			<label for="field-award-per">Award per field completed</label>
-			<input type="text" name="award-per" id="field-award-per" value="<?php echo str_replace('"', '&quot;', $awardPer); ?>" />
+			<input type="text" name="award-per" id="field-award-per" value="<?php echo str_replace('"', '&quot;', $awardPer ?? ''); ?>" />
 		</div>
 
 		<div class="input-wrap">
 			<label for="field-test-group">Test group (name or id number)</label>
-			<input type="text" name="test-group" id="field-test-group" value="<?php echo str_replace('"', '&quot;', $testGroup); ?>" />
+			<input type="text" name="test-group" id="field-test-group" value="<?php echo str_replace('"', '&quot;', $testGroup ?? ''); ?>" />
 		</div>
 
 		<fieldset>
@@ -293,8 +294,8 @@ $groupDefs = $groups->getAllGroups();
 			</p>
 			<p>
 				After reaching the end of this list: <br />
-				<input type="radio" name="repeat-type" checked="checked" /> repeat prompting indefinitely using the last delay listed between attempts<br />
-				<input type="radio" name="repeat-type" /> stop prompting
+				<input type="radio" name="repeat-type" value="0" <?php if ($repeatType !== 1) { echo 'checked="checked" '; } ?>/> repeat prompting indefinitely using the last delay listed between attempts<br />
+				<input type="radio" name="repeat-type" value="1" <?php if ($repeatType === 1) { echo 'checked="checked" '; } ?>/> stop prompting
 			</p>
 		</fieldset>
 	</fieldset>

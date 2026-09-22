@@ -16,12 +16,18 @@ use Event;
 use User;
 use Lang;
 use App;
+use Config;
 
 /**
  * Groups controller class
  */
 class Media extends Base
 {
+	/**
+	 * Plugin acccess
+	 */
+	protected $pluginAccess;
+	
 	/**
 	 * Override Execute Method
 	 *
@@ -46,7 +52,7 @@ class Media extends Base
 		$this->authorized = false;
 
 		// Load plugin access groups
-		$pluginAccess = \Hubzero\User\Group\Helper::getPluginAccess($this->group);
+		$this->pluginAccess = \Hubzero\User\Group\Helper::getPluginAccess($this->group);
 
 		// Ensure we found the group info
 		if (!$this->group || !$this->group->get('gidNumber'))
@@ -55,7 +61,7 @@ class Media extends Base
 		}
 
 		// Kick user out if not logged in and should be
-		/*if (User::isGuest() && $pluginAccess['files'] == 'registered')
+		/*if (User::isGuest() && $this->pluginAccess['files'] == 'registered')
 		{
 			$this->_errorHandler(403, Lang::txt('COM_GROUPS_ERROR_NOT_AUTH'));
 		}*/
@@ -64,7 +70,7 @@ class Media extends Base
 		if (User::isGuest())
 		{
 			// If not everyone can view files, kick them to the login page
-			if ($pluginAccess['files'] != 'anyone')
+			if ($this->pluginAccess['files'] != 'anyone')
 			{
 				return $this->loginTask(Lang::txt('COM_GROUPS_MEDIA_MUST_BE_LOGGED_IN'));
 			}
@@ -73,7 +79,7 @@ class Media extends Base
 		// Check authorization
 		if (!in_array(User::get('id'), $this->group->get('members')))
 		{
-			if ($pluginAccess['files'] == 'members')
+			if ($this->pluginAccess['files'] == 'members')
 			{
 				$this->_errorHandler(403, Lang::txt('COM_GROUPS_ERROR_NOT_AUTH'));
 			}
@@ -83,8 +89,32 @@ class Media extends Base
 			$this->authorized = true;
 		}
 
+		// A site administrator is not necessarily a group member, and the write
+		// gate below keys off $this->authorized. Helpers\View::authorize() already
+		// treats core.admin on com_groups as 'admin' for this component, so admit
+		// them here too rather than refusing them their own file manager.
+		if (!$this->authorized && User::authorise('core.admin', 'com_groups'))
+		{
+			$this->authorized = true;
+		}
+
 		//build path to the group folder
 		$this->path = PATH_APP . DS . trim($this->config->get('uploadpath', '/site/groups'), DS) . DS . $this->group->get('gidNumber');
+
+		// Mutating file operations require group membership (authorized).
+		// Resolve the task the way SiteController::execute() does -- it falls back
+		// to the `layout` word when `task` is absent, so reading `task` alone lets
+		// ?layout=deletefile reach deletefileTask() with this gate skipped.
+		$mtask = strtolower(Request::getCmd('task', Request::getWord('layout', '')));
+		$writeTasks = array(
+			'upload', 'ajaxupload', 'editorupload', 'doupload', 'domovefile', 'dorenamefile',
+			'deletefile', 'savefolder', 'dorenamefolder', 'domovefolder',
+			'deletefolder', 'extractfile'
+		);
+		if (in_array($mtask, $writeTasks) && !$this->authorized)
+		{
+			$this->_errorHandler(403, Lang::txt('COM_GROUPS_ERROR_NOT_AUTH'));
+		}
 
 		//continue with parent execute method
 		parent::execute();
@@ -95,6 +125,28 @@ class Media extends Base
 	 *
 	 * @return  void
 	 */
+	protected function _containRelativePath($rel)
+	{
+		// Deliberately not Util::normalizePath(): that substitutes PATH_ROOT for
+		// anything empty() calls empty -- including the string "0", a perfectly
+		// good folder name -- and the loop below would then rebuild the server's
+		// document root as though the caller had asked for it. Every call site
+		// here defaults its parameter to '', so that case is the common one.
+		// Strip control characters, normalise separators, and drop any segment
+		// that would climb out.
+		$rel = preg_replace('#\p{C}+#u', '', (string) $rel);
+		$out = array();
+		foreach (explode('/', str_replace('\\', '/', $rel)) as $seg)
+		{
+			if ($seg === '' || $seg === '.' || $seg === '..')
+			{
+				continue;
+			}
+			$out[] = $seg;
+		}
+		return $out ? DS . implode(DS, $out) : '';
+	}
+
 	public function filebrowserTask()
 	{
 		// set the neeced layout
@@ -228,7 +280,7 @@ class Media extends Base
 
 			if (isset($treeLevel['children']) && is_array($treeLevel['children']))
 			{
-				$nodeToggle   = '<a class="tree-folder-toggle" href="javascript:void(0);"></a>';
+				$nodeToggle   = '<a class="tree-folder-toggle" href="javascript:void(0);" aria-label="Toggle folder"></a>';
 				$childrenHtml = $this->_buildFolderTreeHtml($treeLevel['children']);
 			}
 
@@ -422,11 +474,11 @@ class Media extends Base
 	}
 
 	/**
-	 * File upload - for CKeditor
+	 * File upload - for rich text editor file browser
 	 *
 	 * @return  void
 	 */
-	public function ckeditorUploadTask()
+	public function editorUploadTask()
 	{
 		// vars for later
 		$message = '';
@@ -439,14 +491,14 @@ class Media extends Base
 			$file     = $upload->file;
 			$fileInfo = pathinfo($file);
 
-			// build url to return to ckeditor
+			// build url to return to editor
 			$url  = ($_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
 			$url .= $_SERVER['HTTP_HOST'] . DS . 'groups' . DS . $this->group->get('cn') . DS . 'File:' . $fileInfo['basename'];
 		} else {
-			$message = $upload->error;
+			$message = $upload->message;
 		}
 
-		// return to ckeditor
+		// return to editor
 		echo json_encode(array(
 			'uploaded' => ($message) ? 0 : 1,
 			'url'      => ($message) ? '' : $url,
@@ -598,6 +650,12 @@ class Media extends Base
 	{
 		Request::checkToken(['get', 'post']);
 
+		if (!$this->authorized)
+		{
+			$this->_errorHandler(403, Lang::txt('COM_GROUPS_ERROR_NOT_AUTH'));
+			return;
+		}
+
 		//get config
 		$config = \Component::params('com_media');
 
@@ -635,7 +693,7 @@ class Media extends Base
 		}
 
 		//get folder
-		$folder = Request::getString('folder', '');
+		$folder = $this->_containRelativePath(Request::getString('folder', ''));
 
 		// make sure we have an active folder
 		if ($folder == '')
@@ -749,6 +807,47 @@ class Media extends Base
 
 		$this->logActivity('uploaded', str_replace($this->path, '', $file));
 
+		// Notify the configured reviewers when a file is uploaded to a group whose
+		// file section is open to anyone (opt-in: only when reviewers are set)
+		if ($this->pluginAccess['files'] == 'anyone')
+		{
+			$reviewers = \Component::params('com_groups')->get('group_reviewer', '');
+			$reviewers = array_unique(array_filter(array_map('trim', explode(',', $reviewers))));
+
+			if (!empty($reviewers))
+			{
+				$from = array(
+					'name'  => Config::get('sitename') . ' ' . Lang::txt(strtoupper($this->_name)),
+					'email' => Config::get('mailfrom')
+				);
+
+				$subject = Lang::txt('COM_GROUPS_ACTIVITY_UPLOAD_FILE_NOTICE', Config::get('sitename'));
+
+				$link     = 'https://' . trim($_SERVER['HTTP_HOST'], '/') . '/groups/' . $this->group->get('cn') . '/files';
+				// Escape the user-supplied filename and description for the HTML part
+				$fileHtml = htmlspecialchars($filename . '.' . $ext, ENT_QUOTES, 'UTF-8');
+				$descHtml = htmlspecialchars($this->group->get('description'), ENT_QUOTES, 'UTF-8');
+				$html     = Lang::txt('COM_GROUPS_ACTIVITY_UPLOAD_FILE_NOTICE_HTML_DESC', $fileHtml, $this->group->get('cn'), $descHtml, $link);
+				$plain    = Lang::txt('COM_GROUPS_ACTIVITY_UPLOAD_FILE_NOTICE_DESC', $filename . '.' . $ext, $this->group->get('cn'), $this->group->get('description'), $link);
+
+				foreach ($reviewers as $reviewer)
+				{
+					$message = new \Hubzero\Mail\Message();
+
+					$message->setSubject($subject)
+						->addFrom($from['email'], $from['name'])
+						->setTo($reviewer)
+						->addHeader('X-Mailer', 'PHP/' . phpversion())
+						->addHeader('X-Component', 'com_groups')
+						->addHeader('X-Component-Object', 'file_uploaded_notice')
+						->addHeader('X-Component-ObjectId', $this->group->get('gidNumber'))
+						->addPart($plain, 'text/plain')
+						->addPart($html, 'text/html')
+						->send();
+				}
+			}
+		}
+
 		//return success
 		echo json_encode(array('success' => true));
 		return;
@@ -765,7 +864,7 @@ class Media extends Base
 		$this->view->setLayout('movefile');
 
 		// get request vars
-		$file = Request::getString('file', '');
+		$file = $this->_containRelativePath(Request::getString('file', ''));
 
 		// default folder to have open
 		$this->view->activeFolder = '/uploads';
@@ -809,8 +908,8 @@ class Media extends Base
 		Request::checkToken(['get', 'post']);
 
 		// get request vars
-		$file   = Request::getString('file', '');
-		$folder = Request::getString('folder', '');
+		$file   = $this->_containRelativePath(Request::getString('file', ''));
+		$folder = $this->_containRelativePath(Request::getString('folder', ''));
 
 		// build source and destination folder
 		$source      = $this->path . $file;
@@ -850,7 +949,7 @@ class Media extends Base
 	public function renameFileTask()
 	{
 		// get request vars
-		$file = Request::getString('file', '');
+		$file = $this->_containRelativePath(Request::getString('file', ''));
 
 		// pass vars to view
 		$this->view->group = $this->group;
@@ -874,8 +973,8 @@ class Media extends Base
 		Request::checkToken(['get', 'post']);
 
 		// get request vars
-		$file = Request::getString('file', '');
-		$name = Request::getString('name', '');
+		$file = $this->_containRelativePath(Request::getString('file', ''));
+		$name = basename(Request::getString('name', ''));
 
 		// get parts of original file
 		$fileInfo = pathinfo($file);
@@ -918,8 +1017,11 @@ class Media extends Base
 	 */
 	public function extractFileTask()
 	{
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
 		// Incoming file
-		$file = trim(Request::getString('file', '', 'get'));
+		$file = $this->_containRelativePath(trim(Request::getString('file', '', 'get')));
 
 		$adapter = \Hubzero\Filesystem\Manager::adapter('local', array('path' => $this->path));
 		$archive = \Hubzero\Filesystem\File::fromPath($file, $adapter);
@@ -952,7 +1054,7 @@ class Media extends Base
 		Request::checkToken(['get', 'post']);
 
 		// Incoming file
-		$file = trim(Request::getString('file', '', 'get'));
+		$file = $this->_containRelativePath(trim(Request::getString('file', '', 'get')));
 		$file = $this->path . $file;
 
 		// get folder to output to
@@ -967,16 +1069,16 @@ class Media extends Base
 
 		$this->logActivity('deleted', str_replace($this->path, '', $file));
 
-		//are we deleting through ckeditor
-		$ckeditor     = Request::getString('CKEditor', '', 'get');
-		$ckeditorFunc = Request::getInt('CKEditorFuncNum', 0, 'get');
+		// Are we deleting through the editor file browser?
+		$editorName   = Request::getString('editor', '', 'get');
+		$editorFunc   = Request::getInt('editorFuncNum', 0, 'get');
 		$type         = Request::getString('type', 'image', 'get');
 
-		if (isset($ckeditor) && $ckeditor != '')
+		if (isset($editorName) && $editorName != '')
 		{
 			$base = ($_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
 			$base .= $_SERVER['HTTP_HOST'];
-			$listFilesUrl = $base . DS . 'index.php?option=com_groups&controller=media&task=listfiles&listdir='.$listdir.'&tmpl=component&type='.$type.'&CKEditor='.$ckeditor.'&CKEditorFuncNum='.$ckeditorFunc;
+			$listFilesUrl = $base . DS . 'index.php?option=com_groups&controller=media&task=listfiles&listdir='.$listdir.'&tmpl=component&type='.$type.'&editor='.$editorName.'&editorFuncNum='.$editorFunc;
 
 			App::redirect($listFilesUrl);
 		}
@@ -1043,7 +1145,7 @@ class Media extends Base
 
 		//get request vars
 		$name   = Request::getCmd('name', '');
-		$folder = Request::getString('folder', '');
+		$folder = $this->_containRelativePath(Request::getString('folder', ''));
 
 		//create return folder
 		$returnFolder = $folder;
@@ -1087,7 +1189,7 @@ class Media extends Base
 	public function renameFolderTask()
 	{
 		// get request vars
-		$folder = Request::getString('folder', '');
+		$folder = $this->_containRelativePath(Request::getString('folder', ''));
 
 		// pass vars to view
 		$this->view->group  = $this->group;
@@ -1111,7 +1213,7 @@ class Media extends Base
 		Request::checkToken(['get', 'post']);
 
 		// get request vars
-		$folder = Request::getString('folder', '');
+		$folder = $this->_containRelativePath(Request::getString('folder', ''));
 		$name   = Request::getCmd('name', '');
 
 		//get path info
@@ -1167,7 +1269,7 @@ class Media extends Base
 	public function moveFolderTask()
 	{
 		// get request vars
-		$folder = Request::getString('folder', '');
+		$folder = $this->_containRelativePath(Request::getString('folder', ''));
 
 		// default folder to have open
 		$this->view->activeFolder = '/uploads';
@@ -1213,8 +1315,8 @@ class Media extends Base
 		Request::checkToken(['get', 'post']);
 
 		// get request vars
-		$current = Request::getString('current', '');
-		$folder  = Request::getString('folder', '');
+		$current = $this->_containRelativePath(Request::getString('current', ''));
+		$folder  = $this->_containRelativePath(Request::getString('folder', ''));
 
 		// return path
 		$returnFolder = $this->path . $folder;
@@ -1260,7 +1362,7 @@ class Media extends Base
 		Request::checkToken(['get', 'post']);
 
 		//get request vars
-		$folder = Request::getString('folder', '');
+		$folder = $this->_containRelativePath(Request::getString('folder', ''));
 
 		// define where to return to
 		$returnFolder = dirname($folder);

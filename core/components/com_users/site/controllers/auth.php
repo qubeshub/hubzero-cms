@@ -21,6 +21,8 @@ use Route;
 use Lang;
 use User;
 use App;
+use Component;
+use Session;
 
 /**
  * Login Controller
@@ -183,10 +185,38 @@ class Auth extends SiteController
 			{
 				$decoded_return = base64_decode($return);
 
-				$dr = new Uri($decoded_return);
-				if ($dr->hasUriVar('authenticator'))
+				// geodynamics 2026-08-02: refuse a return that points back at
+				// an auth page. $return is re-emitted into every link this
+				// view renders, so a return naming /login or /register nests
+				// on each hop:
+				//   /login?return=b64(/login?return=b64(/login?...))
+				// That is an unbounded URL space. Verified Bingbot was
+				// walking it and collecting 429s; the 2026-08-01 crawl flood
+				// hit the same space from the other direction. robots.txt now
+				// disallows both paths and the links carry rel=nofollow, but
+				// those only stop well-behaved crawlers *finding* it -- this
+				// stops it existing.
+				//
+				// Dropping the return is the correct degradation: the user
+				// lands on the site default after login instead of being
+				// bounced back to a login page they have just left.
+				$rpath  = (string) parse_url($decoded_return, PHP_URL_PATH);
+				$rquery = (string) parse_url($decoded_return, PHP_URL_QUERY);
+				if (preg_match('#(^|/)(login|register)(/|$)#i', $rpath)
+				 || preg_match('#view=(login|register)(&|$)#i', $rquery))
 				{
-					$auth = $dr->getUriVar('authenticator');
+					$return = null;
+					Request::setVar('return', null);
+					$decoded_return = '';
+				}
+
+				if ($decoded_return !== '')
+				{
+					$dr = new Uri($decoded_return);
+					if ($dr->hasUriVar('authenticator'))
+					{
+						$auth = $dr->getUriVar('authenticator');
+					}
 				}
 				/*$query  = parse_url($decoded_return);
 				if (is_array($query) && isset($query['query']))
@@ -332,7 +362,17 @@ class Auth extends SiteController
 	 **/
 	protected function isBase64($str)
 	{
-		if (preg_match('/[^A-Za-z0-9\+\/\=]/', $str == null ? '' : $str))
+		// An absent `return` gives getString() null, and the character class
+		// matches nothing in the '' it was coerced to -- so this answered true
+		// for null and the caller ran base64_decode(null), a PHP 8 deprecation
+		// printed ahead of the Location header. The caller's fallback is the
+		// same either way, so refusing the empty string changes no live URL.
+		if ($str === null || $str === '')
+		{
+			return false;
+		}
+
+		if (preg_match('/[^A-Za-z0-9\+\/\=]/', $str))
 		{
 			return false;
 		}
@@ -592,7 +632,12 @@ class Auth extends SiteController
 		}
 		else
 		{
-			$return = Reoute::url('index.php');
+			$return = Route::url('index.php');
+		}
+
+		if (!$return || !Uri::isInternal($return))
+		{
+			$return = Route::url('index.php');
 		}
 
 		App::redirect($return);

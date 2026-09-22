@@ -256,7 +256,10 @@ class plgMembersAccount extends \Hubzero\Plugin\Plugin
 		$view->passinfo = $this->getPassInfo();
 
 		// Get the ssh key if it exists
-		$view->key = $this->readKey();
+		$keyError = null;
+
+		$view->key      = $this->readKey($keyError);
+		$view->keyError = $keyError;
 
 		// Get the password rules
 		$password_rules = \Hubzero\Password\Rule::all()
@@ -648,6 +651,12 @@ class plgMembersAccount extends \Hubzero\Plugin\Plugin
 		// Get instance
 		$hzal = \Hubzero\Auth\Link::find_by_id($hzal_id);
 
+		// Only the owner may unlink their own authentication link
+		if ($hzal && $hzal->user_id != $this->member->get('id'))
+		{
+			App::abort(403, Lang::txt('PLG_MEMBERS_UNLINK_FAILED'));
+		}
+
 		if ($hzal)
 		{
 			// Delete the auth_link
@@ -706,60 +715,216 @@ class plgMembersAccount extends \Hubzero\Plugin\Plugin
 	}
 
 	/**
+	 * Get the base path of the webdav mount holding the member home directories
+	 *
+	 * @return  string
+	 */
+	protected function webdavHome()
+	{
+		return DS . 'webdav' . DS . 'home';
+	}
+
+	/**
+	 * Make sure the member has a real home directory, creating one if needed
+	 *
+	 * @return  boolean
+	 */
+	protected function ensureHomeDirectory()
+	{
+		$homeDir = $this->member->get('homeDirectory');
+
+		if (!empty($homeDir) && Filesystem::exists($homeDir))
+		{
+			return true;
+		}
+
+		// Try to create their home directory
+		require_once \Component::path('com_tools') . DS . 'helpers' . DS . 'utils.php';
+
+		return (bool) \Components\Tools\Helpers\Utils::createHomeDirectory($this->member->get('username'));
+	}
+
+	/**
+	 * Resolve the path of the member's .ssh directory, refusing anything unsafe
+	 *
+	 * The webdav mount gives the web server write access to the member's home
+	 * directory, but the member also controls the contents of that directory.
+	 * If any component of <home>/.ssh were a symlink, the member could aim it at
+	 * another account (or at the web server's own account) and take over the
+	 * authorized_keys file found there, so links are never followed - see
+	 * Hubzero\Filesystem\SafePath for how the path is resolved.
+	 *
+	 * @param   boolean  $create  Create the directory when it is missing?
+	 * @param   string   &$error  Language key describing why the path was rejected
+	 * @return  string|boolean    Canonical path of the .ssh directory, false on failure
+	 */
+	protected function sshDirectory($create = true, &$error = null)
+	{
+		$username = (string) $this->member->get('username');
+
+		// Never build a path out of an unexpected username
+		if (!preg_match('/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/', $username))
+		{
+			$error = 'PLG_MEMBERS_ACCOUNT_KEY_UNSAFE_PATH';
+			return false;
+		}
+
+		$reason = null;
+
+		// The home directory is created by the middleware, with the member as its
+		// owner, so it is never created from here
+		$home = \Hubzero\Filesystem\SafePath::directory($this->webdavHome(), $username, false, 0700, $reason);
+
+		if ($home === false)
+		{
+			switch ($reason)
+			{
+				case \Hubzero\Filesystem\SafePath::REASON_BASE:
+					$error = 'PLG_MEMBERS_ACCOUNT_KEY_UPLOAD_NOT_AVAILABLE';
+					break;
+
+				case \Hubzero\Filesystem\SafePath::REASON_MISSING:
+					$error = 'PLG_MEMBERS_ACCOUNT_KEY_UPLOAD_NO_HOME_DIRECTORY';
+					break;
+
+				default:
+					$error = 'PLG_MEMBERS_ACCOUNT_KEY_UNSAFE_PATH';
+					break;
+			}
+
+			return false;
+		}
+
+		$ssh = \Hubzero\Filesystem\SafePath::directory($home, '.ssh', $create, 0700, $reason);
+
+		if ($ssh === false)
+		{
+			$error = ($reason == \Hubzero\Filesystem\SafePath::REASON_CREATE
+				? 'PLG_MEMBERS_ACCOUNT_KEY_UPLOAD_CREATE_FOLDER_FAILED'
+				: 'PLG_MEMBERS_ACCOUNT_KEY_UNSAFE_PATH');
+
+			return false;
+		}
+
+		$error = null;
+
+		return $ssh;
+	}
+
+	/**
+	 * Resolve the authorized_keys path inside an already validated .ssh directory
+	 *
+	 * @param   string  $ssh     Validated .ssh directory
+	 * @param   string  &$error  Language key describing why the path was rejected
+	 * @return  string|boolean   Path of the authorized_keys file, false on failure
+	 */
+	protected function authorizedKeysPath($ssh, &$error = null)
+	{
+		$error = null;
+
+		$auth = \Hubzero\Filesystem\SafePath::file($ssh, 'authorized_keys');
+
+		if ($auth === false)
+		{
+			$error = 'PLG_MEMBERS_ACCOUNT_KEY_UNSAFE_PATH';
+			return false;
+		}
+
+		return $auth;
+	}
+
+	/**
+	 * Write the authorized_keys file without ever following a link
+	 *
+	 * @param   string   $auth     Validated path of the authorized_keys file
+	 * @param   string   $content  File content
+	 * @return  boolean
+	 */
+	protected function writeAuthorizedKeys($auth, $content)
+	{
+		return \Hubzero\Filesystem\SafePath::write($auth, $content, 0600);
+	}
+
+	/**
+	 * Record a rejected SSH key path so abuse attempts are visible to admins
+	 *
+	 * @param   string  $action  Either 'read' or 'write'
+	 * @param   string  $error   Language key the path was rejected with
+	 * @return  void
+	 */
+	protected function logUnsafePath($action, $error)
+	{
+		if ($error != 'PLG_MEMBERS_ACCOUNT_KEY_UNSAFE_PATH')
+		{
+			return;
+		}
+
+		Log::warning(sprintf(
+			'Refused to %s the SSH key of member %s: unsafe path under %s',
+			$action,
+			$this->member->get('username'),
+			$this->webdavHome()
+		));
+	}
+
+	/**
 	 * Upload SSH key
 	 *
 	 * @return  void
 	 */
 	private function _uploadKey()
 	{
-		// Webdav path
-		$base = DS . 'webdav' . DS . 'home';
-		$user = DS . $this->member->get('username');
-		$ssh  = DS . '.ssh';
-		$auth = DS . 'authorized_keys';
+		Request::checkToken();
 
-		// Real home directory
-		$homeDir = $this->member->get('homeDirectory');
+		$memberId = (int) $this->member->get('id');
+		$userId   = (int) $this->user->get('id');
 
-		// First, make sure webdav is there and that the necessary folders are there
-		if (!Filesystem::exists($base))
+		// Only the account owner can change their own key, and only when the hub
+		// offers local services at all. Whether this action is reachable at all
+		// is decided by onMembersAreas() further up, but that is several steps
+		// away from a write into someone's home directory.
+		if (!$this->params->get('ssh_key_upload', 0)
+		 || !$userId
+		 || $memberId !== $userId)
+		{
+			App::abort(403, Lang::txt('PLG_MEMBERS_ACCOUNT_KEY_UPLOAD_NOT_AUTHORIZED'));
+			return;
+		}
+
+		// First, make sure webdav is there
+		if (!is_dir($this->webdavHome()))
 		{
 			App::abort(500, Lang::txt('PLG_MEMBERS_ACCOUNT_KEY_UPLOAD_NOT_AVAILABLE'));
 			return;
 		}
-		if (!Filesystem::exists($homeDir))
-		{
-			// Try to create their home directory
-			require_once \Component::path('com_tools') . DS . 'helpers' . DS . 'utils.php';
 
-			if (!\Components\Tools\Helpers\Utils::createHomeDirectory($this->member->get('username')))
-			{
-				App::abort(500, Lang::txt('PLG_MEMBERS_ACCOUNT_KEY_UPLOAD_NO_HOME_DIRECTORY'));
-				return;
-			}
-		}
-		if (!Filesystem::exists($base . $user . $ssh))
+		// ... and that the member has a home directory to write into
+		if (!$this->ensureHomeDirectory())
 		{
-			// User doesn't have an ssh directory, so try to create one (with appropriate permissions)
-			if (!Filesystem::makeDirectory($base . $user . $ssh, 0700))
-			{
-				App::abort(500, Lang::txt('PLG_MEMBERS_ACCOUNT_KEY_UPLOAD_CREATE_FOLDER_FAILED'));
-				return;
-			}
+			App::abort(500, Lang::txt('PLG_MEMBERS_ACCOUNT_KEY_UPLOAD_NO_HOME_DIRECTORY'));
+			return;
+		}
+
+		$error = null;
+
+		if (!($ssh = $this->sshDirectory(true, $error))
+		 || !($auth = $this->authorizedKeysPath($ssh, $error)))
+		{
+			$this->logUnsafePath('write', $error);
+
+			App::abort(500, Lang::txt($error));
+			return;
 		}
 
 		// Get the form input
 		$content = Request::getString('keytext', '');
 
 		// Write to the file
-		if (!Filesystem::write($base . $user . $ssh . $auth, $content) && $content != '')
+		if (!$this->writeAuthorizedKeys($auth, $content))
 		{
 			App::abort(500, Lang::txt('PLG_MEMBERS_ACCOUNT_KEY_UPLOAD_WRITE_FAILED'));
 			return;
 		}
-
-		// Set correct permissions on authorized_keys file
-		Filesystem::setPermissions($base . $user . $ssh . $auth, '0600');
 
 		// Set the redirect
 		Notify::success(Lang::txt('PLG_MEMBERS_ACCOUNT_KEY_UPLOAD_SUCCESSFUL'));
@@ -772,67 +937,39 @@ class plgMembersAccount extends \Hubzero\Plugin\Plugin
 	/**
 	 * Read SSH key
 	 *
+	 * @param   string  &$error  Language key describing why the key couldn't be read
 	 * @return  string  .ssh/authorized_keys file content
 	 */
-	private function readKey()
+	private function readKey(&$error = null)
 	{
-		// Webdav path
-		$base = DS . 'webdav' . DS . 'home';
-		$user = DS . $this->member->get('username');
-		$ssh  = DS . '.ssh';
-		$auth = DS . 'authorized_keys';
-
-		// Real home directory
-		$homeDir = $this->member->get('homeDirectory');
-
-		$key = '';
-
-		// First, make sure webdav is there and that the necessary folders are there
-		if (!Filesystem::exists($base))
+		// First, make sure webdav is there and that the member has a home directory
+		if (!is_dir($this->webdavHome()) || !$this->ensureHomeDirectory())
 		{
 			// Not sure what to do here
-			return $key = false;
+			return false;
 		}
-		if (!Filesystem::exists($homeDir))
-		{
-			// Try to create their home directory
-			require_once \Component::path('com_tools') . DS . 'helpers' . DS . 'utils.php';
 
-			if (!\Components\Tools\Helpers\Utils::createHomeDirectory($this->member->get('username')))
-			{
-				return $key = false;
-			}
-		}
-		if (!Filesystem::exists($base . $user . $ssh))
+		if (!($ssh = $this->sshDirectory(true, $error))
+		 || !($auth = $this->authorizedKeysPath($ssh, $error)))
 		{
-			// User doesn't have an ssh directory, so try to create one (with appropriate permissions)
-			if (!Filesystem::makeDirectory($base . $user . $ssh, 0700, true, true))
-			{
-				return $key = false;
-			}
+			$this->logUnsafePath('read', $error);
+
+			return false;
 		}
-		if (!Filesystem::exists($base . $user . $ssh . $auth))
+
+		if (!is_file($auth))
 		{
 			// Try to create their authorized keys file
-			$content = ''; // J25 passes param by reference so couldn't use constant below
-			Filesystem::write($base . $user . $ssh . $auth, $content);
-			if (!Filesystem::exists($base . $user . $ssh . $auth))
+			if (!$this->writeAuthorizedKeys($auth, ''))
 			{
-				return $key = false;
+				return false;
 			}
-			else
-			{
-				// Set correct permissions on authorized_keys file
-				Filesystem::setPermissions($base . $user . $ssh . $auth, '0600');
 
-				return $key;
-			}
+			return '';
 		}
 
 		// Read the file contents
-		$key = Filesystem::read($base . $user . $ssh . $auth);
-
-		return $key;
+		return Filesystem::read($auth);
 	}
 
 	/**
@@ -845,7 +982,7 @@ class plgMembersAccount extends \Hubzero\Plugin\Plugin
 	{
 		// Create the database object and set the token
 		$db     = App::get('db');
-		$params = json_decode($this->user->get('params'));
+		$params = json_decode((string) $this->user->get('params'));
 
 		if (empty($params) || !is_object($params))
 		{

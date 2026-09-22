@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Installation and first-time configuration · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Switching a hub from Basic search to Solr takes three things: an Apache Solr service running somewhere the hub can reach, the connection settings that point…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/components/search/install/">
+  <link rel="icon" href="../../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../../index.html">
+      <img class="brand__mark" src="../../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../../search-index.json" data-base="../../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../../docs/index.html">About</a>
+      <a href="../../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../../index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../saml/index.html">SAML</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Installation and first-time configuration</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#install-and-start-solr">Install and start Solr</a></li>
+<li class="toc__item toc__item--l2"><a href="#point-the-hub-at-solr">Point the hub at Solr</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-the-first-visit-creates">What the first visit creates</a></li>
+<li class="toc__item toc__item--l2"><a href="#check-the-connection">Check the connection</a></li>
+<li class="toc__item toc__item--l2"><a href="#build-the-first-index">Build the first index</a></li>
+<li class="toc__item toc__item--l2"><a href="#you-are-done-when">You are done when</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Components</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Search</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Installation and first-time configuration</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Installation and first-time configuration</h1>
+        </header>
+        
+        <div class="prose">
+<p>Switching a hub from Basic search to Solr takes three things: an Apache Solr
+service running somewhere the hub can reach, the connection settings that
+point the hub at it, and a first pass over the hub's content to fill the
+index.</p>
+<p>Do this on a hub that has outgrown Basic search — several thousand resources
+and publications, members complaining about ranking, a wish for counts by
+content type down the side of the results page. Do not do it because it
+sounds better. The whole sequence takes a server administrator, an hour or
+more of indexing, and it removes forum, wiki, questions, wishlist, event and
+ticket results from search permanently. If none of that is worth it, close
+this chapter and stay on Basic.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> There is no dry run. The moment you set <strong>Engine</strong> to
+<strong>Apache Solr</strong> and save, the site's search box starts answering from an
+empty Solr index — every member sees no results for everything — and it
+keeps doing so until the first index finishes. The change is reversible in
+one field, so if you are caught out, set <strong>Engine</strong> back to
+<strong>Basic (default)</strong> and members get working search back on the next
+request. Prefer to do the switch out of hours, or on a staging copy first.</p>
+</aside>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Solr itself is not part of this repository. The hub ships only
+the client side — the Solarium 6.2 library from Composer and the two
+adapters,
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Search/Adapters/SolrIndexAdapter.php"><code>SolrIndexAdapter</code></a>
+and
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Search/Adapters/SolrQueryAdapter.php"><code>SolrQueryAdapter</code></a>.
+No Solr schema, config set, service file, or package script is in the tree,
+so nothing on this page about installing or running Solr could be checked
+against code. Treat the service instructions as a pointer to your platform
+packaging, not as verified detail.</p>
+</aside>
+<h2 id="install-and-start-solr">Install and start Solr</h2>
+<p>Hubzero packages Solr for RedHat and Debian as <code>hubzero-solr</code>. Your platform
+packaging supplies the schema the hub expects, the service definition, and
+the port it listens on. Install it with the system package manager and start
+the service before configuring anything in the administrator interface.</p>
+<p>Once the service answers, the hub needs no shell access to it. Everything
+below happens in the administrator interface.</p>
+<h2 id="point-the-hub-at-solr">Point the hub at Solr</h2>
+<ol>
+<li>Go to <strong>Components &gt; Search</strong>.</li>
+<li>Select <strong>Options</strong>.</li>
+<li>On the first tab, set <strong>Engine</strong> to <strong>Apache Solr</strong>.</li>
+<li>Open the <strong>Solr</strong> tab and check the connection settings against your
+installation.</li>
+<li>Select <strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>The connection is assembled from five of those fields — host, port, path,
+context, and core — into one Solarium endpoint. Their defaults are:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Solr Host</strong></td>
+<td><code>localhost</code></td>
+</tr>
+<tr>
+<td><strong>Solr Port</strong></td>
+<td><code>8445</code></td>
+</tr>
+<tr>
+<td><strong>Solr Core</strong></td>
+<td><code>hubzero-solr-core</code></td>
+</tr>
+<tr>
+<td><strong>Solr Context</strong></td>
+<td><code>solr</code></td>
+</tr>
+<tr>
+<td><strong>Solr Path</strong></td>
+<td><code>/</code></td>
+</tr>
+<tr>
+<td><strong>Solr Log Path</strong></td>
+<td><code>/srv/hubzero-solr/logs/solr.log</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Solr Log Path</strong> is read from the web server, not over the network, so it
+has to be a path the hub's PHP process can open. The remaining fields on the
+tab tune indexing and querying rather than the connection; they are all
+listed in the
+<a href="../../../../reference/configuration/components/search/index.html">configuration reference</a>
+and described in <a href="../index/index.html">Maintaining the index</a>.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> The defaults match a stock <code>hubzero-solr</code> install on the same
+machine as the hub. Changing the host, core, path, or context means the
+corresponding change on the Solr side; there is no validation of these
+fields and no test-connection button.</p>
+</aside>
+<h2 id="what-the-first-visit-creates">What the first visit creates</h2>
+<p>The first time you open a Solr screen after switching engines, the component
+sets up an account for the indexer if <code>app/config/solr.json</code> does not already
+exist. It creates:</p>
+<ul>
+<li>a user named <code>hubzerosolrworker</code> with a random password and no login shell;</li>
+<li>an API application called <strong>HUBzero - Solr Indexing</strong>;</li>
+<li><code>app/config/solr.json</code>, holding that application's client id and secret,
+the account's credentials, and the Solr host and port.</li>
+</ul>
+<p>The file is written by <code>configure()</code> in the Solr controller:</p>
+<pre><code class="language-php">				$comConfig = Component::params('com_search');
+				$application = $application-&gt;toObject();
+				$config = array();
+				$config['solr_client_id'] = $application-&gt;client_id;
+				$config['solr_client_secret'] = $application-&gt;client_secret;
+				$config['solr_username'] = $user-&gt;get('username');
+				$config['solr_password'] = $newpass;
+				$config['solr_host'] = $comConfig-&gt;get('solr_host', 'localhost');
+				$config['solr_port'] = $comConfig-&gt;get('solr_port', '8445');
+				$json = json_encode($config);
+
+				$filesystem = App::get('filesystem');
+				$filesystem-&gt;write(PATH_APP . '/config/solr.json', $json);
+</code></pre>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> That account is added to <strong>every</strong> access group on the hub, so
+that the indexer can read content at every access level. Do not delete the
+user or the application, and treat <code>app/config/solr.json</code> as a secret.</p>
+</aside>
+<h2 id="check-the-connection">Check the connection</h2>
+<p>Return to <strong>Components &gt; Search</strong>. The <strong>Overview</strong> tab shows a Solr Status
+panel with the mechanism in use and the time of the last document insert. A
+green check and <em>The search engine is responding</em> means the hub reached Solr.</p>
+<p>If instead you see <em>The search engine is not responding</em>, the hub could not
+open the endpoint. Check the host, port, core, path, and context on the
+<strong>Solr</strong> tab, and check that the Solr service is running.</p>
+<aside class="admonition admonition--important">
+<p><strong>Important:</strong> A green check means the hub opened a connection to Solr. It
+does not mean the index has anything in it, and it does not mean saved
+content is reaching it. Those are the next two sections. Managers stop
+here, see the tick, and report search as working.</p>
+</aside>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The site's search entry point can fall back to the Basic engine,
+but nothing in this tree ever sets the session flag that triggers it, so a
+hub whose Solr service dies does not quietly revert — its search page
+breaks. You can force Basic for one request by adding <code>?engine=basic</code> to
+the search URL, which is useful for checking whether a bad result is Solr's
+doing or the content's.</p>
+</aside>
+<h2 id="build-the-first-index">Build the first index</h2>
+<p>A fresh Solr core is empty; nothing is findable until the hub has pushed its
+content into it. Two things have to be enabled first, both under
+<strong>Extensions &gt; Plug-ins</strong>:</p>
+<ul>
+<li><strong>System - HUBzero</strong> (<code>plg_system_content</code>), which raises the event when a
+record is saved or destroyed. Enabled by default.</li>
+<li><strong>Search - Solr</strong> (<code>plg_search_solr</code>), which writes those records to Solr.
+<strong>Ships disabled</strong> — you have to enable it.</li>
+</ul>
+<p>Then build the index from the <strong>Searchable Components</strong> tab:</p>
+<ol>
+<li>Select <strong>Discover Searchable Components</strong>. The component scans
+<code>core/components</code> and <code>app/components</code> for a model implementing
+<code>Hubzero\Search\Searchable</code> and adds a row for each one it finds.</li>
+<li>For each component you want indexed, select the <strong>Not Indexed</strong> state
+icon in the <strong>Active?</strong> column. The hub indexes that component's records in
+batches; the row reports its progress and ends at <strong>Indexed</strong>.</li>
+</ol>
+<p>The first pass is slow and only needs doing once per component. On a large
+hub it is better run from the command line, where it is not bounded by the
+web server's time limit:</p>
+<pre><code class="language-bash">muse searchmigration run --all -url='https://yourhub.org'
+</code></pre>
+<p>See <a href="../../../../reference/muse/index.html#muse-searchmigration"><code>muse searchmigration</code></a> for
+its options: <code>-components</code> indexes a named list instead of <code>--all</code>, and
+<code>--rebuild</code> includes components that have already been indexed once.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> <code>-url</code> is required — the command stops without it — but nothing
+reads it. Documents get their identity from the hub's <strong>Site Code</strong>
+configuration setting, not from this argument. Pass the hub's own URL and
+ignore it.</p>
+</aside>
+<p>Once a component reads <strong>Indexed</strong>, saving a record of that type updates Solr
+without further action. <a href="../index/index.html">Maintaining the index</a> covers what
+happens after that.</p>
+<h2 id="you-are-done-when">You are done when</h2>
+<p>Check all five before telling anyone search is working:</p>
+<ol>
+<li><strong>Overview</strong> reads <em>The search engine is responding</em>.</li>
+<li><strong>Search - Solr</strong> shows as enabled in the plugin manager.</li>
+<li>Every content type you care about reads <strong>Indexed</strong> on <strong>Searchable
+Components</strong>, with a non-zero record count beside it.</li>
+<li>A search on the site for something you know exists returns it.</li>
+<li>You edit that record's title, wait out the <strong>CommitWithin</strong> window — five
+minutes by default — and search finds it under the new title.</li>
+</ol>
+<p>Step 5 is the one that catches a missing <strong>Search - Solr</strong> plugin, and it is
+the only check that proves the hub will keep the index current on its own.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 009ec973b7</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../index.html" rel="prev"><span>Previous</span>Search</a><a class="pager__next" href="../admin/index.html" rel="next"><span>Next</span>Administration</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/09-components/31-search/01-install.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

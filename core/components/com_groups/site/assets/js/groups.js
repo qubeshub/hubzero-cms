@@ -258,7 +258,7 @@ HUB.Groups = {
 		var floatingAssetBrowser = $('.floating-iframe-container');
 		if (floatingAssetBrowser.length)
 		{
-			floatingAssetBrowser.append('<a href="#" class="floating-iframe-toggle"></a>');
+			floatingAssetBrowser.append('<a href="#" class="floating-iframe-toggle" aria-label="Toggle asset browser"><span class="sr-only">Toggle asset browser</span></a>');
 			$('.floating-iframe-toggle')
 				.on('hover', function(event) {
 					event.preventDefault();
@@ -1106,7 +1106,7 @@ jQuery(document).ready(function($){
 	if (el.length) {
 		el.addClass('js');
 
-		var select = $("<select />").on('change', function() {
+		var select = $("<select />", {"aria-label": "Group navigation"}).on('change', function() {
 			window.location = $(this).find("option:selected").val();
 		});
 

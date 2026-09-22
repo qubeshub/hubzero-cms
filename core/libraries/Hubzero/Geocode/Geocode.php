@@ -258,11 +258,16 @@ class Geocode
 		$longitude = isset($coordinates['longitude']) ? $coordinates['longitude'] : $coordinates[1];
 
 		// Instantiate the Geocoder service and pass it the list of providers
-		$geocoder = new \Geocoder\Geocoder();
-		$geocoder->registerProvider(new \Geocoder\Provider\ChainProvider($p));
+		$geocoder = new \Geocoder\ProviderAggregator();
+
+		$chain = new \Geocoder\Provider\Chain\Chain($p);
+
+		$geocoder->registerProvider($chain);
 
 		// Try to get some data...
-		return $geocoder->reverse($latitude, $longitude);
+		$query = \Geocoder\Query\ReverseQuery::fromCoordinates($latitude, $longitude);
+
+		return $geocoder->reverseQuery($query);
 	}
 
 	/**
@@ -375,7 +380,7 @@ class Geocode
 			return array();
 		}
 
-		$gdb->setQuery("SELECT DISTINCT continent FROM country_continent WHERE LOWER(country) ='" . strtolower($country) . "'");
+		$gdb->setQuery("SELECT DISTINCT continent FROM country_continent WHERE LOWER(country) =" . $gdb->quote(strtolower($country)));
 		return $gdb->loadColumn();
 	}
 
@@ -469,8 +474,10 @@ class Geocode
 
 			// Convert the dotted quad IP address to long:
 			$n_ip = ip2long($ip);
-
-			$sql = "SELECT LOWER(countrySHORT) FROM ipcountry WHERE ipFROM <= " .  $gdb->quote($n_ip) . " AND ipTO >= " . $gdb->quote($n_ip);
+			$sql = "SELECT LOWER(countrySHORT) FROM ipcountry"
+				. " INNER JOIN (SELECT MAX(ipFROM) AS start FROM ipcountry"
+				. " WHERE ipFROM <= " . $gdb->quote($n_ip) . ") s ON (ipFROM = s.start)"
+				. " WHERE ipTO >= " . $gdb->quote($n_ip);
 			$gdb->setQuery($sql);
 			$country = stripslashes($gdb->loadResult());
 		}

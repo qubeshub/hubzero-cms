@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Global configuration · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Site-wide settings live on one screen, Site Global Configuration . It covers the site&#x27;s name and defaults, the mail transport, sessions, caching, search engine…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/configuring/hub/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Global configuration</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#what-is-safe-to-change-and-what-is-not">What is safe to change and what is not</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-this-screen-is-not">What this screen is not</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-screen">The screen</a></li>
+<li class="toc__item toc__item--l3"><a href="#toolbar">Toolbar</a></li>
+<li class="toc__item toc__item--l3"><a href="#tabs">Tabs</a></li>
+<li class="toc__item toc__item--l2"><a href="#site">Site</a></li>
+<li class="toc__item toc__item--l3"><a href="#taking-the-hub-offline">Taking the hub offline</a></li>
+<li class="toc__item toc__item--l2"><a href="#system">System</a></li>
+<li class="toc__item toc__item--l3"><a href="#session-settings">Session Settings</a></li>
+<li class="toc__item toc__item--l2"><a href="#server">Server</a></li>
+<li class="toc__item toc__item--l3"><a href="#database-settings">Database Settings</a></li>
+<li class="toc__item toc__item--l3"><a href="#mail-settings">Mail Settings</a></li>
+<li class="toc__item toc__item--l2"><a href="#api">API</a></li>
+<li class="toc__item toc__item--l2"><a href="#permissions-and-text-filters">Permissions and Text Filters</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-moved-where">What moved where</a></li>
+<li class="toc__item toc__item--l2"><a href="#ldap">LDAP</a></li>
+<li class="toc__item toc__item--l2"><a href="#where-members-land-after-signing-in">Where members land after signing in</a></li>
+<li class="toc__item toc__item--l2"><a href="#older-screenshots">Older screenshots</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Configuring</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Global configuration</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Global configuration</h1>
+        </header>
+        
+        <div class="prose">
+<p>Site-wide settings live on one screen, <strong>Site &gt; Global Configuration</strong>. It
+covers the site's name and defaults, the mail transport, sessions, caching,
+search engine friendly URLs, the API rate limits, the permission rules that
+sit above every component, and the text filters applied to user input.</p>
+<aside class="admonition admonition--important">
+<p><strong>Important:</strong> There is no longer a <strong>Hub</strong> component. The separate Hub
+settings screen described by older documentation was removed; its settings
+either moved into Global Configuration or disappeared with the features
+that used them. <a href="#what-moved-where">What moved where</a> maps the old fields
+onto the current ones.</p>
+</aside>
+<p>Most of these settings are chosen once, during installation, and then left
+alone. You come back for a handful of reasons: the hub is going down for an
+hour and you want visitors told; mail has started bouncing and the From
+address is wrong; a new member of staff needs administrator access. Those are
+safe errands. The rest of the screen is not, and the fields sit side by side
+with no visual difference between them.</p>
+<h2 id="what-is-safe-to-change-and-what-is-not">What is safe to change and what is not</h2>
+<p>Every field on this screen is written to a file the moment you select <strong>Save</strong>.
+There is no preview, no staging, and no undo button. Whoever is using the hub
+at that moment gets the new setting on their next page.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>If you get it wrong</th>
+<th>Can you fix it from the administrator interface?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Site Offline</strong></td>
+<td>Every visitor without <strong>Offline Access</strong> sees the offline page and a <code>503</code> response</td>
+<td>Yes. The administrator interface is never taken offline</td>
+</tr>
+<tr>
+<td><strong>Session Handler</strong>, <strong>Session Lifetime</strong></td>
+<td>Everyone signed in is signed out; a handler whose server is not running means nobody can sign in at all</td>
+<td>No, if nobody can sign in. Edit <code>app/config/session.php</code> on the server</td>
+</tr>
+<tr>
+<td><strong>Cookie Domain</strong>, <strong>Cookie Path</strong></td>
+<td>Sessions stop sticking: sign-in appears to succeed and the next page is signed out again, on the site <em>and</em> in the administrator interface</td>
+<td>No. Edit <code>app/config/session.php</code> on the server</td>
+</tr>
+<tr>
+<td><strong>Mailer</strong></td>
+<td>Every mail the hub sends fails. Nothing on screen says so — registrations, password resets and ticket notifications simply never arrive</td>
+<td>Yes, once you notice</td>
+</tr>
+<tr>
+<td><strong>Database Tables Prefix</strong>, <strong>Database Host</strong>, <strong>Database Name</strong>, <strong>Username</strong></td>
+<td>The site points at tables that do not exist. Every page, including the administrator interface, stops</td>
+<td>No. Edit <code>app/config/database.php</code> on the server</td>
+</tr>
+<tr>
+<td><strong>Reset Hub Secret?</strong></td>
+<td>Everything signed with the old secret stops being accepted</td>
+<td>The reset cannot be undone</td>
+</tr>
+<tr>
+<td><strong>Cache Settings</strong></td>
+<td>Stale pages, or an error on every request if the handler's server is not there</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Force SSL</strong></td>
+<td>Every request redirects to HTTPS. If the certificate is not working, nothing answers, the administrator interface included</td>
+<td>No, if it locks you out. Edit <code>app/config/app.php</code> on the server</td>
+</tr>
+</tbody>
+</table>
+<p>Everything else — the site name, the metadata, the SEO switches, the debug
+switches, the API rate limits, the permission grid — is reversible from the
+same screen, and worth trying rather than agonising over.</p>
+<aside class="admonition admonition--tip">
+<p><strong>Tip:</strong> Before you change anything in that table, open a second browser
+and sign in to the administrator interface there. A second live session is
+the difference between a bad setting and a call to whoever has shell
+access.</p>
+</aside>
+<h2 id="what-this-screen-is-not">What this screen is not</h2>
+<p>It is not where a component's behaviour is set. Whether groups may be created
+by anyone, how large a project may grow, which address support tickets come
+from — none of that is here. Each component keeps its own settings behind an
+<strong>Options</strong> button in its own toolbar; see <a href="../components/index.html">Components</a>.</p>
+<p>It is not where individual people are given permissions either. The
+<strong>Permissions</strong> tab grants actions to <em>user groups</em>, not to members. Putting
+someone in a group is done from
+<a href="../../users/accessgroups/index.html">Access groups</a>.</p>
+<h2 id="the-screen">The screen</h2>
+<p>Open <strong>Site &gt; Global Configuration</strong> from the administrator menu.</p>
+<h3 id="toolbar">Toolbar</h3>
+<ul>
+<li><strong>Save</strong> — write the changes and stay on the screen.</li>
+<li><strong>Save &amp; Close</strong> — write the changes and return to the control panel.</li>
+<li><strong>Cancel</strong> — discard the changes and return to the control panel.</li>
+<li><strong>Help</strong> — open the screen's help text.</li>
+</ul>
+<p>Settings are written to plain PHP files under <code>app/config/</code>, one file per
+group: <code>app.php</code>, <code>mail.php</code>, <code>session.php</code>, <code>cache.php</code>, <code>seo.php</code>,
+<code>meta.php</code>, <code>offline.php</code>, <code>database.php</code>, <code>ftp.php</code>, and <code>rate_limit.php</code>.
+The administrator account needs write access to that directory or the save
+fails with a &quot;could not write&quot; error.</p>
+<h3 id="tabs">Tabs</h3>
+<table>
+<thead>
+<tr>
+<th>Tab</th>
+<th>Panels</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Site</strong></td>
+<td>Site Settings, Offline Settings, Metadata Settings, SEO Settings, Cookie Settings</td>
+</tr>
+<tr>
+<td><strong>System</strong></td>
+<td>System Settings, Hub Secret, Debug Settings, Cache Settings, Session Settings</td>
+</tr>
+<tr>
+<td><strong>Server</strong></td>
+<td>Server Settings, Location Settings, Message Queue Settings, Database Settings, Mail Settings</td>
+</tr>
+<tr>
+<td><strong>API</strong></td>
+<td>Ratelimit: Short, Ratelimit: Long</td>
+</tr>
+<tr>
+<td><strong>Permissions</strong></td>
+<td>Permission Settings</td>
+</tr>
+<tr>
+<td><strong>Text Filters</strong></td>
+<td>Text Filter Settings</td>
+</tr>
+</tbody>
+</table>
+<p>A hub can add its own configuration groups by dropping a file into
+<code>app/config/</code>. Any group the form does not already know about gets its own
+tab at the end of the list, named after the file, with a plain text box for
+every key it contains.</p>
+<h2 id="site">Site</h2>
+<p><strong>Site Settings</strong> holds the settings a visitor notices first.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Application Environment</strong></td>
+<td>Production, Production - Cloud, Staging, Testing, or Development. Controls how much detail errors show.</td>
+</tr>
+<tr>
+<td><strong>Site Name</strong></td>
+<td>The hub's name. It appears in page titles, in mail subjects, and wherever a component asks for the site name.</td>
+</tr>
+<tr>
+<td><strong>Site Code</strong></td>
+<td>Short code identifying the installation.</td>
+</tr>
+<tr>
+<td><strong>FQDN</strong></td>
+<td>The hub's fully qualified domain name.</td>
+</tr>
+<tr>
+<td><strong>Default Editor</strong></td>
+<td>The editor plugin used for rich text. The field's own fallback is <code>tinymce</code>, but that only applies when the setting is absent; the installer always writes <code>ckeditor</code>, so a stock hub runs CKEditor.</td>
+</tr>
+<tr>
+<td><strong>Default Captcha</strong></td>
+<td>The captcha plugin used where a component does not name its own.</td>
+</tr>
+<tr>
+<td><strong>Default Access Level</strong></td>
+<td>The viewing level given to new content.</td>
+</tr>
+<tr>
+<td><strong>Default List Limit</strong></td>
+<td>Rows per page in administrator lists. Defaults to 20.</td>
+</tr>
+<tr>
+<td><strong>Default Feed Limit</strong></td>
+<td>Items in a syndication feed. Defaults to 10.</td>
+</tr>
+<tr>
+<td><strong>Feed email</strong></td>
+<td>Which address a feed publishes, the author's or the site's.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Metadata Settings</strong> sets the site-wide description, keywords, <code>robots</code>
+directive, and whether the generator and version are advertised.
+<strong>SEO Settings</strong> turns search engine friendly URLs on, adds the rewrite and
+suffix behaviour, and controls whether group URLs are rewritten too.</p>
+<p><strong>Cookie Settings</strong> sets the cookie domain and path, and the JWT RSA public
+key used to validate tokens. Despite the panel's place on the <strong>Site</strong> tab,
+these three are stored in <code>app/config/session.php</code>, and the domain and path
+are used for the session cookie of <em>both</em> the site and the administrator
+interface. Leave both blank unless the hub is deliberately sharing a session
+across sub-domains; a wrong value signs everybody out of everything, and the
+only place left to fix it is the file itself.</p>
+<h3 id="taking-the-hub-offline">Taking the hub offline</h3>
+<p><strong>Offline Settings</strong> is the panel a manager comes to this screen for. It puts
+a maintenance page in front of the site instead of the hub.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Site Offline</strong></td>
+<td>Yes or No. Defaults to No</td>
+</tr>
+<tr>
+<td><strong>Offline Message</strong></td>
+<td>Hide, <strong>Use Custom Message</strong>, or <strong>Use Site Language Default Message</strong></td>
+</tr>
+<tr>
+<td><strong>Custom Message</strong></td>
+<td>The text shown when <strong>Use Custom Message</strong> is chosen</td>
+</tr>
+<tr>
+<td><strong>Offline Image</strong></td>
+<td>An image shown above the message</td>
+</tr>
+</tbody>
+</table>
+<p>Say the hub is moving to a new database server on Saturday morning and will
+be unreachable for two hours. The sequence is:</p>
+<ol>
+<li>A day or two ahead, put a warning banner on the site with the
+<code>mod_notices</code> module, so the outage is not a surprise. See
+<a href="../../maintenance/notices/index.html">Site Notices</a>.</li>
+<li>On the day, open <strong>Site &gt; Global Configuration</strong> and stay on the <strong>Site</strong>
+tab.</li>
+<li>Set <strong>Site Offline</strong> to <strong>Yes</strong>.</li>
+<li>Set <strong>Offline Message</strong> to <strong>Use Custom Message</strong> and write a <strong>Custom
+Message</strong> that says what is happening and when the hub comes back. A
+sentence is enough, and it is the only thing most visitors will read.</li>
+<li>Select <strong>Save</strong>. The site is offline from that moment.</li>
+<li>Do the work. Check the hub yourself — you will still see the site, not the
+offline page, because of the permission below.</li>
+<li>Set <strong>Site Offline</strong> back to <strong>No</strong> and select <strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>Three things about being offline are worth knowing before you do this on a
+live hub.</p>
+<ul>
+<li><strong>The administrator interface is never taken offline.</strong> The check runs only
+on the site. You can always get back in and turn it off again.</li>
+<li><strong>Some people still see the site.</strong> The check exempts anyone holding the
+<strong>Offline Access</strong> permission — <code>core.login.offline</code> on the <strong>Permissions</strong>
+tab. The shipped rules grant it to <strong>Manager</strong>, which <strong>Administrator</strong>
+inherits, and Super Users bypass every permission check anyway. So the
+people testing the work in progress are usually the people who cannot see
+the offline page. Sign out, or use a private window, to see what a visitor
+sees.</li>
+<li><strong>The offline page returns HTTP <code>503</code>.</strong> That is the correct answer for a
+temporary outage and stops search engines recording the maintenance page as
+the hub's content. It also means uptime monitors will alert. Warn whoever
+watches them.</li>
+</ul>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> How much of the panel is honoured depends on the template the
+site is running. The <strong>kimera</strong> template's own <code>offline.php</code> prints
+<strong>Custom Message</strong> and nothing else — the <strong>Hide</strong> and <strong>Use Site Language
+Default Message</strong> choices and <strong>Offline Image</strong> are ignored. Templates that
+ship no <code>offline.php</code> of their own, including <strong>lucent</strong> and <strong>Welcome</strong>,
+fall back to <code>core/templates/system/offline.php</code>, which honours all three.</p>
+</aside>
+<h2 id="system">System</h2>
+<p><strong>System Settings</strong> sets the log folder, the help server, and whether the
+Hubzero API web services are enabled.</p>
+<p><strong>Hub Secret</strong> has one control, <strong>Reset Hub Secret?</strong>. The hub secret signs
+tokens the hub issues.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Resetting the hub secret invalidates everything signed with
+the old one. Sessions and issued tokens stop being accepted.</p>
+</aside>
+<p><strong>Debug Settings</strong> turns on the system profiler, the language debugger, and
+POST data logging. All three are safe to switch on, and all three are visible
+to visitors, so switch them off again when you are done.</p>
+<p><strong>Cache Settings</strong> chooses off, conservative, or progressive caching, the
+cache handler, and the cache lifetime; a memcache handler adds host, port,
+persistence, and compression fields. Turning caching off, or changing the
+handler, empties the cache as part of the save, so the first few page loads
+afterwards are slow. Choosing a handler whose server is not running gives an
+error on every request.</p>
+<h3 id="session-settings">Session Settings</h3>
+<p>Two fields, and they are the ones most likely to lock you out.</p>
+<p><strong>Session Lifetime</strong> is how many minutes of inactivity end a session.
+<strong>Session Handler</strong> is where session data is kept. The drop-down offers only
+the handlers whose PHP extension is present on this server, so a handler
+being listed means the extension is loaded — not that the server behind it is
+running or reachable. Point the hub at a Redis or memcache server that is not
+there and nobody, including you, can sign in.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Changing <strong>Session Handler</strong> signs out everyone who is signed
+in, immediately, on the site and in the administrator interface. Anyone
+part-way through a form loses it. Switching <em>to</em> the database handler also
+empties <code>#__sessions</code> first, so every other session goes at the same
+moment. Do it out of hours, and only with a second signed-in session or
+shell access in reserve.</p>
+</aside>
+<p>The manifest and the shipped install disagree about both defaults, and the
+installed values win. The form declares <code>none</code> and 15 minutes; the installer
+writes <code>database</code> and 45 minutes into <code>app/config/session.php</code>, and those are
+what a stock hub runs. Take <strong>database</strong> and <strong>45</strong> as the real defaults —
+they are sensible, and there is no reason to change either. <strong>None</strong> hands
+sessions back to PHP's own storage, which on a hub behind more than one web
+server means a member's session is only there when they land on the same
+one.</p>
+<h2 id="server">Server</h2>
+<p><strong>Server Settings</strong> covers the temp folder, gzip page compression, error
+reporting, and <strong>Force SSL</strong> — off, administrator only, or the entire site.
+<strong>Location Settings</strong> has one field, <strong>Server Time Zone</strong>.
+<strong>Message Queue Settings</strong> points at the queue host, port, user, and password
+used by the background workers.</p>
+<p><strong>Force SSL</strong> does two things, and its three settings do not do them evenly.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Redirects a plain HTTP request to HTTPS</th>
+<th>Marks session cookies <code>secure</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>None</strong></td>
+<td>Neither half</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Administrator Only</strong></td>
+<td>The administrator interface only</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Entire Site</strong></td>
+<td>Both the administrator interface and the site</td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<p>The redirects are in
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/bootstrap/Administrator/Providers/RouterServiceProvider.php"><code>Administrator/Providers/RouterServiceProvider.php</code></a>
+and
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/bootstrap/Site/Providers/RouterServiceProvider.php"><code>Site/Providers/RouterServiceProvider.php</code></a>,
+and the cookie flag is set in the two session providers beside them. Note the
+asymmetry: the cookie flag arrives only at <strong>Entire Site</strong>, so a hub set to
+<strong>Administrator Only</strong> redirects the back end but still sends its session
+cookie over plain HTTP on the public side.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> This setting cannot make a hub serve HTTPS. It only redirects
+to it. Turn it on before the web server has a working certificate and every
+request bounces to an address that does not answer, including the
+administrator interface you would use to turn it back off. Fix that by
+editing <code>force_ssl</code> in <code>app/config/app.php</code> on the server.</p>
+</aside>
+<h3 id="database-settings">Database Settings</h3>
+<p>This panel shows the connection the site is already using. There is no
+password field: the stored password is deliberately carried through the save
+untouched.</p>
+<p>Nothing here is a setting in the ordinary sense. These four values describe
+where the hub's data is, and the hub is running because they are right. Change
+one on a live hub and the next request has nowhere to read from — including
+the request that would let you change it back. Recovery is editing
+<code>app/config/database.php</code> on the server.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> <strong>Database Tables Prefix</strong> identifies the tables this
+installation owns. Changing it on a running hub points the site at tables
+that do not exist.</p>
+</aside>
+<p>The shipped prefix is <code>jos_</code>, and every stock hub is running on it. It looks
+like a leftover and it is not; the tables really are called that. Tidying it
+up here renames nothing — it only stops the hub finding its own data.</p>
+<h3 id="mail-settings">Mail Settings</h3>
+<p><strong>From email</strong> and <strong>From Name</strong> are the identity every mail the hub sends
+goes out under, and several components default their own notification
+addresses to this value. Getting them right is worth doing early: an address
+that does not exist, or one that a receiving mail server will not accept as a
+sender, is the usual reason a hub's registration confirmations quietly stop
+arriving.</p>
+<p><strong>Mailer</strong> chooses how mail leaves the hub. It offers three values, and only
+two of them work.</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Sendmail</strong></td>
+<td>Mail is handed to the local sendmail. This is what a stock hub uses, and it is the setting to keep unless someone has given you a mail relay</td>
+</tr>
+<tr>
+<td><strong>SMTP</strong></td>
+<td>Mail goes to <strong>SMTP Host</strong> and <strong>SMTP Port</strong>, with <strong>SMTP Username</strong> and <strong>SMTP Password</strong> if either is filled in</td>
+</tr>
+<tr>
+<td><strong>Mandrill (SMTP)</strong></td>
+<td>Nothing goes anywhere. See the warning below</td>
+</tr>
+</tbody>
+</table>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Do not choose <strong>Mandrill (SMTP)</strong>. The drop-down stores
+<code>mandrill</code>, and the code that turns the setting into a connection string
+recognises <code>smtp</code>, <code>sendmail</code>, <code>mail</code>, <code>native</code> and <code>mandrill+smtp</code> — but
+not <code>mandrill</code>. The result is an empty connection string, which throws
+rather than returning an error, on <em>every</em> mail the hub tries to send:
+registration confirmations, password resets, ticket notifications, group
+invitations. Nothing on this screen warns you, and the failure shows up
+later as members saying they never got the mail.</p>
+</aside>
+<p>Three fields on this panel are stored and then never read. <strong>Sendmail Path</strong>,
+<strong>SMTP Authentication</strong> and <strong>SMTP Security</strong> play no part in building the
+connection — only <strong>Mailer</strong>, <strong>SMTP Host</strong>, <strong>SMTP Port</strong>, <strong>SMTP Username</strong>
+and <strong>SMTP Password</strong> do. Setting <strong>SMTP Security</strong> to TLS does not turn TLS
+on, and blanking <strong>SMTP Authentication</strong> does not turn authentication off;
+filling in a username or password is what turns it on.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> <strong>SMTP Username</strong> and <strong>SMTP Password</strong> are lower-cased when
+the connection is built. A relay whose credentials contain a capital letter
+will refuse them, and the symptom is authentication failures with a
+password that is demonstrably correct. Where that bites, put a complete
+connection string in a <code>mailer_dsn</code> key in <code>app/config/mail.php</code> instead —
+if that key has a value, the whole drop-down is bypassed and the string is
+used as it stands. It is also the way to reach Mandrill.</p>
+</aside>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> A hub installed by the web installer starts with a <strong>Mailer</strong>
+value of <code>mail</code>, which is not one of the three choices offered. The first
+save of this screen rewrites it to <code>sendmail</code>, which behaves the same way
+and preserves Bcc recipients. You do not need to do anything about it.</p>
+</aside>
+<h2 id="api">API</h2>
+<p>Two panels, <strong>Ratelimit: Short</strong> and <strong>Ratelimit: Long</strong>, each a period in
+minutes and a request limit. The defaults are 120 requests per minute and
+10,000 requests per day. They matter only to a hub whose members drive it
+from scripts; if nobody is using the API, leave them alone. Both are
+reversible, so a hub whose own tooling is being throttled can raise them and
+watch what happens.</p>
+<h2 id="permissions-and-text-filters">Permissions and Text Filters</h2>
+<p><strong>Permissions</strong> is the site-wide rules grid: for each user group, the default
+answer to each core action — including <strong>Offline Access</strong>, the one that
+decides who still sees the site while it is offline. Components inherit these
+rules and can override them in their own <strong>Options</strong> screen, so a Deny here is
+the strongest answer there is: nothing below can grant it back.</p>
+<p>The screen protects you from exactly one mistake. If the rules you are saving
+would leave your own account without <strong>Super User</strong> access, the save is
+refused with an error. Every other way of locking a group out of something
+saves quietly.</p>
+<p><strong>Text Filters</strong> offers, per group, a choice of how much HTML a member may
+submit.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Nothing reads it. Saving the tab stores the map in the
+<code>com_config</code> extension's own parameters, and no component, plugin or
+library in the tree consults it when content is saved, so <strong>No Filtering</strong>
+and <strong>Default Black List</strong> are indistinguishable in effect. The screen
+looks like the most important one here and it is not a control at all. See
+<a href="../../security/index.html#text-filters">Security</a>.</p>
+</aside>
+<h2 id="what-moved-where">What moved where</h2>
+<table>
+<thead>
+<tr>
+<th>Old Hub setting</th>
+<th>Now</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Short Name</td>
+<td><strong>Site Name</strong>, on the Site tab. <code>{xhub:getcfg hubShortName}</code> returns it.</td>
+</tr>
+<tr>
+<td>Short URL, Long URL</td>
+<td>Gone. The hub derives its URL from the request; <code>{xhub:getcfg hubShortURL}</code> returns the live base URL.</td>
+</tr>
+<tr>
+<td>Support Email</td>
+<td>Each component that sends mail now carries its own address list, defaulting to the global <strong>From email</strong>. For tickets, see the Support component's options.</td>
+</tr>
+<tr>
+<td>Monitor Email</td>
+<td>Gone.</td>
+</tr>
+<tr>
+<td>Home Dir</td>
+<td><strong>Home directory path</strong>, in the Members component's options.</td>
+</tr>
+<tr>
+<td>Forge Settings (Name, URL, RepoURL)</td>
+<td>Gone. The Tool Forge is no longer configured from the CMS.</td>
+</tr>
+<tr>
+<td>LDAP Settings (MasterHost, SlaveHosts, BaseDN, NegotiateTLS, SearchUserDN, SearchUserPW, AcctMgrDN, AcctMgrPW)</td>
+<td><strong>Site &gt; LDAP</strong>, then the <strong>Options</strong> button. See <a href="#ldap">LDAP</a>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="ldap">LDAP</h2>
+<p>LDAP is configured from <strong>Site &gt; LDAP</strong>, which is the System component's
+LDAP screen. The screen itself exports members and groups to the directory
+and deletes them from it; the connection settings are behind the <strong>Options</strong>
+button in its toolbar.</p>
+<p>The fields are <strong>LDAP Primary Host URI</strong> (default <code>ldap://localhost</code>),
+<strong>LDAP Secondary Host URI</strong>, <strong>LDAP Base DN</strong>, <strong>LDAP Search DN</strong>, <strong>LDAP
+Search Password</strong>, <strong>LDAP Manager DN</strong>, <strong>LDAP Manager Password</strong>, and <strong>Use
+LDAP TLS</strong>. They are listed with their defaults in the
+<a href="../../../reference/configuration/components/system/index.html">System component reference</a>.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> The export and delete buttons on the LDAP screen act on the
+whole directory and cannot be undone. The screen says so before you use
+them.</p>
+</aside>
+<h2 id="where-members-land-after-signing-in">Where members land after signing in</h2>
+<p>There is no Login Return URL setting. A member who signs in without a
+<code>return</code> parameter goes to their account page, <code>/members/myaccount</code>.</p>
+<p>To send them somewhere else, edit the menu item that points at the login
+view:</p>
+<ol>
+<li>Go to <strong>Menus</strong> and open the menu item whose type is the login view.</li>
+<li>In the <strong>Basic</strong> options, set <strong>Login Redirect</strong>.</li>
+<li>Set <strong>Logout Redirect</strong> in the same place if you want a different
+destination after signing out.</li>
+</ol>
+<p>A path that starts with <code>/</code> is treated as internal and the hub prefixes the
+site root. The same menu item also carries the login and logout
+descriptions and images.</p>
+<pre><code class="language-php">		// Get the default return value
+		$defaultReturn = Route::url('index.php?option=com_members&amp;task=myaccount');
+		$description   = '';
+		if ($menu &amp;&amp; isset($menu-&gt;params) &amp;&amp; is_object($menu-&gt;params))
+		{
+			$defaultReturn = $menu-&gt;params-&gt;get('login_redirect_url', $defaultReturn);
+			// Assume redirect URLs that start with a slash are internal
+			// As such, we want to make sure the path has the appropriate root
+			$root = Request::root(true);
+			if (substr($defaultReturn, 0, 1) == '/'
+			 &amp;&amp; substr($defaultReturn, 0, strlen($root)) != $root)
+			{
+				$defaultReturn = rtrim($root, '/') . $defaultReturn;
+			}
+			$description   = $menu-&gt;params-&gt;get('login_description');
+		}
+		$defaultReturn = base64_encode($defaultReturn);
+</code></pre>
+<h2 id="older-screenshots">Older screenshots</h2>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The four images below came from the imported version of this
+page. They show the retired <strong>Hub</strong> component and its parameters pop-up,
+which no longer exist in Hubzero 2.4. They are kept only until the
+screenshot pass replaces them; do not follow the steps they show.</p>
+</aside>
+<p><img src="../../media/hub-edit-registration-01.png" alt="The Components menu with the retired Hub component selected" /></p>
+<p><img src="../../media/hub-edit-hubconfig-00.png" alt="The Parameters button in the retired Hub component's toolbar" /></p>
+<p><img src="../../media/hub-edit-hubconfig-02.png" alt="The retired Hub parameters pop-up showing a Login Return URL field" /></p>
+<p><img src="../../media/hub-edit-hubconfig-03.png" alt="The retired Hub parameters pop-up with the Save button" /></p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../index.html" rel="prev"><span>Previous</span>Configuring</a><a class="pager__next" href="../registration/index.html" rel="next"><span>Next</span>Registration</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/05-configuring/01-hub.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

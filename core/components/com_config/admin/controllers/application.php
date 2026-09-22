@@ -16,6 +16,9 @@ use Notify;
 use Route;
 use User;
 use App;
+use Date;
+use Lang;
+use Request;
 
 include_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'application.php';
 
@@ -224,7 +227,7 @@ class Application extends AdminController
 		// If user has opted to reset the Hub secret:
 		if ($hubsecret['reset_secret'] == 'reset')
 		{
-			$tableName = 'jos_config';
+			$tableName = '#__config';
 
 			// create 32-character secret:
 			$secretLength = 32;

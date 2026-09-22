@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plugins · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Twenty-six plugin directories ship in the search group. Twenty-four of them are registered at install and appear under Extensions Plug-ins with the filter…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/components/search/plugins/">
+  <link rel="icon" href="../../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../../index.html">
+      <img class="brand__mark" src="../../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../../search-index.json" data-base="../../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../../docs/index.html">About</a>
+      <a href="../../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../../index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../saml/index.html">SAML</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Plugins</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#plugins-for-the-basic-engine">Plugins for the Basic engine</a></li>
+<li class="toc__item toc__item--l2"><a href="#plugins-that-shape-basic-ranking">Plugins that shape Basic ranking</a></li>
+<li class="toc__item toc__item--l2"><a href="#plugins-for-the-solr-engine">Plugins for the Solr engine</a></li>
+<li class="toc__item toc__item--l2"><a href="#two-plugins-that-are-not-installed">Two plugins that are not installed</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-plugins-that-look-like-indexers-and-are-not">The plugins that look like indexers and are not</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-system-plugin">The system plugin</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Components</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Search</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Plugins</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Plugins</h1>
+        </header>
+        
+        <div class="prose">
+<p>Twenty-six plugin directories ship in the <strong>search</strong> group. Twenty-four of
+them are registered at install and appear under <strong>Extensions &gt; Plug-ins</strong>
+with the filter <strong>Type: search</strong>; the other two are not — see
+<a href="#two-plugins-that-are-not-installed">Two plugins that are not installed</a>.
+They do not all do the same thing, and which ones matter depends on the
+engine the hub is running.</p>
+<p>Read this page when a content type is missing from search results, or before
+disabling anything in this group. On a Basic hub each plugin is a content
+type, so turning one off is how you take a type out of search — the only way,
+in fact, since there is no per-type setting anywhere else. On a Solr hub
+almost none of them matter, and the two that do ship switched off.</p>
+<h2 id="plugins-for-the-basic-engine">Plugins for the Basic engine</h2>
+<p>These turn a query into results by searching the hub's own database. Each one
+is a content type; disabling one drops that type out of Basic search results
+immediately, with no re-index and nothing to rebuild — re-enable it and the
+type comes back on the next query. All of them are enabled on a new hub.</p>
+<p>This is the lever to reach for when a hub has a content type it does not use.
+A hub with the forum switched off has no forum posts to find, so the plugin
+costs a pointless database query on every search; disabling it is safe. It is
+also the lever for a hub whose wiki is an internal scratchpad that should not
+surface in site search.</p>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Searches</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Search - Blogs</strong></td>
+<td>Blog entries</td>
+</tr>
+<tr>
+<td><strong>Search - Citations</strong></td>
+<td>Citations</td>
+</tr>
+<tr>
+<td><strong>Search - Collections</strong></td>
+<td>Collection posts</td>
+</tr>
+<tr>
+<td><strong>Search - Content</strong></td>
+<td>Articles</td>
+</tr>
+<tr>
+<td><strong>Search - Courses</strong></td>
+<td>Courses</td>
+</tr>
+<tr>
+<td><strong>Search - Events</strong></td>
+<td>Calendar events</td>
+</tr>
+<tr>
+<td><strong>Search - Forum</strong></td>
+<td>Forum posts</td>
+</tr>
+<tr>
+<td><strong>Search - Groups</strong></td>
+<td>Groups</td>
+</tr>
+<tr>
+<td><strong>Search - Kb</strong></td>
+<td>Knowledge base articles</td>
+</tr>
+<tr>
+<td><strong>Search - Members</strong></td>
+<td>Member profiles</td>
+</tr>
+<tr>
+<td><strong>Search - Projects</strong></td>
+<td>Projects</td>
+</tr>
+<tr>
+<td><strong>Search - Publications</strong></td>
+<td>Publications</td>
+</tr>
+<tr>
+<td><strong>Search - Questions</strong></td>
+<td>Questions and answers</td>
+</tr>
+<tr>
+<td><strong>Search - Resources</strong></td>
+<td>Resources</td>
+</tr>
+<tr>
+<td><strong>Search - Sitemap</strong></td>
+<td>Hand-written site map entries</td>
+</tr>
+<tr>
+<td><strong>Search - Wiki</strong></td>
+<td>Wiki pages</td>
+</tr>
+<tr>
+<td><strong>Search - Wishlists</strong></td>
+<td>Wishlist items</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Search - Sitemap</strong> is the odd one. As well as contributing results, it
+supplies the whole administrative screen the Basic engine shows at
+<strong>Components &gt; Search</strong>: a small editor for site map entries, so that a query
+about the structure of the hub — rather than its content — can be answered
+with a hand-written link.</p>
+<h2 id="plugins-that-shape-basic-ranking">Plugins that shape Basic ranking</h2>
+<p>These contribute no results of their own. They adjust the terms or reorder
+what the content plugins returned. All are enabled on a new hub except
+<strong>Search - Weighttools</strong>, which ships disabled — enable it on a tool-centred
+hub where tools should outrank the presentations and datasets that mention
+them.</p>
+<p>They are the Basic engine's equivalent of <a href="../boosting/index.html">boosting</a>, and
+they are cruder: each is on or off, with no strength to set. Turning one off
+and running the same search again is the whole of the tuning available.</p>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Search - Suffixes</strong></td>
+<td>Expands query terms with common word endings.</td>
+</tr>
+<tr>
+<td><strong>Search - Weighttitle</strong></td>
+<td>Raises results whose title matches the query.</td>
+</tr>
+<tr>
+<td><strong>Search - Weightcontributor</strong></td>
+<td>Raises results whose contributors match.</td>
+</tr>
+<tr>
+<td><strong>Search - Weighttools</strong></td>
+<td>Weights resources of the tool type. <strong>Ships disabled.</strong></td>
+</tr>
+<tr>
+<td><strong>Search - Sortcourses</strong></td>
+<td>Groups near-identical course resources together.</td>
+</tr>
+<tr>
+<td><strong>Search - Sortevents</strong></td>
+<td>Orders event results.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="plugins-for-the-solr-engine">Plugins for the Solr engine</h2>
+<p>Solr indexing does not go through the content plugins above. It goes through
+the models that implement <code>Hubzero\Search\Searchable</code>, driven by a single
+plugin, which ships <strong>disabled</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Directory</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Search - Solr</strong></td>
+<td><code>core/plugins/search/solr</code></td>
+<td>Handles <code>search.onAddIndex</code> and <code>search.onRemoveIndex</code>, converts the saved record to a Solr document, and writes it. This is the plugin that keeps the index current; a hub using Solr must enable it.</td>
+</tr>
+</tbody>
+</table>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> <strong>Search - Solr</strong> ships <strong>disabled</strong>, and it is the only thing
+that keeps the index current after the first build. A hub that switched to
+Solr, built its index, and never enabled this plugin has a search that
+stopped at the moment of the switch and will never move again. Enable it
+before you build the first index, not after.</p>
+</aside>
+<p>Enabling it is safe on a hub that has not switched engines: with <strong>Engine</strong>
+set to <strong>Basic (default)</strong> it has nothing to do. The risk runs the other way.</p>
+<h2 id="two-plugins-that-are-not-installed">Two plugins that are not installed</h2>
+<p>Two directories in <code>core/plugins/search</code> have no extension row on a new hub,
+so they do not appear in the plugin manager at all and cannot be enabled from
+it. Nothing is missing as a result — neither is needed — but they are worth
+knowing about, because running <strong>Discover</strong> in the extension manager pulls
+them in and produces two confusing entries.</p>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th>Manifest name</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>core/plugins/search/remote</code></td>
+<td><strong>Search - Solr</strong></td>
+<td>Posts documents to a separate indexing service over HTTP, for a Solr instance shared by several hubs. It hears only the batch operations — a component index, rebuild, or clear — not individual saves. Its <strong>Connection Info</strong> parameters take that service's URL and access token.</td>
+</tr>
+<tr>
+<td><code>core/plugins/search/tickets</code></td>
+<td><strong>Search - Resources</strong></td>
+<td>Contributes no Basic search results and no Solr documents; it answers only the type-list event used by the search API. Support tickets are not searchable from the site either way.</td>
+</tr>
+</tbody>
+</table>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Both manifests are wrong about themselves. <code>remote.xml</code> names
+the plugin <strong>Search - Solr</strong> and declares its element as <code>solr</code>, colliding
+with the real Solr plugin; <code>tickets.xml</code> names it <strong>Search - Resources</strong>
+and points at a <code>resources.php</code> that is not in that directory. If you have
+run <strong>Discover</strong> and now see <strong>Search - Solr</strong> twice, the one to enable is
+the one whose element is <code>solr</code> and whose files are in <code>search/solr</code>. Do
+not enable the <code>remote</code> one unless the hub genuinely shares a Solr instance
+with other hubs; there is nothing for it to talk to otherwise.</p>
+</aside>
+<h2 id="the-plugins-that-look-like-indexers-and-are-not">The plugins that look like indexers and are not</h2>
+<p>Seventeen search plugins — every one in the first table except
+<strong>Search - Sitemap</strong>, plus the uninstalled <code>tickets</code> plugin — carry an
+<code>onIndex</code> method that turns a record into index data. It is easy to read
+that as Solr support for forum posts, wiki pages, questions and wishlists.
+It is not. The only thing in this tree that
+raises <code>search.onIndex</code> is the <strong>Process Queue</strong> cron event, and that event
+reads a queue table nothing ever writes to. None of those seventeen handlers
+has ever been called on a running hub.</p>
+<p>Take the practical point and ignore the archaeology: what is in the Solr
+index is decided by the eleven models listed in
+<a href="../breadth/index.html#what-can-be-indexed">Breadth</a>, and by nothing else.</p>
+<h2 id="the-system-plugin">The system plugin</h2>
+<p>Indexing also depends on one plugin outside the search group: <strong>System -
+HUBzero</strong> (<code>plg_system_content</code>) under <strong>Type: system</strong>, which raises the
+event that <strong>Search - Solr</strong> listens for. It is enabled by default. If new
+content stops appearing in search, check that plugin and <strong>Search - Solr</strong>
+before anything else.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 009ec973b7</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../index/index.html" rel="prev"><span>Previous</span>Maintaining the index</a><a class="pager__next" href="../blacklist/index.html" rel="next"><span>Next</span>Blacklist</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/09-components/31-search/06-plugins.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

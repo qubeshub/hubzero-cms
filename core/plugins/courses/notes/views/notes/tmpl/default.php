@@ -66,8 +66,25 @@ $base = $this->offering->link();
 	<div class="notes-wrap">
 	<?php if (count($results)): ?>
 		<?php
+		// Pre-load lectures and their unit display order, then sort by unit
+		// ordering (not unit id) and lecture ordering within the unit.
+		$lectures  = array();
+		$unitOrder = array();
+		foreach ($results as $id => $notes)
+		{
+			$lectures[$id]  = new \Components\Courses\Models\Assetgroup($id);
+			$unitOrder[$id] = (int) \Components\Courses\Models\Unit::getInstance($lectures[$id]->get('unit_id'))->get('ordering', 0);
+		}
+		uksort($results, function($a, $b) use ($lectures, $unitOrder) {
+			if ($unitOrder[$a] != $unitOrder[$b])
+			{
+				return $unitOrder[$a] - $unitOrder[$b];
+			}
+			return $lectures[$a]->get('ordering', 0) - $lectures[$b]->get('ordering', 0);
+		});
+
 		foreach ($results as $id => $notes):
-			$lecture = new \Components\Courses\Models\Assetgroup($id);
+			$lecture = $lectures[$id];
 			$unit = \Components\Courses\Models\Unit::getInstance($lecture->get('unit_id'));
 			?>
 			<div class="section">

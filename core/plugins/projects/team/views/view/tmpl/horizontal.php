@@ -27,14 +27,14 @@ defined('_HZEXEC_') or die();
 				//$thumb   = $profile->get('id') ? $profile->picture() : $actor->picture(true);
 			?>
 			<li>
-				<img width="50" height="50" src="<?php echo $profile->picture(); ?>" alt="<?php echo $this->escape($owner->fullname); ?>" />
+				<img width="50" height="50" src="<?php echo $profile->picture(); ?>" alt="" />
 				<span class="block"><a href="<?php echo Route::url('index.php?option=com_members&id=' . $owner->userid); ?>"><?php echo $this->escape($owner->fullname); ?></a></span>
 			</li>
 			<?php } ?>
-			<li class="clear">&nbsp;</li>
+			<li class="clear" aria-hidden="true">&nbsp;</li>
 		</ul>
 	<?php } else { ?>
 		<div class="noresults"><?php echo Lang::txt('PLG_PROJECTS_TEAM_EXTERNAL_NO_TEAM'); ?></div>
 	<?php } ?>
-	<div class="clear"></div>
+	<div class="clear" aria-hidden="true"></div>
 </div>

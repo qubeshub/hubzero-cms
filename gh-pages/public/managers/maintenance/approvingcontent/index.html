@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Approving Content · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="When auto-approval is off, a resource or publication a user submits sits in a pending state until an administrator publishes it. This page covers finding that…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/maintenance/approvingcontent/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Approving Content</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#turning-auto-approval-on-or-off">Turning auto-approval on or off</a></li>
+<li class="toc__item toc__item--l2"><a href="#resource-states">Resource states</a></li>
+<li class="toc__item toc__item--l2"><a href="#clearing-the-queue">Clearing the queue</a></li>
+<li class="toc__item toc__item--l2"><a href="#publications">Publications</a></li>
+<li class="toc__item toc__item--l2"><a href="#where-the-counts-come-from">Where the counts come from</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Daily Maintenance</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Approving Content</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Approving Content</h1>
+        </header>
+        
+        <div class="prose">
+<p>When auto-approval is off, a resource or publication a user submits sits in a
+pending state until an administrator publishes it. This page covers finding
+that queue and clearing it.</p>
+<p>Two components on the hub queue what users submit: <strong>Resources</strong> and
+<strong>Publications</strong>. If your hub does not take submissions from members — a hub
+that is a website with a tool or two on it, run by one office — the queues
+stay empty and there is nothing here for you. If it does, this is the job
+that has to be done promptly rather than well. A submitter who waits a week
+to hear whether their dataset was accepted assumes the hub is abandoned.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> This is not moderation of comments, forum posts or reviews.
+Those are not queued; they appear at once and are dealt with afterwards
+through the abuse reports on the <a href="../tickets/index.html">Support</a> screen. Approval
+here is a gate in front of publishing, and it applies only to resources and
+publications.</p>
+</aside>
+<p>A worked scenario runs through the page: the hub has just been named in a
+published paper, a dozen groups have registered, and eight datasets and two
+tools are sitting in the queues on Monday morning.</p>
+<h2 id="turning-auto-approval-on-or-off">Turning auto-approval on or off</h2>
+<p>This is the decision that determines how much of the rest of the page you
+ever do. <strong>Auto-approve</strong> is <strong>No</strong> on a stock hub, so everything a member
+submits waits for you. That is the right default for a hub whose reputation
+rests on what it publishes, and the wrong one for a hub whose members are all
+known colleagues, where it just adds a day's delay to everything.</p>
+<p>If your hub is somewhere between the two — trusted people plus the public —
+leave <strong>Auto-approve</strong> at <strong>No</strong> and list the trusted accounts in
+<strong>Auto-approved Users</strong> instead. Their submissions skip the queue; everyone
+else's waits.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Turning <strong>Auto-approve</strong> on publishes submissions the moment
+they are made, with no review, to whoever the access level allows. On a hub
+that has just been written about in a paper, that is also the moment it
+becomes worth somebody's while to submit something you would not want
+published. Turn it on for a closed hub, not an open one.</p>
+</aside>
+<p>Both components that queue submissions carry the setting in their <strong>Options</strong>
+(the <strong>Options</strong> button in the component's toolbar).</p>
+<p><strong>Resources</strong> — see the <a href="../../../reference/configuration/components/resources/index.html">generated parameter
+list</a>:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Label on screen</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>autoapprove</code></td>
+<td><strong>Auto-approve</strong></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>autoapproved_users</code></td>
+<td><strong>Auto-approved Users</strong></td>
+<td>empty</td>
+</tr>
+<tr>
+<td><code>autoapprove_content_check</code></td>
+<td><strong>Auto-approve Content Check</strong></td>
+<td>No</td>
+</tr>
+<tr>
+<td><code>email_when_submitted</code></td>
+<td><strong>Notify Upon Submission</strong></td>
+<td><code>{config.mailfrom}</code></td>
+</tr>
+<tr>
+<td><code>email_when_approved</code></td>
+<td><strong>Email When Published</strong></td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Auto-approved Users</strong> is a list of usernames whose submissions skip the
+queue even when <strong>Auto-approve</strong> is off. <strong>Auto-approve Content Check</strong>
+requires an auto-approved front-end submission to actually have content before
+it is accepted.</p>
+<p><strong>Publications</strong> — see the <a href="../../../reference/configuration/components/publications/index.html">generated parameter
+list</a> — has the same
+first two: <strong>Auto-approve</strong> and <strong>Auto-approved Users</strong>.</p>
+<h2 id="resource-states">Resource states</h2>
+<p>A resource's state is the <code>published</code> column, and the admin list's <strong>Status</strong>
+filter offers every one of them:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Filter label</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2</td>
+<td>Draft (external)</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Draft (internal)</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Pending</strong></td>
+</tr>
+<tr>
+<td>0</td>
+<td>Unpublished</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Published</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Trashed</td>
+</tr>
+<tr>
+<td>-1</td>
+<td>Archived</td>
+</tr>
+</tbody>
+</table>
+<p>Only state 3 is the approval queue. The other unpublished states are drafts
+the author has not submitted, or items an administrator has taken down.</p>
+<h2 id="clearing-the-queue">Clearing the queue</h2>
+<p>Monday morning, eight datasets waiting. This is the round trip:</p>
+<p><img src="../../media/approvingcontent-pending-resources1.png" alt="The resources list filtered to pending submissions" /></p>
+<ol>
+<li>Go to <strong>Components → Resources</strong>.</li>
+<li>Set the <strong>Status</strong> filter to <strong>Pending</strong>.</li>
+<li>Open each one by its title and read it. Approval is a publishing decision
+— the licence, the access level and whether the description says what the
+thing actually is are all yours to check, and nobody else will.</li>
+<li>Tick the resources to approve and select <strong>Publish</strong> in the toolbar, or
+set the status on the edit form of the one you have open.</li>
+<li>For anything you are not publishing, leave it pending and tell the
+submitter why. Unpublishing it instead takes it out of the <strong>Pending</strong>
+filter, and it is then in a state nobody is looking at.</li>
+</ol>
+<p>Publishing is reversible: set a resource back to Unpublished and it leaves the
+site, with nothing lost. Nothing on this screen deletes a submission.</p>
+<p><img src="../../media/approvingcontent-pending-resources2.png" alt="A pending resource open for editing, with its status field" /></p>
+<p>Publishing stamps the publish-up date and, if <strong>Email When Published</strong> is on,
+notifies the submitter. The resource then appears in browse and search for
+anyone its access level allows.</p>
+<p>Publishing requires the <code>core.edit.state</code> permission on <code>com_resources</code>. A
+resource checked out by another administrator is skipped.</p>
+<h2 id="publications">Publications</h2>
+<p>Publications move through a curation workflow rather than a single pending
+flag, and the admin list's <strong>Status</strong> filter names each stage:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Filter label</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3</td>
+<td>draft</td>
+<td>Author is still working</td>
+</tr>
+<tr>
+<td>4</td>
+<td>ready</td>
+<td>Posted for review</td>
+</tr>
+<tr>
+<td>5</td>
+<td>pending approval</td>
+<td>Awaiting an administrator</td>
+</tr>
+<tr>
+<td>7</td>
+<td>changes required</td>
+<td>Sent back to the author</td>
+</tr>
+<tr>
+<td>1</td>
+<td>published</td>
+<td>Live</td>
+</tr>
+<tr>
+<td>0</td>
+<td>unpublished</td>
+<td>Taken down</td>
+</tr>
+<tr>
+<td>2</td>
+<td>deleted</td>
+<td>Removed</td>
+</tr>
+</tbody>
+</table>
+<p>Publications take longer per item, so do them second. Go to <strong>Components →
+Publications</strong>, filter to <strong>pending approval</strong>, and open a publication to
+review it. The curation panel walks the manifest block by
+block; each block is either approved or sent back, and a publication with any
+block outstanding moves to <strong>changes required</strong> rather than <strong>published</strong>.</p>
+<p>The <code>mod_mycuration</code> module gives curators a site-side list of the items
+assigned to them, split into <strong>Review</strong> and <strong>Pending changes</strong>.</p>
+<h2 id="where-the-counts-come-from">Where the counts come from</h2>
+<p>The <strong>Resources</strong> dashboard panel counts each state directly:</p>
+<pre><code class="language-php">		$queries = array(
+			'unpublished'   =&gt; 0,
+			'published'     =&gt; 1,
+			'draftUser'     =&gt; 2,
+			'pending'       =&gt; 3,
+			'removed'       =&gt; 4,
+			'draftInternal' =&gt; 5
+		);
+
+		foreach ($queries as $key =&gt; $state)
+		{
+			$database-&gt;setQuery(&quot;SELECT count(*) FROM `#__resources` WHERE published=$state AND standalone=1&quot;);
+			$this-&gt;$key = $database-&gt;loadResult();
+		}
+</code></pre>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../index.html" rel="prev"><span>Previous</span>Daily Maintenance</a><a class="pager__next" href="../tools/index.html" rel="next"><span>Next</span>Tools</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/03-maintenance/01-approvingcontent.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

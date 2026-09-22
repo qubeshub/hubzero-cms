@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>User notes · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="A user note is a record an administrator keeps about a member account: what a support case was about, why an account was suspended, what was agreed in a phone…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/users/user-notes/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">User notes</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#whether-to-use-this-screen-at-all">Whether to use this screen at all</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-note-list">The note list</a></li>
+<li class="toc__item toc__item--l2"><a href="#writing-a-note">Writing a note</a></li>
+<li class="toc__item toc__item--l2"><a href="#note-categories">Note categories</a></li>
+</ol></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Users</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">User notes</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>User notes</h1>
+        </header>
+        
+        <div class="prose">
+<p>A user note is a record an administrator keeps about a member account:
+what a support case was about, why an account was suspended, what was agreed
+in a phone call. Notes are filed under categories and can carry a review
+date.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Users do not write these. There is no site-facing notes feature
+in 2.4 — the model and its screens exist only in the administrator
+interface, and a note is written <em>about</em> a member, not <em>by</em> one.</p>
+</aside>
+<h2 id="whether-to-use-this-screen-at-all">Whether to use this screen at all</h2>
+<p>Decide that before you start, because the screen is only half-built and
+switching to something else later means retyping.</p>
+<p>It works for one thing: writing a note against an account and reading it back
+later. That is genuinely useful on a hub where more than one person answers
+support mail and the next person needs to know why an account was suspended in
+March. If that is your problem, the screen solves it.</p>
+<p>Almost everything else on it does not work. Seven of the toolbar's actions —
+<strong>Publish</strong>, <strong>Unpublish</strong>, <strong>Archive</strong>, <strong>Check-in</strong> and <strong>Empty Trash</strong> on
+the list, <strong>Save &amp; New</strong> and <strong>Save as Copy</strong> on the form — submit tasks the
+notes controller does not implement, and pressing one simply redraws the
+screen. <strong>Edit</strong> and <strong>Trash</strong> reach real code but read the selected rows under
+a name the list never posts, so they behave as though you had ticked nothing.
+The column sort links fail. Deleting a note cannot be done from the interface
+at all.</p>
+<p>So: use it if you want an append-mostly log against an account and can live
+with notes accumulating. Do not use it if you need to retract, tidy or archive
+what you write, or if the notes have to be got rid of on request — a
+data-protection erasure request cannot be honoured from this screen.</p>
+<aside class="admonition admonition--caution">
+<p><strong>Caution:</strong> A user note is personal information about a real person, kept
+where they cannot see it and cannot correct it, and in this release cannot be
+deleted without database access. Write what a support record needs and no
+more.</p>
+</aside>
+<p>Notes live in <code>com_members</code>, at <strong>Users</strong> → <strong>User Notes</strong>, or under
+<strong>Users</strong> → <strong>Members</strong> → <strong>Notes</strong>. Categories are ordinary content
+categories belonging to <code>com_members</code>, at <strong>Users</strong> → <strong>User Note
+Categories</strong>, which opens <code>com_categories</code>.</p>
+<h2 id="the-note-list">The note list</h2>
+<p>Each row shows the <strong>User</strong> the note is about, its <strong>Subject</strong>, its
+<strong>Category</strong>, a status icon, the <strong>Review date</strong> and the note <strong>ID</strong>.
+Selecting the user's name opens the note. A note someone else has open shows
+a checked-out marker.</p>
+<p>Filter with:</p>
+<ul>
+<li>The search box, which matches the note's subject and body. Enter
+<code>uid:123</code> instead to list every note about one account by its member ID.</li>
+<li>The category menu.</li>
+<li>The status menu: Published, Unpublished, Archived, Trashed, All.</li>
+</ul>
+<p>The toolbar carries <strong>New</strong>, <strong>Edit</strong>, <strong>Publish</strong>, <strong>Unpublish</strong>,
+<strong>Archive</strong>, <strong>Check-in</strong>, <strong>Trash</strong> and <strong>Options</strong>. When the status filter
+is set to Trashed, <strong>Trash</strong> is replaced by <strong>Empty Trash</strong>.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Most of that toolbar does nothing in 2.4. Only <strong>New</strong> and
+<strong>Options</strong> work. <strong>Publish</strong>, <strong>Unpublish</strong>, <strong>Archive</strong>, <strong>Check-in</strong> and
+<strong>Empty Trash</strong> submit tasks the notes controller does not implement, and
+the status icon in the list is inert for the same reason. <strong>Edit</strong> and
+<strong>Trash</strong> reach real code but look for the selected rows under the wrong
+request name, so they always behave as though nothing were ticked: <strong>Edit</strong>
+opens a blank new note and <strong>Trash</strong> reports <em>No rows selected</em>. Selecting
+anything else just redraws the list.</p>
+<p>What does work: open a note by selecting the user's name in its row, and
+change its status with the <strong>State</strong> menu on the form. Deleting a note has
+to be done in the database.</p>
+</aside>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The sort links in the column headings also fail. They set a sort
+column qualified with a table alias the query does not use, which the
+database rejects. Leave the list on its default order, newest review date
+first.</p>
+</aside>
+<h2 id="writing-a-note">Writing a note</h2>
+<p>Notes are written one at a time and only from the <strong>New</strong> button. Everything
+else on the toolbar is either inert or misreads the selection, so this is the
+whole of what the screen does. Nothing here is sent to anyone and nothing is
+visible on the site.</p>
+<ol>
+<li>Go to <strong>Users</strong> → <strong>User Notes</strong>.</li>
+<li>Select <strong>New</strong>.</li>
+<li>Fill in the form:</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Subject</strong></td>
+<td>A one-line summary. Required</td>
+</tr>
+<tr>
+<td><strong>Body</strong></td>
+<td>The note itself, in the editor</td>
+</tr>
+<tr>
+<td><strong>Category</strong></td>
+<td>One of the note categories, or none</td>
+</tr>
+<tr>
+<td><strong>User</strong></td>
+<td>The member the note is about. Required</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>Published, Unpublished or Trashed</td>
+</tr>
+<tr>
+<td><strong>Review time</strong></td>
+<td>A date to look at this note again. Shown in the list's Review date column and left blank if you do not need one</td>
+</tr>
+</tbody>
+</table>
+<ol start="4">
+<li>Select <strong>Save</strong>.</li>
+</ol>
+<p><strong>Apply</strong> saves and stays on the form; <strong>Save</strong> saves and returns to the
+list.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Do not use <strong>Trashed</strong>. The form stores it as state 2, which
+is the platform's value for <em>archived</em>: the list then shows the note as
+<strong>Archived</strong>, and the list's own <strong>Trashed</strong> filter, which looks for state
+-2, never finds it. Use <strong>Unpublished</strong> to take a note out of circulation.</p>
+</aside>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> <strong>Save &amp; New</strong> and <strong>Save as Copy</strong> on the note form are not
+implemented either. Both discard what you typed and return you to the
+list. Use <strong>Save</strong>, then <strong>New</strong>.</p>
+</aside>
+<h2 id="note-categories">Note categories</h2>
+<p>Categories organise notes; a hub with a handful of notes does not need them,
+one that logs every support contact does. Decide early whether you want them,
+because the note list's category filter is the only way to narrow a long list —
+the sort links do not work and the search box matches subject and body only.</p>
+<p>Go to <strong>Users</strong> → <strong>User Note Categories</strong>. The screen is <code>com_categories</code>
+scoped to <code>com_members</code>, the same manager used for article categories, and it
+behaves the same way: create, edit, publish, reorder, nest, batch-process and
+trash. The categories it shows belong to notes alone; they do not appear
+anywhere else on the hub.</p>
+<p>A note does not have to have a category, and the note list's category filter
+is the only thing categories change.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../supergroups/index.html" rel="prev"><span>Previous</span>Super Groups</a><a class="pager__next" href="../../menus/index.html" rel="next"><span>Next</span>Menus</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/06-users/user-notes.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

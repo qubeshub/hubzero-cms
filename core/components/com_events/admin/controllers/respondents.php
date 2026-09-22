@@ -17,6 +17,7 @@ use Notify;
 use Route;
 use Lang;
 use App;
+use User;
 
 require_once dirname(dirname(__DIR__)) . '/models/orm/event.php';
 
@@ -93,7 +94,7 @@ class Respondents extends AdminController
 		// Output the HTML
 		$this->view
 			->set('event', $event)
-			->set('resp', $respondent)
+			->set('resp', $resp)
 			->display();
 	}
 

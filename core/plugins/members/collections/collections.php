@@ -891,6 +891,22 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 		{
 			return $this->_login();
 		}
+		$restrictUsers = \Component::params('com_answers')->get('restrict_users');
+		if ($restrictUsers == 'active')
+		{
+			$restrictDays = \Component::params('com_answers')->get('restrict_days');
+			$now = new \DateTime();
+			$registered = new \DateTime(User::get('registerDate'));
+			if ($now->diff($registered)->days < $restrictDays)
+			{
+				App::redirect(
+					Route::url('index.php?option=com_members'),
+					Lang::txt('PLG_MEMBERS_COLLECTIONS_ERROR_NEW_ACCOUNT'),
+					'warning'
+				);
+				return;
+			}
+		}
 
 		if (!$this->params->get('access-edit-item') && !$this->params->get('access-create-item'))
 		{
@@ -1075,7 +1091,7 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 		}
 
 		$coltitle = Request::getString('collection_title', '', 'post');
-		if (!$p['collection_id'] && $coltitle)
+		if (empty($p['collection_id']) && $coltitle)
 		{
 			$collection = new \Components\Collections\Models\Collection();
 			$collection->set('title', $coltitle);
@@ -1521,11 +1537,11 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 
 		$recipients = array(
 			['collection', $post->get('collection_id')],
-			['user', $comment->get('created_by')]
+			['user', $row->get('created_by')]
 		);
-		if ($comment->get('parent'))
+		if ($row->get('parent'))
 		{
-			$recipients[] = ['user', $comment->parent()->get('created_by')];
+			$recipients[] = ['user', $row->parent()->get('created_by')];
 		}
 
 		$title = $post->item()->get('title');
@@ -1535,15 +1551,15 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 
 		Event::trigger('system.logActivity', [
 			'activity' => [
-				'action'      => ($data['id'] ? 'updated' : 'created'),
+				'action'      => (!empty($comment['id']) ? 'updated' : 'created'),
 				'scope'       => 'collections.comment',
-				'scope_id'    => $comment->get('id'),
-				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_COMMENT_' . ($data['id'] ? 'UPDATED' : 'CREATED'), $comment->get('id'), '<a href="' . $url . '#c' . $comment->get('id') . '">' . $title . '</a>'),
+				'scope_id'    => $row->get('id'),
+				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_COMMENT_' . (!empty($comment['id']) ? 'UPDATED' : 'CREATED'), $row->get('id'), '<a href="' . $url . '#c' . $row->get('id') . '">' . $title . '</a>'),
 				'details'     => array(
 					'collection_id' => $post->get('collection_id'),
 					'post_id'       => $post->get('id'),
 					'item_id'       => $row->get('item_id'),
-					'url'           => $url . '#c' . $comment->get('id')
+					'url'           => $url . '#c' . $row->get('id')
 				)
 			],
 			'recipients' => $recipients
@@ -1574,6 +1590,15 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 
 		// Initiate a whiteboard comment object
 		$comment = \Hubzero\Item\Comment::oneOrFail($id);
+
+		// Only the comment's author and the owner of the profile may remove it
+		if (User::get('id') != $comment->get('created_by')
+		 && User::get('id') != $this->member->get('id'))
+		{
+			$this->setError(Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
+			return $this->_post();
+		}
+
 		$comment->set('state', $comment::STATE_DELETED);
 
 		// Delete the entry itself
@@ -1673,6 +1698,22 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 				'warning'
 			);
 			return;
+		}
+		$restrictUsers = \Component::params('com_answers')->get('restrict_users');
+		if ($restrictUsers == 'active')
+		{
+			$restrictDays = \Component::params('com_answers')->get('restrict_days');
+			$now = new \DateTime();
+			$registered = new \DateTime(User::get('registerDate'));
+			if ($now->diff($registered)->days < $restrictDays)
+			{
+				App::redirect(
+					Route::url('index.php?option=com_members'),
+					Lang::txt('PLG_MEMBERS_COLLECTIONS_ERROR_NEW_ACCOUNT'),
+					'warning'
+				);
+				return;
+			}
 		}
 
 		// Access check

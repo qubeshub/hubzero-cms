@@ -19,6 +19,9 @@ use User;
 use Date;
 use Lang;
 use App;
+use Component;
+use Event;
+use Session;
 
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'orm' . DS . 'description' . DS . 'field.php';
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'orm' . DS . 'description.php';
@@ -936,7 +939,7 @@ class Setup extends Base
 							1,
 							1,
 							'',
-							$split_group_roles = 0
+							$split_group_roles = 1
 						);
 					}
 				}

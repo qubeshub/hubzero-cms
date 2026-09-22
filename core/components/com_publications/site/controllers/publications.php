@@ -30,6 +30,9 @@ use Event;
 use Lang;
 use User;
 use App;
+use Config;
+use Date;
+use Filesystem;
 
 /**
  * Primary component controller
@@ -426,6 +429,17 @@ class Publications extends SiteController
 			'tag_ignored' => []
 		];
 
+		// Hard cap on per-page size. Each rendered item runs an authors
+		// lookup with N+1 Member model loads (see _list.php), so a
+		// limit=1000 request blew through the 128 MB request heap and
+		// crashed in View::render. Beyond ~100 the page is also useless
+		// to users — they can't realistically scan that many thumbs.
+		$maxLimit = 100;
+		if ($filters['limit'] <= 0 || $filters['limit'] > $maxLimit)
+		{
+			$filters['limit'] = $maxLimit;
+		}
+
 		if (!in_array($filters['sortby'], ['date', 'title', 'id', 'rating', 'ranking', 'popularity']))
 		{
 			$filters['sortby'] = $default_sort;
@@ -789,6 +803,15 @@ class Publications extends SiteController
 		// Bundle requested?
 		if ($render == 'archive')
 		{
+			// Asynchronous bundle path (gated). A no-op unless the bundle_async
+			// flag is on or this version has a queue row (canary) — so the
+			// synchronous path below is unchanged for everyone else.
+			if ($this->bundleAsyncActive($this->model->get('version_id')))
+			{
+				$this->serveAsyncBundle();
+				return;
+			}
+
 			// Produce archival package
 			if ($this->model->_curationModel->package())
 			{
@@ -802,7 +825,17 @@ class Publications extends SiteController
 			}
 			else
 			{
-				throw new Exception(Lang::txt('COM_PUBLICATIONS_ERROR_FINDING_ATTACHMENTS'), 404);
+				// The bundle could not be produced (e.g. the dataset is too
+				// large to package on demand and has not been pre-built). Don't
+				// dead-end on a bare 404 — send the user back to the publication
+				// page with an explanation so they can download files
+				// individually.
+				App::redirect(
+					Route::url('index.php?option=' . $this->_option . '&id=' . $this->model->get('id')),
+					Lang::txt('COM_PUBLICATIONS_BUNDLE_UNAVAILABLE'),
+					'warning'
+				);
+				return;
 			}
 		}
 
@@ -925,6 +958,198 @@ class Publications extends SiteController
 		}
 
 		return $content;
+	}
+
+	/**
+	 * Is the asynchronous bundle path active for this version?
+	 *
+	 * True when the bundle_async component flag is on, or (per-version canary)
+	 * a queue row already exists for the version. Kept cheap and defensive: it
+	 * does not load the BundleQueue model, and a missing table just reads as
+	 * "not active" — so the synchronous archive path is never affected.
+	 *
+	 * @param   integer  $versionId
+	 * @return  boolean
+	 */
+	protected function bundleAsyncActive($versionId)
+	{
+		$versionId = (int) $versionId;
+
+		if (!$versionId)
+		{
+			return false;
+		}
+
+		$active = false;
+
+		if ((int) \Component::params('com_publications')->get('bundle_async', 0))
+		{
+			$active = true;
+		}
+		else
+		{
+			// Per-version canary: a queue row activates the path even with the
+			// flag off (so a version queued before the flag flips is served async).
+			try
+			{
+				$db = \App::get('db');
+				$db->setQuery("SELECT 1 FROM `#__publication_bundle_queue` WHERE `publication_version_id` = " . $versionId . " LIMIT 1");
+				$active = (bool) $db->loadResult();
+			}
+			catch (\Throwable $e)
+			{
+				return false;
+			}
+		}
+
+		if (!$active)
+		{
+			return false;
+		}
+
+		// The async path only applies to file-based versions. A version with no
+		// role-1 file attachment (a Databases CSV, a Series of linked pubs) is not
+		// built off-request, so it must fall through to the synchronous packager
+		// — otherwise its archive download would loop forever "preparing", since
+		// the queue would never accept (and the worker never build) it. This is
+		// the same test BundleQueue::enqueueVersion gates on.
+		try
+		{
+			require_once \Component::path('com_publications') . '/models/bundlequeue.php';
+
+			return \Components\Publications\Models\BundleQueue::isAsyncBuildable($versionId);
+		}
+		catch (\Throwable $e)
+		{
+			return false;
+		}
+	}
+
+	/**
+	 * Serve (or report the status of) a version's bundle on the async path.
+	 *
+	 * ready+fresh -> stream it; never built or ready-but-stale -> (re)queue and
+	 * show "preparing"; queued/building -> "preparing"; failed -> unavailable.
+	 * We never serve a bundle known to need rebuilding.
+	 *
+	 * @return  void
+	 */
+	protected function serveAsyncBundle()
+	{
+		require_once \Component::path('com_publications') . '/models/bundlequeue.php';
+
+		$versionId = (int) $this->model->get('version_id');
+		$bq        = \Components\Publications\Models\BundleQueue::forVersion($versionId);
+		$status    = ($bq && $bq->get('id')) ? $bq->get('status') : null;
+
+		if ($status == \Components\Publications\Models\BundleQueue::STATUS_READY
+		 && $this->bundleIsFresh($bq, $versionId))
+		{
+			if ($this->model->isPublished())
+			{
+				$this->model->logAccess('primary');
+			}
+			$this->model->_curationModel->serveBundle();
+			return;
+		}
+
+		// No queue row yet, but a served bundle already exists on disk — one built
+		// by the legacy in-request packager before async was enabled, or a version
+		// left over after a queue reset (TRUNCATE rollback). Serve it directly
+		// rather than needlessly rebuilding it, so enabling bundle_async on any
+		// host is safe with no manual backfill of the queue.
+		if ($status === null)
+		{
+			$existing = $this->model->path('base', true) . DS . $this->model->_curationModel->getBundleName();
+
+			if (is_file($existing))
+			{
+				if ($this->model->isPublished())
+				{
+					$this->model->logAccess('primary');
+				}
+				$this->model->_curationModel->serveBundle();
+				return;
+			}
+		}
+
+		// Never built, or ready-but-stale (needs repair): (re)queue it.
+		if ($status === null || $status == \Components\Publications\Models\BundleQueue::STATUS_READY)
+		{
+			\Components\Publications\Models\BundleQueue::enqueueVersion($versionId);
+			$status = \Components\Publications\Models\BundleQueue::STATUS_QUEUED;
+		}
+
+		$url = Route::url('index.php?option=' . $this->_option . '&id=' . $this->model->get('id'));
+
+		if ($status == \Components\Publications\Models\BundleQueue::STATUS_FAILED)
+		{
+			App::redirect($url, Lang::txt('COM_PUBLICATIONS_BUNDLE_UNAVAILABLE'), 'warning');
+			return;
+		}
+
+		App::redirect($url, Lang::txt('COM_PUBLICATIONS_BUNDLE_PREPARING'), 'info');
+	}
+
+	/**
+	 * Whether a ready bundle is still fresh. A NULL stored source_hash is
+	 * grandfathered (trusted, never auto-rebuilt); otherwise compare against
+	 * the version's current source signature.
+	 *
+	 * @param   object   $bq
+	 * @param   integer  $versionId
+	 * @return  boolean
+	 */
+	protected function bundleIsFresh($bq, $versionId)
+	{
+		$stored = $bq->get('source_hash');
+
+		if ($stored === null || $stored === '')
+		{
+			return true;
+		}
+
+		require_once \Component::path('com_publications') . '/models/bundlebuilder.php';
+
+		$builder = new \Components\Publications\Models\BundleBuilder();
+
+		return $bq->isFresh($builder->currentSourceHash($versionId));
+	}
+
+	/**
+	 * JSON bundle-build status for the version, for the "preparing" button to
+	 * poll. Returns {status, ready, url?}. Same access gate as viewing the
+	 * publication. Readiness here is the lightweight status check; the serve
+	 * path remains authoritative on freshness.
+	 *
+	 * @return  void
+	 */
+	public function bundlestatusTask()
+	{
+		$this->model = new Models\Publication($this->_identifier, $this->_version);
+
+		$out = array('status' => 'unknown', 'ready' => false);
+
+		if ($this->model->exists() && !$this->model->isDeleted() && $this->model->access('view-all'))
+		{
+			require_once \Component::path('com_publications') . '/models/bundlequeue.php';
+
+			$vid = (int) $this->model->get('version_id');
+			$bq  = \Components\Publications\Models\BundleQueue::forVersion($vid);
+
+			$out['status'] = ($bq && $bq->get('id')) ? $bq->get('status') : 'none';
+			$out['ready']  = ($out['status'] === \Components\Publications\Models\BundleQueue::STATUS_READY);
+
+			if ($out['ready'])
+			{
+				$out['url'] = Route::url('index.php?option=' . $this->_option . '&id=' . $this->model->get('id')
+					. '&task=serve&v=' . $this->model->get('version_number') . '&render=archive');
+			}
+		}
+
+		header('Content-Type: application/json');
+		echo json_encode($out);
+		exit;
 	}
 
 	/**
@@ -1132,9 +1357,7 @@ class Publications extends SiteController
 	 */
 	protected function _serveup($inline, $p, $f, $mime)
 	{
-		$user_agent = (isset($_SERVER["HTTP_USER_AGENT"]))
-					? $_SERVER["HTTP_USER_AGENT"]
-					: $HTTP_USER_AGENT;
+		$user_agent = $_SERVER['HTTP_USER_AGENT'] ?? '';
 
 		// Clean all output buffers (needs PHP > 4.2.0)
 		while (ob_get_level())
@@ -2150,9 +2373,6 @@ class Publications extends SiteController
 		$customFields = json_decode($rpublica->_curationModel->getMetaSchema(), true);
 
 		// Diff the two versions
-		require_once dirname(dirname(__DIR__)) . '/helpers/Diff.php';
-		require_once dirname(dirname(__DIR__)) . '/helpers/Diff/Renderer/Html/SideBySide.php';
-
 		$diffs = array();
 
 		$l = explode("\n", $lversion->get('title'));

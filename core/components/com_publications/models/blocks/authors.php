@@ -14,6 +14,7 @@ use Event;
 use Lang;
 use User;
 use Date;
+use Component;
 
 /**
  * Authors block
@@ -342,9 +343,10 @@ class Authors extends Base
 		$config = Component::params('com_publications');
 
 		$emailConfig = $config->get('email');
-		$email      = Request::getString('email', '', 'post');
+		$email      = trim(Request::getString('email', '', 'post'));
 		$firstName  = trim(Request::getString('firstName', '', 'post'));
 		$lastName   = trim(Request::getString('lastName', '', 'post'));
+		$dept       = trim(Request::getString('department', '', 'post'));
 		$org        = trim(Request::getString('organization', '', 'post'));
 		$orcid      = trim(Request::getString('orcid', '', 'post'));
 		$credit     = trim(Request::getString('credit', '', 'post'));
@@ -465,6 +467,7 @@ class Authors extends Base
 		$pAuthor->name         = $name;
 		$pAuthor->firstName    = $firstName;
 		$pAuthor->lastName     = $lastName;
+		$pAuthor->department   = $dept;
 		$pAuthor->organization = $org;
 		$pAuthor->orcid        = $orcid;
 
@@ -556,6 +559,7 @@ class Authors extends Base
 		$email      = Request::getString('email', '', 'post');
 		$firstName  = Request::getString('firstName', '', 'post');
 		$lastName   = Request::getString('lastName', '', 'post');
+		$dept       = Request::getString('department', '', 'post');
 		$org        = Request::getString('organization', '', 'post');
 		$orcid      = Request::getString('orcid', '', 'post');
 		$credit     = Request::getString('credit', '', 'post');
@@ -579,7 +583,8 @@ class Authors extends Base
 			$orgid = $this->getOrganizationId($org);
 			$row->orgid = $orgid;
 		}
-
+		
+		$row->department    = $dept;
 		$row->organization  = $org;
 		$row->firstName     = $firstName;
 		$row->lastName      = $lastName;
@@ -859,11 +864,11 @@ class Authors extends Base
 		$org = trim($organization);
 		$orgQry = \Components\Members\Helpers\Utility::escapeSpecialChars($org);
 		
-		$verNum = \Component::params('com_members')->get('rorApiVersion');
+		$verNum = \Component::params('com_members')->get('rorApiVersion', 'v2');
 		
 		if (!empty($verNum))
 		{
-			$queryURL = "https://api.ror.org/$verNum/organizations?query.advanced=names.value:" . urlencode($orgQry);
+			$queryURL = "https://api.ror.org/$verNum/organizations?query.advanced=names.value:" . urlencode('"' . $orgQry . '"');
 			
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $queryURL);

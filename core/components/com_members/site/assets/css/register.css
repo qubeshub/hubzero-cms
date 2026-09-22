@@ -33,13 +33,58 @@
 	}
 	#hubForm ul#passrules li.error {
 		font-weight: bold;
+		background-color: #8b3a3a;
+		border-color: #6e2e2e;
+		color: #fff;
 	}
 	#hubForm ul#passrules li.passed {
 		text-decoration: line-through;
 	}
 
+	/* Select boxes and ORCID input: align with labels inside fieldset padding */
+	#hubForm .form-group select,
+	#hubForm .orcid-field {
+		width: calc(100% - 4em);
+		margin-left: 2em;
+	}
+
+	/* CAPTCHA fieldset: ensure enough room for reCAPTCHA widget */
+	#hubForm .form-group {
+		padding-bottom: 1.5em;
+	}
+
+	/* Sidebar explaination boxes */
+	#hubForm .explaination {
+		background: #f0f0f0;
+		padding: 10px 15px;
+		border-radius: 0.27em;
+		border-top: none;
+	}
+	#hubForm .explaination:first-of-type {
+		background: #2b6cb0;
+		border-left: 3px solid #1e4f82;
+		color: #fff;
+	}
+	#hubForm .explaination:first-of-type a {
+		color: #fff;
+		text-decoration: underline;
+	}
+
+	/* Submit button: reduce gap above */
+	#hubForm p.submit {
+		margin-top: -1em;
+	}
+
 	#hubForm label#botcheck-label {
-		display: none;
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 
 	#hubForm .radio {
@@ -63,7 +108,7 @@
 
 /* Username checker */
 	#hubForm p.hint.ok {
-		color: #090;
+		color: #0e6b0e;
 	}
 	#hubForm p.hint.notok {
 		color: #900;
@@ -105,7 +150,7 @@
 	.success-message {
 		font-size: 3.5em;
 		text-align: center;
-		color: #ccc;
+		color: #595959;
 		margin: 0;
 		padding: 0;
 		line-height: 1;
@@ -131,7 +176,7 @@
 		background-color: #f0f0f0;
 	}
 	.account-activation .account-email {
-		color: #eca95a;
+		color: #8a5d00;
 		font-weight: bold;
 	}
 	.account-activation ol {
@@ -172,8 +217,73 @@
 	.ui-autocomplete .ui-menu-item {
 		padding: 10px 5px;
 	}
-	
+
 	.ui-autocomplete .ui-menu-item:hover {
 		background: #f1f1f1;
 		cursor: pointer;
+	}
+
+/* WCAG AA 2.1 Contrast overrides
+   ============================== */
+
+	/* Form labels: #777 (4.48:1) → #545454 (7.5:1) */
+	#hubForm label {
+		color: #545454;
+	}
+
+	/* Required marker: #ff0000 (4.0:1) → #cc0000 (5.9:1); 0.75em → 0.8125rem */
+	#hubForm label .required {
+		color: #cc0000;
+		font-size: 0.8125rem;
+	}
+
+	/* Optional marker: #999 (2.85:1) → #767676 (4.54:1); 0.75em → 0.8125rem */
+	#hubForm label .optional {
+		color: #767676;
+		font-size: 0.8125rem;
+	}
+
+	/* Hint text: #999 (2.85:1) → #767676 (4.54:1) */
+	#hubForm .hint {
+		color: #767676;
+	}
+
+	/* Password rules: inherit (too light on #dde0e3 bg) → #545454 (4.86:1 on #dde0e3) */
+	#hubForm ul#passrules li {
+		color: #545454;
+	}
+
+	/* ORCID about text: ensure contrast on light background */
+	.orcid-about {
+		color: #545454;
+	}
+
+	/* Warning banner: solid muted background with white text */
+	#hubForm p.warning {
+		background-color: #8a6d3b !important;
+		background-image: none !important;
+		border-color: #6e5730 !important;
+		color: #fff !important;
+	}
+	#hubForm p.warning a {
+		color: #fff !important;
+		border-bottom-color: #fff !important;
+	}
+
+	/* Error notification block: #fff on #dd5555 (3.8:1) → #fff on #b91c1c (5.35:1) */
+	#hubForm > .error {
+		background-color: #b91c1c !important;
+		border-color: #991616 !important;
+	}
+
+	/* Inline field error spans: match darker error background */
+	#hubForm span.error {
+		background-color: #b91c1c !important;
+		border-color: #991616 !important;
+	}
+
+	/* Submit button: #fff on #62c462 (2.18:1) → #fff on #2e7d32 (5.17:1) */
+	#hubForm .btn-success {
+		background-color: #2e7d32;
+		border-color: #256b29;
 	}

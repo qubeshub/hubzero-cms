@@ -109,9 +109,9 @@ $this->css('browse.css');
 					$qs .= ($this->filters['group']  ? '&group=' . $this->escape($this->filters['group'])   : '');
 					?>
 					<ul class="entries-menu order-options">
-						<li><a<?php echo ($this->filters['sortby'] == 'title') ? ' class="active"' : ''; ?> href="<?php echo Route::url('index.php?option='.$this->option.'&task=browse&sortby=title' . $qs); ?>" title="<?php echo Lang::txt('COM_COURSES_SORT_BY_TITLE'); ?>"><?php echo Lang::txt('COM_COURSES_SORT_TITLE'); ?></a></li>
-						<li><a<?php echo ($this->filters['sortby'] == 'alias') ? ' class="active"' : ''; ?> href="<?php echo Route::url('index.php?option='.$this->option.'&task=browse&sortby=alias' . $qs); ?>" title="<?php echo Lang::txt('COM_COURSES_SORT_BY_ALIAS'); ?>"><?php echo Lang::txt('COM_COURSES_SORT_ALIAS'); ?></a></li>
-						<li><a<?php echo ($this->filters['sortby'] == 'popularity') ? ' class="active"' : ''; ?> href="<?php echo Route::url('index.php?option='.$this->option.'&task=browse&sortby=popularity' . $qs); ?>" title="<?php echo Lang::txt('COM_COURSES_SORT_BY_POPULARITY'); ?>"><?php echo Lang::txt('COM_COURSES_SORT_POPULARITY'); ?></a></li>
+						<li><a<?php echo ($this->filters['sortby'] == 'title') ? ' class="active"' : ''; ?> href="<?php echo Route::url('index.php?option='.$this->option.'&task=browse&sortby=title' . $qs); ?>" title="<?php echo Lang::txt('COM_COURSES_SORT_BY_TITLE'); ?>" rel="nofollow"><?php echo Lang::txt('COM_COURSES_SORT_TITLE'); ?></a></li>
+						<li><a<?php echo ($this->filters['sortby'] == 'alias') ? ' class="active"' : ''; ?> href="<?php echo Route::url('index.php?option='.$this->option.'&task=browse&sortby=alias' . $qs); ?>" title="<?php echo Lang::txt('COM_COURSES_SORT_BY_ALIAS'); ?>" rel="nofollow"><?php echo Lang::txt('COM_COURSES_SORT_ALIAS'); ?></a></li>
+						<li><a<?php echo ($this->filters['sortby'] == 'popularity') ? ' class="active"' : ''; ?> href="<?php echo Route::url('index.php?option='.$this->option.'&task=browse&sortby=popularity' . $qs); ?>" title="<?php echo Lang::txt('COM_COURSES_SORT_BY_POPULARITY'); ?>" rel="nofollow"><?php echo Lang::txt('COM_COURSES_SORT_POPULARITY'); ?></a></li>
 					</ul>
 				</nav>
 
@@ -180,7 +180,7 @@ $this->css('browse.css');
 									</a>
 								</h4>
 								<p class="course-identity">
-									<a href="<?php echo Route::url($course->link()); ?>">
+									<a href="<?php echo Route::url($course->link()); ?>" aria-label="<?php echo $this->escape($course->get('title')); ?>">
 										<?php if ($logo = $course->logo('url')) { ?>
 											<img src="<?php echo Route::url($logo); ?>" alt="<?php echo $this->escape($course->get('title')); ?>" />
 										<?php } else { ?>

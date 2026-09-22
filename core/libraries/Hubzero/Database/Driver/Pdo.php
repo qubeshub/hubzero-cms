@@ -21,6 +21,14 @@ use Hubzero\Database\Exception\UnsupportedEngineException;
 class Pdo extends Driver
 {
 	/**
+	 * The connection options the driver was constructed with, retained so a
+	 * dropped connection can be re-established (see reconnect()).
+	 *
+	 * @var  array
+	 */
+	protected $options = array();
+
+	/**
 	 * Constructs a new database object based on the given params
 	 *
 	 * @param   array  $options  The database connection params
@@ -34,6 +42,10 @@ class Pdo extends Driver
 		{
 			throw new ConnectionFailedException('PDO does not appear to be installed or enabled.', 500);
 		}
+
+		// Retain the params so the connection can be rebuilt if the server drops
+		// it (e.g. MySQL wait_timeout reached while a long task idles the link).
+		$this->options = $options;
 
 		// Try to connect
 		try
@@ -81,6 +93,39 @@ class Pdo extends Driver
 	public function throwExceptions()
 	{
 		$this->connection->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
+		return $this;
+	}
+
+	/**
+	 * Re-establish the connection from the options it was created with.
+	 *
+	 * Recovers from a server-side disconnect — most often MySQL closing an idle
+	 * connection once wait_timeout is reached while a long CPU/IO task (e.g.
+	 * zipping a multi-GB publication bundle) runs between queries. Callers detect
+	 * the dead link with connected() and call this before their next query.
+	 *
+	 * @return  $this
+	 * @since   2.0.0
+	 **/
+	public function reconnect()
+	{
+		if (empty($this->options['dsn']))
+		{
+			return $this;
+		}
+
+		$this->disconnect();
+
+		$this->setConnection(new \PDO(
+			(string) $this->options['dsn'],
+			(string) (isset($this->options['user']) ? $this->options['user'] : ''),
+			(string) (isset($this->options['password']) ? $this->options['password'] : ''),
+			(array) (isset($this->options['extras']) ? $this->options['extras'] : array())
+		));
+
+		$this->throwExceptions();
+		$this->setUTF();
 
 		return $this;
 	}
@@ -679,7 +724,8 @@ class Pdo extends Driver
 	 */
 	public function escape($text, $extra = false)
 	{
-		$result = substr($this->connection->quote($text ? $text : ''), 1, -1);
+		// Use null coalescing to properly handle falsy but valid values like 0, '0', false
+		$result = substr($this->connection->quote($text ?? ''), 1, -1);
 
 		if ($extra)
 		{
@@ -708,12 +754,37 @@ class Pdo extends Driver
 	 */
 	public function connected()
 	{
-		if (is_object($this->connection))
+		if (!is_object($this->connection))
 		{
-			return $this->connection->query("SELECT 1")->fetchAll()[0][1];
+			return false;
 		}
 
-		return false;
+		// "SELECT 1" throws PDOException when the underlying server has
+		// gone away (e.g., mysql wait_timeout reached while the PHP
+		// process held the connection). Catch it so connected() can
+		// honestly answer "no" instead of letting the exception bubble
+		// out as an unhandled fatal — which is what was filling the
+		// error log every time session_write_close() ran on an idle
+		// request.
+		try
+		{
+			$result = $this->connection->query("SELECT 1");
+		}
+		catch (\PDOException $e)
+		{
+			return false;
+		}
+
+		if ($result === false)
+		{
+			return false;
+		}
+
+		// SELECT 1 returns one column; the previous code read [0][1]
+		// (which is always undefined) and so always returned a falsy
+		// value, defeating the point of the check.
+		$row = $result->fetch(\PDO::FETCH_NUM);
+		return $row !== false && isset($row[0]) && (int) $row[0] === 1;
 	}
 
 	/**
@@ -791,6 +862,13 @@ class Pdo extends Driver
 	 */
 	public function getNumRows()
 	{
+		// After loadObjectList() frees the result set, the statement is null.
+		// Guard so callers that invoke getNumRows() afterward don't fatal.
+		if ($this->statement === null)
+		{
+			return 0;
+		}
+
 		// @FIXME: this isn't guaranteed to work on select statements in mysql
 		return $this->statement->rowCount();
 	}

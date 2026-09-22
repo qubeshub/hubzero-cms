@@ -8,6 +8,7 @@
 namespace Hubzero\Filesystem\Adapter;
 
 use Hubzero\Filesystem\AdapterInterface;
+use Hubzero\Filesystem\Exception\FileNotFoundException;
 use Hubzero\Filesystem\Util\MimeType;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -100,6 +101,19 @@ class Local implements AdapterInterface
 
 		foreach ($paths as $path)
 		{
+			// A link is removed as a link. unlink() doesn't follow it, but the chmod()
+			// below would - loosening the permissions of whatever it points at, which
+			// may be a file in another account entirely.
+			if (is_link($path))
+			{
+				if (!@unlink($path))
+				{
+					$success = false;
+				}
+
+				continue;
+			}
+
 			if (!is_file($path))
 			{
 				continue;
@@ -320,30 +334,60 @@ class Local implements AdapterInterface
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * Returns true only when the configured virus scanner exits 0
+	 * (clean). Any non-zero exit — virus found (1), scanner error
+	 * (2), command-not-found (127), signal kill — is treated as
+	 * unsafe so a broken or unreachable scanner can't silently let
+	 * uploads through.
+	 *
+	 * Previously this method only failed on exit code 1 (virus
+	 * found per clamscan's convention), which meant an unreachable
+	 * clamd (clamdscan exit 2) silently passed every upload.
 	 */
 	public function isSafe($file)
 	{
-		if ($this->command)
+		if (!$this->command)
 		{
-			$command = trim($this->command);
-			if (strstr($command, '%s'))
-			{
-				$command = sprintf($command, $file);
-			}
-			else
-			{
-				$command .= ' ' . str_replace(' ', '\ ', $file);
-			}
-
-			exec($command, $output, $status);
-
-			if ($status == 1)
-			{
-				return false;
-			}
+			return true;
 		}
 
-		return true;
+		$command = trim($this->command);
+		if (strstr($command, '%s'))
+		{
+			$command = sprintf($command, escapeshellarg($file));
+		}
+		else
+		{
+			$command .= ' ' . escapeshellarg($file);
+		}
+
+		$output = [];
+		$status = 0;
+		exec($command . ' 2>&1', $output, $status);
+
+		if ($status === 0)
+		{
+			return true;
+		}
+
+		// Anything other than 0 is "we can't confirm this is safe":
+		// virus found, scanner error, daemon down, command missing,
+		// killed by signal, etc. Log so admins can see the scanner
+		// is broken rather than discover it from missed-virus reports.
+		if ($status !== 1)
+		{
+			error_log(sprintf(
+				'Hubzero\\Filesystem\\Adapter\\Local::isSafe: virus '
+				. 'scanner "%s" exited with status %d (rejecting file). '
+				. 'Output: %s',
+				$this->command,
+				$status,
+				implode(' | ', $output)
+			));
+		}
+
+		return false;
 	}
 
 	/**
@@ -501,6 +545,14 @@ class Local implements AdapterInterface
 	 */
 	public function deleteDirectory($directory, $preserve = false)
 	{
+		// isDirectory() follows links, so a link to a directory would have us
+		// empty out the target. Remove the link itself instead - that is what the
+		// caller pointed at - and leave whatever it referenced alone.
+		if (is_link($directory))
+		{
+			return @unlink($directory);
+		}
+
 		if (!$this->isDirectory($directory))
 		{
 			return false;
@@ -510,6 +562,15 @@ class Local implements AdapterInterface
 
 		foreach ($items as $item)
 		{
+			// A symlink is removed, never followed. isDir() below reports true for a
+			// link to a directory, so without this the recursion would delete the
+			// contents of the target - which may well live in another account.
+			if ($item->isLink())
+			{
+				@unlink($item->getPathname());
+				continue;
+			}
+
 			// If the item is a directory, we can just recurse into the function and
 			// delete that sub-director, otherwise we'll just delete the file and
 			// keep iterating through each file until the directory is cleaned.

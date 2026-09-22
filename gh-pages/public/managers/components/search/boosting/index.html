@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Boosting · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="A boost moves one kind of matching result up or down the ranking. It does not change which results are found, only their order. Most hubs never need one. Reach…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/components/search/boosting/">
+  <link rel="icon" href="../../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../../index.html">
+      <img class="brand__mark" src="../../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../../search-index.json" data-base="../../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../../docs/index.html">About</a>
+      <a href="../../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../../index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../saml/index.html">SAML</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Boosting</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#what-can-be-boosted">What can be boosted</a></li>
+<li class="toc__item toc__item--l2"><a href="#creating-a-boost">Creating a boost</a></li>
+<li class="toc__item toc__item--l2"><a href="#editing-and-removing">Editing and removing</a></li>
+<li class="toc__item toc__item--l2"><a href="#when-boosts-are-ignored">When boosts are ignored</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Components</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Search</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Boosting</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Boosting</h1>
+        </header>
+        
+        <div class="prose">
+<p>A boost moves one kind of matching result up or down the ranking. It does not
+change which results are found, only their order.</p>
+<p>Most hubs never need one. Reach for a boost when a whole class of content is
+consistently in the wrong place: a hub whose members come for the tools, but
+where a search for a tool's name returns the dozen presentations that mention
+it first. Boosting the tool resource type moves tools up for every query at
+once. That is also its limitation — a boost is not per-query and not per-word,
+so if the problem is one bad result rather than a whole type, a boost is the
+wrong instrument.</p>
+<p>Boosts are the safest thing on these screens. Nothing is re-indexed, nothing
+is deleted, the change takes effect on the next search, and setting the
+strength back to zero or deleting the row undoes it completely.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Boosting is a Solr feature. On a hub running Basic search the
+<strong>Boosts</strong> tab is not reachable and the stored boosts have no effect.</p>
+</aside>
+<h2 id="what-can-be-boosted">What can be boosted</h2>
+<p>The <strong>Type</strong> menu offers one entry for each resource type defined under
+<strong>Components &gt; Resources</strong>, plus <strong>Citations</strong>. Those are the only choices;
+there is no boost for blog entries, groups, members, or the other indexed
+types.</p>
+<p>Behind the menu, a resource type becomes the Solr clause
+<code>type:&lt;the type&gt;^&lt;strength&gt;</code> and <strong>Citations</strong> becomes
+<code>hubtype:citation^&lt;strength&gt;</code>. Every boost is added to the query as a Solr
+boost query, so the effect is cumulative with the field weights in
+<strong>Query Fields</strong>.</p>
+<h2 id="creating-a-boost">Creating a boost</h2>
+<ol>
+<li>
+<p>Go to <strong>Components &gt; Search</strong>.</p>
+</li>
+<li>
+<p>Select the <strong>Boosts</strong> tab.</p>
+<p><img src="../../../media/boosting-boost-tab.png" alt="The Boosts tab in the Search component's sub-navigation" /></p>
+</li>
+<li>
+<p>Select the <strong>+</strong> button in the toolbar.</p>
+<p><img src="../../../media/boosting-new-boost.png" alt="The Boosts list with the new-boost button highlighted" /></p>
+</li>
+<li>
+<p>Choose a <strong>Type</strong>.</p>
+<p><img src="../../../media/boosting-new-boost-form.png" alt="The new boost form, with a Type menu and a Strength field" /></p>
+</li>
+<li>
+<p>Enter a whole number for <strong>Strength</strong>.</p>
+<ul>
+<li>A positive value moves matching results higher.</li>
+<li>A negative value moves them lower.</li>
+<li>Zero has no effect.</li>
+</ul>
+<p>There is no scale printed anywhere and no preview. Start at a small
+number, save, run two or three searches you know the right answer to, and
+raise it only if nothing moved. A large boost pushes that type to the top
+of every result page on the hub, including searches where it is irrelevant.</p>
+</li>
+<li>
+<p>Save the boost with the tick button in the toolbar.</p>
+<p><img src="../../../media/boosting-finalize-new-boost.png" alt="The completed new boost form before saving" /></p>
+</li>
+</ol>
+<p>The new boost applies to the next search; nothing has to be re-indexed.</p>
+<h2 id="editing-and-removing">Editing and removing</h2>
+<p>Selecting a row on the <strong>Boosts</strong> list opens it for editing. <strong>Strength</strong> can
+be changed; <strong>Type</strong> is shown as a disabled field, because a boost is
+identified by its type. To boost a different type, delete this boost and
+create another. The edit screen's trash button deletes the boost outright —
+there is no trashed state to recover it from.</p>
+<p>Only one boost may exist per type. Saving a second one for a type that
+already has a boost fails with <em>A boost already exists for …</em>.</p>
+<h2 id="when-boosts-are-ignored">When boosts are ignored</h2>
+<p>Turning the <strong>Tag Search Box</strong> option on disables boosting altogether: the
+query is built without any boost queries, and the <strong>Boosts</strong> screen shows the
+notice <em>Query boosts are currently omitted because tag search is enabled</em>.
+The boosts stay stored and take effect again when the option is turned off.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Tag search costs more than the boosts. The same block of code
+that adds the boost queries also sets <strong>Query Fields</strong>, <strong>Phrase Fields</strong>
+and <strong>Phrase Slop</strong>, so with tag search on the hub stops weighting titles
+and URLs above body text as well. If you turn on <strong>Tag Search Box</strong> and
+then wonder why result ordering got worse across the whole site, that is
+why. The option is off by default. See
+<a href="../breadth/index.html#how-wide-a-query-reaches">Breadth</a>.</p>
+</aside>
+<p>This is the first thing to check when a boost appears to do nothing: the
+notice at the top of the <strong>Boosts</strong> screen. A boost that is saved, correct,
+and simply never applied looks identical to one that is too weak.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 009ec973b7</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../breadth/index.html" rel="prev"><span>Previous</span>Breadth</a><a class="pager__next" href="../index/index.html" rel="next"><span>Next</span>Maintaining the index</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/09-components/31-search/04-boosting.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

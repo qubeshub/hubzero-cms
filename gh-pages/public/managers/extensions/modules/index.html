@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Module Manager · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Modules are the small blocks of output that sit around the component: a login box, a breadcrumb trail, a search field, a site-wide notice. The Module Manager…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/extensions/modules/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Module Manager</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#what-the-module-manager-is-not">What the Module Manager is not</a></li>
+<li class="toc__item toc__item--l2"><a href="#modules-and-module-instances">Modules and module instances</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-list">The list</a></li>
+<li class="toc__item toc__item--l2"><a href="#filters">Filters</a></li>
+<li class="toc__item toc__item--l2"><a href="#toolbar">Toolbar</a></li>
+<li class="toc__item toc__item--l2"><a href="#creating-and-editing-a-module">Creating and editing a module</a></li>
+<li class="toc__item toc__item--l3"><a href="#menu-assignment">Menu assignment</a></li>
+<li class="toc__item toc__item--l2"><a href="#positions">Positions</a></li>
+<li class="toc__item toc__item--l3"><a href="#why-a-fresh-hub-looks-empty">Why a fresh hub looks empty</a></li>
+<li class="toc__item toc__item--l2"><a href="#making-the-main-menu-visible">Making the main menu visible</a></li>
+<li class="toc__item toc__item--l2"><a href="#adding-a-site-notice">Adding a site notice</a></li>
+<li class="toc__item toc__item--l2"><a href="#permissions">Permissions</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Extensions</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Module Manager</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Module Manager</h1>
+        </header>
+        
+        <div class="prose">
+<p>Modules are the small blocks of output that sit around the component: a login
+box, a breadcrumb trail, a search field, a site-wide notice. The Module
+Manager creates them, places them in a template position, decides which pages
+they appear on, and orders them within a position.</p>
+<p>Select <strong>Extensions</strong> → <strong>Module Manager</strong> in the administrator interface, or
+go to <code>/administrator/index.php?option=com_modules</code>.</p>
+<p>Every hub uses this screen, whether or not anyone has opened it, because the
+menu down the side of the site and the login box in the corner are modules.
+You come here to add a block, to move one, to stop one appearing on a
+particular page, or — most often — to find out why one is not appearing at
+all. That last case is nearly always
+<a href="#positions">a position problem</a>.</p>
+<p>This chapter covers creating modules, positions and page assignment. The
+parameters inside a module — how many items it lists, which feed it reads —
+are covered in <a href="../../configuring/modules/index.html">Modules</a>.</p>
+<h2 id="what-the-module-manager-is-not">What the Module Manager is not</h2>
+<p>It is not where modules are installed. The hundred module types that ship
+with the platform arrive with the code; a hub's own arrive through the
+<a href="../extension-manager/index.html">Extension Manager</a>. This screen only creates
+<em>instances</em> of types that already exist.</p>
+<p>It is not the menu editor either. <code>mod_menu</code> renders a menu, but the menu's
+items are built in <a href="../../menus/index.html">Menus</a>; the module only decides where the
+result appears and on which pages.</p>
+<h2 id="modules-and-module-instances">Modules and module instances</h2>
+<p>The code for a module lives in <a href="https://github.com/hubzero/hubzero-cms/tree/2.4-main/core/modules"><code>core/modules/</code></a>, one
+directory per module, named <code>mod_something</code>. A hub's own modules go in
+<code>app/modules/</code> and take precedence over a core module of the same name. One
+hundred modules ship with the platform: 78 for the site and 22 for the
+administrator interface.</p>
+<p>Each directory holds <code>mod_name.php</code>, a <code>mod_name.xml</code> manifest that declares
+the module's parameters, and a <code>tmpl/</code> directory of layouts. All but one also
+carry a <code>helper.php</code> holding the class that does the work, which
+<code>mod_name.php</code> requires and runs:</p>
+<pre><code class="language-php">&lt;?php
+/**
+ * @package    hubzero-cms
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
+ * @license    http://opensource.org/licenses/MIT MIT
+ */
+
+namespace Modules\Login;
+
+require_once __DIR__ . DS . 'helper.php';
+
+with(new Helper($params, $module))-&gt;display();
+</code></pre>
+<p>The Module Manager does not list those directories. It lists <em>instances</em>.
+Creating a module makes a row in <code>#__modules</code> that points at one of the
+installed module types and carries its own title, position, access level,
+parameters and page assignment. Ten instances of <code>mod_custom</code> are ten
+different blocks of HTML sharing one piece of code.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> A module type must be enabled in the
+<a href="../extension-manager/index.html">Extension Manager</a> before any of its instances
+render. The site query joins <code>#__extensions</code> and skips modules whose
+extension row is disabled, whatever the instance's own status says.</p>
+</aside>
+<h2 id="the-list">The list</h2>
+<p>The list shows the modules for one client at a time — <strong>Site</strong> or
+<strong>Administrator</strong> — chosen from the <strong>Client</strong> filter. Columns:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Checkbox</td>
+<td>Selects rows for the toolbar buttons. The header checkbox selects all. A module whose files are missing has no checkbox and cannot be selected.</td>
+</tr>
+<tr>
+<td><strong>Title</strong></td>
+<td>The instance title. Click it to edit. A module note, if set, appears beneath.</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Published, unpublished or trashed. Click the icon to toggle.</td>
+</tr>
+<tr>
+<td><strong>Position</strong></td>
+<td>The template position the module renders in, or <code>:: None ::</code>.</td>
+</tr>
+<tr>
+<td><strong>Ordering</strong></td>
+<td>Order within the position. Editable only while the list is sorted by this column.</td>
+</tr>
+<tr>
+<td><strong>Module</strong></td>
+<td>The module type, for example <code>mod_login</code>.</td>
+</tr>
+<tr>
+<td><strong>Pages</strong></td>
+<td>Page assignment: <strong>All</strong>, <strong>None</strong>, <strong>Selected only</strong> or <strong>All except selected</strong>.</td>
+</tr>
+<tr>
+<td><strong>Access</strong></td>
+<td>The <a href="../../users/accesslevels/index.html">access level</a> required to see the module.</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td>The content language the module is limited to, or <strong>All</strong>.</td>
+</tr>
+<tr>
+<td><strong>ID</strong></td>
+<td>The row's primary key. Not editable.</td>
+</tr>
+</tbody>
+</table>
+<p>If a module's files have been removed from disk, the row loses its checkbox
+and its title link, carries the message <em>Module file(s) not found!</em>, and is
+shown as unpublished.</p>
+<h2 id="filters">Filters</h2>
+<p>Above the list, a search box matches the title, and six drop-downs narrow the
+list further. They combine.</p>
+<table>
+<thead>
+<tr>
+<th>Filter</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Client</strong></td>
+<td>Site, Administrator</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Published, Unpublished, Trashed</td>
+</tr>
+<tr>
+<td><strong>Position</strong></td>
+<td>Every position currently in use by a module of this client</td>
+</tr>
+<tr>
+<td><strong>Module</strong></td>
+<td>Every installed module type for this client</td>
+</tr>
+<tr>
+<td><strong>Access</strong></td>
+<td>Any defined access level</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td>Any installed content language</td>
+</tr>
+</tbody>
+</table>
+<h2 id="toolbar">Toolbar</h2>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>New</strong></td>
+<td>Opens the module-type chooser in a pop-up. Pick a type to create an instance of it.</td>
+</tr>
+<tr>
+<td><strong>Edit</strong></td>
+<td>Opens the selected module.</td>
+</tr>
+<tr>
+<td><strong>Duplicate</strong></td>
+<td>Copies the selected modules. The copies are created unpublished.</td>
+</tr>
+<tr>
+<td><strong>Publish</strong> / <strong>Unpublish</strong></td>
+<td>Changes the state of the selected modules.</td>
+</tr>
+<tr>
+<td><strong>Check In</strong></td>
+<td>Releases modules left checked out by an interrupted edit.</td>
+</tr>
+<tr>
+<td><strong>Trash</strong></td>
+<td>Moves the selected modules to the trash.</td>
+</tr>
+<tr>
+<td><strong>Empty trash</strong></td>
+<td>Replaces <strong>Trash</strong> when the Status filter is set to Trashed. Deletes permanently.</td>
+</tr>
+<tr>
+<td><strong>Options</strong></td>
+<td>Component permissions; there are no other settings.</td>
+</tr>
+<tr>
+<td><strong>Help</strong></td>
+<td>Opens the built-in help screen.</td>
+</tr>
+</tbody>
+</table>
+<p>A batch panel below the list applies an access level, a language or a position
+to every selected module at once. It is hidden unless you hold create, edit
+and edit-state permission on <code>com_modules</code>.</p>
+<h2 id="creating-and-editing-a-module">Creating and editing a module</h2>
+<p><strong>New</strong> opens a pop-up listing every <em>enabled</em> module type for the current
+client, by translated name and by directory name, with the manifest
+description as a tooltip. A module type disabled in the Extension Manager does
+not appear here. Choosing a type opens the edit form; the type is fixed once
+the instance exists.</p>
+<p>The left column holds the details every module shares:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Title</strong></td>
+<td>Required, up to 100 characters.</td>
+</tr>
+<tr>
+<td><strong>Show Title</strong></td>
+<td>Show or Hide. Whether the template prints the title above the module.</td>
+</tr>
+<tr>
+<td><strong>Position</strong></td>
+<td>The template position. Type one, or use <strong>Select position</strong> for a picker listing every position declared by an installed template plus every position already in use.</td>
+</tr>
+<tr>
+<td><strong>Ordering</strong></td>
+<td>Position within the chosen position.</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Published, Unpublished or Trashed.</td>
+</tr>
+<tr>
+<td><strong>Access</strong></td>
+<td>The access level required to see the module.</td>
+</tr>
+<tr>
+<td><strong>Start Publishing</strong> / <strong>Finish Publishing</strong></td>
+<td>Optional dates that bracket when the module renders.</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td>Limits the module to one content language, or <strong>All</strong>.</td>
+</tr>
+<tr>
+<td><strong>Note</strong></td>
+<td>A private label shown under the title in the list.</td>
+</tr>
+<tr>
+<td><strong>ID</strong></td>
+<td>Read-only.</td>
+</tr>
+</tbody>
+</table>
+<p>The right column shows the module type, the client, and the description from
+the module's XML manifest, none of which can be edited. Below them, the
+module's own parameters appear in collapsible panels named by the manifest.
+For a module with no parameters the panel is empty.</p>
+<p>An instance of <code>mod_custom</code> — or a module with no XML manifest — also gets a
+<strong>Custom output</strong> editor for arbitrary HTML.</p>
+<h3 id="menu-assignment">Menu assignment</h3>
+<p>Site modules get a <strong>Menu Assignment</strong> section. <strong>Module Assignment</strong> offers
+four choices:</p>
+<ul>
+<li><strong>On all pages</strong></li>
+<li><strong>No pages</strong></li>
+<li><strong>Only on the pages selected</strong></li>
+<li><strong>On all pages except those selected</strong></li>
+</ul>
+<p>The last two reveal a tabbed tree of every menu item, one tab per menu, with
+<strong>All</strong>, <strong>None</strong> and <strong>Invert</strong> buttons. Administrator modules have no menu
+assignment.</p>
+<h2 id="positions">Positions</h2>
+<p>Positions are what managers get wrong, and the reason is that getting them
+wrong produces no error of any kind. A module in a position the live template
+does not draw is published, correct, present in the list — and invisible.
+Nothing on the Module Manager screen tells you which positions those are.</p>
+<p>A position is just a name. The template decides where on the page a position
+appears, and which positions exist at all; a position no template renders
+produces nothing. The positions a template offers are declared in its
+<code>templateDetails.xml</code>.</p>
+<p><strong>kimera</strong> and <strong>lucent</strong>, the older site templates, both declare:</p>
+<p><code>footer</code>, <code>banner</code>, <code>welcome</code>, <code>left</code>, <code>right</code>, <code>helppane</code>, <code>user3</code>,
+<code>introblock</code>, <code>notices</code>, <code>search</code></p>
+<p>kimera's <code>index.php</code> also renders <code>breadcrumbs</code> and <code>endpage</code>, which are not
+in the declared list, and does not render <code>banner</code> or <code>introblock</code>, which
+are. So the picker is a guide, not a guarantee — check the template you are
+actually using.</p>
+<p><strong>hubzero</strong>, the site template in <code>app/templates/</code>, declares:</p>
+<p><code>footer</code>, <code>banner</code>, <code>welcome</code>, <code>left</code>, <code>right</code>, <code>helppane</code>, <code>user3</code>,
+<code>notices</code>, <code>search</code>, <code>breadcrumbs</code>, <code>endpage</code></p>
+<p>It has dropped <code>introblock</code> and declares the two kimera only rendered. A
+module in <code>introblock</code> therefore renders under one of these site templates
+and not the other, which is worth knowing before you change the site's
+template style.</p>
+<p><strong>kameleon</strong>, the administrator template, declares:</p>
+<p><code>menu</code>, <code>submenu</code>, <code>toolbar</code>, <code>title</code>, <code>status</code>, <code>icon</code>, <code>cpanel</code>, <code>debug</code></p>
+<p>The <strong>Select position</strong> picker lists two things together: every position
+declared by an installed template, and every position some module is already
+sitting in. Its second column names the templates that declare each one. A
+position with an empty second column is in use by a module and declared by
+nothing — which is the picker's way of showing you a module that cannot
+render, if you know to read it that way.</p>
+<p>To see the positions of the live template laid out on the page, set
+<strong>Preview Module Positions</strong> to Enabled in the Template Manager's <strong>Options</strong>,
+then append <code>?tp=1</code> to any site URL. Each position is drawn as a labelled
+outline, including the empty ones. This is the only reliable way to find out
+what the template you are running actually draws, and it is worth doing once
+before you place anything.</p>
+<p>You can also type a position no template defines and pull the module into
+article text with the Content - Load Module plugin, which expands
+<code>{loadposition myposition}</code> and <code>{loadmodule mod_login}</code> wherever they appear
+in content. The plugin must be enabled for either to work.</p>
+<h3 id="why-a-fresh-hub-looks-empty">Why a fresh hub looks empty</h3>
+<p>A newly installed hub shows no menu, no login box and no sidebar, and a
+manager's first instinct is to go looking for the content. The content is
+fine. Two separate things in the shipped install data are responsible, and
+both live in this section of the book.</p>
+<p><strong>The default site style draws no modules at all.</strong> The install data ships
+three template styles and makes <strong>Welcome Template</strong> the default for the
+site. That template declares no positions and its <code>index.php</code> contains no
+module include of any kind, so nothing you do in the Module Manager appears
+on the front end while it is the default. It is a splash page for a hub that
+has just been installed, not a template to run a hub on. The <strong>Get started</strong>
+link on that splash page — the same as visiting <code>/?getstarted=1</code> — switches
+the default site style to <strong>kimera</strong> and sends you to the getting started
+page. Doing it from the <a href="../templates/index.html">Template Manager</a> has the same
+effect.</p>
+<p><strong>The main menu ships in a position no site template declares.</strong> The install
+data creates one site module, <em>Main Menu</em>, published, assigned to all pages,
+and placed in a position called <code>position-7</code>. No site template in the tree
+declares <code>position-7</code> — not kimera, not lucent, not hubzero; nothing draws
+it. Only the optional sample data moves
+it — it runs an update that sets the position to <code>user3</code> and hides the
+title — so a hub installed without the sample data has a main menu that is
+switched on and cannot be seen. The shipped <em>Login Form</em> module is in
+<code>position-7</code> as well.</p>
+<p>So the sequence on a new hub is: change the site's default style away from
+Welcome, then move the Main Menu module into a position the new template
+draws. Neither is obvious, and neither reports anything if you skip it.</p>
+<h2 id="making-the-main-menu-visible">Making the main menu visible</h2>
+<p>This is the task above, done once, on a hub that has just been installed and
+whose default style is already <strong>kimera</strong>.</p>
+<ol>
+<li>Go to <strong>Extensions</strong> → <strong>Module Manager</strong>.</li>
+<li>Leave the <strong>Client</strong> filter on <strong>Site</strong>.</li>
+<li>Select <strong>Main Menu</strong> in the list. Its <strong>Position</strong> column reads
+<code>position-7</code>.</li>
+<li>In the edit screen, select <strong>Select position</strong> beside <strong>Position</strong>.</li>
+<li>Search the picker for <code>user3</code> and select it. The picker's second column
+shows which templates declare it — confirmation that something will draw
+it, which <code>position-7</code> does not have.</li>
+<li>Check that <strong>Status</strong> is <strong>Published</strong> and that <strong>Menu Assignment</strong> is
+<strong>On all pages</strong>.</li>
+<li>Select <strong>Save &amp; Close</strong>.</li>
+<li>Open the site in another tab. The menu is there.</li>
+</ol>
+<p>If it is not, the position is drawn by a different template from the one the
+site is running. Turn on <strong>Preview Module Positions</strong> and load the site with
+<code>?tp=1</code> to see what the live template really offers.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> This changes what every visitor sees, immediately. It is entirely
+reversible — set the position back — but there is no draft state and no
+preview of the change itself.</p>
+</aside>
+<h2 id="adding-a-site-notice">Adding a site notice</h2>
+<p>The other module a manager creates by hand is <code>mod_notices</code>, the coloured
+banner used for maintenance windows and hub-wide announcements. It follows
+the same shape as the task above, with <strong>New</strong> in place of picking an
+existing row: choose <strong>Site Notices</strong> from the type pop-up, fill in the
+<strong>Details</strong>, set the position, choose <strong>On all pages</strong> under <strong>Menu
+Assignment</strong>, then <strong>Save &amp; Close</strong>.</p>
+<p>Its position is <code>notices</code>, which kimera, lucent and hubzero all declare, and
+it is worth setting <strong>Finish Publishing</strong> so the notice takes itself down.
+Its own parameters — <strong>Alert level</strong>, <strong>Message</strong>, <strong>Module ID</strong>, <strong>Allow
+closing</strong>, <strong>Autolink message</strong> — and the rest of the detail are in
+<a href="../../maintenance/notices/index.html">Site Notices</a>.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> A template that does not declare <code>notices</code> will not render the
+notice, with the same silence as any other unrendered position.</p>
+</aside>
+<h2 id="permissions">Permissions</h2>
+<p><code>com_modules</code> has no configuration options of its own. Its <strong>Options</strong> button
+opens a single <strong>Permissions</strong> tab, which sets who may configure, access,
+create, delete, edit and change the state of modules.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../index.html" rel="prev"><span>Previous</span>Extensions</a><a class="pager__next" href="../templates/index.html" rel="next"><span>Next</span>Template Manager</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/10-extensions/01-modules.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

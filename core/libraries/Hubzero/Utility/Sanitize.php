@@ -327,7 +327,7 @@ class Sanitize
 	 * @param    array   $purifierConfigSettings   HTML purifier configuration settings
 	 * @return   void
 	 */
-	protected static function _findOrCreateClientSerializerDirectory($purifierConfigSettings)
+	protected static function _findOrCreateClientSerializerDirectory(&$purifierConfigSettings)
 	{
 		$client = \App::get('client');
 		$clientAlias = isset($client->alias) ? $client->alias : $client->name;
@@ -423,6 +423,16 @@ class Sanitize
 	protected static function _addAttributesToHtmlPurifierWhitelist($htmlPurifierWhitelist)
 	{
 		$htmlPurifierWhitelist->addAttribute('img', 'usemap', 'CDATA');
+
+		// Allow ARIA attributes on common elements for accessibility
+		$ariaElements = ['a', 'div', 'span', 'img', 'table', 'ul', 'ol', 'li', 'nav', 'section', 'button'];
+		foreach ($ariaElements as $element)
+		{
+			$htmlPurifierWhitelist->addAttribute($element, 'aria-label', 'Text');
+			$htmlPurifierWhitelist->addAttribute($element, 'aria-labelledby', 'Text');
+			$htmlPurifierWhitelist->addAttribute($element, 'aria-describedby', 'Text');
+			$htmlPurifierWhitelist->addAttribute($element, 'role', 'Text');
+		}
 	}
 
 	/**
@@ -440,14 +450,16 @@ class Sanitize
 		{
 			case 'INT':
 			case 'INTEGER':
-				// Only use the first integer value
-				preg_match('/-?[0-9]+/', (string) $source, $matches);
+				// Only use a LEADING integer value (whitespace trimmed). Anchored
+				// so digits are never scavenged from mid-string -- otherwise a
+				// value like "jesus1993coral@gmail.com" would yield 1993.
+				preg_match('/^-?[0-9]+/', trim((string) $source), $matches);
 				$result = @ (int) $matches[0];
 				break;
 
 			case 'UINT':
-				// Only use the first integer value
-				preg_match('/-?[0-9]+/', (string) $source, $matches);
+				// Only use a LEADING integer value (whitespace trimmed).
+				preg_match('/^-?[0-9]+/', trim((string) $source), $matches);
 				$result = @ abs((int) $matches[0]);
 				break;
 

@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scheduled Tasks · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="The Cron component manages the hub&#x27;s scheduled jobs — digest emails, cache cleanup, search indexing, DOI registration, and the rest. Go to Components → Cron .…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/maintenance/cron/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Scheduled Tasks</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#nothing-here-runs-until-you-set-it-up">Nothing here runs until you set it up</a></li>
+<li class="toc__item toc__item--l3"><a href="#what-ships-with-a-new-hub">What ships with a new hub</a></li>
+<li class="toc__item toc__item--l3"><a href="#worked-example-the-first-newsletter-goes-nowhere">Worked example: the first newsletter goes nowhere</a></li>
+<li class="toc__item toc__item--l2"><a href="#how-it-works">How it works</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-job-list">The job list</a></li>
+<li class="toc__item toc__item--l2"><a href="#creating-and-editing-a-job">Creating and editing a job</a></li>
+<li class="toc__item toc__item--l3"><a href="#details">Details</a></li>
+<li class="toc__item toc__item--l3"><a href="#parameters">Parameters</a></li>
+<li class="toc__item toc__item--l3"><a href="#recurrence">Recurrence</a></li>
+<li class="toc__item toc__item--l3"><a href="#publishing">Publishing</a></li>
+<li class="toc__item toc__item--l3"><a href="#execution">Execution</a></li>
+</ol></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Daily Maintenance</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Scheduled Tasks</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Scheduled Tasks</h1>
+        </header>
+        
+        <div class="prose">
+<p>The <strong>Cron</strong> component manages the hub's scheduled jobs — digest emails, cache
+cleanup, search indexing, DOI registration, and the rest. Go to
+<strong>Components → Cron</strong>.</p>
+<p><img src="../../media/cron-cron-manager-01.png" alt="The Cron job manager" /></p>
+<h2 id="nothing-here-runs-until-you-set-it-up">Nothing here runs until you set it up</h2>
+<p>This is the section of the book where a feature can be switched on, tested,
+documented and still do nothing, because the work it depends on happens on a
+schedule and no schedule exists. Two things have to be true before anything
+happens at all:</p>
+<ol>
+<li>Something has to tick the hub every minute. That is a Unix cron entry on
+the server, described under <a href="#how-it-works">How it works</a>. Without it, no
+job ever runs, however the administrator interface looks.</li>
+<li>A <strong>job</strong> has to exist for the thing you want done, and it has to be
+published. Jobs are rows you create on this screen. Enabling a plugin does
+not create one.</li>
+</ol>
+<p>A new hub has three jobs, and only one of them is published. Everything else
+in the table below is a feature that will sit there doing nothing until
+somebody comes to this screen and adds a job for it.</p>
+<table>
+<thead>
+<tr>
+<th>Waiting for a job</th>
+<th>What does not happen without it</th>
+<th>Event</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Newsletter mailings</td>
+<td>Queued newsletters are never sent</td>
+<td><code>processMailings</code></td>
+</tr>
+<tr>
+<td>Search index, on a hub using Solr</td>
+<td>New and changed content never reaches the index, so search does not find it</td>
+<td><code>processQueue</code>, <code>runFullIndex</code></td>
+</tr>
+<tr>
+<td>Group announcements</td>
+<td>Announcements posted in groups are never mailed</td>
+<td><code>sendGroupAnnouncements</code></td>
+</tr>
+<tr>
+<td>Group membership dates</td>
+<td>Memberships with an end date never expire, and nobody is warned they are about to</td>
+<td><code>expireGroupMemberships</code>, <code>notifyExpiringMemberships</code></td>
+</tr>
+<tr>
+<td>Support ticket housekeeping</td>
+<td>Pending tickets never close themselves, and no reminders or ticket lists go out</td>
+<td><code>onClosePending</code>, <code>sendTicketsReminder</code>, <code>sendTicketList</code></td>
+</tr>
+<tr>
+<td>Activity digests</td>
+<td>Members never get their digest email</td>
+<td><code>emailMemberDigest</code></td>
+</tr>
+<tr>
+<td>Cache expiry</td>
+<td>Expired cache data and old generated CSS are never cleared</td>
+<td><code>trashExpiredData</code>, <code>cleanSystemCss</code></td>
+</tr>
+<tr>
+<td>Publication and resource DOIs</td>
+<td>Master DOIs are never issued</td>
+<td><code>issueMasterDoi</code>, <code>issueResourceMasterDoi</code></td>
+</tr>
+</tbody>
+</table>
+<p>Search is the row to read carefully. A stock hub has <strong>Engine</strong>, on the Search
+component's <strong>Options</strong>, set to <strong>Basic (default)</strong>, which queries the
+database directly and needs no job at all. Only a hub switched to <strong>Apache
+Solr</strong> depends on these two events, and on such a hub search quietly stops
+reflecting reality without them.</p>
+<p>None of that is a defect. It is a design decision — the hub does not assume
+what your site wants on a schedule — but it catches every manager once,
+because there is nothing on the newsletter screen or the search screen to
+tell you a job is missing.</p>
+<aside class="admonition admonition--important">
+<p><strong>Important:</strong> If a feature on this hub &quot;does not work&quot; and it involves
+sending mail, expiring something, or indexing something, check this screen
+before anything else. Compare each job's <strong>Last Run</strong> against its
+recurrence. A job whose last run was three weeks ago on a five-minute
+schedule means the tick is not arriving at all, and every scheduled feature
+on the hub is dead, not just the one you noticed.</p>
+</aside>
+<h3 id="what-ships-with-a-new-hub">What ships with a new hub</h3>
+<p>The install seeds no jobs of its own; three come from migrations that run
+during installation.</p>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Event</th>
+<th>Recurrence</th>
+<th>State as shipped</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Group Announcements</strong></td>
+<td><code>sendGroupAnnouncements</code></td>
+<td>every 5 minutes</td>
+<td>Published</td>
+</tr>
+<tr>
+<td><strong>Process Newsletter Mailings</strong></td>
+<td><code>processMailings</code></td>
+<td>every 5 minutes</td>
+<td><strong>Unpublished</strong></td>
+</tr>
+<tr>
+<td><strong>Process Newsletter Opens &amp; Click IP Addresses</strong></td>
+<td><code>processIps</code></td>
+<td>every 5 minutes</td>
+<td><strong>Unpublished</strong></td>
+</tr>
+</tbody>
+</table>
+<p>So on a new hub exactly one scheduled job runs. The two newsletter jobs are
+created for you and left switched off, which is why a manager's first
+newsletter is composed, sent, and never arrives.</p>
+<h3 id="worked-example-the-first-newsletter-goes-nowhere">Worked example: the first newsletter goes nowhere</h3>
+<p>Say the hub has just published its first newsletter issue and no one received
+it, including you.</p>
+<ol>
+<li>Go to <strong>Components → Cron</strong>.</li>
+<li>Find <strong>Process Newsletter Mailings</strong> in the list. Its <strong>State</strong> is
+<strong>Unpublished</strong>, and <strong>Last Run</strong> is empty.</li>
+<li>Tick it and select <strong>Publish</strong>. The job is now due — its stored next run
+is the zero date, which is in the past — so it goes at the next tick.</li>
+<li>Wait five minutes and reload. <strong>Last Run</strong> should now carry a timestamp.
+If it does not, the tick is not reaching the hub — go to
+<a href="#how-it-works">How it works</a> and check the cron entry on the server.</li>
+<li>Do the same for <strong>Process Newsletter Opens &amp; Click IP Addresses</strong> if you
+want open and click tracking. It is not needed to send mail.</li>
+</ol>
+<p>Publishing a job is safe and reversible: unpublish it again and it stops. The
+button to be careful with on this screen is <strong>Run</strong>, which runs the selected
+jobs immediately — on a mailing job that means the queue goes out now, to
+real addresses, whatever you were expecting.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> A job is not the same as a plugin. The plugin supplies the event;
+the job says when to fire it. Both have to be in place. Most cron plugins
+ship enabled, but <strong>Cron - Forum</strong> ships disabled, so <code>emailGroupForumDigest</code>
+is not on the <strong>Event</strong> menu until you enable it at <strong>Extensions → Plugin
+Manager</strong>.</p>
+</aside>
+<h2 id="how-it-works">How it works</h2>
+<p>Unix cron does not run each hub job. It ticks the CMS, once a minute, and the
+CMS runs whichever jobs are due. Everything about a job — what it does, how
+often, and whether it runs at all — is configured in the administrator
+interface.</p>
+<p>There are two ways to deliver the tick.</p>
+<p><strong>Over HTTP.</strong> A request to <code>index.php?option=com_cron&amp;task=tick&amp;no_html=1</code>
+runs the pending jobs. The request must come from an allowed address: the
+caller either has <code>core.manage</code> on <code>com_cron</code>, or its IP is in the
+component's <strong>whitelist</strong> option (default <code>127.0.0.1</code>), or it resolves to the
+server's own hostname or to <code>localhost</code>. Anything else gets a 404.</p>
+<p><strong>From the command line.</strong> <code>muse cron:jobs tick</code> makes that HTTP request for
+you, taking the URL from the CMS <code>live_site</code> setting and holding a lock so
+ticks cannot pile up:</p>
+<pre><code>* * * * * apache /var/www/yourhub/core/bin/muse cron:jobs tick &gt;&gt; /var/log/hub-cron.log
+</code></pre>
+<p>The <code>cron:jobs</code> command has four other tasks:</p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>run</code></td>
+<td>Run pending jobs in this process. <code>--job=5</code> runs only that job</td>
+</tr>
+<tr>
+<td><code>list</code></td>
+<td>List jobs that are due. <code>-a</code> lists every published job</td>
+</tr>
+<tr>
+<td><code>deactivate</code></td>
+<td>Mark a job inactive</td>
+</tr>
+<tr>
+<td><code>unpublish</code></td>
+<td>Unpublish a job</td>
+</tr>
+</tbody>
+</table>
+<p><code>cron:jobs</code> is a component command, so it does not appear in <code>muse help</code> or in
+the <a href="../../../reference/muse/index.html">generated muse reference</a>, which covers
+only the commands under <code>core/libraries/Hubzero/Console/Command/</code>. Run
+<code>muse cron:jobs help</code> for its own documentation.</p>
+<p>Jobs claim themselves before running, so a manual run from the administrator
+interface and a scheduled tick cannot execute the same job at once, and a job
+whose process died is reclaimed.</p>
+<h2 id="the-job-list">The job list</h2>
+<p>The columns are <strong>ID</strong>, <strong>Title</strong>, <strong>State</strong>, <strong>Starts</strong>, <strong>Ends</strong>,
+<strong>Active</strong>, <strong>Last Run</strong> and <strong>Next Run</strong>. The recurrence is not among them;
+to see how often a job runs, open it. The toolbar carries <strong>Run</strong> (run the
+selected jobs now), <strong>Publish</strong>, <strong>Unpublish</strong>, <strong>Deactivate</strong>, <strong>New</strong>,
+<strong>Delete</strong>, and <strong>Options</strong>.</p>
+<p><strong>Last Run</strong> and <strong>Next Run</strong> are the two that tell you whether the hub is
+healthy. Read them together: a <strong>Next Run</strong> in the past on a published job
+means the tick has stopped.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> <strong>Delete</strong> here removes the job row for good. It asks for
+confirmation and then destroys the record; it is not the reversible trash
+you get on the Article Manager — see <a href="../../content/states/index.html">States, deleting and
+check-out</a>. If you only want a job to stop, use
+<strong>Unpublish</strong>, which keeps the row and its history.</p>
+</aside>
+<p><strong>Options</strong> holds one setting, the IP whitelist, which defaults to
+<code>127.0.0.1</code> — see the
+<a href="../../../reference/configuration/components/cron/index.html">generated parameter list</a>.
+Leave it at the default unless the tick comes from another machine. Widening
+it lets anything at that address run every due job on the hub without logging
+in.</p>
+<h2 id="creating-and-editing-a-job">Creating and editing a job</h2>
+<p>A job has four fieldsets: <strong>Details</strong>, the event's own <strong>Parameters</strong>,
+<strong>Recurrence</strong>, and <strong>Publishing</strong>, plus an <strong>Execution</strong> option.</p>
+<h3 id="details"><a id="editfields-details"></a>Details</h3>
+<p><img src="../../media/cron-cron-manager-03.png" alt="The Details fieldset of a cron job" /></p>
+<ul>
+<li><strong>Title</strong> (required)
+What the job is called in the list.</li>
+<li><strong>Event</strong> (required)
+The plugin event this job triggers, chosen from a drop-down grouped by
+plugin. This is the job — everything else is scheduling. The event cannot be
+changed to something no installed cron plugin offers.</li>
+</ul>
+<p>The events on offer come from the enabled plugins in <code>core/plugins/cron/</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Events</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>activity</code></td>
+<td><code>emailMemberDigest</code></td>
+</tr>
+<tr>
+<td><code>cache</code></td>
+<td><code>cleanSystemCss</code>, <code>trashExpiredData</code></td>
+</tr>
+<tr>
+<td><code>courses</code></td>
+<td><code>syncPassportBadgeStatus</code>, <code>emailInstructorDigest</code></td>
+</tr>
+<tr>
+<td><code>forum</code></td>
+<td><code>emailGroupForumDigest</code></td>
+</tr>
+<tr>
+<td><code>groups</code></td>
+<td><code>cleanGroupFolders</code>, <code>sendGroupAnnouncements</code>, <code>expireGroupMemberships</code>, <code>notifyExpiringMemberships</code></td>
+</tr>
+<tr>
+<td><code>members</code></td>
+<td><code>onPointRoyalties</code></td>
+</tr>
+<tr>
+<td><code>newsletter</code></td>
+<td><code>processMailings</code>, <code>processIps</code></td>
+</tr>
+<tr>
+<td><code>projects</code></td>
+<td><code>computeStats</code>, <code>googleSync</code>, <code>gitGc</code></td>
+</tr>
+<tr>
+<td><code>publications</code></td>
+<td><code>sendAuthorStats</code>, <code>rollUserStats</code>, <code>runMkAip</code>, <code>issueMasterDoi</code>, <code>updateFtpLinks</code>, <code>buildPublicationBundles</code></td>
+</tr>
+<tr>
+<td><code>resources</code></td>
+<td><code>issueResourceMasterDoi</code>, <code>auditResourceData</code>, <code>emailMemberResources</code>, <code>updateResourceRanking</code></td>
+</tr>
+<tr>
+<td><code>search</code></td>
+<td><code>processQueue</code>, <code>runFullIndex</code></td>
+</tr>
+<tr>
+<td><code>storefront</code></td>
+<td><code>emailPublishDownNotifications</code></td>
+</tr>
+<tr>
+<td><code>support</code></td>
+<td><code>onClosePending</code>, <code>sendTicketsReminder</code>, <code>sendTicketList</code>, <code>cleanTempUploads</code></td>
+</tr>
+<tr>
+<td><code>users</code></td>
+<td><code>cleanAuthTempAccounts</code></td>
+</tr>
+</tbody>
+</table>
+<p>The <a href="../../../reference/events/cron/index.html">cron events reference</a> lists each event
+with its listeners.</p>
+<h3 id="parameters"><a id="editfields-parameters"></a>Parameters</h3>
+<p><img src="../../media/cron-cron-manager-05.png" alt="The Parameters fieldset" /></p>
+<p>Every event brings its own parameters, and the form swaps them in when you
+pick the event. An event with none shows &quot;No parameters found&quot;.</p>
+<h3 id="recurrence"><a id="editfields-recurrence"></a>Recurrence</h3>
+<p><img src="../../media/cron-cron-manager-04.png" alt="The Recurrence fieldset" /></p>
+<p><strong>Frequency</strong> offers the common schedules:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Cron expression</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Run once a year, midnight, Jan. 1st</td>
+<td><code>0 0 1 1 *</code></td>
+</tr>
+<tr>
+<td>Run once a month, midnight, first of month</td>
+<td><code>0 0 1 * *</code></td>
+</tr>
+<tr>
+<td>Run once a week, midnight on Sunday</td>
+<td><code>0 0 * * 0</code></td>
+</tr>
+<tr>
+<td>Run once a day, midnight</td>
+<td><code>0 0 * * *</code></td>
+</tr>
+<tr>
+<td>Run once an hour, beginning of hour</td>
+<td><code>0 * * * *</code></td>
+</tr>
+<tr>
+<td><strong>[ Custom ]</strong></td>
+<td>Set the five fields below by hand</td>
+</tr>
+</tbody>
+</table>
+<p>Choosing <strong>[ Custom ]</strong> opens <strong>Minute</strong>, <strong>Hour</strong>, <strong>Day of month</strong>,
+<strong>Month</strong>, and <strong>Day of week</strong>. Each has a drop-down of common values —
+<code>Every</code>, <code>Every 5</code>, <code>Every 10</code>, weekday and month names — and a text box for
+anything else.</p>
+<h3 id="publishing">Publishing</h3>
+<ul>
+<li><strong>State</strong> — Published, Unpublished, or Trashed. Only published jobs run.</li>
+<li><strong>Start running</strong> / <strong>Stop running</strong> — an optional window. A job outside its
+window is skipped even while published.</li>
+</ul>
+<p>The list also shows an <strong>Active</strong> flag. That is not a setting: it means the
+job is running right now, or was claimed by a process that has not released
+it. <strong>Deactivate</strong> clears a stuck claim.</p>
+<h3 id="execution">Execution</h3>
+<ul>
+<li>
+<p><strong>Run in a detached process</strong> — run the job in its own background process
+instead of inside the web tick, so a long batch job does not tie up a web
+worker. A detached job runs without a web request, so it cannot build
+correct absolute URLs unless <code>live_site</code> is set. The form warns when it is
+empty. Never enable it for a job that emails links.</p>
+<aside class="admonition admonition--caution">
+<p><strong>Caution:</strong> Detached execution is marked a prototype in the code. Use it
+for archival and bundle-building jobs, not for anything that sends mail.</p>
+</aside>
+</li>
+</ul>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../notices/index.html" rel="prev"><span>Previous</span>Site Notices</a><a class="pager__next" href="../../faq/index.html" rel="next"><span>Next</span>Frequently asked questions</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/03-maintenance/05-cron.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

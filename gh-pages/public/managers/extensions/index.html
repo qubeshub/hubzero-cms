@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Extensions · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Everything Hubzero puts on a page comes from an extension. The platform ships with a large set of them, and a hub can add its own. This section covers the four…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/extensions/">
+  <link rel="icon" href="../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../index.html">
+      <img class="brand__mark" src="../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../search-index.json" data-base="../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../docs/index.html">About</a>
+      <a href="../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link is-active" href="index.html" aria-current="page">Extensions</a></summary><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#this-section-and-the-one-it-is-confused-with">This section, and the one it is confused with</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-extension-types">The extension types</a></li>
+<li class="toc__item toc__item--l3"><a href="#components">Components</a></li>
+<li class="toc__item toc__item--l3"><a href="#modules">Modules</a></li>
+<li class="toc__item toc__item--l3"><a href="#plugins">Plugins</a></li>
+<li class="toc__item toc__item--l3"><a href="#templates">Templates</a></li>
+<li class="toc__item toc__item--l3"><a href="#languages">Languages</a></li>
+<li class="toc__item toc__item--l2"><a href="#where-extensions-live">Where extensions live</a></li>
+</ol><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Extensions</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Extensions</h1>
+        </header>
+        
+        <div class="prose">
+<p>Everything Hubzero puts on a page comes from an extension. The platform ships
+with a large set of them, and a hub can add its own. This section covers the
+four administrator screens that manage extensions, all reached from the
+<strong>Extensions</strong> menu in the administrator interface.</p>
+<table>
+<thead>
+<tr>
+<th>Screen</th>
+<th>What it manages</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="extension-manager/index.html">Extension Manager</a></td>
+<td>Enabling, disabling and updating every installed extension</td>
+</tr>
+<tr>
+<td><a href="modules/index.html">Module Manager</a></td>
+<td>Module instances, their positions and their page assignments</td>
+</tr>
+<tr>
+<td><a href="plugins/index.html">Plug-in Manager</a></td>
+<td>Plugin state, access level and run order</td>
+</tr>
+<tr>
+<td><a href="templates/index.html">Template Manager</a></td>
+<td>Template styles, the default template, and template source files</td>
+</tr>
+</tbody>
+</table>
+<p>A fifth entry, <strong>Language Manager</strong>, opens <code>com_languages</code>. It has its own
+chapter, <a href="../components/languages/index.html">Language Manager</a>, among the
+<a href="../components/index.html">component chapters</a>.</p>
+<h2 id="this-section-and-the-one-it-is-confused-with">This section, and the one it is confused with</h2>
+<p>This section is about <strong>which extensions exist and where they sit</strong>. Creating
+a module and putting it in a template position. Turning a plugin on. Choosing
+the template the site renders in. Adding a hub's own code from a git
+repository.</p>
+<p><a href="../configuring/index.html">Configuring</a> is about <strong>values</strong>: the settings
+inside an extension once it exists and is switched on.</p>
+<p>Two screens carry both jobs, and that is where the confusion starts. The
+Module Manager creates a module <em>and</em> holds its parameters; the Plug-in
+Manager enables a plugin <em>and</em> holds its parameters. In this book the
+parameters are described in the Configuring chapters —
+<a href="../configuring/modules/index.html">Modules</a> and
+<a href="../configuring/plugins/index.html">Plugins</a> — and everything else here.</p>
+<aside class="admonition admonition--important">
+<p><strong>Important:</strong> If a hub looks empty — no menu down the side, no login box,
+nothing but the component in the middle of the page — the cause is almost
+always in this section, not in the content. A module renders only if its
+position is one the live template actually draws, and a fresh install ships
+neither a default style that draws any nor a main menu in a position that
+exists. <a href="modules/index.html#positions">Positions</a> explains it.</p>
+</aside>
+<h2 id="the-extension-types">The extension types</h2>
+<h3 id="components">Components</h3>
+<p>A component is an application. It has its own controllers, models, views,
+database tables, administrator screens and access rules, and it renders the
+main body of the page. Exactly one component runs per request; a menu item is
+essentially a switch that decides which one. Components live in
+<a href="https://github.com/hubzero/hubzero-cms/tree/2.4-main/core/components"><code>core/components/</code></a>, and a hub's own components in
+<code>app/components/</code>. Their names begin with <code>com_</code>: <code>com_resources</code>,
+<code>com_groups</code>, <code>com_publications</code>.</p>
+<p>Components are not created or removed from the Extensions screens. They are
+enabled and disabled from the <a href="extension-manager/index.html">Extension Manager</a>,
+configured from their own <strong>Options</strong> button, and given menu items from the
+<a href="../menus/index.html">menu manager</a>.</p>
+<h3 id="modules">Modules</h3>
+<p>A module is a small block of output placed around the component, in a named
+position defined by the template: a login box, a breadcrumb trail, a site
+notice, a list of the newest resources. Modules live in
+<a href="https://github.com/hubzero/hubzero-cms/tree/2.4-main/core/modules"><code>core/modules/</code></a> and are named <code>mod_login</code>,
+<code>mod_breadcrumbs</code>, and so on. One hundred ship with the core, 78 for the site
+and 22 for the administrator interface.</p>
+<p>Unlike a component, a module is instantiated. The same <code>mod_custom</code> code can
+back a dozen separate blocks, each with its own title, position, access level
+and set of pages. That is what the <a href="modules/index.html">Module Manager</a> edits.</p>
+<h3 id="plugins">Plugins</h3>
+<p>A plugin answers events. Something in the platform triggers an event —
+a user logs in, a resource is saved, a page of content is about to be
+rendered — and every enabled plugin that implements a handler for it runs, in
+order. Plugins live in <a href="https://github.com/hubzero/hubzero-cms/tree/2.4-main/core/plugins"><code>core/plugins/</code></a>, grouped into
+folders by the kind of event they answer: <code>authentication</code>, <code>content</code>,
+<code>members</code>, <code>groups</code>, <code>cron</code>, <code>system</code>, and about thirty more.</p>
+<p>Plugins also supply whole tabbed sections of some components. The tabs on a
+group page, on a member profile and on a project are each a plugin in the
+<code>groups</code>, <code>members</code> and <code>projects</code> folders.</p>
+<h3 id="templates">Templates</h3>
+<p>A template controls presentation. It supplies <code>index.php</code> (the page
+skeleton), stylesheets, scripts, the list of module positions it offers, and
+optional overrides of any component or module layout. Templates live in
+<a href="https://github.com/hubzero/hubzero-cms/tree/2.4-main/core/templates"><code>core/templates/</code></a>, and a hub's own in
+<code>app/templates/</code>.</p>
+<p>A template is not the same thing as a <em>style</em>. One template can have several
+styles, each a saved set of that template's parameters, and styles are what
+you assign to the site or to individual menu items. See
+<a href="templates/index.html">Templates</a>.</p>
+<h3 id="languages">Languages</h3>
+<p>A language pack is a set of <code>.ini</code> files of key/value pairs, one file per
+extension, plus an XML manifest describing the language. Every string the
+interface renders comes from one of these keys, which is why this
+documentation quotes labels as the language files spell them. Language packs
+cover both the site and the administrator interface.</p>
+<h2 id="where-extensions-live">Where extensions live</h2>
+<p>Hubzero looks for an extension in the hub's own directory first and falls back
+to the core:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Hub</th>
+<th>Core</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Components</td>
+<td><code>app/components/com_name/</code></td>
+<td><code>core/components/com_name/</code></td>
+</tr>
+<tr>
+<td>Modules</td>
+<td><code>app/modules/mod_name/</code></td>
+<td><code>core/modules/mod_name/</code></td>
+</tr>
+<tr>
+<td>Plugins</td>
+<td><code>app/plugins/folder/name/</code></td>
+<td><code>core/plugins/folder/name/</code></td>
+</tr>
+<tr>
+<td>Templates</td>
+<td><code>app/templates/name/</code></td>
+<td><code>core/templates/name/</code></td>
+</tr>
+</tbody>
+</table>
+<p>Nothing in <code>core/</code> should be edited on a running hub. To change core
+behaviour, put a replacement of the same name under <code>app/</code>; it wins. The
+<a href="extension-manager/index.html">Extension Manager</a> calls those hub-side additions
+<strong>Custom Extensions</strong> and installs them from a git repository.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../components/wishlist/index.html" rel="prev"><span>Previous</span>Wish lists</a><a class="pager__next" href="modules/index.html" rel="next"><span>Next</span>Module Manager</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/10-extensions/README.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

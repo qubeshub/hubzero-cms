@@ -137,6 +137,8 @@ class Uri
 	 */
 	public static function getInstance($uri = 'SERVER')
 	{
+		$theURI = '';
+
 		if (empty(self::$instances[$uri]))
 		{
 			// Are we obtaining the URI from the server?
@@ -156,13 +158,13 @@ class Uri
 				// to determine if we are running on apache or IIS.  If PHP_SELF and REQUEST_URI
 				// are present, we will assume we are running on apache.
 
-				if (!empty($_SERVER['PHP_SELF']) && !empty($_SERVER['REQUEST_URI']))
+				if (!empty($_SERVER['HTTP_HOST']) && !empty($_SERVER['PHP_SELF']) && !empty($_SERVER['REQUEST_URI']))
 				{
 					// To build the entire URI we need to prepend the protocol, and the http host
 					// to the URI string.
 					$theURI = 'http' . $https . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 				}
-				else
+				else if (!empty($_SERVER['HTTP_HOST']))
 				{
 					// Since we do not have REQUEST_URI to work with, we will assume we are
 					// running on IIS and will therefore need to work some magic with the SCRIPT_NAME and
@@ -611,12 +613,40 @@ class Uri
 	 */
 	public static function isInternal($url)
 	{
+		// Browsers strip ASCII tab/newline anywhere in a URL before parsing it, so
+		// judge a copy with control characters removed ("/\t/evil.com" is "//evil.com")
+		$probe = preg_replace('/[\x00-\x20]+/', '', (string) $url);
+
+		// Protocol-relative and backslash forms are resolved by browsers as another host
+		if (preg_match('#^(//|/\\\\|\\\\)#', $probe))
+		{
+			return false;
+		}
+
+		// A backslash in the scheme, authority or path ends the authority for a browser
+		// ("https://evil.com\@hub.org" goes to evil.com). Past the first "?" or "#" it is
+		// an ordinary character, so a return URL carrying one in its query ("/search?terms=\frac")
+		// is still ours. A URL the parser cannot read at all ("http:///evil.com", which
+		// browsers collapse to evil.com) tells us nothing about its host
+		if (preg_match('/^[^?#]*\\\\/', $probe) || parse_url($probe) === false)
+		{
+			return false;
+		}
+
 		$current = self::getInstance()->toString(['scheme', 'host']);
-		$given   = self::getInstance($url);
+		$given   = self::getInstance($probe);
 		$base    = $given->toString(['scheme', 'host', 'path']);
 		$host    = $given->toString(['scheme', 'host']);
 
-		if (stripos($base, $current) !== 0 && !empty($host))
+		// A scheme with no host ("http:/evil.com") is resolved by browsers against
+		// another origin, so it is never ours
+		if ($given->getScheme() && !$given->getHost())
+		{
+			return false;
+		}
+
+		// Compare the host exactly: a prefix test lets "hub.org.evil.com" pass as internal
+		if (!empty($host) && strcasecmp($host, $current) !== 0)
 		{
 			return false;
 		}

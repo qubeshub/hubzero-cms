@@ -18,6 +18,7 @@ use Event;
 use Lang;
 use Date;
 use Plugin;
+use Route;
 
 /**
  * Html helper class
@@ -463,15 +464,15 @@ class Html extends Obj
 		}
 		if ($minlength > $maxlength)
 		{
-			$length = mt_rand($maxlength, $minlength);
+			$length = random_int($maxlength, $minlength);
 		}
 		else
 		{
-			$length = mt_rand($minlength, $maxlength);
+			$length = random_int($minlength, $maxlength);
 		}
 		for ($i=0; $i<$length; $i++)
 		{
-			$key .= $charset[(mt_rand(0, (strlen($charset)-1)))];
+			$key .= $charset[(random_int(0, (strlen($charset)-1)))];
 		}
 		return $key;
 	}
@@ -489,8 +490,19 @@ class Html extends Obj
 		// Replace email links
 		$string = preg_replace('/([_\.0-9a-z-]+@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,3})/', '<a href="mailto:$1">$1</a>', $string);
 
-		// Replace url links
-		$string = preg_replace('#\b((?<!href=")(https?://www[.]|[\w-]+://?|(?<!://)www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))#', "<a rel=\"{$rel}\" href=\"$1\">$1</a>", $string);
+		// Replace url links — split around existing <a> tags so URLs inside them are not double-wrapped
+		$urlPattern = '#\b((?<!href=")(https?://www[.]|[\w-]+://?|(?<!://)www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))#';
+		$parts = preg_split('#(<a\s[^>]*>.*?</a>)#is', $string, -1, PREG_SPLIT_DELIM_CAPTURE);
+		foreach ($parts as $i => &$part)
+		{
+			// Only process parts that are NOT existing <a> tags (odd indices are captured delimiters)
+			if ($i % 2 === 0)
+			{
+				$part = preg_replace($urlPattern, "<a rel=\"{$rel}\" href=\"$1\">$1</a>", $part);
+			}
+		}
+		unset($part);
+		$string = implode('', $parts);
 
 		return $string;
 	}
@@ -1177,7 +1189,7 @@ class Html extends Obj
 	 */
 	public static function getProjectRepoPath($projectAlias = '', $case = 'files', $exists = true)
 	{
-		if (!trim($projectAlias))
+		if (!trim($projectAlias ?? ''))
 		{
 			return false;
 		}

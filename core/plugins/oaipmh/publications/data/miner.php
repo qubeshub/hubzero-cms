@@ -327,19 +327,21 @@ class Miner extends Obj implements Provider
 			
 			if ($masterType == 1)
 			{
-				$mimeTypes = \Components\Publications\Helpers\Html::getMimeTypes($masterType, $record->publication_id, $record->version_id, $record->secret, $attachments);
+				$mimeTypes = \Components\Publications\Helpers\Html::getMimeTypes($masterType, $record->publication_id, $record->version_id, $record->secret, $attachments, true);
 			}
 			else if ($masterType == 7)
 			{				
 				$files = \Components\Publications\Helpers\Html::getdatabaseFiles($record->publication_id, $record->version_id);
 				
-				$mimeTypes = \Components\Publications\Helpers\Html::getMimeTypes($masterType, $record->publication_id, $record->version_id, $record->secret, $attachments);
+				$mimeTypes = \Components\Publications\Helpers\Html::getMimeTypes($masterType, $record->publication_id, $record->version_id, $record->secret, $attachments, true);
 				
 				if ($files != false && !empty($files))
 				{
 					foreach ($files as $file)
 					{
-						$mimeType = mime_content_type($file);
+						//$mimeType = mime_content_type($file);
+						$mimer = new  \Hubzero\Content\Mimetypes();
+						$mimeType = $mimer->getMimeType($file,true);
 						if ($mimeType && !in_array($mimeType, $mimeTypes))
 						{
 							$mimeTypes[] = $mimeType;
@@ -385,7 +387,7 @@ class Miner extends Obj implements Provider
 			"SELECT pa.name, pa.user_id
 			FROM `#__publication_authors` AS pa
 			WHERE (pa.role IS NULL OR pa.role != 'submitter') AND pa.status=1 AND pa.publication_version_id=" . $this->database->quote($record->version_id) . "
-			ORDER BY pa.name"
+			ORDER BY pa.ordering"
 		);
 		$creators = $this->database->loadObjectList();
 		foreach ($creators as $creator)

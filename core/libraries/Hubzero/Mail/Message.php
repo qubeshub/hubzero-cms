@@ -107,7 +107,6 @@ class Message extends \Symfony\Component\Mime\Email
 				$port = strtolower(trim(\Config::get('smtpport','0')));
 				$username = strtolower(trim(\Config::get('smtpuser','')));
 				$password = strtolower(trim(\Config::get('smtppass','')));
-
 				switch ($scheme)
 				{
 					case 'smtp':
@@ -135,12 +134,9 @@ class Message extends \Symfony\Component\Mime\Email
 						break;
 
 					case 'sendmail':
-						$dsn = "sendmail://default";
-						break;
-
 					case 'mail':
 					case 'native':
-						$dsn = "native://default";
+						$dsn = "sendmail://default";
 						break;
 
 					case 'mandrill+smtp':
@@ -266,7 +262,7 @@ class Message extends \Symfony\Component\Mime\Email
 	 *
 	 * @return $this
 	 */
-	public function setBody(...$params)
+	public function setBody(...$params): static
 	{
 		if (isset($params[1]))
 		{
@@ -319,8 +315,17 @@ class Message extends \Symfony\Component\Mime\Email
 
 		foreach($addresses as $key => $value)
 		{
-			if (is_numeric($key))
+			if ($key === null || $key === '')
 			{
+				continue;
+			}
+			else if (is_numeric($key))
+			{
+				if ($value === null)
+				{
+					continue;
+				}
+
 				$address = new \Symfony\Component\Mime\Address($value);
 			}
 			else
@@ -352,7 +357,7 @@ class Message extends \Symfony\Component\Mime\Email
 	 *
 	 * @return $this
 	 */
-	public function addFrom(...$address)
+	public function addFrom(...$address): static
 	{
 		if (isset($address[1]))
 		{
@@ -391,8 +396,17 @@ class Message extends \Symfony\Component\Mime\Email
 
 		foreach($addresses as $key => $value)
 		{
-			if (is_numeric($key))
+			if ($key === null || $key === '')
 			{
+				continue;
+			}
+			else if (is_numeric($key))
+			{
+				if ($value === null)
+				{
+					continue;
+				}
+
 				$address = new \Symfony\Component\Mime\Address($value);
 			}
 			else
@@ -425,7 +439,7 @@ class Message extends \Symfony\Component\Mime\Email
 	 *
 	 * @return $this
 	 */
-	public function addTo(...$address)
+	public function addTo(...$address): static
 	{
 		if (isset($address[1]))
 		{
@@ -462,8 +476,17 @@ class Message extends \Symfony\Component\Mime\Email
 
 		foreach($addresses as $key => $value)
 		{
-			if (is_numeric($key))
+			if ($key === null || $key === '')
 			{
+				continue;
+			}
+			else if (is_numeric($key))
+			{
+				if ($value === null)
+				{
+					continue;
+				}
+
 				$address = new \Symfony\Component\Mime\Address($value);
 			}
 			else
@@ -495,7 +518,7 @@ class Message extends \Symfony\Component\Mime\Email
 	 *
 	 * @return $this
 	 */
-	public function addReplyTo(...$address)
+	public function addReplyTo(...$address): static
 	{
 		if (isset($address[1]))
 		{
@@ -534,8 +557,17 @@ class Message extends \Symfony\Component\Mime\Email
 
 		foreach($addresses as $key => $value)
 		{
-			if (is_numeric($key))
+			if ($key === null || $key === '')
 			{
+				continue;
+			}
+			else if (is_numeric($key))
+			{
+				if ($value === null)
+				{
+					continue;
+				}
+
 				$address = new \Symfony\Component\Mime\Address($value);
 			}
 			else
@@ -543,7 +575,7 @@ class Message extends \Symfony\Component\Mime\Email
 				$address = new \Symfony\Component\Mime\Address($key, $value);
 			}
 
-			if (isset($first_set))
+			if (!isset($first_set))
 			{
 				parent::bcc($address);
 				$first_set = true;
@@ -567,7 +599,7 @@ class Message extends \Symfony\Component\Mime\Email
 	 *
 	 * @return $this
 	 */
-	public function addBcc(...$address)
+	public function addBcc(...$address): static
 	{
 		if (isset($address[1]))
 		{
@@ -584,14 +616,26 @@ class Message extends \Symfony\Component\Mime\Email
 	 /**
 	 * Add a MimePart to this Message. (compatability function)
 	 *
-	 * @param string $body
+	 * Symfony's Email uses addPart() as its attachment-collection primitive:
+	 * attach(), embed(), embedFromPath() and attachPart() all funnel into it
+	 * with a DataPart. This override keeps the legacy Swiftmailer-style
+	 * addPart($body, $contentType) signature working, so a DataPart must be
+	 * handed straight to the parent — otherwise it falls through to attach(),
+	 * which wraps it in a second DataPart and throws.
+	 *
+	 * @param mixed  $body
 	 * @param string $contentType
 	 * @param string $charset
 	 *
 	 * @return $this
 	 */
-	public function addPart($body, $contentType = null, $charset = '')
+	public function addPart($body, $contentType = null, $charset = ''): static
 	{
+		if ($body instanceof \Symfony\Component\Mime\Part\DataPart)
+		{
+			return parent::addPart($body);
+		}
+
 		if ($contentType == "text/html")
 		{
 			$this->html($body, $charset);

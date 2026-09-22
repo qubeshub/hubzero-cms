@@ -111,7 +111,7 @@ class Newsletters extends AdminController
 				'int'
 			),
 			'type'=> Request::getstate(
-				$this->_option . '.' . $this->controller . '.type',
+				$this->_option . '.' . $this->_controller . '.type',
 				'type',
 				''
 			),
@@ -511,6 +511,17 @@ class Newsletters extends AdminController
 	 */
 	public function doSendTestTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
+		if (
+			!User::authorise('core.edit', $this->_option)
+			&& !User::authorise('core.create', $this->_option)
+		)
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		//vars needed for test sending
 		$goodEmails = array();
 		$badEmails  = array();
@@ -629,6 +640,17 @@ class Newsletters extends AdminController
 	 */
 	public function doSendNewsletterTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
+		if (
+			!User::authorise('core.edit', $this->_option)
+			&& !User::authorise('core.create', $this->_option)
+		)
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		//get request vars
 		$newsletterId  = Request::getInt('nid', 0);
 		$mailinglistId = Request::getInt('mailinglist', -1);

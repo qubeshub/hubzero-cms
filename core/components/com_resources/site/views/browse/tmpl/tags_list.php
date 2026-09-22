@@ -26,35 +26,39 @@ switch ($this->level)
 		}
 		$html .= '</h3>';
 
-		$html .= '<ul id="ultags">';
+		$html .= '<ul id="ultags" tabindex="0" role="listbox" aria-label="' . Lang::txt('COM_RESOURCES_TAG') . '">';
 		if (!$tg2)
 		{
-			$html .= '<li><a id="col1_all" class="';
+			$html .= '<li' . ($tg == '' ? ' class="selected"' : '') . '><span id="col1_all" class="';
 			if ($tg == '')
 			{
 				$html .= 'open';
 			}
-			$html .= '" href="javascript:HUB.TagBrowser.nextLevel(\''.$type->get('id').'\',\'\',\'\',2,\'col1_all\',\''.$id.'\');">[ All ]</a></li>';
+			$html .= '" data-type="'.$type->get('id').'" data-input="" data-input2="" data-level="2" data-col="col1_all" data-rid="'.$id.'">[ All ]</span></li>';
 		}
 		$lis = '';
 		$i = 0;
 		foreach ($tags as $tag)
 		{
 			$i++;
-			$li  = '<li';
+			$isOpen = ($tg == $tag->tag);
+
+			$li  = '<li role="option" aria-selected="';
+			$li .= $isOpen ? 'true' : 'false';
+			$li .= '"';
 			if ($this->bits['supportedtag'] && $tag->tag == $this->bits['supportedtag'])
 			{
 				$li .= ' class="supported"';
 				$i = 0;
 			}
-			$li .= '><a id="col1_'.$tag->tag.'" class="';
-			if ($tg == $tag->tag)
+			$li .= '><span id="col1_'.$tag->tag.'" class="';
+			if ($isOpen)
 			{
 				$li .= 'open';
 				$d = $i;
 			}
 
-			$li .= '" href="javascript:HUB.TagBrowser.nextLevel(\''.$type->get('id').'\',\''.$tag->tag.'\',\''.$tg2.'\',2,\'col1_'.$tag->tag.'\',\''.$id.'\');">'.stripslashes($tag->raw_tag).' ('.$tag->ucount.')</a></li>';
+			$li .= '" data-type="'.$type->get('id').'" data-input="'.$tag->tag.'" data-input2="'.$tg2.'" data-level="2" data-col="col1_'.$tag->tag.'" data-rid="'.$id.'">'.stripslashes($tag->raw_tag).' ('.$tag->ucount.')</span></li>';
 
 			if ($this->bits['supportedtag'] && $tag->tag == $this->bits['supportedtag'])
 			{
@@ -94,8 +98,8 @@ switch ($this->level)
 			$sortbys['jobs'] = Lang::txt('COM_RESOURCES_SORT_BY').' '.Lang::txt('COM_RESOURCES_JOBS');
 		}
 
-		$html .= '<h3>'.Lang::txt('COM_RESOURCES').' '.\Components\Resources\Helpers\Html::formSelect('sortby', $sortbys, $this->bits['sortby'], '" onchange="javascript:HUB.TagBrowser.changeSort();"').'</h3>';
-		$html .= '<ul id="ulitems">';
+		$html .= '<h3>'.Lang::txt('COM_RESOURCES').' '.\Components\Resources\Helpers\Html::formSelect('sortby', $sortbys, $this->bits['sortby'], '" aria-label="' . Lang::txt('COM_RESOURCES_SORT_BY')).'</h3>';
+		$html .= '<ul id="ulitems" tabindex="0" role="listbox" aria-label="' . Lang::txt('COM_RESOURCES') . '">';
 		if ($tools && count($tools) > 0)
 		{
 			foreach ($tools as $tool)
@@ -109,20 +113,19 @@ switch ($this->level)
 					{
 						$supported = true;
 					}
-					//$supported = $rt->checkTagUsage( $this->bits['supportedtag'], $tool->id );
 				}
 
-				$html .= '<li ';
+				$html .= '<li role="option" aria-selected="false" ';
 				if ($this->bits['supportedtag'] && ($this->bits['tag'] == $this->bits['supportedtag'] || $supported))
 				{
 					$html .= 'class="supported" ';
 				}
-				$html .= '><a id="col2_'.$tool->id.'" href="javascript:HUB.TagBrowser.nextLevel(\''.$type->get('id').'\',\''.$tool->id.'\',\'\',3,\'col2_'.$tool->id.'\',\'\');">'.stripslashes($tool->title).'</a></li>';
+				$html .= '><span id="col2_'.$tool->id.'" data-type="'.$type->get('id').'" data-input="'.$tool->id.'" data-input2="" data-level="3" data-col="col2_'.$tool->id.'" data-rid="">'.stripslashes($tool->title).'</span></li>';
 			}
 		}
 		else
 		{
-			$html .= '<li><span>'.Lang::txt('COM_RESOURCES_NO_RESULTS').'</span></li>';
+			$html .= '<li role="option" aria-selected="false"><span>'.Lang::txt('COM_RESOURCES_NO_RESULTS').'</span></li>';
 		}
 		$html .= '</ul>';
 		if ($type->isForTools() && $params->get('show_ranking'))
@@ -134,7 +137,7 @@ switch ($this->level)
 				$html .= ' <div>'.Lang::txt('Show:');
 				foreach ($filters as $avalue => $alabel)
 				{
-					$html .= ' <label class="skill_'.$avalue.'"><input type="checkbox" class="option" name="filter" value="'.$avalue.'" onchange="javascript:HUB.TagBrowser.changeSort();" ';
+					$html .= ' <label class="skill_'.$avalue.'"><input type="checkbox" class="option" name="filter" value="'.$avalue.'" ';
 					$html .= in_array($avalue, $this->bits['filter']) ? 'checked="checked"' : '';
 					$html .= ' /> '.$alabel.'</label>';
 				}
@@ -176,7 +179,7 @@ switch ($this->level)
 		}
 
 		$html .= '<h3>'.Lang::txt('COM_RESOURCES_INFO').'</h3>';
-		$html .= '<ul id="ulinfo">';
+		$html .= '<ul id="ulinfo" tabindex="0" aria-label="' . Lang::txt('COM_RESOURCES_INFO') . '">';
 		$html .= '<li>';
 		$html .= '<h4';
 		switch ($resource->access)

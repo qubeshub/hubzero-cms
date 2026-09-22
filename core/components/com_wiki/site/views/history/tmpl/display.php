@@ -87,6 +87,8 @@ $revisions = $this->page->versions()
 			</p>
 
 			<div class="container">
+				<fieldset style="border:0;margin:0;padding:0;">
+				<legend class="sr-only"><?php echo Lang::txt('COM_WIKI_HISTORY_COMPARE'); ?></legend>
 				<p><input type="submit" class="btn" value="<?php echo Lang::txt('COM_WIKI_HISTORY_COMPARE'); ?>" /></p>
 
 				<table class="entries" id="revisionhistory">
@@ -98,9 +100,9 @@ $revisions = $this->page->versions()
 							<th scope="col"><?php echo Lang::txt('COM_WIKI_HISTORY_COL_MADE_BY'); ?></th>
 							<th scope="col"><?php echo Lang::txt('COM_WIKI_HISTORY_COL_LENGTH'); ?></th>
 							<th scope="col"><?php echo Lang::txt('COM_WIKI_HISTORY_COL_STATUS'); ?></th>
-							<th scope="col"></th>
+							<th scope="col"><span class="sr-only">Markup</span></th>
 							<?php if (($this->page->isLocked() && $this->page->access('manage')) || (!$this->page->isLocked() && $this->page->access('delete'))) { ?>
-								<th scope="col"></th>
+								<th scope="col"><span class="sr-only">Actions</span></th>
 							<?php } ?>
 						</tr>
 					</thead>
@@ -149,29 +151,29 @@ $revisions = $this->page->versions()
 							?>
 							<tr class="<?php echo $cls; ?>">
 								<?php if ($this->page->get('version_id') == $revision->get('id')) { ?>
+									<td><?php /* [a11y] old-version radio placeholder */ ?></td>
 									<td>
-
-									</td>
-									<td>
-										<input type="radio" name="diff" value="<?php echo $revision->get('version'); ?>" checked="checked" />
+										<label class="sr-only" for="diff-<?php echo $revision->get('id'); ?>"><?php echo Lang::txt('COM_WIKI_HISTORY_COMPARE_NEW_VERSION', $revision->get('version')); ?></label>
+									<input type="radio" name="diff" id="diff-<?php echo $revision->get('id'); ?>" value="<?php echo $revision->get('version'); ?>" aria-label="<?php echo Lang::txt('COM_WIKI_HISTORY_COMPARE_NEW_VERSION', $revision->get('version')); ?>" checked="checked" />
 									</td>
 								<?php } else { ?>
 									<td>
-										<input type="radio" name="oldid" value="<?php echo $revision->get('version'); ?>"
+										<label class="sr-only" for="oldid-<?php echo $revision->get('id'); ?>"><?php echo Lang::txt('COM_WIKI_HISTORY_COMPARE_OLD_VERSION', $revision->get('version')); ?></label>
+										<input type="radio" name="oldid" id="oldid-<?php echo $revision->get('id'); ?>" value="<?php echo $revision->get('version'); ?>" aria-label="<?php echo Lang::txt('COM_WIKI_HISTORY_COMPARE_OLD_VERSION', $revision->get('version')); ?>"
 										<?php if ($comparefirst == true)
 										{
 											echo ' checked="checked"';
 											$comparefirst = false;
 										} ?> />
 									</td>
-									<td>
-
-									</td>
+									<td><?php /* [a11y] new-version radio placeholder */ ?></td>
 								<?php } ?>
 								<td>
 									<a href="<?php echo Route::url($this->page->link('', 'version=' . $revision->get('version'))); ?>" class="tooltips" title="<?php echo Lang::txt('COM_WIKI_REVISION_SUMMARY').' :: ' . $summary; ?>">
 										<time datetime="<?php echo $revision->get('created'); ?>"><?php echo $this->escape(Date::of($revision->get('created'))->toLocal('Y-m-d h:i:s')); ?></time>
 									</a>
+								</td>
+								<td>
 									<a class="tooltips markup icon-file-alt-text" href="<?php echo Route::url($this->page->link('', 'version=' . $revision->get('version') . '&format=raw')); ?>" title="<?php echo Lang::txt('COM_WIKI_HISTORY_MARKUP_TITLE'); ?>">
 										<?php echo Lang::txt('COM_WIKI_HISTORY_MARKUP'); ?>
 									</a>
@@ -217,6 +219,7 @@ $revisions = $this->page->versions()
 					</tbody>
 				</table>
 				<p><input type="submit" class="btn" value="<?php echo Lang::txt('COM_WIKI_HISTORY_COMPARE'); ?>" /></p>
+				</fieldset>
 			</div><!-- / .container -->
 
 			<div class="clear"></div>

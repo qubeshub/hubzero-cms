@@ -77,7 +77,7 @@ if ($this_datetime <= $last_event_time) {
 $content  = '<table class="ecalendar">'."\n";
 $content .= ' <caption>';
 if ($this->shownav) {
-	$content .= '<a class="prv" href="'.$prev.'" title="'.$prev_text.'">&lsaquo;</a> <a class="nxt" href="'.$next.'" title="'.$next_text.'">&rsaquo;</a> ';
+	$content .= '<a class="prv" rel="nofollow" href="'.$prev.'" title="'.$prev_text.'" aria-label="'.$prev_text.'">&lsaquo;</a> <a class="nxt" rel="nofollow" href="'.$next.'" title="'.$next_text.'" aria-label="'.$next_text.'">&rsaquo;</a> ';
 }
 $content .= \Components\Events\Helpers\Html::getMonthName($cal_month).'</caption>'."\n";
 $content .= ' <thead>'."\n";
@@ -111,6 +111,33 @@ for ($a=$start; $a>0; $a--)
 $monthHasEvent = false;
 //$eventCheck = new EventsRepeat;
 $lastDayOfMonth = date("t", mktime(0, 0, 0, $cal_month, 1, $cal_year));
+
+// Pre-bucket events by their OWN local date. Times are stored in UTC; convert
+// each event to its time zone so it lands on the day it occurs locally.
+$eventDays  = array();
+$rangeStart = date('Y-m-d H:i:s', mktime(0, 0, 0, $cal_month, 1, $cal_year) - 86400);
+$rangeEnd   = date('Y-m-d H:i:s', mktime(23, 59, 59, $cal_month, $lastDayOfMonth, $cal_year) + 86400);
+$database->setQuery(
+	"SELECT `publish_up`, `publish_down`, `time_zone` FROM `#__events`
+	 WHERE `scope`='event' AND `state`=1 AND `approved`=1
+	   AND `publish_up` <= " . $database->quote($rangeEnd) . "
+	   AND (`publish_down` >= " . $database->quote($rangeStart) . "
+	        OR `publish_down` IS NULL OR `publish_down` = '' OR `publish_down` = '0000-00-00 00:00:00')"
+);
+foreach ((array) $database->loadObjectList() as $ev)
+{
+	$etz      = $ev->time_zone ? $ev->time_zone : \Config::get('offset');
+	$dayStart = Date::of($ev->publish_up)->toTimeZone($etz, 'Y-m-d');
+	$dayEnd   = ($ev->publish_down && $ev->publish_down != '0000-00-00 00:00:00')
+	          ? Date::of($ev->publish_down)->toTimeZone($etz, 'Y-m-d')
+	          : $dayStart;
+	for ($cur = $dayStart, $guard = 0; $cur <= $dayEnd && $guard < 400; $guard++)
+	{
+		$eventDays[$cur] = true;
+		$cur = date('Y-m-d', strtotime($cur . ' +1 day'));
+	}
+}
+
 $rd = 0;
 for ($d=1; $d<=$lastDayOfMonth; $d++)
 {
@@ -134,16 +161,13 @@ for ($d=1; $d<=$lastDayOfMonth; $d++)
 		. "\n OR (publish_up <= '$selected_date 00:00:00' AND publish_down >= '$selected_date 23:59:59')) AND state='1'"
 		. "\n ORDER BY publish_up ASC";
 	*/
-	$database->setQuery($sql);
-	$rows = $database->loadObjectList();
-
 
 	$class = ($selected_date == $to_day) ? 'today' : '';
 	if ($d == $this->day) {
 		//$class .= ' selected';
 	}
 
-	$hasevents = (count($rows) > 0) ? true : false;
+	$hasevents = isset($eventDays[$selected_date]);
 	//for ($r = 0; $r < count($rows); $r++)
 	//{
 	//	if ($eventCheck->EventsRepeat($rows[$r], $cal_year, $cal_month, $do)) {
@@ -159,7 +183,7 @@ for ($d=1; $d<=$lastDayOfMonth; $d++)
 	$content .= '   <td';
 	$content .= ($class) ? ' class="'.$class.'">' : '>';
 	if ($hasevents) {
-		$content .= '<a class="mod_events_daylink" href="'.Route::url('index.php?option='.$this->option.'&year='.$cal_year.'&month='.$cal_month.'&day='.$do).'">'.$d.'</a>';
+		$content .= '<a class="mod_events_daylink" rel="nofollow" href="'.Route::url('index.php?option='.$this->option.'&year='.$cal_year.'&month='.$cal_month.'&day='.$do).'">'.$d.'</a>';
 	} else {
 		$content .= $d;
 	}

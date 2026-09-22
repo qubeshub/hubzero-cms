@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Customization · Hub users · Hubzero Documentation</title>
+  <meta name="description" content="What a group manager can change about a group from the site: its logo and settings, the pages that make up its content, the categories those pages are filed…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/users/groups/groupcustom/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub users</a>
+        <nav aria-label="Hub users contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../introduction/index.html">Introduction</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../blog/index.html">Blog</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../forum/index.html">Forum</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Groups</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../createdeleteagroup/index.html">Creating and deleting a group</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../groupmembers/index.html">Member functions</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Customization</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#group-settings">Group settings</a></li>
+<li class="toc__item toc__item--l3"><a href="#the-group-logo">The group logo</a></li>
+<li class="toc__item toc__item--l3"><a href="#which-tabs-appear">Which tabs appear</a></li>
+<li class="toc__item toc__item--l2"><a href="#group-pages">Group pages</a></li>
+<li class="toc__item toc__item--l3"><a href="#creating-a-page">Creating a page</a></li>
+<li class="toc__item toc__item--l3"><a href="#editing-a-page">Editing a page</a></li>
+<li class="toc__item toc__item--l3"><a href="#reordering-and-nesting-pages">Reordering and nesting pages</a></li>
+<li class="toc__item toc__item--l3"><a href="#version-history">Version history</a></li>
+<li class="toc__item toc__item--l3"><a href="#deleting-a-page">Deleting a page</a></li>
+<li class="toc__item toc__item--l3"><a href="#page-categories">Page categories</a></li>
+<li class="toc__item toc__item--l3"><a href="#modules">Modules</a></li>
+<li class="toc__item toc__item--l2"><a href="#php-and-javascript-in-a-page">PHP and JavaScript in a page</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-group-calendar">The group calendar</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../groupcitations/index.html">Group citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../groupforum/index.html">Group forum</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../knowledgebase/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../dashboard/index.html">Member dashboard</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../profile/index.html">Member profile</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../questions/index.html">Questions and answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../search/index.html">Search</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../simusagedefinitions/index.html">Simulation usage definitions</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../wishlist/index.html">Wish list</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../gettingstarted/index.html">Getting started</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub users</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Groups</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Customization</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub users</p>
+          <h1>Customization</h1>
+        </header>
+        
+        <div class="prose">
+<p>What a group manager can change about a group from the site: its logo and
+settings, the pages that make up its content, the categories those pages are
+filed under, and — on a super group — the modules around them.</p>
+<p>A new group is a shell. The <strong>Overview</strong> tab shows whatever the hub's custom
+fields collected and a list of members, and that is all, which is enough for
+a reading group and not enough for a project people are meant to find their
+way around. <code>soilcarbon</code>, the group built through this chapter, needs three
+pages — a sampling protocol, the analysis pipeline, and who to ask about
+what — filed under a <strong>Methods</strong> category so the two protocol pages sit
+together, and its own logo so a member can tell it apart from the other four
+groups in their list. All of that is on this page.</p>
+<p>What is <em>not</em> on this page is anything that changes the group's HTML, its
+template or its CSS. That is the boundary worth learning early, and the
+<a href="#php-and-javascript-in-a-page">section at the end</a> says exactly where it
+falls.</p>
+<p>Two entries in the <strong>Group Manager</strong> menu do all of it: <strong>Edit Group
+Settings</strong> and <strong>Manage Group Pages</strong>.</p>
+<p><img src="../../media/groupcustom-groupmanagersettings.png" alt="The Group Manager menu, open" /></p>
+<p>Members holding a role can reach them too: <strong>Edit Group Settings</strong> needs the
+role permission of the same name, <strong>Manage Group Pages</strong> needs
+<strong>Create/Edit Group Pages &amp; Categories</strong>. See
+<a href="../groupmembers/index.html#roles">Member functions</a>.</p>
+<h2 id="group-settings">Group settings</h2>
+<p><strong>Group Manager</strong> → <strong>Edit Group Settings</strong> opens the same form used to
+create the group, with everything filled in. The sections are described in
+<a href="../createdeleteagroup/index.html#creating-a-group">Creating and deleting a group</a>.
+The two that shape how the group looks are <strong>Logo</strong> and, under <strong>Privacy
+Settings</strong>, <strong>Access Permissions</strong>.</p>
+<p>Select <strong>Save Group</strong> when you are done. Saving emails the group's managers a
+summary of what changed.</p>
+<h3 id="the-group-logo">The group logo</h3>
+<p>The logo is how a member picks the group out of a list. It shows on the group
+page, in the group browse listing, and in the mail the group sends.</p>
+<p>The <strong>Logo</strong> section only exists once the group has been saved at least once.</p>
+<ol>
+<li>Open <strong>Edit Group Settings</strong>.</li>
+<li>In the file browser on the right of the page, select <strong>Upload a file</strong> —
+or drop a file onto it — to put the image in the group's <code>uploads</code> folder.</li>
+<li>Choose it from the <strong>Logo</strong> drop-down. A preview appears below.</li>
+<li>Select <strong>Save Group</strong>.</li>
+</ol>
+<p><img src="../../media/groupcustom-addingalogo.png" alt="Choosing a logo, with the group file browser beside it" /></p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> On a super group the logo set here does <em>not</em> change the logo in
+the group's own template. It is used for branding elsewhere on the hub —
+in resources, courses and the like.</p>
+</aside>
+<h3 id="which-tabs-appear">Which tabs appear</h3>
+<p>Every tab is a separate decision about a separate audience, and the two
+useful moves are opposite ones: turn a tab off entirely so the menu stays
+short and nobody wonders what is behind it, or open one wider than the rest
+so outsiders can read something before they ask to join. <code>soilcarbon</code> keeps
+<strong>Overview</strong> and <strong>Citations</strong> open to anyone and everything else to members.</p>
+<p><strong>Access Permissions</strong>, in the <strong>Privacy Settings</strong> section, lists every tab
+groups can have on this hub. Each one takes a value:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Who reaches the tab</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Any HUB Visitor</strong></td>
+<td>Everyone, signed in or not</td>
+</tr>
+<tr>
+<td><strong>Registered HUB Users</strong></td>
+<td>Anyone with a hub account</td>
+</tr>
+<tr>
+<td><strong>Group Members Only</strong></td>
+<td>Members of this group</td>
+</tr>
+<tr>
+<td><strong>Disabled/Off</strong></td>
+<td>Nobody. The tab is removed from the menu</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Overview</strong> cannot be turned off. Whatever is preselected is the hub's own
+default for that tab until you change it.</p>
+<h2 id="group-pages">Group pages</h2>
+<p>Group pages are the group's own writing: the things that are true for a while
+and want a stable address. A protocol, a list of who does what, a set of
+instructions for a new student. They are not conversation, and they are not
+the wiki.</p>
+<p>The group's content pages live behind <strong>Group Manager</strong> → <strong>Manage Group
+Pages</strong>. The screen has two tabs, or three on a super group:</p>
+<ul>
+<li><strong>Manage Pages</strong></li>
+<li><strong>Manage Page Categories</strong></li>
+<li><strong>Manage Modules</strong> — on a super group, or when the hub has switched
+modules on for ordinary groups</li>
+</ul>
+<p><strong>Upload Images/Files</strong> in the header opens the group's file browser, the
+same one used for the logo. <strong>Back to Group</strong> returns to the group.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Group pages are separate from the group's wiki. The wiki is its
+own tab, for content the members write together; pages are the group's own
+site.</p>
+</aside>
+<h3 id="creating-a-page">Creating a page</h3>
+<p>The steps below make <code>soilcarbon</code> its first page: the sampling protocol,
+readable by members only because it quotes site coordinates that are not
+public yet.</p>
+<ol>
+<li>Open <strong>Manage Group Pages</strong> and select <strong>New Page</strong>.</li>
+<li>Fill in <strong>Title</strong>. It is required.</li>
+<li>Fill in <strong>Alias</strong> if you want to choose the segment the page gets in the
+URL. Aliases take lowercase letters, digits, underscores and dashes;
+spaces are removed.</li>
+<li>Write the page in the <strong>Content</strong> editor. It is required.</li>
+<li>On the right, set <strong>Status</strong> — <strong>Published</strong> or <strong>Unpublished</strong> — and
+<strong>Privacy</strong>, which is either <strong>Inherits overview tab's privacy setting</strong>
+or <strong>Private Page (Accessible to members only)</strong>.</li>
+<li>Under <strong>Settings</strong>, optionally pick a <strong>Category</strong>, a <strong>Parent</strong> page and
+an <strong>Order</strong>, and choose whether the page shows <strong>Comments</strong>. Comments
+default to <strong>Use Group Setting</strong>, from the group's own <strong>Page Settings</strong>.</li>
+<li>Select <strong>Save Page</strong>, or <strong>Apply Changes</strong> from the drop-down beside it
+to save and stay on the form.</li>
+</ol>
+<p>An unpublished page stays off the group's menu, but managers can still open
+and edit it. A private page is restricted to group members even when the
+<strong>Overview</strong> tab is open to everyone; the page list marks it with a padlock.</p>
+<h3 id="editing-a-page">Editing a page</h3>
+<p>From the <strong>Manage Pages</strong> list, select the page's title, or <strong>Manage Page</strong>
+on its row. The row's drop-down also offers <strong>Edit Page</strong>, <strong>Preview Page</strong>,
+<strong>Publish Page</strong>/<strong>Unpublish Page</strong>, <strong>Version History</strong> and <strong>Delete
+Page</strong>.</p>
+<p>The list itself shows each page's URL, a padlock on private pages, a coloured
+stripe for its category, and who has it open if someone is editing it.
+Filter the list by category, or search it by title.</p>
+<p>You can also edit a page from the group itself, if the group's <strong>Author
+Details</strong> page setting is on: the edit control sits in the byline at the foot
+of the page. With <strong>Author Details</strong> off there is no byline and no control,
+so go through <strong>Manage Group Pages</strong> instead.</p>
+<h3 id="reordering-and-nesting-pages">Reordering and nesting pages</h3>
+<p>Drag a page by the handle at the right of its row in <strong>Manage Pages</strong>. Drop
+it on another page to make it a child. The hub sets how deep the nesting may
+go — five levels by default.</p>
+<h3 id="version-history">Version history</h3>
+<p>Every save that changes a page's content creates a new version.</p>
+<ol>
+<li>Open the page's <strong>Version History</strong>.</li>
+<li>Step through the versions with <strong>Previous</strong> and <strong>Next</strong>, jump straight to
+a version number with the menu between them, and use <strong>View Source Diff</strong>
+to see what changed in the markup.</li>
+<li><strong>Restore This Version</strong> copies the version you are looking at back to the
+top of the history as a new version. Nothing is thrown away.</li>
+</ol>
+<h3 id="deleting-a-page">Deleting a page</h3>
+<p>Select <strong>Delete Page</strong> from a page's drop-down in <strong>Manage Pages</strong>. The
+group's home page cannot be deleted, published or unpublished.</p>
+<h3 id="page-categories">Page categories</h3>
+<p>Categories group pages together and give each one a colour, used as a stripe
+in the page list and as a filter. They matter once a group has more pages
+than fit on a screen — <code>soilcarbon</code> files the sampling protocol and the
+analysis pipeline under <strong>Methods</strong>, so a manager can pull up just those two.
+They are a manager's convenience, not a permission: putting a page in a
+category does not change who can read it.</p>
+<ol>
+<li>Open <strong>Manage Group Pages</strong> and select the <strong>Manage Page Categories</strong> tab.</li>
+<li>Select <strong>New Page Category</strong>.</li>
+<li>Give it a <strong>Title</strong>, and a <strong>Color</strong> if you want one.</li>
+<li>Select <strong>Save Category</strong>.</li>
+</ol>
+<p>Each row's <strong>Manage Category</strong> drop-down offers <strong>Edit Category</strong> and
+<strong>Delete Category</strong>, and shows how many pages the category holds.</p>
+<p>You can also make a category while editing a page: choose <strong>Other</strong> in the
+page's <strong>Category</strong> menu.</p>
+<h3 id="modules">Modules</h3>
+<p>The <strong>Manage Modules</strong> tab puts blocks of content in the positions around a
+group's pages. It is present for every super group; for an ordinary group it
+appears only when the hub's administrators have switched group modules on.
+The screen is described in
+<a href="../../../managers/users/supergroups/index.html#managing-modules-from-the-site">Super Groups</a>.</p>
+<h2 id="php-and-javascript-in-a-page">PHP and JavaScript in a page</h2>
+<p>Sooner or later somebody wants a group page to do something: pull a live
+figure out of a database, embed a widget, run a script. This section is the
+answer, and mostly the answer is that you cannot do it yourself.</p>
+<p>An ordinary group's page content is filtered: <code>&lt;script&gt;</code> blocks and PHP tags
+are stripped out before the page is stored. Nothing you can do from the site
+changes that.</p>
+<p>There are two ways round it, and both need an administrator:</p>
+<ul>
+<li>The group is made a <strong>super group</strong>. Its pages may then contain PHP and
+JavaScript, and it gets a template, modules and a web space of its own.</li>
+<li>Or the group is left an ordinary group and its <strong>Trusted content</strong> page
+setting is turned on, which lifts the filtering for that one group without
+making it a super group.</li>
+</ul>
+<p>In either case content that contains <code>&lt;?</code>, <code>&lt;?php</code> or <code>&lt;script</code> is saved
+<strong>unapproved</strong> and mailed to the hub's page approvers. Until one of them
+approves it, visitors see the previously approved version, or a placeholder
+saying the page is awaiting approval. The page shows <strong>Pending Approval</strong> in
+<strong>Manage Pages</strong> meanwhile.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> A group cannot make itself a super group, turn on trusted
+content, override its site template, or edit its template files and CSS
+from the site. The group file browser reaches only the group's <code>uploads</code>
+folder, for every group, super or not. Super group templates are edited on
+the server. See
+<a href="../../../managers/users/supergroups/index.html">Super Groups</a> for what the
+status gives a group and
+<a href="../../../developers/supergroups/index.html">Super Groups</a> in the developer
+book for the templating itself.</p>
+</aside>
+<h2 id="the-group-calendar">The group calendar</h2>
+<p>A group's <strong>Calendar</strong> tab is only useful if people see the events without
+going to look. Both routes below put the group's events into the calendar a
+member already reads — the field season's sampling trips turning up beside
+their teaching, without anyone copying dates across by hand.</p>
+<p>Members can take a group's events away with them, in two ways. Both live in
+the <strong>Subscribe</strong> box below the calendar on the group's <strong>Calendar</strong> tab.</p>
+<p>Tick the calendars you want — the group may have several, each with its own
+colour, plus <strong>Uncategorized Events</strong> — then:</p>
+<ul>
+<li><strong>Download</strong> saves an iCalendar file (<code>.ics</code>) you import into your own
+calendar application. It is a snapshot: later changes on the hub are not
+reflected.</li>
+<li><strong>Subscribe</strong> hands the calendar to your default calendar application as a
+live subscription, so changes made on the hub show up in your calendar.</li>
+</ul>
+<p>The box also shows the subscription address, so you can copy it into an
+application yourself.</p>
+<p>If the group's <strong>Calendar</strong> tab is restricted to registered users or to group
+members, you are asked for your hub username and password when you subscribe.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Google Calendar does not support authenticated calendar
+subscriptions, so it can only subscribe to a group whose <strong>Calendar</strong> tab
+is set to <strong>Any HUB Visitor</strong>. Otherwise, download the file and import it.</p>
+</aside>
+<p>A calendar that is not publishing events is listed but cannot be ticked.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 42a7a5b5c7</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../groupmembers/index.html" rel="prev"><span>Previous</span>Member functions</a><a class="pager__next" href="../groupcitations/index.html" rel="next"><span>Next</span>Group citations</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/users/11-groups/03-groupcustom.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

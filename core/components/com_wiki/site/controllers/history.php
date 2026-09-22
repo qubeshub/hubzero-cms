@@ -17,6 +17,8 @@ use Request;
 use User;
 use Lang;
 use App;
+use Route;
+use Event;
 
 /**
  * Wiki controller class for page history
@@ -211,7 +213,7 @@ class History extends SiteController
 		$nta = explode("\n", $dr->get('pagetext',''));
 
 		$formatter = new \TableDiffFormatter();
-		$result = $formatter->format(new \Diff($ota, $nta));
+		$result = $formatter->format(new \WikiDiff($ota, $nta));
 
 		// Set the page's <title> tag
 		Document::setTitle(

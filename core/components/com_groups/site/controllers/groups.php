@@ -25,6 +25,9 @@ use User;
 use Date;
 use Lang;
 use App;
+use Component;
+use Plugin;
+use Session;
 
 /**
  * Groups controller class
@@ -232,11 +235,21 @@ class Groups extends Base
 			return;
 		}
 
-	        $gparams = new \Hubzero\Config\Registry($this->view->group->params);
-                $page_template = $gparams->get("page_template");
-                if ($page_template && $page_template != ""){
-                        App::get('template')->template = $page_template;
-                }
+		// A group may set its own site template. Guarded on is_object rather
+		// than relying on the not-found check above still sitting in front of
+		// it: Group::getInstance() returns false for an unknown cn, and this
+		// block has been moved above that check before now, which turns every
+		// hit on a missing group into a warning in the error log.
+		if (is_object($this->view->group))
+		{
+			$gparams       = new Registry($this->view->group->get('params'));
+			$page_template = $gparams->get('page_template');
+
+			if ($page_template)
+			{
+				App::get('template')->template = $page_template;
+			}
+		}
 	
 		// Ensure it's an allowable group type to display
 		if (!in_array($this->view->group->get('type'), array(1, 3)))
@@ -604,7 +617,11 @@ class Groups extends Base
 		{
 			$group = Group::getInstance($g_gidNumber);
 			$this->_task = 'edit';
-			$before = Group::getInstance($g_gidNumber);
+			// Snapshot the pre-save state for groups.onGroupAfterSave listeners.
+			// Group::getInstance() is a singleton cache, so a second call would
+			// return the *same* instance as $group and reflect the post-save
+			// values; clone it instead, matching the admin controllers.
+			$before = clone $group;
 		}
 		else
 		{
@@ -738,6 +755,33 @@ class Groups extends Base
 		$gParams = new Registry($group->get('params'));
 		$gParams->merge($params);
 
+		// Snapshot the pre-change values so the manager notification email can
+		// highlight what changed. These must be read here, before the setters
+		// below mutate the group. ($before is the same cached instance as
+		// $group via Group::getInstance(), so it cannot be relied on to hold
+		// the old values.) Only meaningful for an edit; a new group has no
+		// "before", so the email shows no change markers.
+		$before_vals = array();
+		if ($this->_task != 'new')
+		{
+			$beforeTags   = new Tags($group->get('gidNumber'));
+			$beforeParams = new Registry($group->get('params'));
+			$before_vals  = array(
+				'description'                    => $group->get('description'),
+				'tags'                           => $beforeTags->render('string'),
+				'public_desc'                    => $group->get('public_desc'),
+				'private_desc'                   => $group->get('private_desc'),
+				'logo'                           => $group->get('logo'),
+				'join_policy'                    => $group->get('join_policy'),
+				'restrict_msg'                   => $group->get('restrict_msg'),
+				'discoverability'                => $group->get('discoverability'),
+				'discussion_email_autosubscribe' => $group->get('discussion_email_autosubscribe'),
+				'access'                         => \Hubzero\User\Group\Helper::getPluginAccess($group),
+				'page_comments'                  => $beforeParams->get('page_comments'),
+				'page_author'                    => $beforeParams->get('page_author')
+			);
+		}
+
 		// Set group vars & Save group
 		$group->set('description', $g_description);
 		$group->set('public_desc', $g_public_desc);
@@ -811,6 +855,7 @@ class Groups extends Base
 		$eview->option = $this->_option;
 		$eview->user   = User::getInstance();
 		$eview->group  = $group;
+		$eview->before = $before_vals;
 		$message['plaintext'] = $eview->loadTemplate(false);
 		$message['plaintext'] = str_replace("\n", "\r\n", $message['plaintext']);
 
@@ -845,29 +890,41 @@ class Groups extends Base
 		// Only inform site admin if the group wasn't auto-approved
 		if (!$this->config->get('auto_approve', 1) && $group->get('approved') == 0)
 		{
-			// Create approval subject
-			$subject = Lang::txt('COM_GROUPS_SAVE_WAITING_APPROVAL', Config::get('sitename'));
+			// Always notify the site admin, plus any configured reviewers
+			$reviewers = array_merge(array($emailadmin), explode(',', $this->config->get('group_reviewer', '')));
+			$reviewers = array_unique(array_filter(array_map('trim', $reviewers)));
 
-			// build approval message
-			$link  = 'https://' . trim($_SERVER['HTTP_HOST'], '/') . '/groups/' . $group->get('cn');
-			$link2 = 'https://' . trim($_SERVER['HTTP_HOST'], '/') . '/administrator';
-			$html  = Lang::txt('COM_GROUPS_SAVE_WAITING_APPROVAL_DESC', $group->get('description'), $link, $link2);
-			$plain = Lang::txt('COM_GROUPS_SAVE_WAITING_APPROVAL_DESC', $group->get('description'), $link, $link2);
+			if (!empty($reviewers))
+			{
+				// Create approval subject
+				$subject = Lang::txt('COM_GROUPS_SAVE_WAITING_APPROVAL', Config::get('sitename'));
 
-			// Create new message
-			$message = new \Hubzero\Mail\Message();
+				// build approval message
+				$link  = 'https://' . trim($_SERVER['HTTP_HOST'], '/') . '/groups/' . $group->get('cn');
+				$link2 = 'https://' . trim($_SERVER['HTTP_HOST'], '/') . '/administrator/index.php?option=' . $this->_option;
+				// Escape the user-supplied description for the HTML part
+				$descHtml = htmlspecialchars($group->get('description'), ENT_QUOTES, 'UTF-8');
+				$html  = Lang::txt('COM_GROUPS_SAVE_WAITING_APPROVAL_HTML_DESC', $link, $group->get('cn'), $descHtml, $link2);
+				$plain = Lang::txt('COM_GROUPS_SAVE_WAITING_APPROVAL_DESC', $group->get('cn'), $group->get('description'), $link2);
 
-			// Build message object and send
-			$message->setSubject($subject)
-					->addFrom($from['email'], $from['name'])
-					->setTo($emailadmin)
-					->addHeader('X-Mailer', 'PHP/' . phpversion())
-					->addHeader('X-Component', 'com_groups')
-					->addHeader('X-Component-Object', 'group_pending_approval')
-					->addHeader('X-Component-ObjectId', $group->get('gidNumber'))
-					->addPart($plain, 'text/plain')
-					->addPart($html, 'text/html')
-					->send();
+				foreach ($reviewers as $reviewer)
+				{
+					// Create new message
+					$message = new \Hubzero\Mail\Message();
+
+					// Build message object and send
+					$message->setSubject($subject)
+						->addFrom($from['email'], $from['name'])
+						->setTo($reviewer)
+						->addHeader('X-Mailer', 'PHP/' . phpversion())
+						->addHeader('X-Component', 'com_groups')
+						->addHeader('X-Component-Object', 'group_pending_approval')
+						->addHeader('X-Component-ObjectId', $group->get('gidNumber'))
+						->addPart($plain, 'text/plain')
+						->addPart($html, 'text/html')
+						->send();
+				}
+			}
 		}
 
 		// Create home page
@@ -1269,7 +1326,7 @@ class Groups extends Base
 		{
 			foreach ($rows as $row)
 			{
-				$name = str_replace("\n", '', stripslashes(trim($row->description)));
+				$name = str_replace("\n", '', stripslashes(trim((string) $row->description)));
 				$name = str_replace("\r", '', $name);
 
 				$item = array(
@@ -1556,7 +1613,7 @@ class Groups extends Base
 		$contentServer = new \Hubzero\Content\Server();
 		$contentServer->filename(PATH_APP . DS . $file_path);
 		$contentServer->disposition('attachment');
-		$contentServer->acceptranges(false);
+		$contentServer->acceptranges(true);
 
 		// Do we need to manually set mime type?
 		switch ($extension)

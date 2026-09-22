@@ -12,6 +12,9 @@ use Pathway;
 use Lang;
 use User;
 use Date;
+use Component;
+use Request;
+use Route;
 
 include_once __DIR__ . DS . 'tags.php';
 
@@ -631,6 +634,38 @@ class Html
 	}
 
 	/**
+	 * Determine if a legacy media type is actually holding a playable video file
+	 *
+	 * Video attachments predating the 'video' resource type are typed
+	 * 'quicktime' or 'player'. The router knows neither, so they fall through
+	 * to a download link even though they are plain video files. Route those to
+	 * the HTML5 player instead - but only where the player can handle them: the
+	 * file has to be one of the formats the manifest builder collects, and it
+	 * has to live in the resource's own filespace.
+	 *
+	 * @param   object   $item  Child resource
+	 * @return  boolean
+	 */
+	public static function isLegacyPlayableVideo($item)
+	{
+		if (!in_array($item->type->alias, array('quicktime', 'player')))
+		{
+			return false;
+		}
+
+		// Externally hosted or absolute paths have no filespace to build a manifest from
+		if (strstr($item->path, 'http')
+		 || substr($item->path, 0, 3) == 'mms'
+		 || substr($item->path, 0, 1) == '/')
+		{
+			return false;
+		}
+
+		// Keep in sync with the extensions buildVideoManifestForResource() globs for
+		return (bool) preg_match('/\.(mp4|ogv|webm)$/i', $item->path);
+	}
+
+	/**
 	 * Determine the final URL for the primary resource child
 	 *
 	 * @param   string   $option  Component name
@@ -648,6 +683,14 @@ class Html
 		else
 		{
 			$type = $item->type->alias;
+
+			// Legacy media types still carry plain video files. Send those to the
+			// player too, unless the caller explicitly asked for the file itself
+			// ($action 3 - the OAI-PMH miner harvests direct file URLs).
+			if ($action != 3 && self::isLegacyPlayableVideo($item))
+			{
+				return Route::url('index.php?option=' . $option . '&id=' . $pid . '&resid=' . $item->id . '&task=video');
+			}
 
 			switch ($type)
 			{
@@ -669,7 +712,7 @@ class Html
 				break;
 
 				case 'hubpresenter':
-					$url = Route::url('index.php?option=' . $option . '&id=' . $pid . '&resid=' . $item->id . '&task=watch');
+					$url = Route::url('index.php?option=' . $option . '&id=' . $pid . '&resid=' . $item->id . '&task=watch') . '#watch-section';
 				break;
 
 				case 'breeze':
@@ -824,7 +867,24 @@ class Html
 					//} else {
 						$pop = (User::isGuest()) ? '<p class="warning">' . Lang::txt('COM_RESOURCES_TOOL_LOGIN_REQUIRED_TO_RUN') . '</p>' : '';
 						$pop = ($resource->revision =='dev') ? '<p class="warning">' . Lang::txt('COM_RESOURCES_TOOL_VERSION_UNDER_DEVELOPMENT') . '</p>' : $pop;
-						$html .= self::primaryButton('launchtool', $lurl, Lang::txt('COM_RESOURCES_LAUNCH_TOOL'), '', '', '', 0, $pop);
+
+						$existingSession = self::findExistingToolSession($resource);
+						if ($existingSession)
+						{
+							$resumeUrl = Route::url(
+								'index.php?option=com_tools&task=session'
+								. '&app=' . $existingSession->appname
+								. '&sess=' . $existingSession->sessnum
+							);
+							$routedLurl = Route::url($lurl);
+							$newUrl = $routedLurl . (strpos($routedLurl, '?') !== false ? '&newinstance=1' : '?newinstance=1');
+							$html .= self::primaryButton('resumetool', $resumeUrl, Lang::txt('COM_RESOURCES_RESUME_TOOL'), '', Lang::txt('COM_RESOURCES_RESUME_TOOL_TITLE'), '', 0, $pop);
+							$html .= '<p class="launch-new-instance"><a class="btn btn-secondary" href="' . $newUrl . '">' . Lang::txt('COM_RESOURCES_LAUNCH_NEW_INSTANCE') . '</a></p>';
+						}
+						else
+						{
+							$html .= self::primaryButton('launchtool', $lurl, Lang::txt('COM_RESOURCES_LAUNCH_TOOL'), '', '', '', 0, $pop);
+						}
 					//}
 				}
 				else
@@ -1017,6 +1077,16 @@ class Html
 					$childParams = $firstChild->params;
 					$linkAction = intval($childParams->get('link_action', $linkAction));
 
+					$isVideo = ($firstChild->type->alias == 'video' || self::isLegacyPlayableVideo($firstChild));
+
+					// A playable video always goes to the player. The generic linkAction
+					// hint the type carries - legacy logical types such as
+					// 'Podcast (video)' are commonly set to 'download' - must not win.
+					if ($isVideo)
+					{
+						$linkAction = 0;
+					}
+
 					$url = self::processPath($option, $firstChild, $resource->id, $linkAction);
 
 					switch ($linkAction)
@@ -1060,6 +1130,13 @@ class Html
 					//$rt = new \Components\Resources\Tables\Type($database);
 					//$rt->load($firstChild->type);
 
+					// resources.js keys the inline embed off this class
+					if ($isVideo)
+					{
+						$class = 'video';
+						$mesg  = Lang::txt('COM_RESOURCES_VIEW_PRESENTATION');
+					}
+
 					//if we are a hubpresenter resource type, do not show file type in button
 					if ($firstChild->type->alias == 'hubpresenter')
 					{
@@ -1070,11 +1147,6 @@ class Html
 					else
 					{
 						$mesg .= ' ' . self::getFileAttribs($firstChild->path);
-					}
-
-					if ($firstChild->type->alias == 'video')
-					{
-						$class = 'video';
 					}
 
 					if ($resource->type->alias == 'databases')
@@ -1093,6 +1165,71 @@ class Html
 		}
 
 		return $html;
+	}
+
+	/**
+	 * Look for an existing middleware session for the current user that matches
+	 * this tool resource (any version). Returns the most recently accessed one,
+	 * or null when none exist / middleware is unavailable.
+	 *
+	 * @param   object  $resource  Tool resource
+	 * @return  object|null
+	 */
+	protected static function findExistingToolSession($resource)
+	{
+		if (User::isGuest())
+		{
+			return null;
+		}
+
+		if (!$resource->alias)
+		{
+			return null;
+		}
+
+		// The session appname is the attached revision: alias_r<rev>, or "_dev" for the dev version.
+		$appname = (!isset($resource->revision) || $resource->revision == 'dev')
+			? $resource->alias . '_dev'
+			: $resource->alias . '_r' . $resource->revision;
+
+		try
+		{
+			require_once \Component::path('com_tools') . DS . 'helpers' . DS . 'utils.php';
+
+			$mwdb = \Components\Tools\Helpers\Utils::getMWDBO();
+			if (!$mwdb)
+			{
+				return null;
+			}
+
+			$toolsTables = \Component::path('com_tools') . DS . 'tables';
+			require_once $toolsTables . DS . 'viewperm.php';
+			require_once $toolsTables . DS . 'session.php';
+
+			$ms = new \Components\Tools\Tables\Session($mwdb);
+			$records = $ms->getRecords(User::get('username'), $appname, false);
+		}
+		catch (\Exception $e)
+		{
+			return null;
+		}
+
+		if (!$records)
+		{
+			return null;
+		}
+
+		// Records are already filtered to this appname; pick the most recently accessed.
+		$match = null;
+		foreach ($records as $row)
+		{
+			if (!$match || strtotime($row->accesstime) > strtotime($match->accesstime))
+			{
+				$match = $row;
+			}
+		}
+
+		return $match;
 	}
 
 	/**
@@ -1166,8 +1303,8 @@ class Html
 		}
 		else if (preg_match("/(?:https?:|mailto:|ftp:|gopher:|news:|file:)/", $path))
 		{
-			$type = 'HTM';
-			$fs = '';
+			// No caption needed for web URLs
+			return '';
 		}
 		// Check if the path has the extension (e.g. Databases don't)
 		elseif (strrpos($path, '.') === false)

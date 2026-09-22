@@ -9,6 +9,7 @@ namespace Hubzero\Html\Builder;
 
 use Lang;
 use App;
+use Document;
 
 /**
  * Utility class for javascript behaviors
@@ -189,7 +190,10 @@ class Behavior
 			script.src = "' . $path . '";
 			var config = `
 			MathJax.Hub.Config({
-				extensions: ["tex2jax.js"],
+				// [a11y] AssistiveMML adds a hidden MathML rendering for
+				// screen readers and aria-hidden="true" on the visible
+				// HTML-CSS glyph spans (SC 1.1.1, 1.3.1, 4.1.2).
+				extensions: ["tex2jax.js", "AssistiveMML.js"],
 				jax: ["input/TeX", "output/HTML-CSS"],
 				"HTML-CSS": {
 						preferredFont: "TeX",
@@ -205,11 +209,25 @@ class Behavior
 				},
 				TeX: {
 					extensions: ["autoload-all.js", "mediawiki-texvc.js"],
-					noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+					noUndefined: { attributes: { mathcolor: "#8b0000", mathbackground: "#FFEEEE", mathsize: "90%" } }, // [a11y] darkred: 8.85:1 on #FFEEEE (was "red" = 3.57:1, fails SC 1.4.3)
 					Macros: { href: "{}" }
 				},
 				messageStyle: "none",
 				styles: { ".MathJax_Display, .MathJax_Preview, .MathJax_Preview > *": { "background": "inherit" } }
+			});
+			// [a11y] axe-core does not honor aria-hidden on the deprecated
+			// <nobr> wrapper that MathJax v2 emits, so propagate it onto
+			// the .MathJax wrapper (the assistive MathML lives in a sibling
+			// .MJX_Assistive_MathML span and remains exposed to AT).
+			MathJax.Hub.Register.MessageHook("End Math", function() {
+				var els = document.querySelectorAll("span.MathJax, div.MathJax_Display");
+				for (var i = 0; i < els.length; i++) {
+					els[i].setAttribute("aria-hidden", "true");
+					// MathJax adds tabindex="0" to the wrapper for the
+					// context menu; that conflicts with aria-hidden so
+					// remove it.
+					els[i].removeAttribute("tabindex");
+				}
 			});`;
 			if (window.opera) { script.innerHTML = config; }
 			else { script.text = config; }
@@ -319,6 +337,8 @@ class Behavior
 		{
 			throw new \UnexpectedValueException("Unrecognized version [$version] of htmx requested");
 		}
+
+		Asset::script('assets/hubzero-debug-timeline.js', true, true, false, true, true, true, false);
 
 		self::$loaded[__METHOD__] = true;
 	}
@@ -1093,5 +1113,51 @@ Calendar._TT["ABOUT_TIME"] = "\n\n" +
 		{
 			return false;
 		}
+	}
+
+	/**
+	 * Add Inertia companion javascript support.
+	 *
+	 * This helper loads Hubzero's shared debug timeline utility.
+	 *
+	 * @return  void
+	 */
+	public static function inertia()
+	{
+		if (isset(self::$loaded[__METHOD__]))
+		{
+			return;
+		}
+
+		self::alpinejs();
+		Asset::script('assets/hubzero-debug-timeline.js', true, true, false, true, true, true, false);
+		Asset::script('assets/hubzero-debug-panel.js', true, true, false, true, true, true, false);
+		Asset::stylesheet('assets/hubzero-debug-panel.css', array('media' => 'all'), true);
+
+		self::$loaded[__METHOD__] = true;
+	}
+
+	/**
+	 * Add HTMX + Alpine.js together with standard companion defaults.
+	 *
+	 * This enables both libraries for views that pair HTMX transport
+	 * with Alpine local interactivity.
+	 *
+	 * @return  void
+	 */
+	public static function htmxalpine($htmxVersion = null, $alpineVersion = null, $debug = null)
+	{
+		if (isset(self::$loaded[__METHOD__]))
+		{
+			return;
+		}
+
+		self::htmx($htmxVersion, $debug);
+		self::alpinejs($alpineVersion, $debug);
+		Asset::script('assets/htmx/hubzero-bootstrap.js', true, true, false, true, true, true, false);
+		Asset::script('assets/hubzero-debug-panel.js', true, true, false, true, true, true, false);
+		Asset::stylesheet('assets/hubzero-debug-panel.css', array('media' => 'all'), true);
+
+		self::$loaded[__METHOD__] = true;
 	}
 }

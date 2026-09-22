@@ -44,7 +44,7 @@ class Application extends Obj
 
 		if (!$form->loadFile($file, false, '//form'))
 		{
-			$this->addError(Lang::txt('JERROR_LOADFILE_FAILED'));
+			$this->setError(Lang::txt('JERROR_LOADFILE_FAILED'));
 		}
 
 		if (!empty($data))
@@ -252,6 +252,15 @@ class Application extends Obj
 			$data[$key] = $values;
 		}
 		ksort($data);
+
+		// Migrate deprecated 'mail' mailer to 'sendmail'.
+		// PHP mail()/native transport uses sendmail -t which strips Bcc headers,
+		// breaking BCC delivery. sendmail -bs uses SMTP protocol which preserves
+		// envelope recipients including BCC.
+		if (isset($data['mail']['mailer']) && $data['mail']['mailer'] === 'mail')
+		{
+			$data['mail']['mailer'] = 'sendmail';
+		}
 
 		// Perform miscellaneous options based on configuration settings/changes.
 		// Escape the offline message if present.

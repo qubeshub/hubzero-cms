@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Components · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Most components carry a set of options. They decide what the component offers a visitor, what its defaults are, and — for components that talk to something…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/configuring/components/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Components</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#what-options-are-not">What options are not</a></li>
+<li class="toc__item toc__item--l2"><a href="#opening-a-component-s-options">Opening a component&#x27;s options</a></li>
+<li class="toc__item toc__item--l2"><a href="#permissions">Permissions</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-the-options-are">What the options are</a></li>
+<li class="toc__item toc__item--l2"><a href="#known-problem-unnamed-tabs">Known problem: unnamed tabs</a></li>
+<li class="toc__item toc__item--l2"><a href="#older-screenshots">Older screenshots</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Configuring</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Components</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Components</h1>
+        </header>
+        
+        <div class="prose">
+<p>Most components carry a set of options. They decide what the component
+offers a visitor, what its defaults are, and — for components that talk to
+something outside the hub — the connection details it needs. Options belong
+to one component and affect nothing else.</p>
+<p>This is the screen a manager opens most often, because it is where a
+component's behaviour actually lives. When somebody says &quot;the hub is emailing
+the wrong person about new support tickets&quot;, the answer is not in the global
+configuration and not in the code: it is <strong>Notify when ticket created</strong>, in
+the Support component's options, which defaults to the site's From address
+and is usually still pointing at whoever installed the hub.</p>
+<h2 id="what-options-are-not">What options are not</h2>
+<p>They are not the switch that makes the component exist. A component that has
+been disabled in the <a href="../../extensions/extension-manager/index.html">Extension
+Manager</a> is gone from the
+administrator menu, options and all.</p>
+<p>They are not what puts the component on the site either. A visitor reaches a
+component through a <a href="../../menus/index.html">menu item</a>; the options only decide how
+it behaves once they are there.</p>
+<h2 id="opening-a-component-s-options">Opening a component's options</h2>
+<ol>
+<li>Sign in to the administrator interface.</li>
+<li>Choose the component from the <strong>Components</strong> menu. Members, Groups, and
+System are not listed there; they have their own places in the menu.</li>
+<li>Select <strong>Options</strong> in the toolbar, at the top right of the screen.</li>
+<li>A pop-up opens with one tab per group of settings.</li>
+<li>Change what you need and select <strong>Save &amp; Close</strong>. <strong>Save</strong> keeps the
+pop-up open. <strong>Cancel</strong> discards the changes.</li>
+</ol>
+<p>Changes take effect immediately, for everyone using the hub, with no undo
+and no confirmation. In practice that is fine: almost every option is a
+display choice or a default, and setting it back restores what you had.</p>
+<p>Two kinds are not fine, and both look like all the others.</p>
+<ul>
+<li><strong>Connection details.</strong> The middleware settings in the Tools component and
+the directory settings behind <strong>Site &gt; LDAP</strong> are what those features run
+on. A wrong value stops the feature outright rather than changing it.</li>
+<li><strong>Anything that decides who may do something.</strong> The <strong>Permissions</strong> tab
+described below, and options such as who may create a group or submit a
+resource, change what other people can do the moment you save. Nobody is
+notified, and the people affected only find out when something they used to
+be able to do stops working.</li>
+</ul>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Not every component has options. If the manifest declares none,
+the pop-up says &quot;No options found.&quot;</p>
+</aside>
+<p>The <strong>Options</strong> button appears wherever the component's toolbar calls for
+it, which for most components is the main list screen. It always opens the
+same pop-up, built from the component's <code>config.xml</code>.</p>
+<h2 id="permissions">Permissions</h2>
+<p>Components that declare an <code>access.xml</code> get a <strong>Permissions</strong> tab in the
+same pop-up. It sets, per user group, who may administer the component,
+access its administrator screens, and create, edit, or delete its content.
+These rules inherit from the site-wide grid on the <strong>Permissions</strong> tab of
+<a href="../hub/index.html#permissions-and-text-filters">Global configuration</a>, and
+override it for this component only.</p>
+<h2 id="what-the-options-are">What the options are</h2>
+<p>Every parameter of every component is listed, with its type and default, in
+the generated
+<a href="../../../reference/configuration/index.html#components">configuration reference</a>.
+That list is produced from the same <code>config.xml</code> files the pop-up reads, so
+it always matches the screen.</p>
+<aside class="admonition admonition--important">
+<p><strong>Important:</strong> Some components do nothing useful until their options are
+filled in. Tools will not run until the middleware settings in the Tools
+component are set; the geolocation and LDAP screens in the System
+component need their connection details before either screen works.</p>
+</aside>
+<h2 id="known-problem-unnamed-tabs">Known problem: unnamed tabs</h2>
+<p>The pop-up names each tab from a language string built out of the fieldset
+name, <code>COM_CONFIG_&lt;NAME&gt;_FIELDSET_LABEL</code>. Only <code>basic</code> and <code>component</code> are
+defined, so a component whose <code>config.xml</code> uses any other unlabelled
+fieldset name shows the raw key as the tab title. The Members component,
+for instance, shows <code>COM_CONFIG_LOGIN_FIELDSET_LABEL</code>,
+<code>COM_CONFIG_PASSWORD_FIELDSET_LABEL</code>, and
+<code>COM_CONFIG_REGISTRATION_FIELDSET_LABEL</code> where names should be. The fields
+under those tabs work normally.</p>
+<h2 id="older-screenshots">Older screenshots</h2>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The screenshots below came from the imported version of this
+page. They show the retired <strong>Hub</strong> component and call the toolbar button
+<strong>Parameters</strong>; the button is now called <strong>Options</strong>, and there is no Hub
+component. The pop-up they show is otherwise the same screen.</p>
+</aside>
+<p><img src="../../media/components-edit-registration-01.png" alt="The Components menu with a component selected" /></p>
+<p><img src="../../media/components-edit-registration-05.png" alt="The toolbar button that opens the options pop-up" /></p>
+<p><img src="../../media/components-edit-registration-06.png" alt="The component options pop-up" /></p>
+<p><img src="../../media/components-edit-registration-07.png" alt="The component options pop-up with the Save button" /></p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../registration/index.html" rel="prev"><span>Previous</span>Registration</a><a class="pager__next" href="../modules/index.html" rel="next"><span>Next</span>Modules</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/05-configuring/03-components.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

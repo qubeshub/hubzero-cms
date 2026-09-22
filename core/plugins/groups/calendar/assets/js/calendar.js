@@ -97,6 +97,14 @@ HUB.Plugins.GroupCalendar = {
 			},
 			viewRender: function(view, element)
 			{
+				// [a11y] add aria-labels to prev/next buttons
+				$('.fc-prev-button').attr('aria-label', 'Previous month');
+				$('.fc-next-button').attr('aria-label', 'Next month');
+
+				// [a11y] fix header-only table — add role=presentation so headers
+				// don't require data cells (SC 1.3.1)
+				$calendar.find('.fc-widget-header > table').attr('role', 'presentation');
+
 				//$calendar.fullCalendar('gotoDate', $year, $month, 0);
 				var date = $calendar.fullCalendar('getDate').format('YYYY/MM');
 
@@ -105,6 +113,20 @@ HUB.Plugins.GroupCalendar = {
 				{
 					window.history.pushState(null,null, $base + '/' + date);
 				}
+
+				// WCAG 4.1.2: also add title tooltips and today button label
+				$('.fc-prev-button').attr('title', 'Previous month');
+				$('.fc-next-button').attr('title', 'Next month');
+				$('.fc-today-button').attr('aria-label', 'Go to today');
+
+				// WCAG 1.3.1 — FullCalendar splits day-name headers into a
+				// separate table with <th> but no <td>. Mark it presentational
+				// so screen readers don't report orphan headers.
+				$('.fc-widget-header table, .fc-head table').each(function() {
+					if ($(this).find('td').length === 0 && $(this).find('th').length > 0) {
+						$(this).attr('role', 'presentation');
+					}
+				});
 			},
 			eventAfterAllRender: function(view)
 			{

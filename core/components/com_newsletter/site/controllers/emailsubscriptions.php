@@ -18,6 +18,12 @@ require_once  "$componentPath/models/emailSubscription.php";
 use Components\Newsletter\Helpers\CodeHelper;
 use Components\Newsletter\Helpers\SubscriptionsHelper;
 use Components\Newsletter\Models\EmailSubscription;
+use App;
+use Component;
+use Lang;
+use Notify;
+use Request;
+use User;
 
 class Emailsubscriptions extends SiteController
 {
@@ -54,7 +60,7 @@ class Emailsubscriptions extends SiteController
 		Request::checkToken();
 
 		$code = Request::getString('code');
-		$userId = Request::getString('userId');
+		$userId = Request::getInt('userId');
 		$username = User::whereEquals('id', $userId)->row()->get('username');
 		$campaignId = Request::getInt('campaign');
 

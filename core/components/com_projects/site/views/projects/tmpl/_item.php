@@ -20,17 +20,32 @@ $role = $this->row->access('readonly') && !$this->row->isArchived()
 	? Lang::txt('COM_PROJECTS_LABEL_REVIEWER')
 	: $role;
 ?>
-<div class="project-card" id="project-<?php echo $this->row->get('id'); ?>">
+<div class="project-card" id="project-<?php echo $this->row->get('id'); ?>" role="group" aria-label="<?php echo $this->escape($this->row->get('alias')) . ' ' . $this->escape($this->row->get('title')); ?>">
 	<div class="project-contents">
-		<?php if ((!$this->row->inSetup() && $this->row->access('view'))
-				|| ($this->row->inSetup() && $this->row->access('owner'))): ?>
-			<a class="project-identity" href="<?php echo Route::url($this->row->link()); ?>">
-				<img src="<?php echo $src; ?>" alt="<?php echo $this->escape($this->row->get('title')); ?>" />
+		<?php
+		$canView = ((!$this->row->inSetup() && $this->row->access('view'))
+				|| ($this->row->inSetup() && $this->row->access('owner')));
+		?>
+		<?php if ($canView): ?>
+			<a class="project-identity project-link" href="<?php echo Route::url($this->row->link()); ?>">
+				<img src="<?php echo $src; ?>" alt="" />
+				<span class="project-details">
+					<span class="project-alias"><?php echo $this->escape($this->row->get('alias')); ?></span>
+					<span class="project-title" data-id="<?php echo $this->row->get('id'); ?>">
+						<?php echo $this->escape(Hubzero\Utility\Str::truncate($this->row->get('title'), 60)); ?>
+					</span>
+				</span>
 			</a>
 		<?php else: ?>
 			<span class="project-identity">
 				<img src="<?php echo $src; ?>" alt="<?php echo $this->escape($this->row->get('title')); ?>" />
 			</span>
+			<div class="project-details">
+				<span class="project-alias"><?php echo $this->escape($this->row->get('alias')); ?></span>
+				<span class="project-title">
+					<?php echo $this->escape(Hubzero\Utility\Str::truncate($this->row->get('title'), 60)); ?>
+				</span>
+			</div>
 		<?php endif; ?>
 
 		<?php if ($this->row->get('featured')): ?>
@@ -39,25 +54,19 @@ $role = $this->row->access('readonly') && !$this->row->isArchived()
 			</span>
 		<?php endif; ?>
 
-		<div class="project-details">
-			<span class="project-alias"><?php echo $this->escape($this->row->get('alias')); ?></span>
-
-			<?php if ((!$this->row->inSetup() && $this->row->access('view'))
-					|| ($this->row->inSetup() && $this->row->access('owner'))): ?>
-				<a class="project-title" rel="<?php echo $this->row->get('id'); ?>" href="<?php echo Route::url($this->row->link()); ?>">
-					<?php echo $this->escape(Hubzero\Utility\Str::truncate($this->row->get('title'), 60)); ?>
-				</a>
-			<?php else: ?>
-				<span class="project-title">
-					<?php echo $this->escape(Hubzero\Utility\Str::truncate($this->row->get('title'), 60)); ?>
-				</span>
-			<?php endif; ?>
-
+		<?php if ($canView): ?>
 			<?php if ($role): ?>
 				<span class="<?php echo str_replace(array('(', ')'), '', $role); ?> project-membership-status">
 					<?php echo $role; ?>
 				</span>
 			<?php endif; ?>
+		<?php else: ?>
+			<?php if ($role): ?>
+				<span class="<?php echo str_replace(array('(', ')'), '', $role); ?> project-membership-status">
+					<?php echo $role; ?>
+				</span>
+			<?php endif; ?>
+		<?php endif; ?>
 
 			<?php
 			// Private
@@ -86,10 +95,9 @@ $role = $this->row->access('readonly') && !$this->row->isArchived()
 				$icon = 'icon-archive';
 			endif;
 			?>
-			<span class="<?php echo $icon; ?> project-privacy tooltips" title="<?php echo $privacyTxt; ?>">
+			<span class="<?php echo $icon; ?> project-privacy">
 				<?php echo $privacyTxt; ?>
 			</span>
-		</div>
 
 		<div class="project-meta">
 			<?php
@@ -109,8 +117,14 @@ $role = $this->row->access('readonly') && !$this->row->isArchived()
 
 			<?php if ($this->row->groupOwner()): ?>
 				<span class="project-owner owner-group icon-group tooltips" title="<?php echo $this->escape(Lang::txt('This project is owned by the %s group', $this->row->groupOwner('description'))); ?>">
-					<a href="<?php echo Route::url('index.php?option=com_groups&cn=' . $this->row->groupOwner('cn')); ?>">
-						<?php echo $this->escape(Hubzero\Utility\Str::truncate($this->row->groupOwner('description'), 25)); ?>
+					<?php
+						$_ownerTrunc = $this->escape(Hubzero\Utility\Str::truncate($this->row->groupOwner('description'), 25));
+						$_ownerCn = $this->escape($this->row->groupOwner('cn'));
+						// [a11y] aria-label must contain visible text (SC 2.5.3) and be unique (SC 2.4.4)
+						$_ownerLabel = $_ownerTrunc . ' (' . $_ownerCn . ')';
+					?>
+					<a href="<?php echo Route::url('index.php?option=com_groups&cn=' . $this->row->groupOwner('cn')); ?>" aria-label="<?php echo $_ownerLabel; ?>">
+						<?php echo $_ownerTrunc; ?>
 					</a>
 				</span>
 			<?php else: ?>

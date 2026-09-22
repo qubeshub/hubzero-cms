@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Browser support · Developers · Hubzero Documentation</title>
+  <meta name="description" content="Nothing in this repository enforces a browser support policy. There is no browserslist, no Babel, no PostCSS, and — with one exception — no build step that…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/developers/getting-started/browsersupport/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Developers</a>
+        <nav aria-label="Developers contents">
+<ul class="tree">
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Getting started</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../releasenotes/index.html">Release notes</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../fileaccess/index.html">Accessing files</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../databaseaccess/index.html">Direct database access</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../upgrade/index.html">Upgrade guide</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Browser support</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#what-the-repository-does-not-contain">What the repository does not contain</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-the-shipped-code-actually-requires">What the shipped code actually requires</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-internet-explorer-leftovers">The Internet Explorer leftovers</a></li>
+<li class="toc__item toc__item--l2"><a href="#browser-detection-and-what-it-is-used-for">Browser detection, and what it is used for</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-one-real-gate">The one real gate</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-to-target">What to target</a></li>
+<li class="toc__item toc__item--l2"><a href="#next">Next</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../devenvironment/index.html">Development environment</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tutorials/index.html">Video tutorials</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../foundation/index.html">Foundation</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/structure/index.html">Application structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/constants/index.html">Constants</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/autoloading/index.html">Autoloading</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/extensions/index.html">Extensions</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/facades/index.html">Facades</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/providers/index.html">Service providers</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../services/index.html">Services</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../services/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/filesystem/index.html">Filesystem</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/session/index.html">Session</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/server/index.html">Server</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../basics/index.html">The basics</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../basics/requests/index.html">Requests</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/responses/index.html">Responses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/config/index.html">Config</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/user/index.html">Users &amp; profiles</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/debugging/index.html">Debugging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/cron/index.html">Scheduled tasks</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/dates/index.html">Dates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/redirect/index.html">Redirect</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../database/index.html">Database</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extreqs/index.html">Requirements</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/parameters/index.html">Parameters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/deployext/index.html">Deploying extensions</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../modules/index.html">Modules</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../modules/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/models/index.html">Models</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/routing/index.html">Routing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/packaging/index.html">Packaging</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../plugins/index.html">Plugins</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../templates/index.html">Templates</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../templates/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/designing/index.html">Designing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/layouts/index.html">Page layouts</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/css/index.html">Cascading style sheets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/javascript/index.html">JavaScript</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/overrides/index.html">Output overrides</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/socicons/index.html">Socicons</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/fontcons/index.html">Fontcons</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/elements/index.html">Elements and typography</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/accessibility/index.html">Accessibility</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../muse/index.html">Muse</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../supergroups/index.html">Super Groups</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/templating-system/index.html">Templating system</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/page-templates/index.html">Page templates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/custom-macros/index.html">Custom macros</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/php-pages/index.html">PHP pages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/databases/index.html">Databases</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/components/index.html">Components</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups-gitlab/index.html">Super groups with GitLab</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../testing/index.html">Testing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../api/index.html">REST API</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../aws/index.html">AWS</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../contributing/index.html">Contributing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../conventions/index.html">Conventions</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Developers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Getting started</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Browser support</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Developers</p>
+          <h1>Browser support</h1>
+        </header>
+        
+        <div class="prose">
+<p>Nothing in this repository enforces a browser support policy. There is no
+browserslist, no Babel, no PostCSS, and — with one exception — no build step
+that targets a language level. What the CMS runs in is decided by the
+libraries it ships and by the CSS and JavaScript its templates were written
+in. This page says what those actually require, and therefore what to target
+when you write front-end code for a hub.</p>
+<p>The short answer, for anyone who came here to get on with it: <strong>target
+current Chrome, Edge, Firefox and Safari, write ES2020 and modern CSS, and
+feature-detect anything newer.</strong> The rest of the page is where that number
+comes from, because nobody in this repository will tell you if you get it
+wrong.</p>
+<p>The page this replaces carried a table of supported versions written in
+2012: Internet Explorer 7 through 9, Firefox 3 to 5, Safari 5, Android 2
+WebKit, Opera 10. None of it is meaningful now. The code in this tree cannot
+run in any of those browsers, and no part of the repository checks.</p>
+<h2 id="what-the-repository-does-not-contain">What the repository does not contain</h2>
+<p>Each of these was looked for and is not present anywhere outside
+<code>core/vendor/</code> and vendored third-party libraries:</p>
+<table>
+<thead>
+<tr>
+<th>Looked for</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.browserslistrc</code> or a <code>browserslist</code> key</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Babel configuration</td>
+<td>None</td>
+</tr>
+<tr>
+<td>PostCSS or Autoprefixer configuration</td>
+<td>None</td>
+</tr>
+<tr>
+<td>A JavaScript bundler for the CMS</td>
+<td>None. The only root <code>package.json</code> dependency is <code>blade-formatter</code></td>
+</tr>
+<tr>
+<td>A build target</td>
+<td>One, and only for the CKEditor 5 editor plugin — see below</td>
+</tr>
+<tr>
+<td>A polyfill loaded on every page</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<p>CSS is compiled from LESS by <code>core/bin/lessc</code> and by <code>muse cache:css</code>, and
+LESS does no prefixing and no transformation for older engines. The CMS's own
+JavaScript is shipped as written; nothing transpiles it.</p>
+<p>The exception is
+<a href="https://github.com/hubzero/hubzero-cms/tree/2.4-main/core/plugins/editors/ckeditor5/build"><code>core/plugins/editors/ckeditor5/build/</code></a>,
+which bundles CKEditor 5 with esbuild. Its <code>build.mjs</code> sets
+<code>target: ['es2020']</code>, and that is the only browser-facing language level
+declared anywhere in the repository. The bundle it produces,
+<code>core/plugins/editors/ckeditor5/assets/js/ckeditor.js</code>, is committed; the
+build is not run as part of any workflow.</p>
+<p>The CI workflows in <code>.github/workflows/</code> run PHP syntax and facade-import
+lint and build the documentation. None of them starts a browser. The root
+<code>README.md</code> says the project is tested with BrowserStack; that sentence is
+the only mention of BrowserStack in the tree, and no configuration, device
+list, or browser test suite goes with it.</p>
+<h2 id="what-the-shipped-code-actually-requires">What the shipped code actually requires</h2>
+<p>The floor is set by what the framework loads, not by a policy:</p>
+<table>
+<thead>
+<tr>
+<th>What ships</th>
+<th>Where</th>
+<th>What it needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>jQuery 3.3.1</td>
+<td><code>core/assets/js/jquery.js</code></td>
+<td>jQuery 3 dropped Internet Explorer 6-8</td>
+</tr>
+<tr>
+<td>Bootstrap 5.3.3</td>
+<td><code>core/assets/css/bootstrap/5.3.3/</code>, <code>core/assets/js/bootstrap/5.3.3/</code></td>
+<td>Bootstrap 5 dropped Internet Explorer entirely and is built on CSS custom properties, flexbox, and grid</td>
+</tr>
+<tr>
+<td>htmx 2.0.4</td>
+<td><code>core/assets/js/htmx/</code></td>
+<td>htmx 2 dropped Internet Explorer</td>
+</tr>
+<tr>
+<td>Alpine.js 3.14.8</td>
+<td><code>core/assets/js/alpine/</code></td>
+<td>Alpine 3 is built on the ES6 <code>Proxy</code>, which cannot be polyfilled</td>
+</tr>
+<tr>
+<td>CKEditor 5</td>
+<td><code>core/plugins/editors/ckeditor5/assets/js/ckeditor.js</code></td>
+<td>Built to ES2020</td>
+</tr>
+</tbody>
+</table>
+<p>Bootstrap, htmx, and Alpine are opt-in: an extension asks for them through
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Html/Builder/Behavior.php"><code>Behavior</code></a> —
+<code>Behavior::bootstrap()</code>, <code>Behavior::htmx()</code>, <code>Behavior::alpinejs()</code>,
+<code>Behavior::htmxalpine()</code>. jQuery comes in with <code>Behavior::framework()</code> and is
+on nearly every page.</p>
+<p>The framework's own JavaScript is ES6 in places. <code>core/assets/js/htmx/hubzero-bootstrap.js</code>
+uses <code>const</code> and <code>&quot;use strict&quot;</code> at the top level. The stylesheets use flexbox
+in dozens of files across <code>core/templates/</code> and <code>core/components/</code>, and CSS
+custom properties in a handful.</p>
+<p>Taken together the practical floor is a current evergreen browser: Chrome,
+Firefox, Safari, or Edge in a version from roughly the last few years. The
+one explicit number in the tree, the editor bundle's ES2020, puts that floor
+at about 2020 for any page with an editor on it. None of this is a policy
+anyone wrote down; it is what the dependencies impose.</p>
+<h2 id="the-internet-explorer-leftovers">The Internet Explorer leftovers</h2>
+<p>Three shipped templates still carry conditional comments that no browser has
+honoured since Internet Explorer 10 dropped support for them:</p>
+<ul>
+<li><code>core/templates/kimera/index.php</code> loads <code>js/html5.js</code> and
+<code>css/browser/ie8.css</code> for <code>lt IE 9</code>, and <code>css/browser/ie9.css</code> for <code>IE 9</code>.</li>
+<li><code>core/templates/kameleon/index.php</code> loads <code>js/html5.js</code> for <code>lt IE 9</code> and
+<code>css/browser/ie9.css</code> for <code>IE 9</code>. It ships no <code>ie8.css</code>.</li>
+<li><code>core/templates/lucent/component.php</code> loads <code>js/html5.js</code> for <code>lt IE 9</code>, and
+that file does not exist in the lucent template. The reference is dead, but
+it is inside a conditional comment, so nothing ever requests it.</li>
+</ul>
+<p><code>core/templates/system/email.php</code> has an <code>IEMobile 7</code> block that is commented
+out in PHP as well.</p>
+<p>Two other legacy shims are still in the tree and are not loaded by anything on
+a normal page: <code>core/assets/js/excanvas/</code> (the <code>&lt;canvas&gt;</code> shim for old
+Internet Explorer) and <code>core/components/com_dataviewer/site/html/modernizr.js</code>.</p>
+<p>None of this does any harm. None of it does any good either. Treat it as dead
+weight, not as evidence of a support target.</p>
+<h2 id="browser-detection-and-what-it-is-used-for">Browser detection, and what it is used for</h2>
+<p>The framework has a user-agent parser,
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Browser/Detector.php"><code>Hubzero\Browser\Detector</code></a>.
+It recognises about forty browser names, including several — Palm, Avantgo,
+Xiino, imode, HotJava — that have not existed for a long time.</p>
+<p>In the templates it is cosmetic. <code>kimera</code>, <code>kameleon</code>, and <code>lucent</code> each build
+a class list for the <code>&lt;html&gt;</code> element from <code>$browser-&gt;name()</code> and
+<code>$browser-&gt;name() . $browser-&gt;major()</code>, alongside the text direction and, in
+the first two, a no-script flag:</p>
+<pre><code class="language-php">// Get browser info to set some classes
+$menu = App::get('menu');
+$browser = new \Hubzero\Browser\Detector();
+$cls = array(
+	'no-js',
+	$browser-&gt;name(),
+	$browser-&gt;name() . $browser-&gt;major(),
+	$this-&gt;direction,
+	$this-&gt;params-&gt;get('header', 'light'),
+	($menu-&gt;getActive() == $menu-&gt;getDefault() ? 'home' : '')
+);
+</code></pre>
+<p>Nothing keys off those classes to withhold a feature. The no-script flag is
+the one piece of progressive enhancement the templates actually implement,
+and each spells it differently: kimera sets <code>no-js</code> and removes it in
+<code>js/hub.js</code>, kameleon sets <code>nojs</code> and removes it in <code>js/index.js</code>, and
+lucent sets neither.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The <code>Edge</code> pattern in <code>Detector</code> matches <code>Edge/</code>, the legacy
+EdgeHTML user agent. Current Edge sends <code>Edg/</code> and falls through to the
+<code>Chrome/</code> pattern, so it is reported as Chrome. The <code>&lt;html&gt;</code> class on an
+Edge page therefore reads <code>chrome</code>.</p>
+</aside>
+<h2 id="the-one-real-gate">The one real gate</h2>
+<p><code>core/plugins/tools/novnc/novnc.php</code> is the only place in the tree that
+refuses to render for a browser. Its <code>canRender()</code> method reads a <strong>Minimum
+OS/Browsers</strong> parameter — one <code>OS, BROWSER MAJOR.MINOR</code> line each — and a
+list of user-agent regular expressions to reject. Its shipped default is from
+around 2014:</p>
+<pre><code class="language-text">*, safari 5.1
+*, chrome 27.0
+*, iceweasel 38.0
+*, firefox 30.0
+*, opera 23.0
+*, mozilla 5.0
+iOS, safari 1.0
+Windows, msie 10.0
+Windows, ie 10.0
+</code></pre>
+<p>These are minimums, so any current version of the browsers named passes. But
+a browser whose name does not appear in the list at all fails the check, and
+the plugin does not render. Vivaldi and Yandex are recognised by <code>Detector</code>
+under their own names and are not in the default list, so a visitor using
+either gets no tool session and no explanation. If your hub runs tools, add
+the names to the parameter rather than leaving the shipped default.</p>
+<h2 id="what-to-target">What to target</h2>
+<p>Since nothing enforces a target, the burden is on what you write. Take these
+as the working baseline; each is what the shipped code already assumes, not
+a preference:</p>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Target</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JavaScript language level</td>
+<td>ES2020</td>
+<td>The one explicit number in the tree, from the editor bundle. <code>const</code>, arrow functions, classes, <code>async</code>/<code>await</code>, optional chaining and <code>Proxy</code> are all safe</td>
+</tr>
+<tr>
+<td>Module loading</td>
+<td>Plain <code>&lt;script&gt;</code></td>
+<td>Nothing bundles the CMS's own scripts, so write scripts that work standalone. Do not assume a build step will be added</td>
+</tr>
+<tr>
+<td>DOM library</td>
+<td>jQuery 3, if a template already loaded it</td>
+<td><code>Behavior::framework()</code> puts it on nearly every page. New code does not need it — <code>querySelector</code> and <code>fetch</code> are everywhere the CMS runs</td>
+</tr>
+<tr>
+<td>CSS layout</td>
+<td>Flexbox and grid</td>
+<td>Both are used across <code>core/templates/</code> and <code>core/components/</code> today</td>
+</tr>
+<tr>
+<td>CSS custom properties</td>
+<td>Yes</td>
+<td>Bootstrap 5.3 is built on them</td>
+</tr>
+<tr>
+<td>Anything newer</td>
+<td>Feature-detect</td>
+<td><code>@supports</code> in CSS, a capability test in JavaScript. Never a user-agent test</td>
+</tr>
+<tr>
+<td>Internet Explorer</td>
+<td>Not supported, at any version</td>
+<td>jQuery 3, Bootstrap 5, htmx 2 and Alpine 3 each dropped it independently. There is nothing left to support it with</td>
+</tr>
+</tbody>
+</table>
+<p>Concretely, a component's script may be written like this and needs no
+tooling:</p>
+<pre><code class="language-js">document.querySelectorAll('[data-booking-slot]').forEach(function (el) {
+    el.addEventListener('click', function () { /* ... */ });
+});
+</code></pre>
+<p>And the rules that go with it:</p>
+<ul>
+<li>Assume an evergreen browser — one that updates itself. Everything the CMS
+already loads does.</li>
+<li>Build on working HTML. kimera and kameleon put a no-script class on
+<code>&lt;html&gt;</code> and remove it once script runs; use it if a feature needs
+JavaScript to be usable, and check which name your template uses.</li>
+<li>Do not add conditional comments, <code>excanvas</code>, <code>html5shiv</code>, or Modernizr. The
+copies already in the tree are historic.</li>
+<li>If you need a version floor for a specific feature, feature-detect it in
+JavaScript or use an <code>@supports</code> rule in CSS. Do not use <code>Detector</code>; it
+parses a string the browser is free to lie about, and it is not maintained
+against current user agents.</li>
+<li>Progressive enhancement — a usable page first, richness layered on — is
+still the right approach, and is the one idea worth keeping from the
+&quot;graded browser support&quot; material this page used to reproduce. That
+material was Yahoo!'s, written in the mid-2000s, and described a testing
+programme Hubzero does not run.</li>
+</ul>
+<h2 id="next">Next</h2>
+<p><a href="../devenvironment/index.html">Development environment</a> covers getting a hub to develop
+against.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 348f0057c2</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../upgrade/index.html" rel="prev"><span>Previous</span>Upgrade guide</a><a class="pager__next" href="../devenvironment/index.html" rel="next"><span>Next</span>Development environment</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/developers/01-getting-started/05-browsersupport.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

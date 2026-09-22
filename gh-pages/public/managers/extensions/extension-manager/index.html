@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Extension Manager · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="The Extension Manager lists every installed extension — components, modules, plugins, templates, languages and libraries — and enables or disables them. It…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/extensions/extension-manager/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Extension Manager</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#what-this-screen-is-not">What this screen is not</a></li>
+<li class="toc__item toc__item--l2"><a href="#hubzero-core">Hubzero Core</a></li>
+<li class="toc__item toc__item--l3"><a href="#toolbar">Toolbar</a></li>
+<li class="toc__item toc__item--l3"><a href="#core-migrations">Core Migrations</a></li>
+<li class="toc__item toc__item--l2"><a href="#custom-extensions">Custom Extensions</a></li>
+<li class="toc__item toc__item--l3"><a href="#toolbar-2">Toolbar</a></li>
+<li class="toc__item toc__item--l3"><a href="#the-form">The form</a></li>
+<li class="toc__item toc__item--l3"><a href="#installing-and-updating-the-code">Installing and updating the code</a></li>
+<li class="toc__item toc__item--l2"><a href="#warnings">Warnings</a></li>
+<li class="toc__item toc__item--l2"><a href="#options">Options</a></li>
+<li class="toc__item toc__item--l2"><a href="#composer-packages">Composer packages</a></li>
+</ol></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Extensions</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Extension Manager</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Extension Manager</h1>
+        </header>
+        
+        <div class="prose">
+<p>The Extension Manager lists every installed extension — components, modules,
+plugins, templates, languages and libraries — and enables or disables them. It
+also installs a hub's own extensions from a git repository, and reports
+problems with the server's PHP configuration.</p>
+<p>Select <strong>Extensions</strong> → <strong>Extension Manager</strong>, or go to
+<code>/administrator/index.php?option=com_installer</code>.</p>
+<p>Most managers never need this screen. The extensions a hub runs on arrive
+with the code and are already switched on. Three things bring you here: a
+component your hub does not use is cluttering the administrator menu and you
+want it gone; someone has written a component or plugin for your hub and it
+lives in a git repository; or mail attachments and image handling have
+stopped working and you want to see what the server thinks of its own PHP
+configuration.</p>
+<h2 id="what-this-screen-is-not">What this screen is not</h2>
+<p>It is not an installer for extensions from elsewhere. There is no upload
+form, no install-from-URL, and nothing that will take a downloaded package.
+The only route for a hub's own code is a git repository, through <strong>Custom
+Extensions</strong>, and it puts that code under <code>app/</code>.</p>
+<p>It is not an update screen either. Updating the platform is a deployment
+task, done outside the administrator interface; what this screen offers is
+<strong>Refresh Cache</strong>, which re-reads manifests, and the migration runner.</p>
+<p>The screen has three tabs:</p>
+<table>
+<thead>
+<tr>
+<th>Tab</th>
+<th>Controller</th>
+<th>What it holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hubzero Core</strong></td>
+<td><code>manage</code></td>
+<td>Every extension shipped with the platform</td>
+</tr>
+<tr>
+<td><strong>Custom Extensions</strong></td>
+<td><code>customexts</code></td>
+<td>Extensions this hub installed from git</td>
+</tr>
+<tr>
+<td><strong>Warnings</strong></td>
+<td><code>warnings</code></td>
+<td>Checks on the server's PHP settings</td>
+</tr>
+</tbody>
+</table>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Do not go by documentation written for other content management
+systems, or by Hubzero documentation older than 2.4. There are no
+<strong>Install</strong>, <strong>Update</strong>, <strong>Discover</strong> or <strong>Database</strong> screens: those controllers were removed, and only some orphaned language
+strings remain. Core extensions come with the code; a hub's own come from
+git through <strong>Custom Extensions</strong>.</p>
+</aside>
+<h2 id="hubzero-core">Hubzero Core</h2>
+<p>This tab lists the platform's own extensions. They can be disabled and
+re-enabled, but never installed or removed from here — they come and go with
+the codebase. A core extension can be overridden by putting a replacement of
+the same name under <code>app/</code>.</p>
+<p>Columns: <strong>Name</strong>, <strong>Location</strong> (Site or Administrator), <strong>Status</strong>, <strong>Type</strong>,
+<strong>Version</strong>, <strong>Date</strong>, <strong>Author</strong>, <strong>Folder</strong> (plugins only) and <strong>ID</strong>. The
+Name, Location, Status, Type, Folder and ID columns sort.</p>
+<p>Filters: a search box and drop-downs for location, status
+(Enabled / Disabled / Protected), type and folder.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The search matches the stored extension name, which for most core
+extensions is a language key such as <code>com_modules</code>, <code>mod_login</code> or
+<code>plg_content_loadmodule</code>, not the label shown in the list. Search for a word
+from the key, or use <code>id:</code> followed by an extension id. Filtering by
+<strong>Type</strong> is usually quicker.</p>
+</aside>
+<h3 id="toolbar">Toolbar</h3>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Enable</strong> / <strong>Disable</strong></td>
+<td>Changes the state of the selected extensions.</td>
+</tr>
+<tr>
+<td><strong>Refresh Cache</strong></td>
+<td>Re-reads the selected extensions' XML manifests. Useful after editing one.</td>
+</tr>
+<tr>
+<td><strong>Options</strong></td>
+<td>Component settings and permissions.</td>
+</tr>
+<tr>
+<td><strong>Help</strong></td>
+<td>Opens the built-in help screen.</td>
+</tr>
+</tbody>
+</table>
+<p>There is no <strong>Uninstall</strong> button; it is commented out in the view. Names in
+this list are not links — there is nothing to edit. Extensions marked
+protected are highlighted but can still be disabled; the only thing the
+component refuses to disable is the default template.</p>
+<p>To enable or disable a core extension:</p>
+<ol>
+<li>Go to <strong>Extensions</strong> → <strong>Extension Manager</strong>.</li>
+<li>Stay on <strong>Hubzero Core</strong>, and find the extension with the search box or the
+<strong>Type</strong> filter.</li>
+<li>Tick it and select <strong>Enable</strong> or <strong>Disable</strong>.</li>
+</ol>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Disabling a component here removes it everywhere, including from
+the administrator menu. Disabling a module type stops every instance of it
+from rendering, whatever the <a href="../modules/index.html">Module Manager</a> says.</p>
+</aside>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> The only thing the component refuses to disable is a
+template that is currently the default. Everything else can be switched
+off, including the components the administrator interface itself is built
+from. Disabling <code>com_installer</code> removes this screen, and this screen is the
+only way to switch it back on; recovery is an edit to the <code>#__extensions</code>
+table. Read the <strong>Name</strong> column before you tick anything — and note that
+what it shows is a translated label, so check the row is the extension you
+meant.</p>
+</aside>
+<p>Disabling is otherwise reversible and reasonably safe to try: nothing is
+deleted, no data is touched, and re-enabling puts everything back. What it
+does do is take a feature away from everybody using the hub at that moment,
+without warning them.</p>
+<h3 id="core-migrations">Core Migrations</h3>
+<p>A second navigation strip inside this tab leads to <strong>Core Migrations</strong>, which
+lists the platform's database migration files and their status. Its toolbar
+offers <strong>Run pending migrations</strong>, and, per selected file, <strong>Force run UP on
+selected migrations</strong> and <strong>Force run DOWN on selected migrations</strong>.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Forcing a migration up or down runs schema changes against the
+live database. Take a backup first.</p>
+</aside>
+<h2 id="custom-extensions">Custom Extensions</h2>
+<p>A custom extension is code this hub adds to <code>app/</code>, installed and updated by
+cloning a git repository. The repository must lay its files out the way the
+platform expects for the chosen extension type; the <code>non-standard</code> type drops
+the repository's contents into <code>app/</code> as they are.</p>
+<p>This is how a hub gets something the platform does not ship: a component
+written for one research group, a plugin that talks to a local instrument, a
+template of the hub's own. It is also how that code is kept up to date
+afterwards, which is the part worth planning for. The update button merges
+new commits into the running hub's filesystem — there is no staging copy,
+no test run, and no undo on this screen. Whoever maintains the repository is
+in effect deploying to production every time you press it, so agree with them
+how a change gets tested before it is tagged.</p>
+<p>Columns: <strong>Name</strong>, <strong>Status</strong>, <strong>Location</strong>, <strong>Type</strong>, <strong>Folder</strong>,
+<strong>Modified on</strong>, <strong>Modified by</strong> and <strong>ID</strong>.</p>
+<h3 id="toolbar-2">Toolbar</h3>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>New</strong></td>
+<td>Opens an empty extension record.</td>
+</tr>
+<tr>
+<td><strong>Edit</strong></td>
+<td>Opens the selected record.</td>
+</tr>
+<tr>
+<td><strong>Delete</strong></td>
+<td>Removes the record, after a confirmation.</td>
+</tr>
+<tr>
+<td><strong>Enable</strong> / <strong>Disable</strong></td>
+<td>Changes the state of the selected extensions.</td>
+</tr>
+<tr>
+<td><strong>Update Selected Custom Extensions</strong></td>
+<td>Fetches from git and offers to merge.</td>
+</tr>
+<tr>
+<td><strong>Help</strong></td>
+<td>Opens the built-in help screen.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-form">The form</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>GIT HTTPS URL</strong></td>
+<td>Required. The full HTTPS clone URL, ending in <code>.git</code>.</td>
+</tr>
+<tr>
+<td><strong>Name</strong></td>
+<td>Required. A title for the extension.</td>
+</tr>
+<tr>
+<td><strong>Alias</strong></td>
+<td>Required. The directory name to create, including any <code>com_</code> or <code>mod_</code> prefix.</td>
+</tr>
+<tr>
+<td><strong>Type</strong></td>
+<td>Required. One of <code>component</code>, <code>language</code>, <code>library</code>, <code>module</code>, <code>plugin</code>, <code>template</code>, <code>non-standard</code>.</td>
+</tr>
+<tr>
+<td><strong>Folder (Plugins Only)</strong></td>
+<td>The plugin group to install into, for <code>plugin</code> extensions.</td>
+</tr>
+<tr>
+<td><strong>Description</strong></td>
+<td>Free text.</td>
+</tr>
+<tr>
+<td><strong>GIT Personal Access Token</strong></td>
+<td>Needed only for a private repository.</td>
+</tr>
+<tr>
+<td><strong>GIT Branch</strong></td>
+<td>The branch to install, in the form <code>origin/main</code>. Blank uses the repository's default branch.</td>
+</tr>
+<tr>
+<td><strong>Location (Legacy)</strong></td>
+<td>Site or Administrator. Only relevant to very old extensions.</td>
+</tr>
+</tbody>
+</table>
+<p>To add one:</p>
+<ol>
+<li>Go to <strong>Extensions</strong> → <strong>Extension Manager</strong> → <strong>Custom Extensions</strong>.</li>
+<li>Select <strong>New</strong>.</li>
+<li>Fill in the form.</li>
+<li>Select <strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>Editing works the same way: tick the row, select <strong>Edit</strong>, change the form,
+<strong>Save &amp; Close</strong>. Enabling and disabling work as they do on the Hubzero Core
+tab.</p>
+<p><img src="../../media/extension-manager-extman1.png" alt="The custom extension form, with each field annotated" /></p>
+<p><img src="../../media/extension-manager-extman3.png" alt="The Type drop-down open, listing the extension types" /></p>
+<p><img src="../../media/extension-manager-extman2.png" alt="The Folder drop-down open, listing the plugin groups" /></p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> These three images are out of date. The form now also has a
+<strong>GIT Branch</strong> field, and what they label <em>GIT API Key</em> is now
+<strong>GIT Personal Access Token</strong>.</p>
+</aside>
+<h3 id="installing-and-updating-the-code">Installing and updating the code</h3>
+<p>Saving a record does not fetch anything. The code is pulled by the update
+button.</p>
+<ol>
+<li>
+<p>Tick the extension on the <strong>Custom Extensions</strong> tab.</p>
+</li>
+<li>
+<p>Select <strong>Update Selected Custom Extensions</strong>.</p>
+<p><img src="../../media/extension-manager-extman4.png" alt="The update button in the Custom Extensions toolbar" /></p>
+</li>
+<li>
+<p>Hubzero clones the repository if it has not been cloned, or fetches it if
+it has, and lists the incoming commits. Select <strong>Merge Code</strong> to apply
+them.</p>
+<p><img src="../../media/extension-manager-extman5.png" alt="The list of incoming commits with the Merge Code button" /></p>
+</li>
+<li>
+<p>A confirmation screen reports what was merged.</p>
+<p><img src="../../media/extension-manager-extman6.png" alt="The confirmation that the code was updated" /></p>
+</li>
+</ol>
+<h2 id="warnings">Warnings</h2>
+<p>This tab is the first place to look when uploads fail, images do not appear,
+or a file that is obviously small is rejected as too large. It reports on the
+server rather than on the hub, so nothing here is something you fix from the
+administrator interface — each item is a change to PHP's configuration or to
+what is installed on the machine, for whoever has that access.</p>
+<p>It runs a set of checks against the PHP configuration and lists anything it
+does not like, each as an expandable panel. It checks that:</p>
+<ul>
+<li>file uploads are enabled;</li>
+<li><code>upload_tmp_dir</code> is set and writable;</li>
+<li>the hub's temporary path is set and writable;</li>
+<li><code>memory_limit</code> is at least 16 MB;</li>
+<li><code>post_max_size</code> is not smaller than <code>upload_max_filesize</code>;</li>
+<li><code>post_max_size</code> and <code>upload_max_filesize</code> are each at least 4 MB;</li>
+<li>the Imagick extension is loaded;</li>
+<li><code>/usr/bin/unzip</code> exists.</li>
+</ul>
+<p>If nothing is wrong the tab says so.</p>
+<h2 id="options">Options</h2>
+<p><strong>Options</strong> holds a cache timeout for the extension list and the name of the
+system user that runs git operations, plus a permissions tab. See
+<a href="../../../reference/configuration/components/installer/index.html">the generated reference</a>.</p>
+<h2 id="composer-packages">Composer packages</h2>
+<p>The component also carries two screens for installing PHP packages with
+Composer — a package list and a repository list. Neither is linked from the
+Extension Manager's navigation, and both need an <code>app/composer.json</code> before
+they will do anything. They are also incomplete: their language strings are
+missing, so they render raw keys such as <code>COM_INSTALLER_TITLE_PACKAGES</code>
+instead of labels. Treat them as unfinished.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../plugins/index.html" rel="prev"><span>Previous</span>Plug-in Manager</a><a class="pager__next" href="../../spam/index.html" rel="next"><span>Next</span>Spam</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/10-extensions/04-extension-manager.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

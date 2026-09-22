@@ -15,6 +15,7 @@ use Request;
 use Route;
 use Lang;
 use App;
+use Config;
 
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'asset.php';
 
@@ -86,8 +87,17 @@ class Assets extends AdminController
 		$tbl = new Tables\Asset($this->database);
 		// print_r($this->view->filters);
 
+		// A scope id of 0 here means "every scope", but the table now reads a
+		// zero as "match nothing", so drop the key instead of passing it.
+		$where = $this->view->filters;
+
+		if (empty($where['asset_scope_id']))
+		{
+			unset($where['asset_scope_id']);
+		}
+
 		$rows = $tbl->find(array(
-			'w' => $this->view->filters
+			'w' => $where
 		));
 
 		// print_r($rows);
@@ -376,26 +386,18 @@ class Assets extends AdminController
 			{
 				if (strtolower($ext) == 'zip')
 				{
-					require_once PATH_CORE . DS . 'includes' . DS . 'pcl' . DS . 'pclzip.lib.php';
+					$zip = new \ZipArchive();
 
-					if (!extension_loaded('zlib'))
+					if ($zip->open($path . DS . $file['name']) !== true)
 					{
-						$this->setError(Lang::txt('ZLIB_PACKAGE_REQUIRED'));
+						$this->setError(Lang::txt('UNABLE_TO_EXTRACT_PACKAGE'));
 					}
 					else
 					{
-						$zip = new PclZip($path . DS . $file['name']);
-
-						// unzip the file
-						if (!($do = $zip->extract($path)))
-						{
-							$this->setError(Lang::txt('UNABLE_TO_EXTRACT_PACKAGE'));
-						}
-						else
-						{
-							@unlink($path . DS . $file['name']);
-							$file['name'] = 'presentation.json';
-						}
+						$zip->extractTo($path);
+						$zip->close();
+						@unlink($path . DS . $file['name']);
+						$file['name'] = 'presentation.json';
 					}
 				}
 

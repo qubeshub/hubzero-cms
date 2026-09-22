@@ -16,6 +16,7 @@ use Exception;
 use Request;
 use Plugin;
 use Lang;
+use Component;
 
 require_once dirname(__DIR__) . DS . 'tables' . DS . 'repo.php';
 require_once dirname(__DIR__) . DS . 'helpers' . DS . 'githelper.php';
@@ -918,6 +919,21 @@ class Repo extends Obj
 		$dirPath     = isset($params['subdir']) ? $params['subdir'] : null;
 		$available   = $this->getAvailableDiskSpace();
 
+		// A file is written under this subdir with move_uploaded_file/copy,
+		// outside any filesystem adapter. Callers should confine the value, but
+		// this is the one point every upload passes through, so refuse a subdir
+		// that escapes the repo here too rather than trust each of them.
+		if ($dirPath !== null && $dirPath !== '')
+		{
+			$dirPath = \Hubzero\Filesystem\SafePath::relative($dirPath);
+			if ($dirPath === false)
+			{
+				$this->setError(Lang::txt('COM_PROJECTS_FILES_ERROR_INVALID_PATH'));
+				return false;
+			}
+			$params['subdir'] = $dirPath;
+		}
+
 		// Collector
 		$results = array(
 			'uploaded' => array(),
@@ -1252,7 +1268,7 @@ class Repo extends Obj
 			try
 			{
 				chdir($tempPath);
-				exec('tar zxvf ' . $tmp_name . ' -C ' . $extractPath . ' 2>&1', $out);
+				exec('tar zxvf ' . escapeshellarg($tmp_name) . ' -C ' . escapeshellarg($extractPath) . ' 2>&1', $out);
 			}
 			catch (Exception $e)
 			{
@@ -1269,10 +1285,10 @@ class Repo extends Obj
 			If no directory is found, create a unique one for the project to contain the files.
 			***/
 			$matches = [];
-			$firstArchiveEntry = shell_exec("unzip -qql " .  $tmp_name . " | head -n1 | tr -s ' ' | cut -d' ' -f5-");
-			preg_match("/(^.*?\/)/", $firstArchiveEntry, $matches);
+			$firstArchiveEntry = shell_exec("unzip -qql " . escapeshellarg($tmp_name) . " | head -n1 | tr -s ' ' | cut -d' ' -f5-");
+			preg_match("/(^.*?\/)/", (string) $firstArchiveEntry, $matches);
 
-			$topLevelDirectory = isset($matches[0]) ? $matches[0] : $firstArchiveEntry;
+			$topLevelDirectory = $matches[0] ?? (string) $firstArchiveEntry;
 
 			if (strpos($topLevelDirectory, '.') !== false)
 			{
@@ -1309,20 +1325,60 @@ class Repo extends Obj
 		$extracted = Filesystem::files($extractPath, '.', true, true,
 			$exclude = array('.svn', 'CVS', '.DS_Store', '__MACOSX'));
 
-		// check for viruses - scans the directory for efficiency
-		$command = "clamscan -i --no-summary --block-encrypted -r " . $extractPath;
+		// Check for viruses — recursive scan over the extracted dir is
+		// much faster than per-file scans, especially with stand-alone
+		// clamscan (which loads its database every invocation).
+		//
+		// Use the configured virus_scanner so admins can switch between
+		// clamscan and clamdscan without touching code, and append -r so
+		// the scanner walks the directory. Fail closed on any non-zero
+		// exit: 1 means a virus was found, anything else means the scan
+		// did not complete (missing binary/DB, clamd unreachable, ...) --
+		// in neither case can we assert the files are clean. Give the two
+		// cases distinct user-facing messages and log loudly (previously
+		// any non-zero was reported as "a virus," which hid real scan
+		// failures and confused users whose files were actually clean).
+		$scanner = trim(\App::get('config')->get(
+			'virus_scanner',
+			'clamscan -i --no-summary --block-encrypted'
+		));
+		$command = $scanner . ' -r ' . escapeshellarg($extractPath) . ' 2>&1';
+		$output = [];
+		$virus_status = 0;
 		exec($command, $output, $virus_status);
-		$virusChecked = false;
+		$virusChecked = ($virus_status === 0);
 
-		if ($virus_status == 0)
-		{
-		  $virusChecked = true;
-		}
-		else
+		if (!$virusChecked)
 		{
 			Filesystem::deleteDirectory($extractPath);
-		  $this->setError('The antivirus software has rejected your files.');
-		  return false;
+
+			if ($virus_status === 1)
+			{
+				error_log(sprintf(
+					'%s: virus detected in extracted archive (rejecting upload). '
+					. 'Scanner "%s". Output: %s',
+					__METHOD__,
+					$scanner,
+					implode(' | ', $output)
+				));
+				$this->setError(Lang::txt('COM_PROJECTS_FILES_ERROR_VIRUS'));
+			}
+			else
+			{
+				// The scan did not run to completion -- make the real reason
+				// loud in the log instead of the misleading "virus detected".
+				error_log(sprintf(
+					'%s: virus scanner "%s" exited with status %d while '
+					. 'scanning extracted archive (rejecting upload). Output: %s',
+					__METHOD__,
+					$scanner,
+					$virus_status,
+					implode(' | ', $output)
+				));
+				$this->setError(Lang::txt('COM_PROJECTS_FILES_ERROR_VIRUS_SCAN_FAILED'));
+			}
+
+			return false;
 		}
 
 		$z = 0;

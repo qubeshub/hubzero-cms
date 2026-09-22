@@ -635,14 +635,33 @@ class plgProjectsDatabases extends \Hubzero\Plugin\Plugin
 			$path .= DS . $dir;
 		}
 
-		if (file_exists($path . DS . $file) && ($handle = fopen($path . '/' . $file, "r")) !== false)
+		// Confine the requested file to the project repository: resolve it and
+		// verify it still sits under the repo root before opening it.
+		$repoReal   = realpath(\Components\Projects\Helpers\Html::getProjectRepoPath($this->model->get('alias')));
+		$targetReal = realpath($path . DS . $file);
+		if ($repoReal === false || $targetReal === false
+			|| strpos($targetReal, $repoReal . DS) !== 0)
+		{
+			echo json_encode(array('status' => 'failed', 'msg' => Lang::txt('PLG_PROJECTS_DATABASES_INVALID_FILE')));
+			return;
+		}
+
+		if (file_exists($targetReal) && ($handle = fopen($targetReal, "r")) !== false)
 		{
 			$table = array();
 			$dd = array();
 
 			$sub_dirs = array();
 			$list = array();
-			chdir($path);
+			// The directory itself came from the request too; only list inside
+			// the project repository
+			$dirReal = realpath($path);
+			if ($dirReal === false || strpos($dirReal . DS, $repoReal . DS) !== 0)
+			{
+				echo json_encode(array('status' => 'failed', 'msg' => Lang::txt('PLG_PROJECTS_DATABASES_INVALID_FILE')));
+				return;
+			}
+			chdir($dirReal);
 			exec('find . -type d -not \( -name ".?*" -prune \)', $list);
 			foreach ($list as $d)
 			{
@@ -951,7 +970,18 @@ class plgProjectsDatabases extends \Hubzero\Plugin\Plugin
 
 		$table['cols'][] = '__ds_rec_id int(11) NOT NULL AUTO_INCREMENT NOT NULL';
 
-		if (file_exists($path . DS . $file) && ($handle = fopen($path . DS . $file, "r")) !== false)
+		// Confine the source file to this project's repository (as the preview
+		// action does): the path above is built straight from the request
+		$repoReal   = realpath(\Components\Projects\Helpers\Html::getProjectRepoPath($this->model->get('alias')));
+		$targetReal = realpath($path . DS . $file);
+		if ($repoReal === false || $targetReal === false
+			|| strpos($targetReal, $repoReal . DS) !== 0)
+		{
+			echo json_encode(array('status' => 'failed', 'msg' => Lang::txt('PLG_PROJECTS_DATABASES_INVALID_FILE')));
+			return;
+		}
+
+		if (file_exists($targetReal) && ($handle = fopen($targetReal, "r")) !== false)
 		{
 
 			// Check if expert mode CSV
@@ -1172,7 +1202,19 @@ class plgProjectsDatabases extends \Hubzero\Plugin\Plugin
 			$header[2] = array('DATASTART');
 
 			$path .= $dir;
-			$fp = fopen($path . $file, 'w+');
+
+			// The stored dir/file originally came from a request: confine the
+			// target to this project's repository before writing and committing
+			$repoReal   = realpath(\Components\Projects\Helpers\Html::getProjectRepoPath($this->model->get('alias')));
+			$targetReal = realpath($path . $file);
+			$dirReal    = realpath($path);
+			if ($repoReal === false || $targetReal === false || $dirReal === false
+				|| strpos($targetReal, $repoReal . DS) !== 0
+				|| strpos($dirReal . DS, $repoReal . DS) !== 0)
+			{
+				return false;
+			}
+			$fp = fopen($targetReal, 'w+');
 			foreach ($header as $h)
 			{
 				fputcsv($fp, $h);
@@ -1190,14 +1232,14 @@ class plgProjectsDatabases extends \Hubzero\Plugin\Plugin
 			fclose($fp);
 
 			// Commit update file
-			$commit_message = Lang::txt('PLG_PROJECTS_DATABASES_UPDATED_FILE') . ' ' . escapeshellarg($file);
-			$author = escapeshellarg(User::get('name') . ' <' . User::get('email') . '> ');
+			$commit_message = Lang::txt('PLG_PROJECTS_DATABASES_UPDATED_FILE') . ' ' . $file;
+			$author = User::get('name') . ' <' . User::get('email') . '> ';
 
-			chdir($path);
+			chdir($dirReal);
 			exec($this->gitpath . ' add ' . escapeshellarg($file));
 			exec($this->gitpath . ' commit ' . escapeshellarg($file)
-				. ' -m "' . $commit_message . '"'
-				. ' --author="' . $author . '" 2>&1');
+				. ' -m ' . escapeshellarg($commit_message)
+				. ' --author=' . escapeshellarg($author) . ' 2>&1');
 
 			$hash = \Hubzero\Utility\Date::of()->toUnix(); // Use the current time as a hash
 			$objPD->source_revision = $hash;

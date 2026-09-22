@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pegasus workflow submission · Tools · Hubzero Documentation</title>
+  <meta name="description" content="can run a workflow through Pegasus . Two cases are supported: workflows generates for you from a parameter sweep, and workflows you build yourself. In both,…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/tools/developers/grid/pegasuswf/">
+  <link rel="icon" href="../../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../../index.html">
+      <img class="brand__mark" src="../../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../../search-index.json" data-base="../../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../../docs/index.html">About</a>
+      <a href="../../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../../index.html">Tools</a>
+        <nav aria-label="Tools contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../administrators/index.html">Tool administrators</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../../index.html">Tool developers</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../toolrepostructure/index.html">Tool repository structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../overview/index.html">What you can publish as a tool</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../invoke/index.html">Launching tools with invoke scripts</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../nanowhim/index.html">Combining tools in one session</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Accessing outside computing resources</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../submitcmd/index.html">Submit command</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Pegasus workflow submission</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#parameter-sweeps">Parameter sweeps</a></li>
+<li class="toc__item toc__item--l2"><a href="#workflows-you-build-yourself">Workflows you build yourself</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../rappture-submit/index.html">Submitting from a Rappture tool</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../jupyter-submit/index.html">Submitting from a Jupyter notebook</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../accesshomedir/index.html">Accessing your home directory</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../toolpaths/index.html">Tool paths</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../toolpaths/toolenvvars/index.html">Environment variables</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../toolpaths/toolpathsinvoke/index.html">Passing path variables with the invoke script</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../toolpaths/toolpathexamples/index.html">Example files</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../toolpaths/toolpathsresults/index.html">Tool generated files</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../fileinout/index.html">Getting files in and out of a tool session</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../largedatapaths/index.html">Large data paths</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../jupyter-notebooks/index.html">Jupyter notebooks</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../jupyter-notebooks/jupyter-deployment-styles/index.html">Deployment styles</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../jupyter-notebooks/pyton-from-jupyter/index.html">Using Python packages from Jupyter notebooks</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../jupyter-notebooks/testing-jupyter/index.html">Testing a Jupyter tool</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../jupyter-notebooks/environment-variables/index.html">Environment variables in a notebook</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../jupyter-notebooks/invoke-jupyter/index.html">Invoke scripts for Jupyter notebooks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../prerequisites/index.html">Prerequisites</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../process/index.html">The contribution process</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../users/index.html">Tool users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../users/introduction/index.html">Introduction</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/simusagedefinitions/index.html">Simulation usage definitions</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/gettingstarted/index.html">Getting started</a></li>
+</ul></details></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../../index.html">Tools</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Tool developers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Accessing outside computing resources</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Pegasus workflow submission</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Tools</p>
+          <h1>Pegasus workflow submission</h1>
+        </header>
+        
+        <div class="prose">
+<p><code>submit</code> can run a workflow through
+<a href="https://pegasus.isi.edu">Pegasus</a>. Two cases are supported: workflows
+<code>submit</code> generates for you from a parameter sweep, and workflows you build
+yourself. In both, <code>submit</code> configures access to the computational
+resources, so you do not have to supply a site catalog.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> <code>submit</code> and its Pegasus integration belong to the tool
+execution platform, which is separate software and is <strong>not in this
+repository</strong>. Nothing here could be checked against the code, and the
+Pegasus release a hub runs could not be established either. Pegasus has
+changed how workflows are described and planned since this material was
+written, so check <code>pegasus-plan --help</code> and the Pegasus documentation for
+your hub's version before writing a workflow against the syntax below.</p>
+</aside>
+<h2 id="parameter-sweeps">Parameter sweeps</h2>
+<p>The <code>-p</code>/<code>--parameters</code> and <code>-d</code>/<code>--data</code> options describe a sweep
+compactly, so you do not have to generate the whole set of input files and
+command lines yourself. You declare substitutable parameters on the
+<code>submit</code> command line, and <code>submit</code> substitutes their values into data
+files and command arguments, covering every combination.</p>
+<p>Each combination is a node in a workflow and a job on the chosen resource.
+A curses interface shows the run's progress. The syntax is described under
+<a href="../submitcmd/index.html#parameter-sweeps">parameter sweeps</a>.</p>
+<h2 id="workflows-you-build-yourself">Workflows you build yourself</h2>
+<p>A sweep is a workflow of independent nodes: no data passes between them.
+When that is not enough, build the workflow yourself and wrap an
+application around it, letting the user supply the values that matter.</p>
+<p>Generate the abstract workflow description with one of the
+<a href="https://pegasus.isi.edu">Pegasus APIs</a>, then hand the resulting file to
+<code>submit</code>:</p>
+<pre><code class="language-text">submit pegasus-plan --dax daxFile
+</code></pre>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> <code>--dax</code> names the XML workflow description used by the
+Pegasus releases this page was written for. Later Pegasus releases
+changed both the workflow format and this option. Confirm what your
+hub's <code>pegasus-plan</code> accepts rather than copying the line as it stands.</p>
+</aside>
+<p>Where more than one venue can run Pegasus workflows, name the one you want;
+otherwise <code>submit</code> picks one at random.</p>
+<pre><code class="language-text">submit -v venueName pegasus-plan --dax daxFile
+</code></pre>
+<p><code>submit --help venues</code> lists the venues you may use. <code>submit</code> supplies
+several other <code>pegasus-plan</code> options itself, and reserves the right to
+ignore options you pass silently.</p>
+<p>A workflow can also run in the tool session itself, with <code>-l</code>/<code>--local</code>:</p>
+<pre><code class="language-text">submit --local pegasus-plan --dax daxFile
+</code></pre>
+<p>The hub's <code>use</code> command puts <code>pegasus-plan</code> and the other Pegasus commands
+on your <code>PATH</code>, and sets the other environment variables the Python and
+Java workflow APIs need.</p>
+
+        </div>
+        <p class="stamp">Reviewed against <code>2.4-main @ e097e0236d</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../submitcmd/index.html" rel="prev"><span>Previous</span>Submit command</a><a class="pager__next" href="../rappture-submit/index.html" rel="next"><span>Next</span>Submitting from a Rappture tool</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/tools/developers/05-grid/02-pegasuswf.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

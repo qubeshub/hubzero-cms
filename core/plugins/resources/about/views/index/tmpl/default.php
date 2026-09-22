@@ -89,7 +89,7 @@ $maintext = $this->model->description;
 			<div class="grid">
 				<div class="col span-half">
 		<?php } ?>
-					<h4><?php echo Lang::txt('PLG_RESOURCES_ABOUT_CATEGORY'); ?></h4>
+					<h3><?php echo Lang::txt('PLG_RESOURCES_ABOUT_CATEGORY'); ?></h3>
 					<p class="resource-content">
 						<a href="<?php echo Route::url('index.php?option=' . $this->option . '&type=' . $this->model->type->get('alias')); ?>">
 							<?php echo $this->escape(stripslashes($this->model->type->get('type'))); ?>
@@ -98,7 +98,7 @@ $maintext = $this->model->description;
 		<?php if ($thedate) { ?>
 				</div>
 				<div class="col span-half omega">
-					<h4><?php echo Lang::txt('PLG_RESOURCES_ABOUT_PUBLISHED_ON'); ?></h4>
+					<h3><?php echo Lang::txt('PLG_RESOURCES_ABOUT_PUBLISHED_ON'); ?></h3>
 					<p class="resource-content">
 						<time datetime="<?php echo $thedate; ?>"><?php echo Date::of($thedate)->toLocal(Lang::txt('DATE_FORMAT_HZ1')); ?></time>
 					</p>
@@ -107,13 +107,13 @@ $maintext = $this->model->description;
 		<?php } ?>
 
 		<?php if (!$this->model->access('view-all')) { // Protected - only show the introtext ?>
-			<h4><?php echo Lang::txt('PLG_RESOURCES_ABOUT_ABSTRACT'); ?></h4>
+			<h3><?php echo Lang::txt('PLG_RESOURCES_ABOUT_ABSTRACT'); ?></h3>
 			<div class="resource-content">
 				<?php echo $maintext; ?>
 			</div>
 		<?php } else { ?>
 			<?php if (trim($maintext)) { ?>
-				<h4><?php echo Lang::txt('PLG_RESOURCES_ABOUT_ABSTRACT'); ?></h4>
+				<h3><?php echo Lang::txt('PLG_RESOURCES_ABOUT_ABSTRACT'); ?></h3>
 				<div class="resource-content">
 					<?php echo $maintext; ?>
 				</div>
@@ -138,9 +138,17 @@ $maintext = $this->model->description;
 						else if ($elements->display($field->type, $data[$field->name]) && ((isset($field->display) && $field->display == $tab) || (!isset($field->display) && 'about' == $tab)))
 						{
 							?>
-							<h4><?php echo $field->label; ?></h4>
+							<h3><?php echo $field->label; ?></h3>
 							<div class="resource-content">
-								<?php echo $elements->display($field->type, $data[$field->name]); ?>
+								<?php
+								$fieldContent = $elements->display($field->type, $data[$field->name]);
+								// Wrap orphaned <li> items in <ul> for accessibility
+								if (preg_match('#<li\b#', $fieldContent) && !preg_match('#<[uo]l[\s>]#', $fieldContent))
+								{
+									$fieldContent = '<ul>' . $fieldContent . '</ul>';
+								}
+								echo $fieldContent;
+								?>
 							</div>
 							<?php
 						}
@@ -208,22 +216,25 @@ $maintext = $this->model->description;
 				?>
 
 				<?php if ($this->model->params->get('show_citation') == 3): ?>
-				<h4 id="citethis"><?php echo (isset($citations) && ($citations != null || $citations != '')) ? Lang::txt('PLG_RESOURCES_ABOUT_CITE_THIS') : ''; ?></h4>
-
-				<div class="resource-content">
-					<?php echo (isset($citations) && ($citations != null || $citations != '')) ? $citeinstruct : ''; ?>
-				</div>
+					<?php if (isset($citations) && ($citations != null || $citations != '')): ?>
+						<h3 id="citethis"><?php echo Lang::txt('PLG_RESOURCES_ABOUT_CITE_THIS'); ?></h3>
+						<div class="resource-content">
+							<?php echo $citeinstruct; ?>
+						</div>
+					<?php endif; ?>
 				<?php else: ?>
-					<h4><?php echo (isset($cite) && ($cite != null || $cite != '')) ? Lang::txt('PLG_RESOURCES_ABOUT_CITE_THIS') : ''; ?></h4>
-					<div class="resource-content">
-						<?php echo (isset($cite) && ($cite != null || $cite != '')) ? $citeinstruct : ''; ?>
-					</div>
+					<?php if (isset($cite) && ($cite != null || $cite != '')): ?>
+						<h3><?php echo Lang::txt('PLG_RESOURCES_ABOUT_CITE_THIS'); ?></h3>
+						<div class="resource-content">
+							<?php echo $citeinstruct; ?>
+						</div>
+					<?php endif; ?>
 				<?php endif; ?>
 			<?php } ?>
 		<?php } ?>
 
 		<?php if ($this->model->attribs->get('timeof', '')) { ?>
-			<h4><?php echo Lang::txt('PLG_RESOURCES_ABOUT_TIME'); ?></h4>
+			<h3><?php echo Lang::txt('PLG_RESOURCES_ABOUT_TIME'); ?></h3>
 			<p class="resource-content"><time><?php
 				// If the resource had a specific event date/time
 				if (substr($this->model->attribs->get('timeof', ''), -8, 8) == '00:00:00')
@@ -250,12 +261,12 @@ $maintext = $this->model->description;
 		<?php } ?>
 
 		<?php if ($this->model->attribs->get('location', '')) { ?>
-			<h4><?php echo Lang::txt('PLG_RESOURCES_ABOUT_LOCATION'); ?></h4>
+			<h3><?php echo Lang::txt('PLG_RESOURCES_ABOUT_LOCATION'); ?></h3>
 			<p class="resource-content"><?php echo $this->escape($this->model->attribs->get('location', '')); ?></p>
 		<?php } ?>
 
 		<?php if ($this->model->contributors('submitter')) { ?>
-			<h4><?php echo Lang::txt('PLG_RESOURCES_ABOUT_SUBMITTER'); ?></h4>
+			<h3><?php echo Lang::txt('PLG_RESOURCES_ABOUT_SUBMITTER'); ?></h3>
 			<div class="resource-content">
 				<div id="submitterlist">
 					<?php
@@ -276,7 +287,7 @@ $maintext = $this->model->description;
 
 			<?php if ($this->model->params->get('show_assocs')): ?>
 			<?php if ($this->tags->count()): ?>
-				<h4><?php echo Lang::txt('PLG_RESOURCES_ABOUT_TAGS'); ?></h4>
+				<h3><?php echo Lang::txt('PLG_RESOURCES_ABOUT_TAGS'); ?></h3>
 				<div class="resource-content">
 					<?php
 					$view = new Hubzero\Component\View(array(

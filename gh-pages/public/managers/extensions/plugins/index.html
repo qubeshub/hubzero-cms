@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plug-in Manager · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="A plugin is a piece of code that answers an event. The Plug-in Manager cannot install or delete plugins; it enables and disables them, sets their access level,…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/extensions/plugins/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Plug-in Manager</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#what-this-is-not">What this is not</a></li>
+<li class="toc__item toc__item--l2"><a href="#how-plugins-work">How plugins work</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-plugin-groups">The plugin groups</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-list">The list</a></li>
+<li class="toc__item toc__item--l2"><a href="#toolbar">Toolbar</a></li>
+<li class="toc__item toc__item--l2"><a href="#editing-a-plugin">Editing a plugin</a></li>
+<li class="toc__item toc__item--l2"><a href="#enabling-or-disabling-a-plugin">Enabling or disabling a plugin</a></li>
+<li class="toc__item toc__item--l2"><a href="#changing-the-order-plugins-run-in">Changing the order plugins run in</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Extensions</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Plug-in Manager</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Plug-in Manager</h1>
+        </header>
+        
+        <div class="prose">
+<p>A plugin is a piece of code that answers an event. The Plug-in Manager cannot
+install or delete plugins; it enables and disables them, sets their access
+level, changes the order they run in, and edits their parameters.</p>
+<p>Select <strong>Extensions</strong> → <strong>Plug-in Manager</strong>, or go to
+<code>/administrator/index.php?option=com_plugins</code>.</p>
+<p>Three hundred and thirty-two plugins ship with the platform, and a manager
+touches perhaps five of them in a year. You come here to switch on a way of
+signing in, to turn off a tab on group pages that your hub does not use, to
+enable a spam detector after a wave of junk postings, or to work out which
+plugin is responsible for something appearing on a page. Nothing here needs
+routine attention.</p>
+<p>This chapter covers state, access and order. A plugin's own parameters are
+covered in <a href="../../configuring/plugins/index.html">Plugins</a>.</p>
+<h2 id="what-this-is-not">What this is not</h2>
+<p>It is not an installer. There is no <strong>New</strong> and no <strong>Delete</strong>, and there
+never will be on this screen: plugins arrive and leave with the code.</p>
+<p>Disabling a plugin is also not a way to hide content. Turning off the plugin
+that supplies a tab removes the tab, not what is behind it; the records stay
+in the database and come back the moment the plugin is enabled again. That
+cuts both ways — it makes disabling safe to try, and it means disabling is
+not a way to make anything private.</p>
+<h2 id="how-plugins-work">How plugins work</h2>
+<p>Plugins live in <a href="https://github.com/hubzero/hubzero-cms/tree/2.4-main/core/plugins"><code>core/plugins/</code></a>, and a hub's own in
+<code>app/plugins/</code>, which takes precedence. Each plugin is a directory two levels
+down — <code>plugins/&lt;folder&gt;/&lt;name&gt;/</code> — containing <code>&lt;name&gt;.php</code> and
+<code>&lt;name&gt;.xml</code>. The folder is the plugin's group, and it decides which events
+the plugin can answer.</p>
+<p>When the platform reaches a point where extensions may contribute, it imports
+every enabled plugin in the relevant folder, in ordering order, and calls the
+matching method on each. A plugin in the <code>authentication</code> folder is asked to
+authenticate; one in <code>content</code> is given content to filter; one in <code>cron</code> is
+asked for scheduled jobs.</p>
+<p>Several folders work differently: instead of filtering something, the plugin
+<em>is</em> a whole section of a page. Every tab on a group, a member profile, a
+project, a resource or a publication is a plugin in the <code>groups</code>, <code>members</code>,
+<code>projects</code>, <code>resources</code> or <code>publications</code> folder. Disabling one removes that
+tab.</p>
+<h2 id="the-plugin-groups">The plugin groups</h2>
+<p>Thirty-seven folders ship with the platform, holding 332 plugins.</p>
+<table>
+<thead>
+<tr>
+<th>Folder</th>
+<th>Plugins</th>
+<th>What they do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>answers</code></td>
+<td>2</td>
+<td>Extras on question pages</td>
+</tr>
+<tr>
+<td><code>antispam</code></td>
+<td>6</td>
+<td>Spam detectors used when content is posted</td>
+</tr>
+<tr>
+<td><code>authentication</code></td>
+<td>13</td>
+<td>Log-in methods, local and third-party</td>
+</tr>
+<tr>
+<td><code>authfactors</code></td>
+<td>2</td>
+<td>Second factors for two-factor authentication</td>
+</tr>
+<tr>
+<td><code>blog</code></td>
+<td>2</td>
+<td>Blog entry extras</td>
+</tr>
+<tr>
+<td><code>captcha</code></td>
+<td>3</td>
+<td>Challenge widgets for forms</td>
+</tr>
+<tr>
+<td><code>cart</code></td>
+<td>3</td>
+<td>Store checkout steps</td>
+</tr>
+<tr>
+<td><code>citation</code></td>
+<td>4</td>
+<td>Citation formats and importers</td>
+</tr>
+<tr>
+<td><code>content</code></td>
+<td>13</td>
+<td>Filters applied to content as it is rendered</td>
+</tr>
+<tr>
+<td><code>courses</code></td>
+<td>14</td>
+<td>Course tabs and asset handlers</td>
+</tr>
+<tr>
+<td><code>cron</code></td>
+<td>14</td>
+<td>Scheduled jobs offered to the cron manager</td>
+</tr>
+<tr>
+<td><code>editors</code></td>
+<td>8</td>
+<td>WYSIWYG and plain editors</td>
+</tr>
+<tr>
+<td><code>editors-xtd</code></td>
+<td>4</td>
+<td>Buttons added below an editor</td>
+</tr>
+<tr>
+<td><code>extension</code></td>
+<td>1</td>
+<td>Installer support for legacy extension packages</td>
+</tr>
+<tr>
+<td><code>filesystem</code></td>
+<td>5</td>
+<td>Storage back ends for project files</td>
+</tr>
+<tr>
+<td><code>geocode</code></td>
+<td>15</td>
+<td>Address and coordinate lookup services</td>
+</tr>
+<tr>
+<td><code>groups</code></td>
+<td>18</td>
+<td>Tabs and features on group pages</td>
+</tr>
+<tr>
+<td><code>handlers</code></td>
+<td>8</td>
+<td>Viewers for published content: video, audio, PDF, LaTeX, notebooks</td>
+</tr>
+<tr>
+<td><code>hubzero</code></td>
+<td>5</td>
+<td>Shared services: comments, autocompleter, system templates and tickets</td>
+</tr>
+<tr>
+<td><code>members</code></td>
+<td>20</td>
+<td>Tabs and features on member profiles</td>
+</tr>
+<tr>
+<td><code>metadata</code></td>
+<td>1</td>
+<td>Metadata attached to content records</td>
+</tr>
+<tr>
+<td><code>newsletter</code></td>
+<td>3</td>
+<td>Newsletter composition and sending</td>
+</tr>
+<tr>
+<td><code>oaipmh</code></td>
+<td>2</td>
+<td>Records exposed over OAI-PMH</td>
+</tr>
+<tr>
+<td><code>projects</code></td>
+<td>11</td>
+<td>Tabs and features on projects</td>
+</tr>
+<tr>
+<td><code>publications</code></td>
+<td>17</td>
+<td>Publication tabs and curation steps</td>
+</tr>
+<tr>
+<td><code>resources</code></td>
+<td>22</td>
+<td>Resource tabs and features</td>
+</tr>
+<tr>
+<td><code>search</code></td>
+<td>26</td>
+<td>Indexers, one per searchable content type</td>
+</tr>
+<tr>
+<td><code>support</code></td>
+<td>13</td>
+<td>Ticket handling and support extras</td>
+</tr>
+<tr>
+<td><code>system</code></td>
+<td>29</td>
+<td>Code that runs on every request</td>
+</tr>
+<tr>
+<td><code>tags</code></td>
+<td>14</td>
+<td>Behaviour attached to tags</td>
+</tr>
+<tr>
+<td><code>tools</code></td>
+<td>1</td>
+<td>Tool session viewers</td>
+</tr>
+<tr>
+<td><code>update</code></td>
+<td>2</td>
+<td>Housekeeping run after an update</td>
+</tr>
+<tr>
+<td><code>usage</code></td>
+<td>7</td>
+<td>Usage statistics collectors</td>
+</tr>
+<tr>
+<td><code>user</code></td>
+<td>11</td>
+<td>Reactions to account creation, change and deletion</td>
+</tr>
+<tr>
+<td><code>whatsnew</code></td>
+<td>6</td>
+<td>Content types listed on the What's New page</td>
+</tr>
+<tr>
+<td><code>wiki</code></td>
+<td>4</td>
+<td>Wiki macros and parsers</td>
+</tr>
+<tr>
+<td><code>xmessage</code></td>
+<td>3</td>
+<td>Delivery channels for internal messages</td>
+</tr>
+</tbody>
+</table>
+<p>For the parameters each plugin exposes, see
+<a href="../../../reference/configuration/plugins/index.html">the generated plugin reference</a>.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> A plugin also has to be enabled as an <em>extension</em> before its row
+matters. The Extension Manager and the Plug-in Manager both write the same
+<code>enabled</code> flag on the same <code>#__extensions</code> row, so either screen will do.</p>
+</aside>
+<h2 id="the-list">The list</h2>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Checkbox</td>
+<td>Selects rows for the toolbar. A plugin whose files are missing has no checkbox.</td>
+</tr>
+<tr>
+<td><strong>Plug-in Name</strong></td>
+<td>The plugin's translated name, usually <em>Group - Name</em>, for example <em>Authentication - Facebook</em>. Click it to edit.</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Enabled or Disabled. Click the icon to toggle.</td>
+</tr>
+<tr>
+<td><strong>Ordering</strong></td>
+<td>The order plugins in the same folder run in.</td>
+</tr>
+<tr>
+<td><strong>Type</strong></td>
+<td>The plugin's folder — its group.</td>
+</tr>
+<tr>
+<td><strong>Element</strong></td>
+<td>The plugin's directory and file name.</td>
+</tr>
+<tr>
+<td><strong>Access</strong></td>
+<td>The access level required.</td>
+</tr>
+<tr>
+<td><strong>ID</strong></td>
+<td>The row's primary key.</td>
+</tr>
+</tbody>
+</table>
+<p>A plugin whose files are gone is shown with a marked row and forced to
+disabled.</p>
+<p>Three filters sit above the list, plus a search box. The search matches the
+stored name and the element, not the label in the <strong>Plug-in Name</strong> column;
+see the tip below.</p>
+<ul>
+<li><strong>- Select Status -</strong>: Enabled, Disabled.</li>
+<li><strong>- Select Type -</strong>: any folder that has plugins installed.</li>
+<li><strong>- Select Access -</strong>: any defined access level.</li>
+</ul>
+<h2 id="toolbar">Toolbar</h2>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Edit</strong></td>
+<td>Opens the selected plugin.</td>
+</tr>
+<tr>
+<td><strong>Enable</strong> / <strong>Disable</strong></td>
+<td>Changes the state of the selected plugins.</td>
+</tr>
+<tr>
+<td><strong>Check In</strong></td>
+<td>Releases plugins left checked out by an interrupted edit.</td>
+</tr>
+<tr>
+<td><strong>Options</strong></td>
+<td>Permissions for <code>com_plugins</code>. There are no other settings.</td>
+</tr>
+<tr>
+<td><strong>Help</strong></td>
+<td>Opens the built-in help screen.</td>
+</tr>
+</tbody>
+</table>
+<p>There is no <strong>New</strong> and no <strong>Delete</strong>. Plugins arrive and leave with the code.</p>
+<h2 id="editing-a-plugin">Editing a plugin</h2>
+<p>The edit screen has three editable fields:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Status</strong></td>
+<td>Enabled or Disabled.</td>
+</tr>
+<tr>
+<td><strong>Access</strong></td>
+<td>The access level required for the plugin to run for a given visitor.</td>
+</tr>
+<tr>
+<td><strong>Ordering</strong></td>
+<td>Where the plugin sits among the others in its folder.</td>
+</tr>
+</tbody>
+</table>
+<p>Beside them, read-only, are the plugin's name, ID, <strong>Type</strong> (its folder) and
+<strong>Element</strong>, and its description from the XML manifest. Below, the plugin's
+own parameters appear in collapsible panels. Many plugins have none.</p>
+<p>The toolbar is <strong>Save</strong>, <strong>Save &amp; Close</strong>, <strong>Close</strong> and <strong>Help</strong>.</p>
+<h2 id="enabling-or-disabling-a-plugin">Enabling or disabling a plugin</h2>
+<ol>
+<li>Go to <strong>Extensions</strong> → <strong>Plug-in Manager</strong>.</li>
+<li>Narrow the list with the <strong>- Select Type -</strong> filter or the search box.</li>
+<li>Tick the plugin, then select <strong>Enable</strong> or <strong>Disable</strong>. Clicking the icon
+in the <strong>Status</strong> column does the same thing for a single plugin.</li>
+</ol>
+<p>Disabling a plugin stops it running everywhere, front end and back end alike.
+If the plugin supplies a tab, that tab disappears.</p>
+<p>The change takes effect on the next request, for everyone, and it is
+reversible by enabling the plugin again — which makes this one of the safer
+screens in the book. Two groups are the exception:</p>
+<ul>
+<li><strong><code>authentication</code>.</strong> Disabling the wrong one of these locks people out of
+the hub, and disabling <strong>Authentication - HUBzero</strong> locks <em>everybody</em> out,
+including you. See
+<a href="../../configuring/authentication/index.html">Authentication</a> before you touch
+the group.</li>
+<li><strong><code>system</code>.</strong> These run on every request, and several of them are what make
+ordinary things work rather than adding a feature. Disable one only when
+you know what it does.</li>
+</ul>
+<aside class="admonition admonition--tip">
+<p><strong>Tip:</strong> Note the plugin's <strong>Element</strong> before you disable it. The search
+box does not match the translated name shown in the list. It matches the
+stored name — which for a core plugin is a language key such as
+<code>plg_content_loadmodule</code> — and the element. So <code>loadmodule</code> finds the
+Content - Load Module plugin and typing its displayed name does not. <code>id:</code>
+followed by an extension id works too, and filtering by
+<strong>- Select Type -</strong> is usually quicker than either.</p>
+</aside>
+<h2 id="changing-the-order-plugins-run-in">Changing the order plugins run in</h2>
+<p>Order matters inside a folder. Content plugins transform the same text one
+after another; authentication plugins are offered a log-in attempt in turn.</p>
+<ol>
+<li>Go to <strong>Extensions</strong> → <strong>Plug-in Manager</strong>.</li>
+<li>Filter by <strong>- Select Type -</strong> so you are looking at one group.</li>
+<li>Select the <strong>Ordering</strong> column heading to sort by it. The up and down
+arrows and the order boxes only work while the list is sorted this way.</li>
+<li>Move rows with the arrows, or type numbers into the boxes and select the
+save icon in the column heading.</li>
+</ol>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../templates/index.html" rel="prev"><span>Previous</span>Template Manager</a><a class="pager__next" href="../extension-manager/index.html" rel="next"><span>Next</span>Extension Manager</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/10-extensions/03-plugins.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

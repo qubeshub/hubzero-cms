@@ -125,7 +125,15 @@ class Newsletters extends SiteController
 		//are we trying to output the newsletter by itself?
 		if (Request::getInt('no_html', 0))
 		{
-			echo $newsletter;
+			$lang = Lang::getTag();
+			$title = is_object($current) ? htmlspecialchars($current->get('name', 'Newsletter')) : 'Newsletter';
+			// Make the fixed-width email HTML fit narrow (mobile) viewports inside
+			// the newsletter iframe: cap tables/images to the available width and
+			// let long words/URLs wrap, so the content reflows instead of forcing
+			// horizontal scrolling.
+			$responsive = '<meta name="viewport" content="width=device-width, initial-scale=1">'
+				. '<style>body{margin:0;padding:0}img{max-width:100%;height:auto}table{max-width:100%!important}td,th,p,a,li,div{overflow-wrap:break-word}</style>';
+			echo '<!DOCTYPE html><html lang="' . htmlspecialchars($lang) . '"><head><meta charset="utf-8">' . $responsive . '<title>' . $title . '</title></head><body><main><h1 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap">' . $title . '</h1>' . $newsletter . '</main></body></html>';
 			return;
 		}
 
@@ -189,28 +197,36 @@ class Newsletters extends SiteController
 			}
 		}
 
+		// Escape the URL and output path before they reach the shell
+		$escUrl = escapeshellarg($newsletterUrl);
+		$escPdf = escapeshellarg($newsletterPdf);
+
 		// check multiple places for wkhtmltopdf lib
 		// fallback on phantomjs
 		$cmd = '';
 		$fallback = '';
 		if (file_exists('/usr/bin/wkhtmltopdf') && file_exists('/usr/bin/xvfb-run'))
 		{
-			//$cmd = '/usr/bin/wkhtmltopdf ' . $newsletterUrl . ' ' . $newsletterPdf;
-			$cmd = '/usr/bin/xvfb-run -a -s "-screen 0 640x480x16" wkhtmltopdf ' . $newsletterUrl . ' ' . $newsletterPdf;
+			//$cmd = '/usr/bin/wkhtmltopdf ' . $escUrl . ' ' . $escPdf;
+			$cmd = '/usr/bin/xvfb-run -a -s "-screen 0 640x480x16" wkhtmltopdf ' . $escUrl . ' ' . $escPdf;
 		}
 		else if (file_exists('/usr/local/bin/wkhtmltopdf') && file_exists('/usr/local/bin/xvfb-run'))
 		{
-			//$cmd = '/usr/local/bin/wkhtmltopdf ' . $newsletterUrl . ' ' . $newsletterPdf;
-			$cmd = '/usr/local/bin/xvfb-run -a -s "-screen 0 640x480x16" wkhtmltopdf ' . $newsletterUrl . ' ' . $newsletterPdf;
+			//$cmd = '/usr/local/bin/wkhtmltopdf ' . $escUrl . ' ' . $escPdf;
+			$cmd = '/usr/local/bin/xvfb-run -a -s "-screen 0 640x480x16" wkhtmltopdf ' . $escUrl . ' ' . $escPdf;
 		}
 		else if (file_exists('/usr/local/bin/wkhtmltopdf'))
 		{
-			$cmd = '/usr/local/bin/wkhtmltopdf ' . $newsletterUrl . ' ' . $newsletterPdf;
+			$cmd = '/usr/local/bin/wkhtmltopdf ' . $escUrl . ' ' . $escPdf;
+		}
+		else if (file_exists('/opt/wkhtmltopdf/bin/wkhtmltopdf'))
+		{
+			$cmd = '/opt/wkhtmltopdf/bin/wkhtmltopdf ' . $escUrl . ' ' . $escPdf;
 		}
 		else if (file_exists('/usr/bin/phantomjs'))
 		{
 			$rasterizeFile = dirname(__DIR__) . DS . 'assets' . DS . 'js' . DS . 'rasterize.js';
-			$fallback = '/usr/bin/phantomjs --ssl-protocol=any --ignore-ssl-errors=yes --web-security=false ' . $rasterizeFile . ' ' . $newsletterUrl . ' ' . $newsletterPdf . ' 8.5in*11in';
+			$fallback = '/usr/bin/phantomjs --ssl-protocol=any --ignore-ssl-errors=yes --web-security=false ' . $rasterizeFile . ' ' . $escUrl . ' ' . $escPdf . ' 8.5in*11in';
 			if (!$cmd)
 			{
 				$cmd = $fallback;

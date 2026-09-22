@@ -30,7 +30,7 @@ use Closure;
  */
 
 /** @phpstan-consistent-constructor */
-class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
+class Relational implements \IteratorAggregate, \ArrayAccess
 {
 	/*
 	 * Errors trait for error message handling
@@ -284,8 +284,9 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 		$plural      = \Hubzero\Utility\Inflector::pluralize(strtolower($this->getModelName()));
 		$this->table = $this->table ?: '#__' . $namespace . $plural;
 
-		// Set up connection and query object
-		$this->newQuery();
+		// Note: Query object is now lazy-loaded to avoid database connection
+		// during construction. Methods that need the query check for null
+		// and call newQuery() if needed.
 
 		// Store methods for later
 		//
@@ -338,7 +339,11 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 			return $this->parse($name, (isset($arguments[0])) ? $arguments[0] : 'parsed');
 		}
 
-		// See if we need to call a query method
+		// See if we need to call a query method (lazy-load query if needed)
+		if ($this->query === null)
+		{
+			$this->newQuery();
+		}
 		if (in_array($name, get_class_methods($this->query)))
 		{
 			// @FIXME: hack to fully qualify field names in one location...is there a better way/location?
@@ -473,7 +478,10 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 **/
 	public function __clone()
 	{
-		$this->query = clone $this->query;
+		if ($this->query !== null)
+		{
+			$this->query = clone $this->query;
+		}
 	}
 
 	/**
@@ -588,8 +596,11 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 **/
 	public function purgeCache()
 	{
-		$query = $this->query;
-		$query::purgeCache();
+		if ($this->query === null)
+		{
+			$this->newQuery();
+		}
+		$this->query::purgeCache();
 
 		return $this;
 	}
@@ -1166,6 +1177,10 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	public function rows($parseIncludes = true)
 	{
 		// Fetch the results
+		if ($this->query === null)
+		{
+			$this->newQuery();
+		}
 		$rows = $this->rowsFromRaw($this->query->fetch('rows', $this->noCache));
 
 		if ($parseIncludes)
@@ -1191,6 +1206,10 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	 **/
 	public function row()
 	{
+		if ($this->query === null)
+		{
+			$this->newQuery();
+		}
 		$row = $this->query->fetch('row');
 
 		return ($row) ? self::newFromResults($row) : self::blank();
@@ -1306,7 +1325,39 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 	public static function one($id)
 	{
 		$instance = self::blank();
-		return $instance->whereEquals($instance->getPrimaryKey(), $id)->rows()->seek($id);
+		$rows     = $instance->whereEquals($instance->getPrimaryKey(), $id)->rows();
+		$row      = $rows->seek($id);
+
+		// Rows keys by the stored primary key and seek() is an exact array-key
+		// lookup, so an id the database matched loosely -- "0123", " 123",
+		// "+123", "1e2" -- misses here and a blank row is handed back. That
+		// turns the common
+		//
+		//     $row = Model::oneOrNew($posted['id']);
+		//     if (!$row->isNew()) { ...ownership check... }
+		//     $row->set($posted);
+		//
+		// idiom into a no-op: the check is skipped because the row looks new,
+		// then set() puts the id back and save() issues
+		// UPDATE ... WHERE id = '0123' against the row the database did match.
+		//
+		// Resolve whatever single row the database itself matched. Restricting
+		// this to is_numeric() ids is not enough: MySQL coerces "0123", " 123"
+		// and "123abc" alike, all three reach row 123, and only the first two
+		// are numeric. What matters is that the model handed to the caller is
+		// the same row a later UPDATE would land on -- resolving it can never
+		// expose a row the query did not already return.
+		if ($row === false && count($rows) === 1)
+		{
+			$only = $rows->first();
+
+			if ($only && $only->getPkValue())
+			{
+				$row = $only;
+			}
+		}
+
+		return $row;
 	}
 
 	/**
@@ -1477,7 +1528,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 
 		if (isset($columns[$col]))
 		{
-			return $column[$col]['default'];
+			return $columns[$col]['default'];
 		}
 
 		return null;
@@ -1496,6 +1547,10 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 
 		$data = $this->getTableColumnsOnly();
 
+		if ($this->query === null)
+		{
+			$this->newQuery();
+		}
 		return $this->query->push($this->getTableName(), $data);
 	}
 
@@ -1513,6 +1568,10 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 		$data = $this->getTableColumnsOnly();
 
 		// Return the result of the query
+		if ($this->query === null)
+		{
+			$this->newQuery();
+		}
 		return $this->query->alter(
 			$this->getTableName(),
 			$this->getPrimaryKey(),
@@ -1603,6 +1662,10 @@ class Relational implements \IteratorAggregate, \ArrayAccess, \Serializable
 
 		\Event::trigger('system.onContentDestroy', array($this->getTableName(), $this));
 
+		if ($this->query === null)
+		{
+			$this->newQuery();
+		}
 		return $this->query->remove(
 			$this->getTableName(),
 			$this->getPrimaryKey(),

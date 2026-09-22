@@ -28,6 +28,9 @@ use Event;
 use Lang;
 use User;
 use App;
+use Component;
+use Config;
+use Date;
 
 /**
  * Resources controller class
@@ -1083,21 +1086,32 @@ class Resources extends SiteController
 			App::abort(403, Lang::txt('COM_CONTRIBUTE_NOT_AUTH'));
 		}
 
-		// Check to see if we have a manifest
-		if (!$this->videoManifestExistsForResource($activechild))
+		// Load the manifest, rebuilding it from the filespace when it is missing or unusable
+		$manifest     = null;
+		$manifestPath = PATH_APP . $this->getVideoManifestForResource($activechild);
+
+		if (is_file($manifestPath))
 		{
-			$this->createVideoManifestForResource($activechild);
+			$manifest = json_decode(file_get_contents($manifestPath));
 		}
 
-		// Get manifest
-		$manifest = $this->getVideoManifestForResource($activechild);
+		if (!isset($manifest->presentation))
+		{
+			$manifest = $this->buildVideoManifestForResource($activechild);
 
-		if (!file_exists(PATH_APP . $manifest))
+			// Cache it for next time, but do not require the write to succeed - an
+			// unwritable filespace should not cost the user the player. An empty
+			// manifest is never cached, or it would mask files landing later.
+			if (count($manifest->presentation->media) > 0)
+			{
+				\Filesystem::write($manifestPath, json_encode($manifest, JSON_PRETTY_PRINT));
+			}
+		}
+
+		if (empty($manifest->presentation->media))
 		{
 			App::abort(404, Lang::txt('COM_RESOURCES_RESOURCE_NOT_FOUND'));
 		}
-
-		$manifest = json_decode(file_get_contents(PATH_APP . $manifest));
 
 		// Media tracking object
 		require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'mediatracking.php';
@@ -1155,6 +1169,7 @@ class Resources extends SiteController
 		$this->view->config   = $this->config;
 		$this->view->database = $this->database;
 		$this->view->resource = $activechild;
+		$this->view->parent   = $model;
 		$this->view->manifest = $manifest;
 
 		// Output HTML
@@ -1167,12 +1182,17 @@ class Resources extends SiteController
 	}
 
 	/**
-	 * Get Video Manifest for resource
+	 * Get the filespace holding a resource's video, relative to PATH_APP
 	 *
-	 * @param   object   $resource  HUB Resource
-	 * @return  boolean
+	 * Both the reader and the writer go through here. filespace() is not
+	 * interchangeable with it: that derives the directory from the created date
+	 * and a zero-padded id, which does not always agree with the path actually
+	 * stored on the attachment.
+	 *
+	 * @param   object  $resource  HUB Resource
+	 * @return  string
 	 */
-	private function getVideoManifestForResource($resource)
+	private function getVideoPathForResource($resource)
 	{
 		// Base url for the resource
 		$base = DS . trim($this->config->get('uploadpath'), DS);
@@ -1187,41 +1207,32 @@ class Resources extends SiteController
 		// Build the rest of the resource path and combine with base
 		$path = $path ? $path : $resource->relativepath();
 
-		// Get manifests
-		$manifests = \Filesystem::files(PATH_APP . DS . $base . $path, '.json');
-
-		// Return path to manifest if we have one
-		return (count($manifests) > 0) ? $base . $path . DS . $manifests[0] : array();
+		return $base . $path;
 	}
 
 	/**
-	 * Check for Video manifest file
+	 * Get the path to a resource's video manifest, relative to PATH_APP
 	 *
-	 * @param   object   $resource  HUB Resource
-	 * @return  boolean
-	 */
-	private function videoManifestExistsForResource($resource)
-	{
-		// Get video manifest
-		$manifest = $this->getVideoManifestForResource($resource);
-
-		// Do we have a manifest already?
-		return (!is_array($manifest) || count($manifest) < 1) ? false : true;
-	}
-
-	/**
-	 * Create manifest file for video
+	 * Named explicitly rather than taken as "the first .json in the directory" -
+	 * an unrelated sidecar would otherwise be loaded as the manifest.
 	 *
 	 * @param   object  $resource  HUB Resource
-	 * @return  boolean
+	 * @return  string
 	 */
-	private function createVideoManifestForResource($resource)
+	private function getVideoManifestForResource($resource)
 	{
-		//base url for the resource
-		//$base = DS . trim($this->config->get('uploadpath'), DS);
+		return $this->getVideoPathForResource($resource) . DS . 'presentation.json';
+	}
 
-		//build the rest of the resource path and combine with base
-		$path = $resource->filespace();
+	/**
+	 * Build a video manifest for a resource from the files in its filespace
+	 *
+	 * @param   object  $resource  HUB Resource
+	 * @return  object
+	 */
+	private function buildVideoManifestForResource($resource)
+	{
+		$path = PATH_APP . $this->getVideoPathForResource($resource);
 
 		//instantiate params object then parse resource attributes
 		$attributes = $resource->attribs;
@@ -1255,23 +1266,43 @@ class Resources extends SiteController
 			$manifest->presentation->media[] = $media;
 		}
 
-		//get the subs
-		$subtitles = \Filesystem::files($path, '.srt|.SRT');
+		//get the subs (SRT and VTT caption formats)
+		$subtitles = \Filesystem::files($path, '.srt|.SRT|.vtt|.VTT');
+
+		// Map of ISO 639-1 language codes to display names
+		$langNames = array(
+			'en' => 'English', 'es' => 'Spanish', 'fr' => 'French',
+			'de' => 'German', 'pt' => 'Portuguese', 'it' => 'Italian',
+			'zh' => 'Chinese', 'ja' => 'Japanese', 'ko' => 'Korean',
+			'ar' => 'Arabic', 'hi' => 'Hindi', 'ru' => 'Russian',
+		);
 
 		//add each subtitle to manifest
 		foreach ($subtitles as $k => $subtitle)
 		{
-			//get name
-			$info = pathinfo( $subtitle );
+			$info = pathinfo($subtitle);
+
+			// Parse language from filename convention: video.lang.vtt
+			// e.g. "ESI.en.vtt" → lang=en, "Spanish-auto.srt" → lang=Spanish
 			$name = str_replace('-auto', '', $info['filename']);
-			$name = ucfirst( $name );
+			$lang = '';
+			if (preg_match('/\.([a-z]{2,3})$/i', $info['filename'], $m))
+			{
+				$lang = strtolower($m[1]);
+				$name = isset($langNames[$lang]) ? $langNames[$lang] : ucfirst($lang);
+			}
+			else
+			{
+				$name = ucfirst($name);
+			}
 
 			// object to hold subtitle info
 			$sub = new stdClass;
-			$sub->type     = 'SRT';
+			$sub->type     = strtoupper($info['extension']);
 			$sub->name     = $name;
+			$sub->lang     = $lang ?: 'en';
 			$sub->source   = $path . DS . $subtitle;
-			$sub->autoplay = (strstr($subtitle, '-')) ? 1 : 0;
+			$sub->autoplay = (strstr($subtitle, '-auto') !== false || $lang === 'en') ? 1 : 0;
 
 			// add sub object to array of subtitles
 			$manifest->presentation->subtitles[] = $sub;
@@ -1281,16 +1312,7 @@ class Resources extends SiteController
 		$manifest->presentation->media     = array_values($manifest->presentation->media);
 		$manifest->presentation->subtitles = array_values($manifest->presentation->subtitles);
 
-		// json encode manifest
-		$manifest = json_encode($manifest, JSON_PRETTY_PRINT);
-
-		// attempt to create manifest file
-		if (!\Filesystem::write($path . DS . 'presentation.json', $manifest))
-		{
-			return false;
-		}
-
-		return true;
+		return $manifest;
 	}
 
 	/**
@@ -2399,6 +2421,11 @@ class Resources extends SiteController
 			}
 		}
 
+		if (!is_file($path) || !is_readable($path))
+		{       
+			App::abort(404, Lang::txt('COM_RESOURCES_FILE_NOT_FOUND') . ' ' . $path);
+		} 
+		
 		$ext = strtolower(\Filesystem::extension($path));
 
 		// Set disposition to attachment unless we think the browser can inline the file

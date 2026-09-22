@@ -8,6 +8,7 @@
 namespace Components\Resources\Helpers;
 
 use Components\Tags\Models\Cloud;
+use Route;
 
 require_once \Component::path('com_tags') . DS . 'models' . DS . 'cloud.php';
 
@@ -177,6 +178,16 @@ class Tags extends Cloud
 	public function get_objects_on_tag($tag='', $id=0, $type=0, $sortby='title', $tag2='', $filterby=array())
 	{
 		$now  = \Date::toSql();
+
+		// These reach the query as bare column names, so restrict them to the
+		// known set once, here. Filtering them further down instead left the
+		// enclosing !empty() test looking at the unfiltered array: a request
+		// whose every value was invalid passed the test, then built the empty
+		// " AND (() OR ())" and turned the page into a SQL syntax error.
+		$filterby = array_values(array_intersect(
+			(array) $filterby,
+			array('level0', 'level1', 'level2', 'level3', 'level4')
+		));
 
 		if ($tag || $tag2)
 		{
@@ -605,11 +616,11 @@ class Tags extends Cloud
 				if ($showsizes == 1)
 				{
 					$size = $min_font_size + ($tag->count - $min_qty) * $step;
-					$tll[$tag->tag] = "\t".'<li' . $class . '><span data-size="' . round($size, 1) . 'em"><a class="tag' . ($tag->admin ? ' admin' : '') . '" rel="nofollow"  href="' . Route::url('index.php?option=com_resources&task=browse&tag=' . implode(',', $lsst)) . '">' . stripslashes($tag->raw_tag) . '</a></li>' . "\n"; //' <span>' . $tag->count . '</span></a></span></li>' . "\n";
+					$tll[$tag->tag] = "\t".'<li' . $class . '><span data-size="' . round($size, 1) . 'em"><a class="tag' . ($tag->admin ? ' core' : '') . '" rel="nofollow"  href="' . Route::url('index.php?option=com_resources&task=browse&tag=' . implode(',', $lsst)) . '">' . stripslashes($tag->raw_tag) . '</a></li>' . "\n"; //' <span>' . $tag->count . '</span></a></span></li>' . "\n";
 				}
 				else
 				{
-					$tll[$tag->tag] = "\t".'<li' . $class . '><a class="tag' . ($tag->admin ? ' admin' : '') . '" rel="nofollow" href="' . urldecode(Route::url('index.php?option=com_resources&task=browse&tag=' . implode(',', $lsst))) . '">' . stripslashes($tag->raw_tag) . '</a></li>' . "\n"; //' <span>' . $tag->count . '</span></a></li>' . "\n";
+					$tll[$tag->tag] = "\t".'<li' . $class . '><a class="tag' . ($tag->admin ? ' core' : '') . '" rel="nofollow" href="' . urldecode(Route::url('index.php?option=com_resources&task=browse&tag=' . implode(',', $lsst))) . '">' . stripslashes($tag->raw_tag) . '</a></li>' . "\n"; //' <span>' . $tag->count . '</span></a></li>' . "\n";
 				}
 			}
 			if ($sort == 'alpha')

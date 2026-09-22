@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>External authenticators · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Single sign-on lets a member reach the hub with an identity someone else already manages — a campus login, a federation, a research identity service. The hub…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/configuring/extauth/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">External authenticators</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#what-this-costs-before-it-works">What this costs before it works</a></li>
+<li class="toc__item toc__item--l2"><a href="#cilogon">CILogon</a></li>
+<li class="toc__item toc__item--l2"><a href="#shibboleth">Shibboleth</a></li>
+<li class="toc__item toc__item--l2"><a href="#globus">Globus</a></li>
+<li class="toc__item toc__item--l2"><a href="#purdue-cas">Purdue CAS</a></li>
+</ol></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Configuring</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">External authenticators</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>External authenticators</h1>
+        </header>
+        
+        <div class="prose">
+<p>Single sign-on lets a member reach the hub with an identity someone else
+already manages — a campus login, a federation, a research identity service.
+The hub never sees or stores their password, they have one fewer to
+remember, and your help desk fields fewer password resets.</p>
+<p>This is the chapter for a hub that has to admit people it does not employ:
+collaborators at another university, a funder's review panel, students on a
+course run somewhere else. If everyone who uses your hub is already on your
+own staff list, the social providers in
+<a href="../authentication/index.html">Authentication</a> are easier and this chapter is not for
+you.</p>
+<h2 id="what-this-costs-before-it-works">What this costs before it works</h2>
+<p>None of these is a fifteen-minute job, and the reason is never the hub. Every
+one of them needs the hub registered with somebody else's identity service
+first, and that step is out of your hands:</p>
+<ul>
+<li>CILogon reviews each registration by hand.</li>
+<li>Shibboleth needs <code>mod_shib</code> installed and configured on the web server, and
+the hub added to a federation's metadata.</li>
+<li>Purdue CAS needs the hub registered with Purdue's identity office.</li>
+<li>Globus needs an application registered in Globus Auth.</li>
+</ul>
+<p>Start the registration before you plan the rest of the work, and expect the
+plugin itself to take minutes once the credentials arrive. When they do,
+enable the plugin the same way as any other — see
+<a href="../authentication/index.html">Authentication</a>.</p>
+<aside class="admonition admonition--tip">
+<p><strong>Tip:</strong> Test with a real account from the institution, borrowed for ten
+minutes from someone who has one. Every one of these plugins works by
+handing a visitor to a service you cannot log into yourself, and the
+failures — a scope that was not approved, an attribute that does not
+arrive, a callback URL that does not match — all look identical from your
+side of it. The Shibboleth plugin's <strong>Testing mode key</strong>, described below,
+exists so that you can do this without showing a half-finished provider to
+the whole hub.</p>
+</aside>
+<p>Four of the authentication plugins federate an external identity provider
+rather than talking to a single social network:</p>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Federates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Authentication - CILogon</strong></td>
+<td>CILogon, which fronts hundreds of campus and laboratory identity providers.</td>
+</tr>
+<tr>
+<td><strong>Authentication - Shibboleth</strong></td>
+<td>Shibboleth and InCommon, with the hub choosing which identity providers to offer.</td>
+</tr>
+<tr>
+<td><strong>Authentication - Globus</strong></td>
+<td>Globus Auth, which fronts campus logins and Globus identities.</td>
+</tr>
+<tr>
+<td><strong>Authentication - Purdue University CAS</strong></td>
+<td>Purdue's Central Authentication Service.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authentication - ORCID</strong> is close to these: it authenticates against a
+research identity rather than an institution.</p>
+<p>All of them are enabled the same way as any other authentication plugin —
+see <a href="../authentication/index.html">Authentication</a> — and their parameters are listed
+in the
+<a href="../../../reference/configuration/plugins/authentication/index.html">authentication plugin reference</a>.</p>
+<h2 id="cilogon">CILogon</h2>
+<p>Register the hub at <a href="https://cilogon.org/oauth2/register">https://cilogon.org/oauth2/register</a>:</p>
+<ol>
+<li>
+<p>Enter a <strong>Client Name</strong>, a <strong>Contact Email Address</strong>, and a home URL —
+the hub's own URL.</p>
+</li>
+<li>
+<p>Give the callback URLs, replacing <code>&lt;hostname&gt;</code> with the hub's host. Add
+a set for every hub instance that will use CILogon.</p>
+<pre><code>https://&lt;hostname&gt;/index.php?option=com_users&amp;task=user.login&amp;authenticator=cilogon
+https://&lt;hostname&gt;/index.php?option=com_users&amp;task=user.link&amp;authenticator=cilogon
+https://&lt;hostname&gt;/administrator/index.php?option=com_login&amp;task=login&amp;authenticator=cilogon
+</code></pre>
+</li>
+<li>
+<p>Select every scope offered: <code>email</code>, <code>openid</code>, <code>profile</code>,
+<code>org.cilogon.userinfo</code>, and the <code>edu.</code> scopes.</p>
+</li>
+<li>
+<p>Leave <strong>Refresh Token Lifetime</strong> and <strong>Issuer</strong> blank.</p>
+</li>
+</ol>
+<p>CILogon reviews the registration by hand. When it is approved you are sent
+a client ID and a client secret. Put them into <strong>Client ID</strong> and <strong>Client
+Secret</strong> on the <strong>Authentication - CILogon</strong> plugin, enable the plugin, and
+CILogon appears on the hub's login page.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The hub requests the <code>openid</code>, <code>email</code>, <code>profile</code>, and
+<code>org.cilogon.userinfo</code> scopes when it sends someone to CILogon. A
+registration that was approved for fewer scopes fails at sign-in.</p>
+</aside>
+<h2 id="shibboleth">Shibboleth</h2>
+<p>The Shibboleth plugin needs <code>mod_shib</code> in front of it; the hub does not
+speak SAML itself. Protect a path and hand the result back to the hub:</p>
+<pre><code class="language-apache">&lt;Location /login/shibboleth&gt;
+    AuthType shibboleth
+    ShibRequestSetting requireSession 1
+    Require valid-user
+    RewriteRule (.*) /index.php?option=com_users&amp;authenticator=shibboleth&amp;task=user.login [L]
+&lt;/Location&gt;
+</code></pre>
+<p>The plugin's parameters are in four groups:</p>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>What it holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Basic</strong></td>
+<td><strong>Site login</strong>, <strong>Admin login</strong>, <strong>DNS Address</strong> (default <code>8.8.8.8</code>, used to resolve visitors' hostnames so they can be matched to a participating institution), and <strong>Auto approve new users</strong>.</td>
+</tr>
+<tr>
+<td><strong>Debug</strong></td>
+<td><strong>Enable debugging</strong>, <strong>Debug Log</strong> (default <code>/var/log/apache2/php/shibboleth.log</code>), and <strong>Testing mode key</strong>.</td>
+</tr>
+<tr>
+<td><strong>Links</strong></td>
+<td>Extra links shown alongside the institution picker.</td>
+</tr>
+<tr>
+<td><strong>Institutions</strong></td>
+<td>The federation metadata file — <code>/etc/shibboleth/metadata/federation-metadata.xml</code> by default — and which of its identity providers the hub offers.</td>
+</tr>
+</tbody>
+</table>
+<aside class="admonition admonition--tip">
+<p><strong>Tip:</strong> Set <strong>Testing mode key</strong> while you are setting Shibboleth up.
+The provider is then hidden from the login page unless the key appears in
+the URL, as in <code>https://yourhub.org/login?yourkey</code>. Clear the field to
+show it to everyone.</p>
+</aside>
+<h2 id="globus">Globus</h2>
+<p>Register the hub as a Globus Auth application, then put the values into
+<strong>Client ID</strong> and <strong>Client Secret</strong> on the <strong>Authentication - Globus</strong>
+plugin. The callback URLs are the same three as CILogon's, with
+<code>authenticator=globus</code>.</p>
+<h2 id="purdue-cas">Purdue CAS</h2>
+<p>The Purdue plugin needs the hub registered with Purdue's Identity and
+Access Management office; see
+<a href="https://www.purdue.edu/apps/account/docs/CAS/CAS_information.jsp">https://www.purdue.edu/apps/account/docs/CAS/CAS_information.jsp</a>. Once the
+hub is registered, enable the plugin — there is no key or secret to enter.</p>
+<p>Its parameters include <strong>Domain</strong> and <strong>Display name</strong>, which set what the
+login page calls it, <strong>End CAS Session Automatically?</strong>, which decides
+whether signing out of the hub also ends the Purdue session or asks first,
+and <strong>Passive SSO detection (CAS gateway)</strong>.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Leave <strong>Passive SSO detection (CAS gateway)</strong> off unless the
+identity provider is known to handle gateway and <code>IsPassive</code> requests
+correctly. Purdue's Entra ID returns a &quot;Stale Request&quot; error page instead
+of responding silently, which breaks login outright.</p>
+</aside>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Other institutions running CAS can use the Purdue plugin as a
+starting point for their own. For a new OAuth provider, the Google or
+CILogon plugin is the better template.</p>
+</aside>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../authentication/index.html" rel="prev"><span>Previous</span>Authentication</a><a class="pager__next" href="../../users/index.html" rel="next"><span>Next</span>Users</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/05-configuring/07-extauth.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

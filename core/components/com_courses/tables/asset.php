@@ -11,6 +11,7 @@ use Hubzero\Database\Table;
 use Lang;
 use Date;
 use User;
+use Event;
 
 /**
  * Course assets table class
@@ -127,7 +128,8 @@ class Asset extends Table
 		{
 			$where[] = "ca.id=" . $this->_db->quote((int) $filters['asset_id']);
 		}
-		if (!empty($filters['asset_scope_id']))
+		// A scope id of 0 must match no assets rather than dropping the clause
+		if (isset($filters['asset_scope_id']))
 		{
 			$where[] = "cag.id=" . $this->_db->quote((int) $filters['asset_scope_id']);
 		}

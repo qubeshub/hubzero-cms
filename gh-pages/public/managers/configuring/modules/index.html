@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Modules · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Most modules carry parameters: what they show, how many items, which feed to read. Parameters belong to one module instance , so the same module type can…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/configuring/modules/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Modules</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#opening-a-module-s-parameters">Opening a module&#x27;s parameters</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-list-screen">The list screen</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-edit-screen">The edit screen</a></li>
+<li class="toc__item toc__item--l2"><a href="#older-screenshots">Older screenshots</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Configuring</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Modules</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Modules</h1>
+        </header>
+        
+        <div class="prose">
+<p>Most modules carry parameters: what they show, how many items, which feed to
+read. Parameters belong to one module <em>instance</em>, so the same module type
+can appear twice on a hub with different settings.</p>
+<p>That last point is the useful one. A hub can put the same list of newest
+resources in the sidebar of the front page showing three items, and in the
+footer showing ten, without touching any code — they are two instances of one
+module, each with its own parameters. If a block on the site is showing the
+wrong number of things, or the wrong kind of things, this is where you fix
+it.</p>
+<p>This chapter covers the parameters. Creating a module, choosing its position,
+deciding which pages it appears on and putting it in order are covered in
+<a href="../../extensions/modules/index.html">Module Manager</a> — the same screen, the other
+half of the job.</p>
+<aside class="admonition admonition--important">
+<p><strong>Important:</strong> If a module is not appearing at all, its parameters are
+almost never the reason. Check its position first: a module in a position
+the live template does not draw renders nothing, silently, however
+correctly it is configured. See
+<a href="../../extensions/modules/index.html#positions">Positions</a>.</p>
+</aside>
+<h2 id="opening-a-module-s-parameters">Opening a module's parameters</h2>
+<ol>
+<li>Sign in to the administrator interface.</li>
+<li>Choose <strong>Extensions &gt; Module Manager</strong>.</li>
+<li>Select the module's title in the list.</li>
+<li>Find the collapsible panels on the right of the edit screen: <strong>Basic
+Options</strong>, and <strong>Advanced Options</strong> if the module declares any. A module
+that declares no parameters has no panels.</li>
+<li>Change what you need and select <strong>Save</strong> or <strong>Save &amp; Close</strong> in the
+toolbar. Changes take effect immediately.</li>
+</ol>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Not every module has parameters. Those that do affect only that
+one instance.</p>
+</aside>
+<p>Editing parameters is about as safe as this book gets. The change lands on
+one block of one page, it is visible the moment you save, and setting the
+value back undoes it. The one field in the <strong>Details</strong> column worth being
+careful with is <strong>Position</strong>, because moving a module to a position no
+template draws makes it vanish without an error.</p>
+<h2 id="the-list-screen">The list screen</h2>
+<p>The list is filtered by a search box and five drop-downs: <strong>Client</strong> (Site
+or Administrator), <strong>- Select Status -</strong>, <strong>- Select Position -</strong>,
+<strong>- Select Type -</strong>, <strong>- Select Access -</strong>, and <strong>- Select Language -</strong>.</p>
+<p>Its columns are <strong>Title</strong>, <strong>Status</strong>, <strong>Position</strong>, <strong>Ordering</strong>, <strong>Type</strong>,
+<strong>Pages</strong>, <strong>Access</strong>, <strong>Language</strong>, and <strong>ID</strong>. Select a column heading to
+sort by it.</p>
+<p>The toolbar offers <strong>New</strong>, <strong>Edit</strong>, <strong>Duplicate</strong>, <strong>Publish</strong>,
+<strong>Unpublish</strong>, <strong>Check In</strong>, <strong>Trash</strong>, <strong>Options</strong>, and <strong>Help</strong>. Each
+button appears only if your account holds the matching permission.
+<strong>New</strong> opens a pop-up listing the module types you can add. Filtering the
+list to the trash replaces <strong>Trash</strong> with <strong>Empty trash</strong>.</p>
+<h2 id="the-edit-screen">The edit screen</h2>
+<p>The left column holds the module's <strong>Details</strong>: <strong>Title</strong>, <strong>Show Title</strong>,
+<strong>Position</strong>, <strong>Ordering</strong>, <strong>Status</strong>, <strong>Access</strong>, <strong>Start Publishing</strong>,
+<strong>Finish Publishing</strong>, <strong>Language</strong>, and <strong>Note</strong>. Custom HTML modules also
+get a <strong>Custom output</strong> panel with a <strong>Text</strong> editor.</p>
+<p>Site modules get a <strong>Menu Assignment</strong> section below that. <strong>Module
+Assignment</strong> chooses between all pages, no pages, only the pages selected,
+or all except the pages selected; the tree below it is where you pick them.
+Administrator modules have no assignment section.</p>
+<p>The right column holds the parameter panels and a table of facts about the
+module — its type, whether it belongs to the site or the administrator, and
+its ID.</p>
+<p>The toolbar has <strong>Save</strong>, <strong>Save &amp; Close</strong>, <strong>Save &amp; New</strong>, <strong>Save as
+Copy</strong>, <strong>Cancel</strong>, and <strong>Help</strong>. <strong>Save</strong> keeps you on the screen; <strong>Save
+&amp; Close</strong> returns to the list.</p>
+<p>Every module's parameters are listed in the generated
+<a href="../../../reference/configuration/index.html">configuration reference</a>.</p>
+<aside class="admonition admonition--tip">
+<p><strong>Tip:</strong> The Module Manager also adds and removes modules, not just
+configures them. See <a href="../../extensions/modules/index.html">Modules manager</a>.</p>
+</aside>
+<h2 id="older-screenshots">Older screenshots</h2>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The screenshots below came from the imported version of this
+page. The screens are the same but the administrator template has been
+restyled since, and the Save button is not a star.</p>
+</aside>
+<p><img src="../../media/modules-modules-manager-01.png" alt="The Module Manager list" /></p>
+<p><img src="../../media/modules-modules-manager-02.png" alt="Choosing a module from the list" /></p>
+<p><img src="../../media/modules-modules-manager-09.png" alt="The parameter panels on the right of the module edit screen" /></p>
+<p><img src="../../media/modules-modules-manager-10.png" alt="Saving the module" /></p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../components/index.html" rel="prev"><span>Previous</span>Components</a><a class="pager__next" href="../plugins/index.html" rel="next"><span>Next</span>Plugins</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/05-configuring/04-modules.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

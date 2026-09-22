@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Billboards · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Billboards are the rotating slides a hub shows on its front page. Each slide carries a background image, a heading, a block of text, and an optional learn more…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/components/billboards/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Billboards</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#whether-your-hub-needs-it">Whether your hub needs it</a></li>
+<li class="toc__item toc__item--l2"><a href="#collections">Collections</a></li>
+<li class="toc__item toc__item--l2"><a href="#creating-a-billboard">Creating a billboard</a></li>
+<li class="toc__item toc__item--l3"><a href="#content">Content</a></li>
+<li class="toc__item toc__item--l3"><a href="#learn-more-link">Learn More Link</a></li>
+<li class="toc__item toc__item--l3"><a href="#styling">Styling</a></li>
+<li class="toc__item toc__item--l2"><a href="#adding-a-background-image">Adding a background image</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-billboard-list">The billboard list</a></li>
+<li class="toc__item toc__item--l2"><a href="#displaying-a-carousel">Displaying a carousel</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Components</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Billboards</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Billboards</h1>
+        </header>
+        
+        <div class="prose">
+<p>Billboards are the rotating slides a hub shows on its front page. Each slide
+carries a background image, a heading, a block of text, and an optional
+&quot;learn more&quot; link. Slides belong to a collection, and the <code>mod_billboards</code>
+module displays one collection as a carousel. Go to <strong>Components →
+Billboards</strong>.</p>
+<h2 id="whether-your-hub-needs-it">Whether your hub needs it</h2>
+<p>A billboard is the hub's shop window: the thing you want a visitor who has
+never been here to see in the first three seconds. Most hubs run three or
+four slides and change one of them a few times a year — a new tool, a paper,
+a workshop with places left.</p>
+<p>The typical case: your annual user meeting opens for registration and you
+want it on the front page for six weeks. That is one billboard, published
+now and unpublished when registration closes.</p>
+<p>This is a small component and there is not much to it. What makes it awkward
+is that it does nothing on its own: a published billboard appears nowhere
+until somebody places the <code>mod_billboards</code> module on a template position. If
+you have made a slide and cannot find it on the site, go straight to
+<a href="#displaying-a-carousel">Displaying a carousel</a>.</p>
+<p><strong>What it is not:</strong> it is not the front page. The hub's front page is a menu
+item and its layout comes from the template; billboards fill one band of it.
+And it is not the media manager — the image lives on the billboard, not in a
+library, and is deleted when you replace it.</p>
+<p>The component has two screens, reached from the submenu:</p>
+<ul>
+<li><strong>Billboards</strong> — the slides.</li>
+<li><strong>Collections</strong> — the named groups a module points at.</li>
+</ul>
+<h2 id="collections">Collections</h2>
+<p>A collection is a name and nothing else. It exists so that a hub can run more
+than one carousel — a front-page set and a landing-page set, say — and point
+each module instance at a different one.</p>
+<p>Press <strong>New</strong> on the <strong>Collections</strong> screen, fill in <strong>Collection Name</strong>, and
+<strong>Save &amp; Close</strong>. The list shows each collection's ID and name, and the
+toolbar carries <strong>New</strong>, <strong>Edit</strong>, and <strong>Delete</strong>.</p>
+<p>Every billboard needs a collection. If you save a billboard without picking
+one, the component creates a collection called <em>Default Collection</em> and puts
+the slide in it.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Deleting a collection does not delete the billboards in it. They
+stay in the database, out of every carousel, until you edit each one and
+give it a collection that exists.</p>
+</aside>
+<h2 id="creating-a-billboard">Creating a billboard</h2>
+<ol>
+<li>Go to <strong>Components → Billboards</strong> and press <strong>New</strong>.</li>
+<li>Fill in the fields below.</li>
+<li>Press <strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>The edit form has three fieldsets.</p>
+<h3 id="content">Content</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Name</strong></td>
+<td>Required. What the slide is called in the list</td>
+</tr>
+<tr>
+<td><strong>Collection</strong></td>
+<td>The collection this slide belongs to</td>
+</tr>
+<tr>
+<td><strong>Ordering</strong></td>
+<td>Position within the collection. On a new billboard this reads <em>New Items Last</em>; it becomes a drop-down once the slide is saved</td>
+</tr>
+<tr>
+<td><strong>Header</strong></td>
+<td>The heading drawn over the image</td>
+</tr>
+<tr>
+<td><strong>Background image</strong></td>
+<td>A file picker. See below</td>
+</tr>
+<tr>
+<td><strong>Text</strong></td>
+<td>The body text, edited in the rich-text editor</td>
+</tr>
+</tbody>
+</table>
+<h3 id="learn-more-link">Learn More Link</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Learn more text</strong></td>
+<td>The link's label. Leave empty for no link</td>
+</tr>
+<tr>
+<td><strong>Learn more target</strong></td>
+<td>Where the link goes</td>
+</tr>
+<tr>
+<td><strong>Learn more class</strong></td>
+<td>An extra CSS class for the link</td>
+</tr>
+<tr>
+<td><strong>Learn more location</strong></td>
+<td><strong>Top left</strong>, <strong>Top right</strong>, <strong>Bottom left</strong>, <strong>Bottom right</strong>, or <strong>Relative</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="styling">Styling</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alias</strong></td>
+<td>The slide's HTML <code>id</code>. The module writes the slide's CSS against it, so give each billboard a distinct alias</td>
+</tr>
+<tr>
+<td><strong>Text padding</strong></td>
+<td>A CSS <code>padding</code> value applied to the slide's text</td>
+</tr>
+<tr>
+<td><strong>CSS</strong></td>
+<td>Free-form CSS added to the page for this slide</td>
+</tr>
+</tbody>
+</table>
+<h2 id="adding-a-background-image">Adding a background image</h2>
+<p>The <strong>Background image</strong> field is an ordinary file input on the edit form.
+There is no media browser and no separate upload step.</p>
+<ol>
+<li>Open the billboard you want to edit.</li>
+<li>Press the button beside <strong>Background image</strong> and choose a file from your
+computer.</li>
+<li>Press <strong>Save</strong> or <strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>The file is scanned for viruses and moved into the directory named by the
+component's <strong>Image Location</strong> option, which defaults to
+<code>/site/media/images/billboards/</code>. See the
+<a href="../../../reference/configuration/components/billboards/index.html">generated parameter list</a>.
+Uploading a new image deletes the one it replaces.</p>
+<p>Once a billboard has an image, the edit form shows it under <strong>Current Image</strong>,
+scaled to 500 pixels wide.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The screenshots on this page show an older interface in which the
+image was chosen through a <strong>Media Manager</strong> pop-up with <strong>Browse</strong> and
+<strong>Start Upload</strong> buttons, and the filename was then pasted into a text
+field. That flow no longer exists. Ignore the pop-up in the second and third
+images.</p>
+</aside>
+<p><img src="../../media/billboards-billboards.png" alt="The Components menu with Billboards selected" /></p>
+<p><img src="../../media/billboards-billboards2.png" alt="The old Media Manager pop-up, no longer used" /></p>
+<p><img src="../../media/billboards-billboards3.png" alt="The old background image field, no longer used" /></p>
+<h2 id="the-billboard-list">The billboard list</h2>
+<p>The list shows each slide's ID, name, collection, ordering, and published
+state. Click a name to edit it. Click the icon in the <strong>Published</strong> column to
+toggle the slide on or off. Reorder slides by typing new numbers in the
+<strong>Ordering</strong> column and pressing the column's sort arrows.</p>
+<p>The toolbar carries <strong>Publish</strong>, <strong>Unpublish</strong>, <strong>New</strong>, <strong>Edit</strong>,
+<strong>Delete</strong>, and — for users with <code>core.admin</code> — <strong>Options</strong>.</p>
+<p>Only published billboards appear in a carousel.</p>
+<p>Unpublishing is how you retire the user-meeting slide when registration
+closes: the slide drops out of the carousel at once and everything about it
+survives, so next year you edit the dates and publish it again. <strong>Delete</strong>
+takes the record and its uploaded image with it. Given that a billboard is a
+few sentences and a picture, there is rarely a reason to delete rather than
+unpublish.</p>
+<p>A new billboard is created unpublished — the edit form has no published
+field at all, so the only way to put a slide on the front page is the
+<strong>Published</strong> toggle in the list. That is the right way round: write and
+save the slide, come back to the list, and toggle it on when you are
+satisfied. There is no preview, so the front page itself is the first place
+you see the slide rendered.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Once a slide is published, every subsequent save shows on the
+front page immediately. Editing a live slide means editing in public.
+Toggle it off, make the change, and toggle it back on.</p>
+</aside>
+<h2 id="displaying-a-carousel">Displaying a carousel</h2>
+<p>Slides are not shown by the component. They are shown by the
+<code>mod_billboards</code> module, which you publish to a template position from
+<strong>Extensions → Module Manager</strong>. Its options are:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Billboard Collection</strong></td>
+<td>collection <code>1</code></td>
+<td>Which collection to display</td>
+</tr>
+<tr>
+<td><strong>Slide Transition Style</strong></td>
+<td>Scroll Horizontal</td>
+<td>Scroll Horizontal, Scroll Vertical, Fade, Shuffle, Zoom, or Turn left</td>
+</tr>
+<tr>
+<td><strong>Random</strong></td>
+<td>No</td>
+<td>Show the slides in random order</td>
+</tr>
+<tr>
+<td><strong>Slide Time</strong></td>
+<td>5</td>
+<td>Seconds each slide stays on screen</td>
+</tr>
+<tr>
+<td><strong>Transition Speed</strong></td>
+<td>1</td>
+<td>Seconds a transition takes</td>
+</tr>
+<tr>
+<td><strong>Display Pager</strong></td>
+<td>Yes</td>
+<td>Show the dots that let a visitor jump between slides</td>
+</tr>
+</tbody>
+</table>
+<p>Several instances of the module can run at once, each on its own collection
+and its own timing.</p>
+<p>Note the <strong>Billboard Collection</strong> default: collection <code>1</code>. On a hub that has
+never created a collection by hand, the first slide you save creates
+<em>Default Collection</em>, which is usually ID 1, and the module finds it. On a
+hub where somebody has since deleted or renumbered collections, a freshly
+placed module points at a collection that may not exist and shows nothing.
+If the carousel is empty, check the module's collection against the
+<strong>Collections</strong> screen before you look anywhere else.</p>
+<p><strong>Slide Time</strong> defaults to 5 seconds, which is too fast for a slide carrying
+a paragraph of text — a reader who has to finish a sentence will not. If your
+slides have more than a headline on them, 8 to 10 is kinder. This is a module
+setting and changing it affects only that module instance, so it is safe to
+try on a live hub and change back.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 009ec973b7</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../answers/index.html" rel="prev"><span>Previous</span>Answers</a><a class="pager__next" href="../blogs/index.html" rel="next"><span>Next</span>Blogs</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/09-components/03-billboards.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

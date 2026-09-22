@@ -36,7 +36,7 @@ class Encrypter
 	 * @param   object  $key     The encryption key[/pair)].
 	 * @return  void
 	 */
-	public function __construct(Cipher $cipher = null, Key $key = null)
+	public function __construct(?Cipher $cipher = null, ?Key $key = null)
 	{
 		// Set the encryption key[/pair)].
 		$this->key = $key;
@@ -137,7 +137,7 @@ class Encrypter
 
 			// Collect any entropy available from the PHP system and filesystem.
 			// If we have ssl data that isn't strong, we use it once.
-			$entropy  = rand() . uniqid(mt_rand(), true) . $sslStr;
+			$entropy  = rand() . uniqid(random_int(0, PHP_INT_MAX), true) . $sslStr;
 			$entropy .= implode('', @fstat(fopen(__FILE__, 'r')));
 			$entropy .= memory_get_usage();
 			$sslStr = '';
@@ -159,7 +159,7 @@ class Encrypter
 				for ($pass = 0; $pass < $samples; ++$pass)
 				{
 					$microStart = microtime(true) * 1000000;
-					$hash = sha1(mt_rand(), true);
+					$hash = sha1(random_int(0, PHP_INT_MAX), true);
 					for ($count = 0; $count < 50; ++$count)
 					{
 						$hash = sha1($hash, true);
@@ -184,7 +184,7 @@ class Encrypter
 				for ($pass = 0; $pass < $iter; ++$pass)
 				{
 					$microStart = microtime(true);
-					$hash = sha1(mt_rand(), true);
+					$hash = sha1(random_int(0, PHP_INT_MAX), true);
 					for ($count = 0; $count < $rounds; ++$count)
 					{
 						$hash = sha1($hash, true);

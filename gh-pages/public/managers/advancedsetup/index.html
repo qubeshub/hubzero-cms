@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Integrations · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Connecting a hub to the outside services it commonly uses — analytics, external file storage for projects, the rich text editor, and CAPTCHA — and where the sign-in providers are covered instead.">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/advancedsetup/">
+  <link rel="icon" href="../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../index.html">
+      <img class="brand__mark" src="../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../search-index.json" data-base="../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../docs/index.html">About</a>
+      <a href="../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Integrations</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#sign-in-providers">Sign-in providers</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-hub-s-own-pages">The hub&#x27;s own pages</a></li>
+<li class="toc__item toc__item--l2"><a href="#google-analytics">Google Analytics</a></li>
+<li class="toc__item toc__item--l2"><a href="#external-file-storage-in-projects">External file storage in projects</a></li>
+<li class="toc__item toc__item--l3"><a href="#what-ships">What ships</a></li>
+<li class="toc__item toc__item--l3"><a href="#turning-one-on">Turning one on</a></li>
+<li class="toc__item toc__item--l3"><a href="#the-older-project-wide-google-connection">The older project-wide Google connection</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-rich-text-editor">The rich text editor</a></li>
+<li class="toc__item toc__item--l2"><a href="#recaptcha">reCAPTCHA</a></li>
+</ol></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Integrations</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Integrations</h1>
+        </header>
+        
+        <div class="prose">
+<p>Everything a hub connects to that is not part of the hub. Each of these is a
+plugin or a module you enable and hand a pair of credentials to, after
+registering the hub with the service.</p>
+<p>None of it is required. A hub runs perfectly well with no analytics, no
+external storage, the editor it was installed with, and no CAPTCHA. Come here
+when something has made one of them necessary — a funder asking for usage
+figures, a project with more data than the hub should hold, a wave of
+registrations by script. Each section below opens by saying which hubs that
+is, so you can stop reading after a paragraph.</p>
+<p>Every integration on this page has a cost the first paragraph will not tell
+you: it is an account at somebody else's service, held by a person who will
+eventually leave. Write down which account, in whose name, before you set one
+up. A dead API key is the commonest way an integration stops working, and it
+is the hardest to diagnose because nothing on the hub says so.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> This page was imported as &quot;Getting Started: Advanced Setup&quot; and
+was mostly a set of step-by-step instructions for registering the hub with
+Facebook, LinkedIn, Google, ORCID, and CILogon. Those instructions were
+stale, and they duplicated
+<a href="../configuring/authentication/index.html">Authentication</a> and
+<a href="../configuring/extauth/index.html">External authenticators</a>, which cover the
+same ground against the current plugins. They have been removed rather than
+maintained in two places. What is left is the material that has nowhere
+else to live.</p>
+</aside>
+<h2 id="sign-in-providers">Sign-in providers</h2>
+<p>Every way of signing in — Google, Facebook, LinkedIn, ORCID, CILogon,
+Shibboleth, Globus, and the hub's own accounts — is an authentication plugin.
+Registering the hub with the provider, the redirect URIs each one needs, and
+the plugin parameters are all in
+<a href="../configuring/authentication/index.html">Authentication</a>, with the federated
+providers in <a href="../configuring/extauth/index.html">External authenticators</a>.</p>
+<h2 id="the-hub-s-own-pages">The hub's own pages</h2>
+<p>A new hub ships with a <strong>Getting Started</strong> article at <code>/gettingstarted</code>, and
+with <strong>About Us</strong>, <strong>Contact Us</strong>, and <strong>Terms of Use</strong> among the other
+sample articles. They are ordinary articles: edit them at <strong>Content →
+Article Manager</strong>, as described in
+<a href="../content/articlemanager/index.html">Article Manager</a>. Rewrite them before the hub
+opens to the public — the sample text describes a hub in general, not yours.</p>
+<h2 id="google-analytics">Google Analytics</h2>
+<p>For hubs that have to report usage to somebody — a funder, a department, a
+steering committee. This is usually the only way a hub gets page-level
+figures. The Usage component publishes a <code>/usage</code> page, but it computes
+nothing: it draws every figure from tables filled in by metrics tooling that
+is not part of this repository, so on a hub installed from this repository
+alone it has nothing to show. See <a href="../components/usage/index.html">Usage</a>.</p>
+<p>Two modules can carry a Google tag. Both are site modules with a single
+parameter, and both need a position that appears on every page — <code>footer</code> in
+the templates that ship.</p>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Parameter</th>
+<th>What it loads</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Google Gtag</strong></td>
+<td><strong>Tracking ID</strong></td>
+<td><code>gtag.js</code> from <code>googletagmanager.com</code>. This is the one to use.</td>
+</tr>
+<tr>
+<td><strong>Google Analytics</strong></td>
+<td><strong>API Key</strong></td>
+<td><code>analytics.js</code>, the Universal Analytics tag. Google retired that property type in 2023, so it collects nothing.</td>
+</tr>
+</tbody>
+</table>
+<p>To add one:</p>
+<ol>
+<li>Get a measurement ID from Google Analytics for the hub's property.</li>
+<li>Go to <strong>Extensions → Module Manager</strong> and select <strong>New</strong>.</li>
+<li>Choose <strong>Google Gtag</strong> from the list of module types.</li>
+<li>Give it a <strong>Title</strong>, set <strong>Position</strong> to <code>footer</code>, set <strong>Status</strong> to
+<strong>Published</strong>, and leave <strong>Module Assignment</strong> at <strong>On all pages</strong>.</li>
+<li>Paste the measurement ID into <strong>Tracking ID</strong>.</li>
+<li><strong>Save &amp; Close</strong>.</li>
+</ol>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Both modules write the tag into the page unconditionally, with
+no consent gate. If your hub is subject to a cookie consent regime, deal
+with that before you publish the module.</p>
+</aside>
+<h2 id="external-file-storage-in-projects">External file storage in projects</h2>
+<p>For hubs whose projects hold more data than the hub should, or data that
+already lives somewhere else and should not be copied. A project's own file
+repository is the default and is the right answer for most projects: it is
+versioned, it is backed up with the hub, and it needs no account anywhere. A
+connection is for the case where that is not true — a group with a terabyte
+in an S3 bucket, a modelling team whose code is a GitHub repository, a lab
+that has standardised on Drive.</p>
+<p>It is not a backup, and it is not a migration. A connection mounts the remote
+store <em>alongside</em> the project's own files; it does not copy anything into the
+hub, and it does not make the hub responsible for the data. If the account
+behind a connection is closed, the files are gone from the project.</p>
+<h3 id="what-ships">What ships</h3>
+<p>Five plugins in the <code>filesystem</code> group. <strong>Filesystem - Local</strong> is the
+project's own repository and needs nothing. The other four appear in a
+project's <strong>Files</strong> tab as connection types:</p>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Parameters you set hub-wide</th>
+<th>What the project supplies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Filesystem - Google Drive</strong></td>
+<td><strong>Client ID</strong>, <strong>Client Secret</strong></td>
+<td>Nothing but a name; a project manager authorizes with their own Google account.</td>
+</tr>
+<tr>
+<td><strong>Filesystem - Dropbox</strong></td>
+<td><strong>App key</strong>, <strong>App secret</strong></td>
+<td>Nothing but a name; a project manager authorizes with their own Dropbox account.</td>
+</tr>
+<tr>
+<td><strong>Filesystem - Github</strong></td>
+<td><strong>Client ID</strong>, <strong>Client Secret</strong></td>
+<td><strong>Repository</strong>. A public repository is read anonymously and needs no authorization at all.</td>
+</tr>
+<tr>
+<td><strong>Filesystem - AWS S3</strong></td>
+<td>None it reads</td>
+<td>Everything: <strong>Access Key ID</strong>, <strong>Secret Access Key</strong>, <strong>Endpoint Region</strong>, <strong>Bucket Name</strong>, and <strong>Directory to connect</strong>, per connection.</td>
+</tr>
+</tbody>
+</table>
+<p>The split matters. Google Drive and Dropbox are one registration you make
+once, on behalf of the whole hub, and then every project authorizes against
+it with its own account. AWS S3 is the opposite — the credentials are part of
+the connection, so each project brings its own bucket and its own key, and
+you as manager only have to enable the plugin. GitHub sits between the two:
+the hub's registration is only needed for private repositories.</p>
+<h3 id="turning-one-on">Turning one on</h3>
+<p>Using Google Drive as the example.</p>
+<ol>
+<li>Register the hub as a web application with the provider. For Google that
+is a Google Cloud project with the Drive API enabled; the authorized
+redirect URI is
+<code>https://&lt;yourhub&gt;/developer/callback/googledriveAuthorize</code>.</li>
+<li><strong>Extensions → Plug-in Manager</strong>, open <strong>Filesystem - Google Drive</strong>, set
+<strong>Status</strong> to <strong>Enabled</strong>, and paste the credentials into <strong>Client ID</strong> and
+<strong>Client Secret</strong>.</li>
+<li><strong>Save &amp; Close</strong>.</li>
+<li>Tell the project managers. Nothing appears to members until somebody in a
+project creates a connection.</li>
+</ol>
+<p>In the project, a manager opens the <strong>Files</strong> tab, picks the provider from
+the <strong>New Connection</strong> drop-down, gives the connection a <strong>Name</strong>, decides
+whether to tick <strong>Share connection with everyone in the project?</strong>, saves,
+and then authorizes it against their own account. The connection then sits
+beside the project's own repository, with <strong>Edit</strong>, <strong>Delete</strong>, <strong>Refresh
+Connection Credentials</strong> and <strong>Refresh Connection Path</strong> against it.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Only a project manager can authorize a connection, and the
+authorization binds <em>their</em> account to it. When that person leaves the
+project, or revokes the hub's access at the provider, the connection stops
+working for everyone in the project until another manager re-authorizes it.
+That is the failure managers are asked about, and <strong>Refresh Connection
+Credentials</strong> is the fix.</p>
+</aside>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> The <strong>New Connection</strong> drop-down lists every provider
+registered on the hub, whether or not its plugin is enabled and whether or
+not you have given it credentials. A project can therefore create a
+connection to a service that cannot work. Disabling a plugin you are not
+using does not take it out of that list.</p>
+</aside>
+<h3 id="the-older-project-wide-google-connection">The older project-wide Google connection</h3>
+<p>A second, earlier path exists and some hubs still run on it. The
+<strong>Projects - Files</strong> plugin (<strong>Extensions → Plug-in Manager</strong>, search for
+<code>projects</code>) carries a project-wide Google connection of its own:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Google Connection Enabled</strong></td>
+<td>Off by default.</td>
+</tr>
+<tr>
+<td><strong>Google Client ID</strong>, <strong>Google Client Secret</strong>, <strong>Google API Key</strong></td>
+<td>From a Google Cloud project with the Drive API enabled.</td>
+</tr>
+<tr>
+<td><strong>Auto Sync</strong></td>
+<td>No auto sync, or every 10 minutes, half hour, hour, 2 hours, or 6 hours.</td>
+</tr>
+<tr>
+<td><strong>Connected Projects</strong></td>
+<td>Comma-separated project aliases allowed to connect. Empty means all of them.</td>
+</tr>
+</tbody>
+</table>
+<p>Its redirect URI is different: register <code>https://&lt;yourhub&gt;/projects/auth</code> as
+the authorized redirect URI and <code>https://&lt;yourhub&gt;</code> as the authorized
+JavaScript origin. It surfaces as a <strong>Connect</strong> link on the project's <strong>Files</strong>
+tab rather than as an entry in <strong>New Connection</strong>, and only the project's
+creator sees that link on a project with no connection yet.</p>
+<p>The two are independent, and a hub can have both on at once, which is
+confusing for everyone. On a new hub use the <strong>Filesystem - Google Drive</strong>
+plugin and leave <strong>Google Connection Enabled</strong> off.</p>
+<h2 id="the-rich-text-editor">The rich text editor</h2>
+<p>Every hub already has one, and most managers never touch this. The reason to
+come here is a complaint: the editor mangles pasted markup, or it will not
+let somebody insert the tag they need, or a member who writes in Markdown
+wants a plain box instead. Changing it is a global change — the setting
+applies to every editor field on the hub, for everyone.</p>
+<p>The editor is set in <strong>Site → Global Configuration</strong>, on the <strong>Site</strong> tab,
+under <strong>Site Settings</strong>, in <strong>Default Editor</strong>. The list offers exactly the
+editor plugins that are enabled in <strong>Extensions → Plug-in Manager</strong>, so
+enable the one you want first, then choose it.</p>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Enabled on a fresh install</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Editor - CKEditor</strong></td>
+<td>Yes</td>
+<td>CKEditor 4. This is what a hub runs — the installer writes <code>ckeditor</code> into the configuration.</td>
+</tr>
+<tr>
+<td><strong>Editor - CKEditor 5</strong></td>
+<td>Yes</td>
+<td>CKEditor 5. Enabled, so it is offered in the list, but not what the installer selects.</td>
+</tr>
+<tr>
+<td><strong>Editor - CodeMirror</strong></td>
+<td>Yes</td>
+<td>A source editor with syntax highlighting.</td>
+</tr>
+<tr>
+<td><strong>Editor - PageDown</strong></td>
+<td>Yes</td>
+<td>Markdown.</td>
+</tr>
+<tr>
+<td><strong>Editor - TinyMCE</strong></td>
+<td>Yes</td>
+<td>The form's declared fallback, but not the installed value.</td>
+</tr>
+<tr>
+<td><strong>Editor - Wikiwyg</strong>, <strong>Editor - Wikitoolbar</strong></td>
+<td>Yes</td>
+<td>For the hub's wiki markup.</td>
+</tr>
+<tr>
+<td><strong>Editor - None</strong></td>
+<td>Yes</td>
+<td>A plain textarea.</td>
+</tr>
+</tbody>
+</table>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The manifest's declared default is <code>tinymce</code> and the installer
+writes <code>ckeditor</code>. Where a manifest default and the shipped install data
+disagree, the stored value is what the hub runs — so a fresh hub is on
+CKEditor 4, whatever the form's declaration says.</p>
+</aside>
+<p>Changing the setting takes effect on the next page load and is reversible,
+but content already saved keeps whatever markup the previous editor produced.
+Switching a hub with years of articles from a WYSIWYG editor to a Markdown
+one does not convert anything.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Older documentation told you to enable <strong>Content - HTML Format
+Handler</strong> as well when switching to CKEditor. That is not needed. Both of
+that plugin's hooks return immediately for the <code>com_content.article</code>
+context, so it does nothing at all to articles; it handles HTML in the
+components that also accept wiki markup.</p>
+</aside>
+<h2 id="recaptcha">reCAPTCHA</h2>
+<p>For hubs with open registration that are getting accounts created by script.
+The symptom is unmistakable: a run of registrations minutes apart, plausible
+names, addresses at throwaway domains, and profiles that fill up with
+advertising a day later. A CAPTCHA is the cheapest thing that stops it.</p>
+<p>It is not a spam filter. It stops a script <em>creating an account</em>; it does
+nothing about a person who registers by hand and then posts advertising, and
+nothing about the accounts already created. Those are <a href="../spam/index.html">Spam</a>.</p>
+<p>Hubzero ships three CAPTCHA plugins. Check what is already on before you
+register anything with Google — the installer leaves <strong>Captcha - Image</strong>
+enabled, <strong>Captcha - Math</strong> disabled, and <strong>Captcha - ReCaptcha</strong> disabled.
+So a fresh hub already has a CAPTCHA, and if accounts are still being created
+by script it is because that one is being solved. <strong>Captcha - Image</strong> and
+<strong>Captcha - Math</strong> need no account anywhere; <strong>Captcha - ReCaptcha</strong> puts
+Google reCAPTCHA v2 on the registration form and anywhere else that asks for
+a CAPTCHA, and needs a Google account and a registered domain.</p>
+<ol>
+<li>Register the hub's domain at
+<a href="https://www.google.com/recaptcha/admin">https://www.google.com/recaptcha/admin</a> and copy the site key and the
+secret.</li>
+<li>Go to <strong>Extensions → Plug-in Manager</strong>, open <strong>Captcha - ReCaptcha</strong>, and
+set <strong>Status</strong> to <strong>Enabled</strong>.</li>
+<li>Put the site key in <strong>Public Key</strong> and the secret in <strong>Private Key</strong>.</li>
+<li>Optionally set <strong>Theme</strong> (Light or Dark), <strong>Type</strong> (Image or Audio), and
+<strong>Language Code</strong>.</li>
+<li><strong>Save &amp; Close</strong>.</li>
+</ol>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Every <em>enabled</em> captcha plugin renders on the registration
+form, so disable <strong>Captcha - Image</strong> and <strong>Captcha - Math</strong> if you want
+only reCAPTCHA. <strong>Global Configuration → Site → Default Captcha</strong> looks
+like it chooses between them, but no code reads that setting.</p>
+</aside>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Enabling <strong>Captcha - ReCaptcha</strong> with either key blank renders
+nothing and reports nothing. If you turn it on, disable the others, and the
+registration form comes up with no CAPTCHA at all, that is the reason —
+check the keys rather than the form.</p>
+</aside>
+<p>The form only asks for a CAPTCHA if the <strong>CAPTCHA</strong> field in the Members
+component's registration options is not set to hidden. See
+<a href="../configuring/registration/index.html">Registration</a>.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../getting-started/index.html" rel="prev"><span>Previous</span>Getting started</a><a class="pager__next" href="../maintenance/index.html" rel="next"><span>Next</span>Daily Maintenance</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/02-advancedsetup.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

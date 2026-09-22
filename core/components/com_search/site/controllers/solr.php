@@ -31,6 +31,9 @@ use Config;
 use Lang;
 use stdClass;
 use Components\Resources\Models\Entry;
+use Component;
+use Event;
+use User;
 
 /**
  * Search controller class
@@ -38,25 +41,25 @@ use Components\Resources\Models\Entry;
 class Solr extends SiteController
 {
 	/**
-	 * Display search form and results (if any)
+	 * Escape special Lucene/Solr syntax characters in search terms
 	 *
-	 * @param   $term
-	 * @return  string
+	 * @param   string  $term  Raw search term
+	 * @return  string  Escaped search term
 	 */
-	public function solrEscape($term) {
-			// List of special characters per Lucene syntax
-			$pattern = '/([+\-!(){}[\]^"~*?:\\/]|&&|\|\|)/';
-			$escaped = preg_replace($pattern, '\\\\$1', $term);
-	
-			// Escape reserved words (AND, OR, NOT)
-			$reserved = ['AND', 'OR', 'NOT'];
-			foreach ($reserved as $word) {
-					// Use word boundaries so only whole words are matched
-					$escaped = preg_replace('/\b' . $word . '\b/i', '\\\\' . $word, $escaped);
-			}
-			return $escaped;
+	public function solrEscape($term)
+	{
+		$pattern = '/([+\-!(){}[\]^"~*?:\\/]|&&|\|\|)/';
+		$escaped = preg_replace($pattern, '\\\\$1', $term);
+
+		$reserved = array('AND', 'OR', 'NOT');
+		foreach ($reserved as $word)
+		{
+			$escaped = preg_replace('/\b' . $word . '\b/i', '\\\\' . $word, $escaped);
+		}
+
+		return $escaped;
 	}
-	
+
 	/**
 	 * Display search form and results (if any)
 	 *
@@ -145,11 +148,18 @@ class Solr extends SiteController
 		{
 			$query = $query->sortBy($sortBy, $sortDir);
 		}
+		// A bogus/stale type id resolves to false (no such SearchComponent), so
+		// normalize it to null and fall through to an all-types search rather
+		// than reading ->filters on a boolean.
 		$typeComponent = null;
 		if ($type != null)
 		{
-			$typeComponent = SearchComponent::one($type);
-			foreach ($typeComponent->filters as $filter)
+			$loaded = SearchComponent::one($type);
+			$typeComponent = is_object($loaded) ? $loaded : null;
+		}
+		if ($typeComponent)
+		{
+			foreach (($typeComponent->filters ?? []) as $filter)
 			{
 				if (method_exists($filter, 'addCounts'))
 				{

@@ -245,8 +245,8 @@ class plgUsageOverview extends \Hubzero\Plugin\Plugin
 		$data = new stdClass;
 		$data->visits = new stdClass;
 		$data->visits->total        = number_format($result == null ? 0.0 : floatval($result));
-		$data->visits->residence    = $residence;
-		$data->visits->organization = $organization;
+		$data->visits->residence    = $residence ?? '';
+		$data->visits->organization = $organization ?? '';
 
 		$sql = "SELECT value, valfmt
 				FROM `summary_user_vals`
@@ -355,7 +355,7 @@ class plgUsageOverview extends \Hubzero\Plugin\Plugin
 		$result = $db->loadResult();
 
 		$data->downloads = new stdClass;
-		$data->downloads->total        = number_format($result);
+		$data->downloads->total        = number_format($result ?? 0.0);
 		$data->downloads->residence    = !isset($residence) ? '' : $residence;
 		$data->downloads->organization = !isset($organization) ? '' : $organization;;
 
@@ -367,7 +367,7 @@ class plgUsageOverview extends \Hubzero\Plugin\Plugin
 			AND `datetime`=" . $db->quote($datetime) . "
 			ORDER BY `datetime` ASC"
 		);
-		$data->simulation_users = number_format($db->loadResult());
+		$data->simulation_users = number_format($db->loadResult() ?? 0.0);
 
 		$db->setQuery(
 			"SELECT value
@@ -377,7 +377,7 @@ class plgUsageOverview extends \Hubzero\Plugin\Plugin
 			AND `datetime`=" . $db->quote($datetime) . "
 			ORDER BY `datetime` ASC"
 		);
-		$data->simulation_jobs = number_format($db->loadResult());
+		$data->simulation_jobs = number_format($db->loadResult() ?? 0.0);
 
 		$db->setQuery(
 			"SELECT a.label,b.value,b.valfmt,a.plot,a.id

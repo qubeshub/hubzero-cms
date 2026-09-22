@@ -10,6 +10,8 @@ namespace Components\Publications\Tables;
 use Hubzero\Database\Table;
 use Date;
 use User;
+use Component;
+use Lang;
 
 /**
  * Table class for publications
@@ -151,12 +153,7 @@ class Publication extends Table
 			{
 				if (is_array($filters['status']))
 				{
-					$squery = '';
-					foreach ($filters['status'] as $s)
-					{
-						$squery .= "'" . $s . "',";
-					}
-					$squery = substr($squery, 0, strlen($squery) - 1);
+					$squery = implode(',', array_map(array($this->_db, 'quote'), $filters['status']));
 					$query .= " AND (V.state IN (" . $squery . ")) ";
 				}
 				else
@@ -228,7 +225,7 @@ class Publication extends Table
 			}
 			else
 			{
-				$query .= " AND t.url_alias='" . $filters['category']."' ";
+				$query .= " AND t.url_alias=" . $this->_db->quote($filters['category']) . " ";
 			}
 		}
 		if (isset($filters['author']) && intval($filters['author']))
@@ -304,7 +301,7 @@ class Publication extends Table
 				if ($componentParams->get('include_author_name_in_search'))
 				{
 					$query .= " OR (V.id in (SELECT publication_version_id"
-						.	" from jos_publication_authors as A where lower(A.name) like '%$escapedtext%'))";
+						.	" from #__publication_authors as A where lower(A.name) like '%$escapedtext%'))";
 				}
 		}
 

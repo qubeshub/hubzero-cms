@@ -24,14 +24,6 @@ Toolbar::cancel();
 					<td><input type="text" name="config[adminmail]" size="30" maxlength="50" value="<?php echo $this->config->adminmail; ?>" /></td>
 				</tr>
 				<tr>
-					<th scope="row" class="key"><?php echo Lang::txt('COM_EVENTS_CAL_LANG_CONFIG_ADMINLEVEL'); ?></th>
-					<td><?php
-					$level[] = Html::select('option', '0', Lang::txt('COM_EVENTS_CAL_LANG_CONFIG_ALL'), 'value', 'text' );
-					$level[] = Html::select('option', '1', Lang::txt('COM_EVENTS_CAL_LANG_CONFIG_SPECIAL'), 'value', 'text' );
-					echo Html::select('genericlist', $level, 'config[adminlevel]', '', 'value', 'text', $this->config->adminlevel, false, false );
-					?></td>
-				</tr>
-				<tr>
 					<th scope="row" class="key"><?php echo Lang::txt('COM_EVENTS_CAL_LANG_CONFIG_FIRSTDAY'); ?></th>
 					<td><?php
 					$first[] = Html::select('option', '0', Lang::txt('COM_EVENTS_CAL_LANG_CONFIG_SUNDAY_FIRST'), 'value', 'text' );
@@ -50,7 +42,7 @@ Toolbar::cancel();
 				<tr>
 					<th scope="row" class="key"><?php echo Lang::txt('COM_EVENTS_CAL_LANG_CONFIG_VIEWBY'); ?></th>
 					<td><?php
-					$viewb[] = Html::select('option', 'YES', Lang::txt('YES'), 'value', 'text' );
+					$viewb[] = Html::select('option', 'YES', Lang::txt('JYES'), 'value', 'text' );
 					$viewb[] = Html::select('option', 'NO', Lang::txt('JNO'), 'value', 'text' );
 					echo Html::select('genericlist', $viewb, 'config[byview]', '', 'value', 'text', $this->config->byview, false, false );
 					?></td>
@@ -58,7 +50,7 @@ Toolbar::cancel();
 				<tr>
 					<th scope="row" class="key"><?php echo Lang::txt('COM_EVENTS_CAL_LANG_CONFIG_VIEWHITS'); ?></th>
 					<td><?php
-					$viewh[] = Html::select('option', 'YES', Lang::txt('YES'), 'value', 'text' );
+					$viewh[] = Html::select('option', 'YES', Lang::txt('JYES'), 'value', 'text' );
 					$viewh[] = Html::select('option', 'NO', Lang::txt('JNO'), 'value', 'text' );
 					echo Html::select('genericlist', $viewh, 'config[hitsview]', '', 'value', 'text', $this->config->hitsview, false, false );
 					?></td>
@@ -75,7 +67,7 @@ Toolbar::cancel();
 				<tr>
 					<th scope="row" class="key"><?php echo Lang::txt('COM_EVENTS_CAL_LANG_CONFIG_TIMEFORMAT'); ?></th>
 					<td><?php
-					$stdTime[] = Html::select('option', 'YES', Lang::txt('YES'), 'value', 'text' );
+					$stdTime[] = Html::select('option', 'YES', Lang::txt('JYES'), 'value', 'text' );
 					$stdTime[] = Html::select('option', 'NO', Lang::txt('JNO'), 'value', 'text' );
 					echo Html::select('genericlist', $stdTime, 'config[calUseStdTime]', '', 'value', 'text', $this->config->calUseStdTime, false, false );
 					?></td>

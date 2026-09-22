@@ -23,6 +23,9 @@ use Route;
 use Event;
 use Lang;
 use App;
+use Notify;
+use Plugin;
+use User;
 
 /**
  * Controller class for citations
@@ -489,6 +492,10 @@ class Citations extends AdminController
 		}
 
 		if ($removed)
+		{
+			Notify::success(Lang::txt('CITATION_REMOVED', $removed));
+		}
+		else
 		{
 			Notify::error(Lang::txt('NO_SELECTION'));
 		}

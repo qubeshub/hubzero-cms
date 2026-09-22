@@ -5749,7 +5749,8 @@ CREATE TABLE `#__xgroups_log` (
   `action` varchar(50) DEFAULT NULL,
   `comments` text DEFAULT NULL,
   `actorid` int(11) DEFAULT 0,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_action_timestamp` (`action`,`timestamp`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
@@ -5794,9 +5795,31 @@ CREATE TABLE `#__xgroups_members` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `gidNumber` int(11) NOT NULL,
   `uidNumber` int(11) NOT NULL,
+  `expires` datetime DEFAULT NULL,
+  `expires_set_by` int(11) DEFAULT NULL,
+  `expires_notified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`),
-  UNIQUE KEY `idx_gidNumber_uidNumber` (`gidNumber`,`uidNumber`)
+  UNIQUE KEY `idx_gidNumber_uidNumber` (`gidNumber`,`uidNumber`),
+  KEY `idx_expires` (`expires`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+
+--
+-- Table structure for table `#__xgroups_member_history`
+--
+
+CREATE TABLE `#__xgroups_member_history` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `gidNumber` int(11) NOT NULL,
+  `uidNumber` int(11) NOT NULL,
+  `expires` datetime DEFAULT NULL,
+  `revoked` datetime DEFAULT NULL,
+  `reason` varchar(32) DEFAULT NULL,
+  `was_manager` tinyint(1) DEFAULT 0,
+  `actor` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_gidNumber_uidNumber` (`gidNumber`,`uidNumber`),
+  KEY `idx_revoked` (`revoked`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
 
 --
@@ -6081,7 +6104,7 @@ CREATE TABLE `#__xprofiles` (
   `countryorigin` char(2) NOT NULL DEFAULT '',
   `gender` varchar(255) NOT NULL DEFAULT '',
   `url` varchar(255) NOT NULL DEFAULT '',
-  `reason` text NOT NULL,
+  `reason` text DEFAULT NULL,
   `mailPreferenceOption` int(11) NOT NULL DEFAULT -1,
   `usageAgreement` int(11) NOT NULL DEFAULT 0,
   `jobsAllowed` int(11) NOT NULL DEFAULT 0,
@@ -6099,8 +6122,8 @@ CREATE TABLE `#__xprofiles` (
   `picture` varchar(255) NOT NULL DEFAULT '',
   `vip` int(11) NOT NULL DEFAULT 0,
   `public` tinyint(2) NOT NULL DEFAULT 0,
-  `params` text NOT NULL,
-  `note` text NOT NULL,
+  `params` text DEFAULT NULL,
+  `note` text DEFAULT NULL,
   `shadowExpire` int(11) DEFAULT NULL,
   `locked` tinyint(4) NOT NULL DEFAULT 0,
   `orcid` varchar(255) NOT NULL DEFAULT '',

@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Knowledge base · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="The knowledge base is a library of articles that explain how to use the hub: how-to guides, answers to common questions, policies. Articles are grouped into…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/components/kb/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Knowledge base</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#whether-your-hub-needs-it">Whether your hub needs it</a></li>
+<li class="toc__item toc__item--l2"><a href="#articles">Articles</a></li>
+<li class="toc__item toc__item--l2"><a href="#creating-or-editing-an-article">Creating or editing an article</a></li>
+<li class="toc__item toc__item--l2"><a href="#categories">Categories</a></li>
+<li class="toc__item toc__item--l2"><a href="#writing-the-first-article">Writing the first article</a></li>
+<li class="toc__item toc__item--l2"><a href="#comments-and-votes">Comments and votes</a></li>
+<li class="toc__item toc__item--l2"><a href="#options">Options</a></li>
+<li class="toc__item toc__item--l2"><a href="#api">API</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Components</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Knowledge base</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Knowledge base</h1>
+        </header>
+        
+        <div class="prose">
+<p>The knowledge base is a library of articles that explain how to use the
+hub: how-to guides, answers to common questions, policies. Articles are
+grouped into categories, can be rated and commented on by members, and
+appear on the site at <code>/kb</code>. This chapter covers the administrator's side;
+the <a href="../../../users/knowledgebase/index.html">Hub users</a> book covers reading, rating,
+and commenting.</p>
+<h2 id="whether-your-hub-needs-it">Whether your hub needs it</h2>
+<p>The knowledge base holds the answers you already know. It is the one
+discussion-adjacent component members cannot write in: articles are created
+in the administrator interface and nowhere else — there is no create or edit
+task on the site side at all — so everything in it is something a manager or
+an editor decided was true. That is the point of it. It is the hub's own
+account of itself.</p>
+<p>Almost every hub needs one, and needs less of it than it expects. Six
+articles that are correct beat sixty that were correct in 2019. The
+articles that earn their place are the ones you would otherwise retype in an
+email once a month: how to get an account, how to ask for more storage, what
+the queue limits are, who to contact when a tool will not start.</p>
+<p>The typical case: a hub opens registration to a partner institution, and
+suddenly forty people a week need to be told the same thing about which
+account gets which access. That is one knowledge base article and a link in
+the welcome email, rather than forty replies.</p>
+<p>Against its siblings:</p>
+<ul>
+<li>Better than <a href="../answers/index.html">Answers</a> at anything you need to stay correct,
+because you own it and can change it. Worse at coverage: it only ever
+contains what somebody sat down and wrote. The two work well together —
+watch the Questions list, and when a question comes up a third time, write
+the article.</li>
+<li>Better than the <a href="../wiki/index.html">Wiki</a> at policy and instruction, because
+nobody else can edit it and it renders in a plain editor rather than wiki
+markup. Worse at anything collaborative: there is no revision history
+here, so an edit that loses a paragraph loses it for good.</li>
+<li>Not a substitute for <a href="../support/index.html">Support</a>. The knowledge base answers
+the question before it is asked; support handles the one that still gets
+asked.</li>
+</ul>
+<p><strong>What it is not:</strong> it is not member-authored. If you want members writing
+the documentation, you want the wiki. If you find yourself pasting a
+member's forum reply into an article, that is the system working, but the
+member gets no byline unless you give them one.</p>
+<p>Open it in the administrator interface under <strong>Components &gt; Knowledgebase</strong>.
+Two sub-menu links sit at the top left: <strong>Articles</strong>, the list below, and
+<strong>Categories</strong>, which opens the shared Categories component filtered to the
+knowledge base.</p>
+<h2 id="articles">Articles</h2>
+<p>The Articles screen lists every article with its <strong>Title</strong>, <strong>Published</strong>
+state, <strong>Access</strong> level, <strong>Category</strong>, and <strong>Votes</strong>. Click a column heading
+to sort by it; click again to reverse the order. Above the list, filter by
+a search term (matched against titles), a category, or an access level, and
+press <strong>Go</strong>.</p>
+<p>The toolbar offers:</p>
+<ul>
+<li><strong>Options</strong> — the component's configuration; see
+<a href="#options">Options</a> below.</li>
+<li><strong>Publish</strong> and <strong>Unpublish</strong> — change the state of the checked articles.</li>
+<li><strong>New</strong> — create an article.</li>
+<li><strong>Edit</strong> — open the checked article. Clicking a title does the same.</li>
+<li><strong>Delete</strong> — remove the checked articles after a confirmation. This is
+permanent; there is no trash to recover from.</li>
+<li><strong>Help</strong> — the built-in help screen.</li>
+</ul>
+<p>Each row also shows the article's tags.</p>
+<h2 id="creating-or-editing-an-article">Creating or editing an article</h2>
+<p>The edit screen has three parts.</p>
+<p><strong>Details</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Category</td>
+<td>Required. The category the article belongs to. Only published categories are visible on the site, and an article's URL is built from its category's alias.</td>
+</tr>
+<tr>
+<td>Title</td>
+<td>Required.</td>
+</tr>
+<tr>
+<td>Alias</td>
+<td>Optional. The last segment of the article's URL. Left blank, it is generated from the title: lowercased, punctuation removed, spaces replaced by hyphens.</td>
+</tr>
+<tr>
+<td>Body</td>
+<td>Required. The article text, in the editor.</td>
+</tr>
+<tr>
+<td>Tags</td>
+<td>Optional, comma-separated. Tags connect the article to searches and to other tagged content on the hub.</td>
+</tr>
+</tbody>
+</table>
+<p>The panel beside the form shows the article's ID, when and by whom it was
+created and last modified, its <strong>Hits</strong> (page views) and <strong>Votes</strong>. Two
+checkboxes, <strong>Reset hits</strong> and <strong>Reset votes</strong>, zero those counters when
+you save.</p>
+<p><strong>State</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Publish</td>
+<td>Unpublished, Published, or Trashed. Only published articles are shown on the site; unpublished and trashed articles return a not-found page.</td>
+</tr>
+<tr>
+<td>Access level</td>
+<td>Which access level a visitor needs to read the article: Public, Registered, or a level you have defined.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Parameters</strong></p>
+<p>These override the component-wide options for this one article. An article
+that has never had a parameter set inherits the option's current value;
+once set, the article's own value wins even if the option changes later.</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authors</td>
+<td>Show or hide the author's name on the article.</td>
+</tr>
+<tr>
+<td>Comments</td>
+<td>Allow or disallow comments.</td>
+</tr>
+<tr>
+<td>Close Comments</td>
+<td>How long after the article was last modified comments stay open: never close, or close after a week, a month, six months, or a year. The component-wide option also offers closing immediately and after a day.</td>
+</tr>
+<tr>
+<td>Feeds</td>
+<td>Enable or disable the article's comment feed, at <code>/kb/&lt;category&gt;/&lt;article&gt;/comments.rss</code>.</td>
+</tr>
+<tr>
+<td>Feed Entries</td>
+<td>Whether feed items carry the full comment or a partial one.</td>
+</tr>
+<tr>
+<td>Date</td>
+<td>Which date to show on the article: none, created, modified, or published.</td>
+</tr>
+</tbody>
+</table>
+<p>Press <strong>Save</strong> to save and stay on the form, <strong>Save &amp; Close</strong> to return to
+the list, or <strong>Cancel</strong> to discard changes.</p>
+<h2 id="categories">Categories</h2>
+<p>Knowledge base categories are managed by the Categories component, which
+the <strong>Categories</strong> sub-menu link opens with the knowledge base selected.
+A category has a title, an alias used in URLs, an optional description, an
+optional parent category, a published state, and an access level. Nest
+categories one level deep: a top-level category with sub-categories. An
+article always belongs to exactly one category.</p>
+<p>A category must be published for its articles to be reachable. Unpublishing
+a category hides every article in it without changing the articles.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Because the article's URL is built from its category's alias,
+moving an article to a different category changes its address, and the old
+address stops working. If the old address is in an email you sent to forty
+people, add a redirect; see <a href="../redirect/index.html">Redirect</a>.</p>
+</aside>
+<h2 id="writing-the-first-article">Writing the first article</h2>
+<p>Following the partner-institution example: the article that explains which
+account gets which access.</p>
+<ol>
+<li>Go to <strong>Components &gt; Knowledgebase &gt; Categories</strong> and check whether a
+category fits. If not, press <strong>New</strong>, give it a <strong>Title</strong> and leave the
+parent empty for a top-level category, set it Published, and save.
+Categories are nested one level deep at most; two or three top-level
+categories is enough for any hub.</li>
+<li>Go back to <strong>Articles</strong> and press <strong>New</strong>.</li>
+<li>Pick the <strong>Category</strong>, write the <strong>Title</strong>, and leave <strong>Alias</strong> blank
+unless you want a specific URL — a generated alias is fine, and a
+deliberate one is worth choosing when you are about to mail the link out,
+because changing the title later changes nothing but changing the alias
+breaks the link.</li>
+<li>Write the <strong>Body</strong>, and add <strong>Tags</strong> if the hub uses them; tags are what
+connect the article to site search and to related content.</li>
+<li>Leave <strong>Publish</strong> at Unpublished for now and press <strong>Save &amp; Close</strong>.</li>
+<li>Read it back in the list, open it again, set <strong>Publish</strong> to Published and
+<strong>Access level</strong> to Public, and <strong>Save &amp; Close</strong>.</li>
+<li>Visit <code>/kb</code> and confirm it appears under the right category.</li>
+</ol>
+<p>Steps 5 and 6 are the useful habit: an unpublished article returns a
+not-found page rather than a half-written one, and publishing is a single
+switch you can flip back the moment you spot a mistake. Nothing here is
+irreversible except <strong>Delete</strong>, which removes the article outright with no
+trash to recover from.</p>
+<h2 id="comments-and-votes">Comments and votes</h2>
+<p>Members rate each article helpful or not helpful and can comment on it
+when comments are allowed. There is no administrator screen for comments:
+a member who reports a comment as abusive files a support ticket, and the
+comment is marked as reported on the site until a manager resolves the
+ticket. The vote totals appear in the Articles list and on each article's
+edit screen, where they can be reset.</p>
+<h2 id="options">Options</h2>
+<p>The <strong>Options</strong> button opens the component-wide defaults that articles
+inherit: the date to show, whether comments are allowed and when they
+close, and whether comment feeds are enabled and how much of each comment
+they carry. Every option is listed with its values in the
+<a href="../../../reference/configuration/components/kb/index.html">configuration reference</a>.</p>
+<p>The shipped values suit most hubs and are worth leaving alone: the modified
+date is shown, comments are allowed, and they close a year after the article
+was last touched. The one decision is comments. An article that invites comments turns into a small
+discussion the moment anyone disagrees with it, and there is no
+administrator screen for knowledge base comments — the only way to deal with
+a bad one is through the support ticket a member files when they report it.
+On a hub with few staff, turning comments off component-wide and pointing
+readers at <a href="../answers/index.html">Answers</a> or <a href="../support/index.html">Support</a> instead is
+the quieter arrangement. <strong>Close Comments</strong> is the middle course, and the default already
+takes it: comments close a set time after the article was last modified, so
+an article you keep current keeps its comments open and one you have not
+touched in a year does not.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> A setting on an individual article wins over the component
+option, permanently. An article whose <strong>Comments</strong> parameter has ever been
+set keeps its own value even after you change the option, so switching
+comments off component-wide does not switch them off on articles where
+somebody set the parameter by hand.</p>
+</aside>
+<p>The <strong>Permissions</strong> tab controls who may manage the component, and create,
+delete, edit, change the state of, or edit their own articles and
+categories. Permissions can be set for the whole component, for categories,
+and for articles.</p>
+<h2 id="api">API</h2>
+<p>The knowledge base exposes one endpoint, <code>GET /api/kb/list</code>, which returns
+articles for the site's search indexer. It requires an administrator token;
+see the <a href="../../../reference/api/kb/index.html">API reference</a>.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 009ec973b7</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../jobs/index.html" rel="prev"><span>Previous</span>Jobs</a><a class="pager__next" href="../languages/index.html" rel="next"><span>Next</span>Language Manager</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/09-components/19-kb.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

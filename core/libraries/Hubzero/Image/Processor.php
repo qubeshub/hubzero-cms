@@ -141,6 +141,21 @@ class Processor extends Obj
 	{
 		try
 		{
+			if (!is_file($this->source) || !is_readable($this->source)) 
+			{
+				return false;
+			}
+			
+			$finfo = finfo_open(FILEINFO_MIME_TYPE);
+			$mimeType = finfo_file($finfo, $this->source);
+			finfo_close($finfo);
+
+			$allowedTypes = ['image/jpeg', 'image/png', 'image/x-png', 'image/gif'];
+			if (!in_array($mimeType, $allowedTypes, true)) 
+			{
+					return false;
+			}       
+			
 			$image_atts = getimagesize($this->source);
 			if (empty($image_atts))
 			{
@@ -559,6 +574,25 @@ class Processor extends Obj
 	 */
 	public function display()
 	{
+		if (!is_file($this->source) || !is_readable($this->source)) 
+		{
+				return;
+		}
+		
+		$finfo = finfo_open(FILEINFO_MIME_TYPE);
+		$mimeType = finfo_file($finfo, $this->source);
+		finfo_close($finfo);
+
+		$allowedTypes = ['image/jpeg', 'image/png', 'image/x-png', 'image/gif'];
+		if (!in_array($mimeType, $allowedTypes, true)) 
+		{
+				return;
+		}       
+		
+		if (exif_imagetype($this->source) == false)
+		{
+				return;
+		}
 		$image_atts = getimagesize($this->source);
 
 		if ($image_atts)

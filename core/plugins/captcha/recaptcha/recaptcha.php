@@ -82,67 +82,16 @@ class plgCaptchaRecaptcha extends \Hubzero\Plugin\Plugin
 			return '<p class="error">' . Lang::txt('PLG_CAPTCHA_RECAPTCHA_API_NEEDED') . '</p>';
 		}
 
-		Document::addStyleDeclaration('
-			noscript .g-recaptcha-ns {
-				width: 302px;
-				height: 352px;
-			}
-			noscript .g-recaptcha-inner {
-				width: 302px;
-				height: 352px;
-				position: relative;
-			}
-			noscript .g-recaptcha-challenge {
-				width: 302px;
-				height: 352px;
-				position: absolute;
-			}
-			noscript .g-recaptcha-challenge iframe {
-				width: 302px;
-				height:352px;
-				border-style: none;
-			}
-			noscript .g-recaptcha-response-wrap {
-				width: 250px;
-				height: 80px;
-				position: absolute;
-				border-style: none;
-				bottom: 21px;
-				left: 25px;
-				margin: 0px;
-				padding: 0px;
-				right: 25px;
-			}
-			noscript .g-recaptcha-response {
-				width: 250px;
-				height: 80px;
-				border: 1px solid #c1c1c1;
-				margin: 0px;
-				padding: 0px;
-				resize: none;
-			}
-		');
 
 		// recaptcha html structure
 		// this has support for users with js off
 		$html  = '<div class="form-group">';
-		$html .= '<label class="">&nbsp;</label><div class="field-wrap">';
+		$html .= '<div class="field-wrap">';
+		$html .= '<label for="g-recaptcha-response" class="sr-only">' . Lang::txt('CAPTCHA verification') . '</label>';
 		$html .= '<div class="g-recaptcha" id="' . $id . '" data-type="' . $this->params->get('type', 'image') . '" data-theme="' . $this->params->get('theme', 'light') . '" data-sitekey="' . $this->params->get('public') . '"></div>
-					<noscript>
-					  <div class="g-recaptcha-ns">
-					    <div class="g-recaptcha-inner">
-					      <div class="g-recaptcha-challenge">
-					        <iframe sandbox="allow-scripts allow-same-origin allow-popups" src="' . static::$_jsFallbackUrl . $this->params->get('public') . '" frameborder="0" scrolling="no" title="' . Lang::txt('PLG_CAPTCHA_RECAPTCHA_TITLE') . '">
-					        </iframe>
-					      </div>
-					      <div class="g-recaptcha-response-wrap">
-					        <textarea id="g-recaptcha-response" name="g-recaptcha-response" class="g-recaptcha-response" value="">
-					        </textarea>
-					      </div>
-					    </div>
-					  </div>
-					</noscript>
 					<script type="text/javascript" src="' . static::$_jsUrl . '?hl=' . $this->params->get('language', 'en') . '" async defer></script>';
+		// [a11y] Remove role="presentation" from reCAPTCHA iframe (injected by Google JS)
+		$html .= '<script type="text/javascript" src="' . rtrim(\Request::base(true), '/') . '/core/plugins/captcha/recaptcha/assets/js/recaptcha-a11y.js" defer></script>';
 		$html .= '</div>';
 		$html .= '</div>';
 

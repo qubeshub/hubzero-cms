@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tools · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="The Tools component has two halves. The half a tool contributor sees lives on the site, at , and is where a tool moves from registration to publication. The…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/components/tools/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Tools</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#half-a-system">Half a system</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-tool-pipeline-lives-elsewhere">The tool pipeline lives elsewhere</a></li>
+<li class="toc__item toc__item--l2"><a href="#where-to-find-it">Where to find it</a></li>
+<li class="toc__item toc__item--l2"><a href="#pipeline">Pipeline</a></li>
+<li class="toc__item toc__item--l3"><a href="#versions">Versions</a></li>
+<li class="toc__item toc__item--l2"><a href="#hosts">Hosts</a></li>
+<li class="toc__item toc__item--l2"><a href="#host-types">Host Types</a></li>
+<li class="toc__item toc__item--l2"><a href="#zones">Zones</a></li>
+<li class="toc__item toc__item--l2"><a href="#sessions">Sessions</a></li>
+<li class="toc__item toc__item--l3"><a href="#active">Active</a></li>
+<li class="toc__item toc__item--l3"><a href="#session-classes">Session classes</a></li>
+<li class="toc__item toc__item--l2"><a href="#user-preferences">User Preferences</a></li>
+<li class="toc__item toc__item--l2"><a href="#file-handlers">File Handlers</a></li>
+<li class="toc__item toc__item--l2"><a href="#windows">Windows</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Components</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Tools</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Tools</h1>
+        </header>
+        
+        <div class="prose">
+<p>The Tools component has two halves. The half a tool contributor sees lives on
+the site, at <code>/tools/pipeline</code>, and is where a tool moves from registration to
+publication. The half described here lives in the administrator interface and
+manages the machinery around it: execution hosts, session zones, running
+sessions, per-user session limits, and file handlers.</p>
+<h2 id="half-a-system">Half a system</h2>
+<p>This is the part of the chapter to read before any of the rest.</p>
+<p>The Tools component is the CMS half of a system whose other half is not in
+this repository. What lives here is a catalogue of tool contributions, a set
+of records describing execution hosts and zones, and the screens that read
+and write them. What runs a tool — the middleware that starts a session,
+allocates it to a host, keeps a container alive and streams its display back
+to a browser — is separate software, installed separately, with its own
+database.</p>
+<p>That has two consequences for a manager.</p>
+<p><strong>Most of these screens are a view onto a database this repository does not
+create.</strong> Hosts, provisions, host status, container statuses and running
+sessions are read from the middleware database, configured under <strong>Options →
+Middleware</strong> as <strong>Middleware DB Host</strong>, <strong>Middleware Database</strong>, <strong>Middleware
+DB Username</strong> and <strong>Middleware DB Password</strong>. The shipped install leaves
+every one of those blank. Until a middleware installation exists and those
+credentials point at it, the Hosts, Sessions and status screens are empty or
+error, and there is nothing you can do about that from inside the CMS.</p>
+<p><strong>Several statements in this chapter could not be verified against this
+repository, and are marked where they appear.</strong> The behaviour of the
+middleware itself — what a provisions bit means to the scheduler, what
+happens on the host when a session is terminated, how a zone's VNC proxy is
+used, what provisions an <code>SSH Key Path</code> — is decided by code that is not
+here. This chapter describes what the CMS screens store and send. It does
+not describe what the other half does with it, because that could not be
+checked.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> <strong>Middleware</strong> on the Options screen is declared <strong>OFF</strong> in the
+component manifest and set to <strong>ON</strong> by the shipped install row, and the
+stored row is what runs. So a hub installed from this release says the
+middleware is on while holding no credentials for it. The setting is not a
+statement of fact about your hub; treat it as a switch you have not
+configured yet.</p>
+</aside>
+<h2 id="the-tool-pipeline-lives-elsewhere">The tool pipeline lives elsewhere</h2>
+<p>For the pipeline itself — the nine tool states, the administrator controls,
+the install and publish steps, and the group membership those controls
+require — see <a href="../../maintenance/tools/index.html">Tools</a> in the maintenance
+section. That chapter is the one to read before touching a tool
+contribution.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> The pipeline's own controls are granted by membership of the
+group named in the <strong>Admin Group</strong> option, which the shipped install sets
+to <code>apps</code>. The install creates no groups at all, so that group does not
+exist until somebody makes it — and while the option names a group, a Super
+User who is <em>not</em> in it has no pipeline controls either. The code says so
+in as many words: &quot;if no admin group is defined, allow superadmin to act as
+admin, otherwise superadmins can only act if they are also a member of the
+component admin group&quot;
+(<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/components/com_tools/site/controllers/pipeline.php"><code>pipeline.php:2523</code></a>).
+Create the <code>apps</code> group and put yourself in it, or clear the option, before
+you try to move a contribution along.</p>
+</aside>
+<h2 id="where-to-find-it">Where to find it</h2>
+<p>Go to <strong>Components → Tools</strong>. The submenu holds:</p>
+<table>
+<thead>
+<tr>
+<th>Screen</th>
+<th>Shown</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Pipeline</strong></td>
+<td>always</td>
+</tr>
+<tr>
+<td><strong>Hosts</strong></td>
+<td>always</td>
+</tr>
+<tr>
+<td><strong>Host Types</strong></td>
+<td>always</td>
+</tr>
+<tr>
+<td><strong>Zones</strong></td>
+<td>only when the <strong>Zones</strong> option is on</td>
+</tr>
+<tr>
+<td><strong>Sessions</strong></td>
+<td>always</td>
+</tr>
+<tr>
+<td><strong>User Preferences</strong></td>
+<td>always</td>
+</tr>
+<tr>
+<td><strong>File Handlers</strong></td>
+<td>always</td>
+</tr>
+<tr>
+<td><strong>Windows</strong></td>
+<td>only when the <strong>Access Key ID</strong> option is set</td>
+</tr>
+</tbody>
+</table>
+<p>Every screen needs <code>core.manage</code> on <code>com_tools</code>. That is separate from the
+pipeline's own controls, which are granted by membership of the group named
+in the <strong>Admin Group</strong> option.</p>
+<h2 id="pipeline">Pipeline</h2>
+<p>A list of every tool contribution: <strong>ID</strong>, <strong>Name</strong>, <strong>Title</strong>, <strong>State</strong>,
+<strong>Registered</strong>, <strong>Changed</strong>, and <strong>Versions</strong>. Above it are a <strong>Search</strong> box
+and a <strong>State</strong> drop-down. The toolbar carries only <strong>Options</strong> and <strong>Help</strong> —
+tools are not created or deleted here.</p>
+<p>Clicking a tool's name or title opens a small edit form carrying only <strong>Title</strong>,
+<strong>Ticket ID</strong>, and <strong>State</strong>. <strong>State</strong> offers all ten values — Unpublished,
+Registered, Created, Uploaded, Installed, Updated, Approved, Published,
+Retired, Abandoned. Setting it here writes the state
+directly and skips everything the pipeline would otherwise do, so use the
+site-side <strong>Flip Status</strong> control instead unless you are repairing a stuck
+contribution.</p>
+<p><strong>Options</strong> in the toolbar opens the component's configuration; the full
+parameter list is in the
+<a href="../../../reference/configuration/components/tools/index.html">generated reference</a>.</p>
+<h3 id="versions">Versions</h3>
+<p>The number in the <strong>Versions</strong> column links to the tool's version list —
+<strong>ID</strong>, <strong>Name</strong>, <strong>Version</strong>, <strong>Revision</strong>, <strong>State</strong>, and, when DOI
+registration is configured, <strong>DOI</strong>.</p>
+<p>A version's edit form has a <strong>Details</strong> tab with <strong>Command</strong>, <strong>Timeout</strong>,
+<strong>Required Host</strong>, <strong>Middleware</strong> and <strong>Parameters</strong>, a DOI panel, and a
+<strong>Zones</strong> tab listing the zones the version may run in.</p>
+<p>The <strong>DOI</strong> column appears only when the <strong>Enable DOI service?</strong> option is on.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The component has a <code>batchdoi</code> task that registers DOIs for tool
+versions that lack one, but no screen links to it. Reach it by hand at
+<code>index.php?option=com_tools&amp;controller=pipeline&amp;task=batchdoi&amp;limit=25</code>.
+It processes <code>limit</code> records — two by default — and prints its results as
+plain text.</p>
+</aside>
+<h2 id="hosts">Hosts</h2>
+<p>A host is a machine the middleware may start sessions on. You do not add one
+here because you have bought a server; you add one here because the
+middleware already knows about it and the CMS needs a matching record. Which
+way round the two are meant to be kept in step could not be determined from
+this repository.</p>
+<p>The execution hosts that run tool sessions. Columns: <strong>Name</strong>, <strong>Service
+Host</strong>, <strong>Provisions</strong>, <strong>Status</strong>, <strong>Uses</strong>, <strong>Zone</strong>, and <strong>Broken
+Containers</strong>.</p>
+<p>A host's edit form asks for <strong>Name</strong> (a valid hostname), <strong>Service Host</strong>,
+the <strong>Types</strong> it provides, and its <strong>Zone</strong>. The right-hand side shows the
+host's live status, its <strong>Tool Sessions</strong>, and its <strong>Container Statuses</strong>.</p>
+<p>The <strong>Provisions</strong> cell lists every host type; the ones the host provides are
+bold. Each is a link that flips that capability bit on the host, so you can
+take one capability away without touching the rest. The <strong>Status</strong> cell links
+to a live status page for the host.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Hosts, provisions, status and container information live in the
+middleware database, not the CMS database. When the middleware is
+unreachable these screens are empty or error. What the middleware does
+with a changed provision bit, and how quickly, could not be verified here.</p>
+</aside>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> The provisions toggle is a plain GET link with no CSRF token
+and no permission check beyond <code>core.manage</code>. Treat a link to it in an
+email the way you would treat any other unguarded admin action.</p>
+</aside>
+<h2 id="host-types">Host Types</h2>
+<p>A host type is a label two sides agree on: a host says it provides type <em>n</em>,
+a tool version says it requires type <em>n</em>, and the middleware matches them.
+The meanings are entirely a local convention — nothing in this repository
+defines what any bit means — so a hub inherits whatever its middleware
+installation was set up with.</p>
+<p>The capability bits a host advertises and a tool requires. Columns:
+<strong>Name</strong>, <strong>Bit#</strong>, <strong>Description</strong>, and <strong>References</strong> — the number of hosts
+using the type.</p>
+<p>An entry is a <strong>Name</strong>, a <strong>Value</strong> (the bit number), and a <strong>Description</strong>.
+A tool's <strong>Required Host</strong> field is matched against these.</p>
+<h2 id="zones">Zones</h2>
+<p>Zones group hosts into pools — a local cluster, a remote site — so a tool
+version can be pinned to one. Only a hub whose middleware spans more than
+one site needs them.</p>
+<p>The screen appears only when the <strong>Zones</strong> option is turned on. It ships
+off, so on a stock hub the submenu entry is absent. Turning it on adds the
+screen; whether the middleware honours zone assignment, and how, could not
+be verified here.</p>
+<p>Columns: <strong>Zone</strong>, <strong>Type</strong>, <strong>State</strong>, <strong>Default</strong>, <strong>Master</strong>, <strong>SSH Key
+Path</strong>, and <strong>Locations</strong>. Type is <strong>Local</strong> or <strong>Remote</strong>; state is <strong>up</strong>
+or <strong>down</strong>; one zone is the <strong>Default</strong> and the toolbar's <strong>Make default</strong>
+sets it.</p>
+<p>A zone's edit form has a <strong>Details</strong> tab and a <strong>Locations</strong> tab. Details
+takes the <strong>Zone</strong> name (letters, numbers, dashes and underscores), a
+<strong>Title</strong>, a <strong>Description</strong>, a <strong>Master</strong>, a <strong>Type</strong>, and a <strong>State</strong>, plus
+an <strong>Image</strong> panel and a <strong>Parameters</strong> fieldset holding the VNC and
+websocket proxy settings:</p>
+<ul>
+<li><strong>Websocket VNC Proxy Server Enabled</strong>, <strong>Websocket VNC Proxy Server</strong>,
+<strong>Secure Websocket VNC Proxy Server</strong></li>
+<li><strong>VNC Proxy Server Configuration Enabled</strong>, <strong>VNC Proxy Server</strong>,
+<strong>Secure VNC Proxy Server</strong></li>
+</ul>
+<p><strong>Locations</strong> are IP ranges — <strong>IP from</strong>, <strong>IP to</strong>, <strong>Continent</strong>,
+<strong>Country</strong>, <strong>Region</strong>, <strong>City</strong> — used to send a visitor to the nearest
+zone. A zone must be saved before locations or an image can be added.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> <strong>SSH Key Path</strong> is a column on the list but has no field on the
+form. Set it in the database, or through whatever provisions the zone.</p>
+</aside>
+<h2 id="sessions">Sessions</h2>
+<p>A running tool session holds a container on a host, so the two questions a
+manager has are <em>what is running now</em> and <em>how many may one person run at
+once</em>. <strong>Active</strong> answers the first, <strong>Session classes</strong> the second.</p>
+<p>Two screens, reached from the sub-navigation: <strong>Active</strong> and <strong>Session
+classes</strong>.</p>
+<h3 id="active">Active</h3>
+<p>Every tool session currently running. Columns: <strong>Session</strong>, <strong>Owner</strong>,
+<strong>Viewer</strong>, <strong>Started</strong>, <strong>Last accessed</strong>, <strong>Tool</strong>, <strong>Exec host</strong>, and
+<strong>Stop</strong>. Drop-downs filter by <strong>Tool</strong>, <strong>Execution Host</strong>, and <strong>Viewer</strong>.</p>
+<p>The <strong>Stop</strong> cell terminates one session. Ticking rows and pressing
+<strong>Delete</strong> terminates several. Terminating is immediate and the user is not
+warned.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Stopping a session takes a running program away from someone
+who is using it. Whether their unsaved work survives depends on the tool
+and on the middleware, and could not be determined from this repository —
+assume it does not. Stop a session when a host has to come down or a
+session is stuck, not to tidy the list.</p>
+</aside>
+<h3 id="session-classes">Session classes</h3>
+<p>A session class is a named session allowance. Columns: <strong>ID</strong>, <strong>Alias</strong>, and
+<strong>Jobs Allowed</strong>.</p>
+<p>The install creates one class, <code>default</code>, allowing <strong>3</strong> concurrent sessions.
+That is the number every user gets unless something overrides it.</p>
+<p>A class's edit form has:</p>
+<ul>
+<li><strong>Alias</strong> — must be unique, and cannot be <code>custom</code>, which is reserved.</li>
+<li><strong>Jobs Allowed</strong> — the number of concurrent sessions.</li>
+<li><strong>User Access Groups</strong> — the access groups this class applies to. A user
+added to one of these groups is given this class automatically.</li>
+</ul>
+<p>Deleting a class moves everyone in it back to the <code>default</code> class. The
+<code>default</code> class itself cannot be deleted.</p>
+<h2 id="user-preferences">User Preferences</h2>
+<p>This is how you give one person more sessions than everyone else: a course
+instructor who needs several tools open at once, or a developer testing a
+contribution. For a whole class of people, add a session class and attach an
+access group to it instead — that scales, and this does not.</p>
+<p>The per-user override of the session allowance. This is the screen the old
+version of this page described.</p>
+<p><img src="../../media/tools-tools-userpreferences.png" alt="The User Preferences list" /></p>
+<p>The list shows <strong>User ID</strong>, <strong>Username</strong>, <strong>Name</strong>, <strong>Session class</strong>, and
+<strong>Sessions</strong>, all sortable. Above it, a <strong>Search by</strong> drop-down (<strong>Username</strong>
+or <strong>Name</strong>) with a search box and <strong>Go</strong>, and a <strong>- Session Class -</strong> filter.</p>
+<p>Only users with an explicit entry appear. Everyone else runs on the class
+their access groups give them, or on <code>default</code>.</p>
+<p>To change a user's limit:</p>
+<ol>
+<li>Go to <strong>Components → Tools → User Preferences</strong>.</li>
+<li>If the user is listed, tick the row and press <strong>Edit</strong>. If not, press
+<strong>New</strong> and find them with the <strong>User</strong> field — search by name, or type a
+username or user ID.</li>
+<li>Set <strong>Session class</strong>. Picking a named class fills <strong>Sessions</strong> from that
+class and makes it read-only. Picking <strong>custom</strong> leaves <strong>Sessions</strong>
+editable, so you can give one person a number no class offers.</li>
+<li>Fill in <strong>Sessions</strong> if you chose <strong>custom</strong>. It must be numeric.</li>
+<li><strong>Preferences</strong> takes free-form extra settings for the session.</li>
+<li>Press <strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>Ticking rows and pressing <strong>Default</strong> in the toolbar puts those users back on
+the <code>default</code> class.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> The <strong>Default</strong> action fails with <em>Could not find class with
+name 'default'!</em> if the <code>default</code> session class has been renamed or
+deleted. Do not rename it.</p>
+</aside>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The screenshot above predates two changes: the <strong>Search by</strong> and
+<strong>for</strong> labels beside the filter, which were missing strings, and the
+<strong>Zones</strong> and <strong>Windows</strong> submenu entries, which appear when those options
+are on.</p>
+</aside>
+<h2 id="file-handlers">File Handlers</h2>
+<p>A file handler is the &quot;open with&quot; list: a user looking at a <code>.dat</code> file in
+their storage is offered the tool you name here. Worth setting up on a hub
+whose users work with a handful of well-known file types, and not worth it
+otherwise.</p>
+<p>A file handler tells the hub which tool opens a given file from a user's
+storage. Columns: <strong>Tool alias</strong>, <strong>Prompt</strong>, and <strong>Rules</strong>.</p>
+<p>A handler is a <strong>Tool alias</strong> chosen from the installed tools, a <strong>Prompt</strong>
+shown to the user, and a list of rules. Each rule is an <strong>Extension</strong> and a
+<strong>Quantity</strong> — how many files of that extension the tool accepts. <strong>Add
+rule</strong> and <strong>Delete rule</strong> build the list.</p>
+<p>If the drop-down says <em>No tools installed</em>, no tool has reached the
+<strong>Installed</strong> state yet.</p>
+<h2 id="windows">Windows</h2>
+<p>Present only when the component's <strong>Access Key ID</strong> option holds an Amazon
+Web Services key. The AWS side of this — what the instances are, how they
+are built and what the CMS expects to find running on them — is outside this
+repository and could not be verified. It manages Windows tool instances on AWS: <strong>ID</strong>, <strong>Name</strong>,
+<strong>Title</strong>, <strong>UUID</strong>, in-use and available session counts, and <strong>State</strong>, with
+per-instance session and usage views and a <strong>Terminate</strong> action.</p>
+<p>Leave the option empty on a hub with no Windows tools and the screen never
+appears.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 009ec973b7</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../tags/index.html" rel="prev"><span>Previous</span>Tags</a><a class="pager__next" href="../usage/index.html" rel="next"><span>Next</span>Usage</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/09-components/36-tools.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

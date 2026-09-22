@@ -135,7 +135,7 @@ endif;
 
 						<div class="form-group">
 							<label id="group-logo-label">
-								<select name="group[logo]" id="group_logo" rel="<?php echo $this->group->get('gidNumber'); ?>">
+								<select name="group[logo]" id="group_logo" rel="<?php echo $this->group->get('gidNumber'); ?>" aria-label="<?php echo Lang::txt('COM_GROUPS_LOGO'); ?>">
 									<option value=""><?php echo Lang::txt('COM_GROUPS_LOGO_FIELD_OPTION_NULL'); ?></option>
 									<?php foreach ($this->logos as $logo): ?>
 										<?php
@@ -207,6 +207,30 @@ endif;
 							</label>
 						</div>
 					</fieldset>
+
+<?php if (\Hubzero\User\Group\Membership::enabled() && \Hubzero\User\Group\Membership::supported()) : ?>
+	<?php
+	$gp       = new \Hubzero\Config\Registry($this->group->get('params'));
+	$termDays = (int) $gp->get('membership_default_term_days', 0);
+	$hubMax   = (int) Component::params('com_groups')->get('membership_max_term_days', 0);
+	?>
+					<fieldset>
+						<legend><?php echo Lang::txt('COM_GROUPS_MEMBERSHIP_TERM_LEGEND'); ?></legend>
+
+						<div class="form-group">
+							<label for="membership_default_term_days">
+								<?php echo Lang::txt('COM_GROUPS_MEMBERSHIP_TERM_DEFAULT'); ?>
+								<input type="number" min="0" step="1"<?php echo $hubMax > 0 ? ' max="' . $hubMax . '"' : ''; ?>
+									class="form-control" name="params[membership_default_term_days]"
+									id="membership_default_term_days" value="<?php echo $termDays; ?>" />
+								<br /><span class="indent"><?php echo Lang::txt('COM_GROUPS_MEMBERSHIP_TERM_DEFAULT_DESC'); ?></span>
+								<?php if ($hubMax > 0) : ?>
+									<br /><span class="indent"><?php echo Lang::txt('COM_GROUPS_MEMBERSHIP_TERM_HUB_MAX', $hubMax); ?></span>
+								<?php endif; ?>
+							</label>
+						</div>
+					</fieldset>
+<?php endif; ?>
 				</fieldset>
 
 				<fieldset>
@@ -240,14 +264,14 @@ endif;
 						<fieldset class="preview">
 							<legend><?php echo Lang::txt('COM_GROUPS_ACCESS_SETTINGS_DESC_DESC'); ?></legend>
 
+							<img src="<?php echo $default_logo; ?>" alt="<?php echo $this->group->get('cn') ?>" >
 							<ul id="access">
-								<img src="<?php echo $default_logo; ?>" alt="<?php echo $this->group->get('cn') ?>" >
 								<?php for ($i=0; $i<count($this->hub_group_plugins); $i++): ?>
 									<?php if ($this->hub_group_plugins[$i]['display_menu_tab']): ?>
 										<li class="group_access_control_<?php echo strtolower($this->hub_group_plugins[$i]['title']); ?>">
 											<input type="hidden" name="group_plugin[<?php echo $i; ?>][name]" value="<?php echo $this->hub_group_plugins[$i]['name']; ?>">
 											<span class="menu_item_title"><?php echo $this->hub_group_plugins[$i]['title']; ?></span>
-											<select name="group_plugin[<?php echo $i; ?>][access]">
+											<select name="group_plugin[<?php echo $i; ?>][access]" aria-label="<?php echo $this->escape($this->hub_group_plugins[$i]['title']) . ' ' . Lang::txt('COM_GROUPS_ACCESS'); ?>">
 												<?php foreach ($levels as $level => $name): ?>
 													<?php $sel = ($this->group_plugin_access[$this->hub_group_plugins[$i]['name']] == $level) ? 'selected' : ''; ?>
 													<?php if (($this->hub_group_plugins[$i]['name'] == 'overview' && $level != 'nobody') || $this->hub_group_plugins[$i]['name'] != 'overview'): ?>
@@ -332,7 +356,7 @@ endif;
 			<div class="col span4 omega floating-iframe-col">
 				<?php if ($this->group->get('gidNumber')) : ?>
 					<div class="floating-iframe-container">
-						<iframe class="floating-iframe" src="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('gidNumber').'&controller=media&task=filebrowser&tmpl=component'); ?>"></iframe>
+						<iframe class="floating-iframe" title="<?php echo Lang::txt('COM_GROUPS_MEDIA_BROWSER'); ?>" src="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('gidNumber').'&controller=media&task=filebrowser&tmpl=component'); ?>"></iframe>
 					</div>
 				<?php else : ?>
 					<p><em><?php echo Lang::txt('COM_GROUPS_EDIT_MUST_SAVE_TO_UPLOAD_IMAGES'); ?></em></p>

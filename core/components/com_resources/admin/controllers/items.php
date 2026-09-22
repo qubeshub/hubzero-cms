@@ -32,6 +32,10 @@ use Route;
 use Event;
 use Lang;
 use App;
+use Component;
+use Date;
+use Notify;
+use User;
 
 /**
  * Manage resource entries
@@ -818,8 +822,6 @@ class Items extends AdminController
 			$isNew = 1;
 		}
 
-		$old = Entry::blank();
-
 		if ($isNew)
 		{
 			// New entry
@@ -991,7 +993,7 @@ class Items extends AdminController
 				}
 			}
 
-			$row->set('path', str_replace($tmpid, Str::pad($row->get('id')), $row->get('path')));
+			$row->set('path', str_replace($tmpid, Str::pad($row->get('id')), $row->get('path', '')));
 			$row->save();
 		}
 
@@ -1123,7 +1125,7 @@ class Items extends AdminController
 		if ($row->standalone == 1 && $this->config->get('email_when_approved'))
 		{
 			// If the state went from pending to published
-			if ($row->published == 1 && $old->published == Entry::STATE_DRAFT)
+			if ($row->published == 1 && $old->published == Entry::STATE_PENDING)
 			{
 				$this->_emailContributors($row);
 

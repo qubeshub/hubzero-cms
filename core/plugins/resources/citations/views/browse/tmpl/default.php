@@ -27,8 +27,19 @@ if ($this->citations)
 	// Loop through the citations and build the HTML
 	foreach ($this->citations as $cite)
 	{
+		$formatted = trim($cite->formatted(array('format' => $this->citationFormat)));
+		// Strip outer <p> tags since the citation is already inside <li>
+		$formatted = preg_replace('#^\s*<p>\s*#i', '', $formatted);
+		$formatted = preg_replace('#\s*</p>\s*$#i', '', $formatted);
+
+		// Skip citations with no rendered content (otherwise we emit an empty <li>)
+		if (strip_tags($formatted) === '' || trim($formatted) === '')
+		{
+			continue;
+		}
+
 		$item  = "\t" . '<li>' . "\n";
-		$item .= $cite->formatted(array('format' => $this->citationFormat));
+		$item .= "\t\t" . $formatted . "\n";
 		$item .= "\t\t" . '<p class="details">' . "\n";
 		$item .= "\t\t\t" . '<a href="' . Route::url('index.php?option=com_citations&task=download&id=' . $cite->id . '&citationFormat=bibtex&no_html=1') . '" title="' . Lang::txt('PLG_RESOURCES_CITATIONS_DOWNLOAD_BIBTEX') . '">BibTex</a> <span>|</span> ' . "\n";
 		$item .= "\t\t\t" . '<a href="' . Route::url('index.php?option=com_citations&task=download&id=' . $cite->id . '&citationFormat=endnote&no_html=1') . '" title="' . Lang::txt('PLG_RESOURCES_CITATIONS_DOWNLOAD_ENDNOTE') . '">EndNote</a>' . "\n";
@@ -80,46 +91,60 @@ if ($this->citations)
 	<p><?php echo Lang::txt('PLG_RESOURCES_CITATIONS_NO_CITATIONS_FOUND'); ?></p>
 <?php } ?>
 
-<div class="customfields">
-	<?php
-		// Parse for <nb:field> tags
-		$type = $this->resource->type;
+<?php
+	// Parse for <nb:field> tags
+	$type = $this->resource->type;
 
-		$data = array();
-		preg_match_all("#<nb:(.*?)>(.*?)</nb:(.*?)>#s", $this->resource->fulltxt, $matches, PREG_SET_ORDER);
-		if (count($matches) > 0)
+	$data = array();
+	preg_match_all("#<nb:(.*?)>(.*?)</nb:(.*?)>#s", $this->resource->fulltxt, $matches, PREG_SET_ORDER);
+	if (count($matches) > 0)
+	{
+		foreach ($matches as $match)
 		{
-			foreach ($matches as $match)
+			$data[$match[1]] = str_replace('="/site', '="' . substr(PATH_APP, strlen(PATH_ROOT)) . '/site', $match[2]);
+		}
+	}
+	include_once Component::path('com_resources') . DS . 'models' . DS . 'elements.php';
+	$elements = new \Components\Resources\Models\Elements($data, $this->resource->type->customFields);
+	$schema = $elements->getSchema();
+	$tab = Request::getCmd('active', 'citations');  // The active tab (section)
+
+	$hasCustomFields = false;
+	if (is_object($schema))
+	{
+		if (!isset($schema->fields) || !is_array($schema->fields))
+		{
+			$schema->fields = array();
+		}
+		foreach ($schema->fields as $field)
+		{
+			if (isset($data[$field->name]) && $elements->display($field->type, $data[$field->name]) && isset($field->display) && $field->display == $tab)
 			{
-				$data[$match[1]] = str_replace('="/site', '="' . substr(PATH_APP, strlen(PATH_ROOT)) . '/site', $match[2]);
+				$hasCustomFields = true;
+				break;
 			}
 		}
-		include_once Component::path('com_resources') . DS . 'models' . DS . 'elements.php';
-		$elements = new \Components\Resources\Models\Elements($data, $this->resource->type->customFields);
-		$schema = $elements->getSchema();
-		$tab = Request::getCmd('active', 'citations');  // The active tab (section)
+	}
 
-		if (is_object($schema))
+	if ($hasCustomFields) :
+?>
+<div class="customfields">
+	<?php
+		foreach ($schema->fields as $field)
 		{
-			if (!isset($schema->fields) || !is_array($schema->fields))
+			if (isset($data[$field->name]))
 			{
-				$schema->fields = array();
-			}
-			foreach ($schema->fields as $field)
-			{
-				if (isset($data[$field->name]))
+				if ($elements->display($field->type, $data[$field->name]) && isset($field->display) && $field->display == $tab)
 				{
-					if ($elements->display($field->type, $data[$field->name]) && isset($field->display) && $field->display == $tab )
-					{
-						?>
-						<h4><?php echo $field->label; ?></h4>
-						<div class="resource-content">
-						<?php echo $elements->display($field->type, $data[$field->name]); ?>
-						</div>
-						<?php
-					}
+					?>
+					<h4><?php echo $field->label; ?></h4>
+					<div class="resource-content">
+					<?php echo $elements->display($field->type, $data[$field->name]); ?>
+					</div>
+					<?php
 				}
 			}
 		}
 	?>
 </div><!-- / .customfields -->
+<?php endif; ?>

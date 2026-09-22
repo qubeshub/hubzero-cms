@@ -20,6 +20,10 @@ use Event;
 use User;
 use Lang;
 use Date;
+use App;
+use Route;
+use Document;
+use Cache;
 
 /**
  * Wiki controller class for pages
@@ -160,10 +164,14 @@ class Pages extends SiteController
 		// Does a page exist for the given pagename?
 		if ($this->page->isNew() || $this->page->isDeleted())
 		{
-			/*if (!$this->page->access('create'))
+			if (Request::getWord('format') == 'raw')
 			{
-				App::abort(404, Lang::txt('COM_WIKI_WARNING_PAGE_DOES_NOT_EXIST'));
-			}*/
+				ob_clean();
+				header('Content-type: text/plain');
+				header('HTTP/1.0 404 Not Found');
+				echo 'Page does not exist.';
+				exit();
+			}
 
 			$this->view
 				->set('page', $this->page)
@@ -221,6 +229,15 @@ class Pages extends SiteController
 
 		if (!$revision->get('id'))
 		{
+			if (Request::getWord('format') == 'raw')
+			{
+				ob_clean();
+				header('Content-type: text/plain');
+				header('HTTP/1.0 404 Not Found');
+				echo 'No such revision.';
+				exit();
+			}
+
 			$this->view
 				->set('page', $this->page)
 				->set('version', ($version ? $version : $this->page->get('version_id')))
@@ -319,9 +336,9 @@ class Pages extends SiteController
 			);
 		}
 
-		// Check if the page can be edited
-		if ((!$this->page->access('edit') || ($this->page->created_by && $this->page->created_by != User::get('id')))
-			&& !$this->page->access('manage'))
+		// Check if the page can be edited. access('edit') already encodes
+		// ownership (core.edit, or the creator via core.edit.own).
+		if (!$this->page->access('edit') && !$this->page->access('manage'))
 		{
 			App::redirect(
 				Route::url($this->page->link()),
@@ -330,8 +347,8 @@ class Pages extends SiteController
 			);
 		}
 
-		// make help pages noneditable
-		if ($this->page->getNamespace() == 'help')
+		// Help pages are shipped documentation; only wiki managers may edit them
+		if ($this->page->getNamespace() == 'help' && !$this->page->access('manage'))
 		{
 			App::redirect(
 				Route::url($this->page->link()),
@@ -426,6 +443,17 @@ class Pages extends SiteController
 				Lang::txt(strtoupper($this->_option)),
 				'index.php?option=' . $this->_option . '&controller=' . $this->_controller
 			);
+		}
+		// Include the page's ancestors in the trail (matches the display view)
+		if ($this->page->get('parent'))
+		{
+			foreach ($this->page->ancestors() as $p)
+			{
+				Pathway::append(
+					$p->get('title'),
+					$p->link()
+				);
+			}
 		}
 		Pathway::append(
 			$this->page->title,
@@ -756,9 +784,9 @@ class Pages extends SiteController
 				'error'
 			);
 		}
-		// Make sure they're authorized to delete
-		if ((!$this->page->access('delete') || ($this->page->created_by && $this->page->created_by != User::get('id')))
-			&& !$this->page->access('manage'))
+		// Make sure they're authorized to delete. access('delete') already
+		// encodes ownership via the ACL.
+		if (!$this->page->access('delete') && !$this->page->access('manage'))
 		{
 			App::redirect(
 				Route::url($this->page->link()),
@@ -886,13 +914,24 @@ class Pages extends SiteController
 			);
 		}
 
-		// Make sure they're authorized to delete
+		// Make sure they're authorized
 		if (!$this->page->access('edit'))
 		{
 			App::redirect(
 				Route::url($this->page->link('base')),
 				Lang::txt('COM_WIKI_ERROR_NOTAUTH'),
 				'error'
+			);
+		}
+
+		// The wiki home page cannot be renamed (change the homepage setting first)
+		if ($this->page->get('pagename') == $this->book->config('homepage', 'MainPage')
+			&& !$this->page->get('path'))
+		{
+			App::redirect(
+				Route::url($this->page->link()),
+				Lang::txt('COM_WIKI_WARNING_NO_RENAME_HOME'),
+				'warning'
 			);
 		}
 
@@ -973,6 +1012,27 @@ class Pages extends SiteController
 
 		// Load the page
 		$this->page = Page::oneByPath($oldpagename, $this->book->get('scope'), $this->book->get('scope_id'));
+
+		// Must be authorized to edit the page being renamed
+		if (!$this->page->access('edit') && !$this->page->access('manage'))
+		{
+			App::redirect(
+				Route::url($this->page->link()),
+				Lang::txt('COM_WIKI_ERROR_NOTAUTH'),
+				'error'
+			);
+		}
+
+		// The wiki home page cannot be renamed (change the homepage setting first)
+		if ($this->page->get('pagename') == $this->book->config('homepage', 'MainPage')
+			&& !$this->page->get('path'))
+		{
+			App::redirect(
+				Route::url($this->page->link()),
+				Lang::txt('COM_WIKI_WARNING_NO_RENAME_HOME'),
+				'warning'
+			);
+		}
 
 		$newpagename = $this->page->normalize($newpagename);
 
@@ -1145,7 +1205,56 @@ class Pages extends SiteController
 			->set('page', $this->page)
 			->set('revision', $revision);
 
-		$pdf->writeHTML($this->view->loadTemplate(), true, false, true, false, '');
+		$html = $this->view->loadTemplate();
+		// Strip elements that TCPDF doesn't handle
+		$html = preg_replace('#</?(?:thead|tbody)(?:\s[^>]*)?>#i', '', $html);
+		$html = preg_replace('#\s+scope="[^"]*"#i', '', $html);
+
+		// Sanitize HTML for TCPDF compatibility
+		$html = self::sanitizeHtmlForPdf($html);
+
+		// Render math formulas as PNG images for PDF (MathJax can't run in TCPDF)
+		$mathTmpDir = PATH_APP . '/site/wiki/tmp';
+		$mathOutDir = PATH_APP . '/site/wiki/math';
+		$html = preg_replace_callback('#<span class="asciimath">\$\$(.*?)\$\$</span>#s', function($m) use ($mathTmpDir, $mathOutDir) {
+			$tex = trim($m[1]);
+			if (empty($tex)) {
+				return '';
+			}
+			// Run texvc — it returns a status char + 32-char hash
+			$cmd = '/usr/bin/texvc ' . escapeshellarg($mathTmpDir) . ' ' . escapeshellarg($mathTmpDir) . ' ' . escapeshellarg($tex) . ' UTF-8';
+			$output = shell_exec($cmd);
+
+			if ($output && preg_match('/^[+cmlCML]([a-f0-9]{32})/', $output, $hm)) {
+				$hash = $hm[1];
+				$tmpPng = $mathTmpDir . '/' . $hash . '.png';
+				$hashDir = $mathOutDir . '/' . $hash[0] . '/' . $hash[1] . '/' . $hash[2];
+				$pngPath = $hashDir . '/' . $hash . '.png';
+
+				if (file_exists($tmpPng)) {
+					if (!is_dir($hashDir)) {
+						@mkdir($hashDir, 0775, true);
+					}
+					@rename($tmpPng, $pngPath);
+				}
+
+				if (file_exists($pngPath)) {
+					return '<img src="' . $pngPath . '" alt="' . htmlspecialchars($tex) . '" />';
+				}
+			}
+			// Fallback: show LaTeX source
+			return '<code>' . htmlspecialchars($tex) . '</code>';
+		}, $html);
+		// Suppress TCPDF warnings about unsupported HTML features (trids, cols)
+		// that the CMS error handler would escalate to 500 errors
+		$previousHandler = set_error_handler(function($errno, $errstr, $errfile) use (&$previousHandler) {
+			if (strpos($errfile, 'tcpdf.php') !== false) {
+				return true; // suppress TCPDF warnings
+			}
+			return $previousHandler ? call_user_func($previousHandler, $errno, $errstr, $errfile, func_get_arg(3)) : false;
+		});
+		$pdf->writeHTML($html, true, false, true, false, '');
+		restore_error_handler();
 
 		header("Content-type: application/octet-stream");
 
@@ -1153,5 +1262,39 @@ class Pages extends SiteController
 		// Force the download of the PDF
 		$pdf->Output($this->page->get('pagename') . '.pdf', 'D');
 		exit();
+	}
+
+	/**
+	 * Sanitize HTML for TCPDF compatibility.
+	 *
+	 * TCPDF does not support HTML5 semantic tags, SVG, or certain
+	 * malformed markup patterns that the wiki parser can produce.
+	 *
+	 * @param   string  $html  Raw HTML
+	 * @return  string  Sanitized HTML
+	 */
+	private static function sanitizeHtmlForPdf($html)
+	{
+		// Replace HTML5 semantic tags with divs (unsupported by TCPDF)
+		$semanticTags = array('header', 'article', 'section', 'nav', 'aside', 'figure', 'figcaption', 'footer', 'main', 'details', 'summary');
+		foreach ($semanticTags as $tag)
+		{
+			$html = preg_replace('/<' . $tag . '\b([^>]*)>/i', '<div$1>', $html);
+			$html = preg_replace('/<\/' . $tag . '>/i', '</div>', $html);
+		}
+
+		// Remove orphaned </li></ul> or </li></ol> sequences from wiki parser
+		$maxPasses = 5;
+		for ($i = 0; $i < $maxPasses; $i++)
+		{
+			$prev = $html;
+			$html = preg_replace('/(<\/[uo]l>)\s*(<!--[^>]*-->\s*)?<\/li>\s*<\/[uo]l>/i', '$1', $html);
+			if ($html === $prev)
+			{
+				break;
+			}
+		}
+
+		return $html;
 	}
 }

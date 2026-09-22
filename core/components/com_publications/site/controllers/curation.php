@@ -21,6 +21,10 @@ use Route;
 use Lang;
 use User;
 use App;
+use Component;
+use Config;
+use Date;
+use Event;
 
 include_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'publication.php';
 include_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'curation.php';
@@ -50,6 +54,8 @@ class Curation extends SiteController
 
 		// Get language
 		Lang::load('plg_projects_publications');
+		
+		$this->registerTask('querydepartment', 'getDepartment');
 
 		//continue with parent execute method
 		parent::execute();
@@ -544,10 +550,27 @@ class Curation extends SiteController
 		// Store curation manifest
 		$this->_pub->version->set('curation', $curation);
 		$this->_pub->version->set('curation_version_id', $versionNumber);
+		
+		// Save dataset bundle size
+		$zipPath = PATH_APP . DS . trim($this->config->get('webpath'), DS) . DS . \Hubzero\Utility\Str::pad($pid) . DS . \Hubzero\Utility\Str::pad($vid) . DS . str_replace(['.', '/'], '_', $this->_pub->version->doi) . ".zip";
+		
+		if (file_exists($zipPath))
+		{
+			$this->_pub->version->set('datasize', filesize($zipPath));
+		}
 
 		if (!$this->_pub->version->store())
 		{
 			throw new Exception(Lang::txt('PLG_PROJECTS_PUBLICATIONS_PUBLICATION_FAILED'), 403);
+		}
+
+		// Async: pre-warm the download-bundle build so it is ready before a
+		// user asks for it (gated; when async is off the synchronous bundle
+		// produced during curation is used as before).
+		if ((int) $this->config->get('bundle_async', 0))
+		{
+			require_once \Component::path('com_publications') . '/models/bundlequeue.php';
+			\Components\Publications\Models\BundleQueue::enqueueVersion($this->_pub->version->get('id'));
 		}
 
 		// Get DOI service
@@ -1029,5 +1052,26 @@ class Curation extends SiteController
 		App::redirect(
 			Route::url('index.php?option=com_users&view=login&return=' . base64_encode($rtrn), false)
 		);
+	}
+	
+	/**
+	 * Query the department of author 
+	 *
+	 * @return  array  department names
+	 */
+	public function getDepartmentTask()
+	{		
+		$departments = Component::params('com_publications')->get('department');
+		$term = trim(Request::getString('term', ''));
+		
+		if (!empty($departments) && !empty($term))
+		{
+			$matchedResults = array_filter(explode(",", $departments), function($item) use ($term) {
+				return stripos($item, $term) !== false;
+			});
+			
+			echo json_encode((array_values($matchedResults)));
+			exit();
+		}
 	}
 }

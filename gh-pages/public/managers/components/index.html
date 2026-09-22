@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Components · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="A component is a whole feature of the hub: its own pages, its own database tables, and its own screens in the administrator interface. Most of what members see…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/components/">
+  <link rel="icon" href="../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../index.html">
+      <img class="brand__mark" src="../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../search-index.json" data-base="../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../docs/index.html">About</a>
+      <a href="../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link is-active" href="index.html" aria-current="page">Components</a></summary><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#which-of-these-does-your-hub-actually-use">Which of these does your hub actually use?</a></li>
+<li class="toc__item toc__item--l3"><a href="#turning-one-off">Turning one off</a></li>
+<li class="toc__item toc__item--l2"><a href="#choosing-between-the-overlapping-ones">Choosing between the overlapping ones</a></li>
+<li class="toc__item toc__item--l2"><a href="#content-and-discussion">Content and discussion</a></li>
+<li class="toc__item toc__item--l2"><a href="#research-content">Research content</a></li>
+<li class="toc__item toc__item--l2"><a href="#members-and-support">Members and support</a></li>
+<li class="toc__item toc__item--l2"><a href="#search-metrics-and-maintenance">Search, metrics, and maintenance</a></li>
+<li class="toc__item toc__item--l2"><a href="#integrations-and-developer-tools">Integrations and developer tools</a></li>
+</ol><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Components</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Components</h1>
+        </header>
+        
+        <div class="prose">
+<p>A component is a whole feature of the hub: its own pages, its own database
+tables, and its own screens in the administrator interface. Most of what
+members see on a hub comes from one component or another, and a hub manager
+decides which of them are in use and how each behaves.</p>
+<p>Every component in this book is reached from the <strong>Components</strong> menu in the
+administrator interface. Each has an <strong>Options</strong> button that opens its
+configuration and a <strong>Permissions</strong> tab that says which access groups may
+use it; the generated
+<a href="../../reference/configuration/index.html">configuration reference</a> lists
+every option of every component in one place.</p>
+<p>The extension managers themselves — modules, plugins and templates — are
+covered in <a href="../extensions/index.html">Extensions</a>, and the article, category
+and media managers in <a href="../content/index.html">Content</a>, rather than here.</p>
+<h2 id="which-of-these-does-your-hub-actually-use">Which of these does your hub actually use?</h2>
+<p>Forty components ship with a hub. Almost no hub uses forty. A typical hub
+runs its resources or publications catalogue, groups, projects, support, and
+perhaps three or four others; the rest sit installed, empty, and out of the
+way. If you have inherited a hub, work out which are live before you read
+any further, because most of this section will not apply to you.</p>
+<p>Three screens answer it, and they answer different questions.</p>
+<ul>
+<li><strong>The Components menu</strong> lists a component only when it is enabled <em>and</em>
+you hold its manage permission. What you see there is what you can
+administer, not what your hub has installed.</li>
+<li><strong>Extensions &gt; Extension Manager</strong>, on its <strong>Hubzero Core</strong> tab with the
+<strong>Type</strong> filter set to Component, lists every component the platform ships,
+enabled or not. This is the full inventory.</li>
+<li><strong>Menus &gt; Main Menu</strong> shows what a visitor is actually offered. A
+component with no menu item can still be reached by typing its URL, so an
+empty menu is not proof a feature is off.</li>
+</ul>
+<p>The quickest read on whether a component is <em>used</em> rather than merely
+enabled is to open it and look at its list. An empty Wiki Pages list or an
+empty Questions list means nobody has ever used it, whatever the menus say.</p>
+<h3 id="turning-one-off">Turning one off</h3>
+<p>Tick the component in <strong>Extensions &gt; Extension Manager</strong> and select
+<strong>Disable</strong>. Every one of its site URLs then returns a not-found page and it
+drops out of the Components menu. Nothing is deleted: the tables, the rows,
+the uploaded files all stay, and selecting <strong>Enable</strong> puts the feature back
+exactly as it was. Disabling is the whole of the lever — the components that
+ship with the platform cannot be uninstalled from the administrator
+interface at all, and there is no <strong>Uninstall</strong> button on that screen. See
+<a href="../extensions/extension-manager/index.html">Extension Manager</a>.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> The change is immediate and hub-wide. Disabling a component
+people are using breaks their bookmarks at once and with no redirect, and
+takes any menu items pointing at it to a dead end. It is reversible, so the
+damage is measured in hours rather than permanently — but do it out of
+hours and tell people first.</p>
+</aside>
+<h2 id="choosing-between-the-overlapping-ones">Choosing between the overlapping ones</h2>
+<p>Five of the components below do jobs that look alike, and a manager setting
+up a hub is asked to choose between them with nothing to go on. A hub does
+not need a forum <em>and</em> a question board <em>and</em> a knowledge base <em>and</em> a wiki.
+Run one or two. Every extra one splits the same small number of posts
+across more places, and a question asked in the wrong one gets no answer.</p>
+<table>
+<thead>
+<tr>
+<th>If members need to …</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ask a specific question and have one reply marked as the answer</td>
+<td><a href="answers/index.html">Answers</a></td>
+</tr>
+<tr>
+<td>Hold a conversation that has no single answer, organised by topic</td>
+<td><a href="forum/index.html">Forum</a></td>
+</tr>
+<tr>
+<td>Read a staff-written explanation that stays put and stays correct</td>
+<td><a href="kb/index.html">Knowledge base</a></td>
+</tr>
+<tr>
+<td>Maintain a document together, with a history of who changed what</td>
+<td><a href="wiki/index.html">Wiki</a></td>
+</tr>
+<tr>
+<td>Follow dated announcements from the hub, a member, or a group</td>
+<td><a href="blogs/index.html">Blogs</a></td>
+</tr>
+</tbody>
+</table>
+<p>Two combinations earn their keep. <strong>Answers plus the knowledge base</strong> is the
+common one: members ask, and when the same question comes up a third time
+you write the settled version as an article and close the loop — the
+Answers component's <strong>About points</strong> option even defaults to a knowledge
+base address. <strong>Forum plus wiki inside groups</strong> is the other: the group
+argues in the forum and records the conclusion on a wiki page. Each of the
+five chapters opens by saying what its component is good at and where a
+sibling beats it.</p>
+<h2 id="content-and-discussion">Content and discussion</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="answers/index.html">Answers</a></td>
+<td>Questions members ask each other, with answers, voting, and rewards.</td>
+</tr>
+<tr>
+<td><a href="blogs/index.html">Blogs</a></td>
+<td>Hub, member, and group blogs.</td>
+</tr>
+<tr>
+<td><a href="forum/index.html">Forum</a></td>
+<td>Discussion sections, categories, and threads.</td>
+</tr>
+<tr>
+<td><a href="kb/index.html">Knowledge base</a></td>
+<td>How-to articles and answers to common questions.</td>
+</tr>
+<tr>
+<td><a href="wiki/index.html">Wiki</a></td>
+<td>Collaboratively edited pages with revision history.</td>
+</tr>
+<tr>
+<td><a href="newsletters/index.html">Newsletters</a></td>
+<td>Email newsletters, their templates, and mailing lists.</td>
+</tr>
+<tr>
+<td><a href="billboards/index.html">Billboards</a></td>
+<td>The rotating banners on the hub's front page.</td>
+</tr>
+<tr>
+<td><a href="feedback/index.html">Feedback</a></td>
+<td>Success stories members submit and the notable quotes drawn from them.</td>
+</tr>
+<tr>
+<td><a href="poll/index.html">Poll</a></td>
+<td>A single site-wide poll. Reachable, but a poll cannot be selected.</td>
+</tr>
+</tbody>
+</table>
+<p>The five overlapping ones are compared above under
+<a href="#choosing-between-the-overlapping-ones">Choosing between the overlapping ones</a>.
+The other four in this group do not overlap with anything: newsletters push
+mail out, billboards fill the front page, feedback gathers testimonials, and
+poll asks one question.</p>
+<h2 id="research-content">Research content</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="resources/index.html">Resources</a></td>
+<td>The hub's catalogue of tools, datasets, presentations, and courses.</td>
+</tr>
+<tr>
+<td><a href="publications/index.html">Publications</a></td>
+<td>Versioned, citable publications and their curation workflow.</td>
+</tr>
+<tr>
+<td><a href="projects/index.html">Projects</a></td>
+<td>Private team workspaces for files, notes, and data.</td>
+</tr>
+<tr>
+<td><a href="citations/index.html">Citations</a></td>
+<td>The bibliography of work about or using the hub.</td>
+</tr>
+<tr>
+<td><a href="collections/index.html">Collections</a></td>
+<td>Member-curated boards of posts, files, and links.</td>
+</tr>
+<tr>
+<td><a href="courses/index.html">Courses</a></td>
+<td>Online courses, their offerings, and their students.</td>
+</tr>
+<tr>
+<td><a href="events/index.html">Events</a></td>
+<td>The hub calendar and event registration.</td>
+</tr>
+<tr>
+<td><a href="tools/index.html">Tools</a></td>
+<td>The tool catalogue and the contribution pipeline.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="members-and-support">Members and support</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="support/index.html">Support</a></td>
+<td>Support tickets, their queues, and the reports members file.</td>
+</tr>
+<tr>
+<td><a href="wishlist/index.html">Wishlist</a></td>
+<td>Feature requests members file and vote on.</td>
+</tr>
+<tr>
+<td><a href="storefront/index.html">Storefront</a> and <a href="cart/index.html">Cart</a></td>
+<td>Products the hub sells and the checkout that sells them.</td>
+</tr>
+<tr>
+<td><a href="tags/index.html">Tags</a></td>
+<td>The hub's tag vocabulary and the pages that browse it.</td>
+</tr>
+<tr>
+<td><a href="jobs/index.html">Jobs</a></td>
+<td>The job board, its listings, and employer subscriptions.</td>
+</tr>
+<tr>
+<td><a href="services/index.html">Services</a></td>
+<td>The subscriptions employers buy to post on the job board.</td>
+</tr>
+<tr>
+<td><a href="messages/index.html">Messages</a></td>
+<td>An administrator-only inbox, separate from member messaging. Not reachable.</td>
+</tr>
+<tr>
+<td><a href="mailto/index.html">Mailto</a></td>
+<td>The send-to-a-friend link on articles. No administrator side.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="search-metrics-and-maintenance">Search, metrics, and maintenance</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="search/index.html">Search</a></td>
+<td>The Solr search index: installing it, filling it, and tuning what it returns.</td>
+</tr>
+<tr>
+<td><a href="usage/index.html">Usage</a></td>
+<td>Traffic and tool-session reports.</td>
+</tr>
+<tr>
+<td><a href="cron/index.html">Cron</a></td>
+<td>Scheduled jobs and the plugins that run them.</td>
+</tr>
+<tr>
+<td><a href="activity/index.html">Activity</a></td>
+<td>The hub-wide activity log and the one chart that reports on it.</td>
+</tr>
+<tr>
+<td><a href="whatsnew/index.html">What's new</a></td>
+<td>Aggregates recent content across six plugins and serves the hub's feeds.</td>
+</tr>
+<tr>
+<td><a href="cache/index.html">Cache</a></td>
+<td>Clearing cached pages, module output, and component fragments.</td>
+</tr>
+<tr>
+<td><a href="checkin/index.html">Check-in</a></td>
+<td>Releasing records left locked by an editor who never saved.</td>
+</tr>
+<tr>
+<td><a href="redirect/index.html">Redirect</a></td>
+<td>Managed redirects, the 404 log, and the external-link interstitial.</td>
+</tr>
+<tr>
+<td><a href="cpanel/index.html">Control panel</a></td>
+<td>The dashboard itself and the panels published to it.</td>
+</tr>
+<tr>
+<td><a href="languages/index.html">Languages</a></td>
+<td>Installed languages, the default, and the string override editor.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="integrations-and-developer-tools">Integrations and developer tools</h2>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="developer/index.html">Developer</a></td>
+<td>OAuth applications, API tokens, and the generated API documentation.</td>
+</tr>
+<tr>
+<td><a href="saml/index.html">SAML</a></td>
+<td>The hub acting as an identity provider for external services.</td>
+</tr>
+<tr>
+<td><a href="oaipmh/index.html">OAI-PMH</a></td>
+<td>The metadata endpoint external harvesters index the hub through.</td>
+</tr>
+<tr>
+<td><a href="dataviewer/index.html">DataViewer</a></td>
+<td>Renders a database table as a searchable spreadsheet.</td>
+</tr>
+</tbody>
+</table>
+<p>Members and access groups have their own chapters under
+<a href="../users/index.html">Users</a>, and the hub's global settings are in
+<a href="../configuring/index.html">Configuring</a>.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 009ec973b7</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../content/urls/index.html" rel="prev"><span>Previous</span>URLs</a><a class="pager__next" href="activity/index.html" rel="next"><span>Next</span>Activity</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/09-components/README.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

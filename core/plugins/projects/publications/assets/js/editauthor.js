@@ -9,6 +9,8 @@
 $(function(){
 	if ($(".rorApiAvailable")[0]){
 		$('[name="organization"]').autocomplete({
+			delay: 400,
+			minLength: 3,
 			source: function(req, resp){
 				var rorURL = "index.php?option=com_members&controller=profiles&task=getOrganizations&term=" + $('[name="organization"]').val();
 
@@ -48,4 +50,28 @@ $(function(){
 			$('#orcid-message').show();
 		}
 	})
+	
+	if ($(".departmentAvailable")[0]){
+		$('[name="department"]').autocomplete({
+			source: function(req, resp){
+				var deptURL = "index.php?option=com_publications&controller=curation&task=getDepartment&term=" + $('[name="department"]').val();
+
+				$.ajax({
+					url:deptURL,
+					data: null,
+					dataType: "json",
+					success:function(result){
+						resp(result);
+					},
+					error:function(jqXHR, textStatus, errorThrown){
+						console.log(textStatus);
+						console.log(errorThrown);
+						console.log(jqXHR.responseText);
+					}
+				});
+			},
+			
+			appendTo: '#autocomplete-department'
+		});
+	}
 });

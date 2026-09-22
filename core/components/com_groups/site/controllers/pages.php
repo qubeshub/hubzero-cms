@@ -17,6 +17,7 @@ use User;
 use Date;
 use Lang;
 use App;
+use Event;
 
 /**
  * Groups controller class
@@ -171,6 +172,22 @@ class Pages extends Base
 		if ($this->version)
 		{
 			$this->view->version = $this->version;
+		}
+
+		// For a new page in a group that isn't fully public, default the
+		// privacy to members-only so private group content isn't published
+		// publicly by default. ('default' privacy would otherwise inherit the
+		// overview tab's access, which can be public even on a restricted
+		// group.) The author can still change this in the form.
+		if ($new && !$this->view->page->get('privacy'))
+		{
+			$isPrivateGroup = ($this->group->get('join_policy') != 0
+				|| $this->group->get('discoverability') == 1);
+
+			if ($isPrivateGroup)
+			{
+				$this->view->page->set('privacy', 'members');
+			}
 		}
 
 		// checkout page
@@ -799,11 +816,11 @@ class Pages extends Base
 		// output page version
 		if ($escape)
 		{
-			echo '<pre>' . utf8_decode($this->view->escape($pageVersion->get('content'))) . '</pre>';
+			echo '<pre>' . $this->view->escape($pageVersion->get('content')) . '</pre>';
 		}
 		else
 		{
-			echo utf8_decode($pageVersion->get('content'));
+			echo $pageVersion->get('content');
 		}
 		exit();
 	}

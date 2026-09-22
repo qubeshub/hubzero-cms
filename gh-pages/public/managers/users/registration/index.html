@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Registration · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Registration decides who may create an account on the hub, what the form asks them for, and what has to happen before the account works. Two screens are…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/users/registration/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Registration</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#which-of-these-settings-you-are-likely-to-need">Which of these settings you are likely to need</a></li>
+<li class="toc__item toc__item--l2"><a href="#turning-registration-off">Turning registration off</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-a-new-account-has-to-pass">What a new account has to pass</a></li>
+<li class="toc__item toc__item--l2"><a href="#default-privacy">Default Privacy</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-registration-fields-table">The registration fields table</a></li>
+<li class="toc__item toc__item--l2"><a href="#incremental-registration">Incremental Registration</a></li>
+<li class="toc__item toc__item--l2"><a href="#premis-data-import">PREMIS Data Import</a></li>
+<li class="toc__item toc__item--l2"><a href="#customising-the-confirmation-email">Customising the confirmation email</a></li>
+<li class="toc__item toc__item--l2"><a href="#logging-in-through-another-service">Logging in through another service</a></li>
+<li class="toc__item toc__item--l2"><a href="#tls-certificate-authentication">TLS certificate authentication</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Users</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Registration</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Registration</h1>
+        </header>
+        
+        <div class="prose">
+<p>Registration decides who may create an account on the hub, what the form asks
+them for, and what has to happen before the account works. Two screens are
+involved: the component's <strong>Options</strong>, which holds the switches, and <strong>Users &gt;
+Members &gt; Registration</strong>, which holds the field-by-field table.</p>
+<aside class="admonition admonition--tip">
+<p><strong>Tip:</strong> Every parameter on the <strong>Options</strong> screen is listed in the generated
+<a href="../../../reference/configuration/components/members/index.html">Members configuration reference</a>.
+<a href="../../configuring/registration/index.html">Configuring Registration</a> covers the
+same field table from the configuration side.</p>
+</aside>
+<h2 id="which-of-these-settings-you-are-likely-to-need">Which of these settings you are likely to need</h2>
+<p>A hub installed today lets anyone register and emails them a confirmation
+link. For a public hub that is the right arrangement and you can leave the
+whole screen alone.</p>
+<p>You come here for one of three reasons.</p>
+<ul>
+<li><strong>The hub is not meant to be open.</strong> An internal hub, or one hosting
+restricted data, wants registration switched off and accounts made by hand
+or by <a href="../memberimport/index.html">import</a>.</li>
+<li><strong>Something has gone wrong.</strong> A paper is published, the hub gets attention,
+and the account list fills with signups nobody made. The fix is the
+activation gate, not the registration switch.</li>
+<li><strong>You need something the form does not ask for.</strong> An institution, a
+department, a signed data agreement. That is the field table further down,
+and the profile builder behind it.</li>
+</ul>
+<p>Everything on this page affects <em>future</em> registrations only. Accounts that
+already exist are not revisited, with one exception — the <strong>Update on Next
+Login</strong> column, which is the one setting here that reaches people already
+using the hub. Treat that column differently from the rest.</p>
+<h2 id="turning-registration-off">Turning registration off</h2>
+<p>To stop visitors creating their own accounts, open <strong>Users &gt; Members</strong>, press
+<strong>Options</strong> in the toolbar, and set <strong>Allow User Registration</strong> — the first
+setting on the <strong>Component</strong> tab — to <strong>No</strong>. Administrators can still create
+accounts from the Members list.</p>
+<p>The change is immediate and reversible: turn it back on and registration
+resumes. Existing accounts are untouched. What actually happens is that the
+<strong>Register</strong> links vanish from the login form and the site header, and the
+registration address itself returns <em>not found</em> to anyone who has kept the
+URL.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> This switch also governs the authentication plugins. With
+registration off, a login through Google, Shibboleth, CILogon, ORCID or any
+other provider can only match an account that already exists; it can no
+longer create one. On a hub where most people arrive through their
+institution's login, turning registration off shuts out every newcomer, not
+just the ones who would have filled in the form.</p>
+</aside>
+<h2 id="what-a-new-account-has-to-pass">What a new account has to pass</h2>
+<p><strong>New User Account Activation</strong>, also on the <strong>Component</strong> tab, sets the gate.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>What happens on registration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>None</strong></td>
+<td>The account is confirmed straight away and can log in.</td>
+</tr>
+<tr>
+<td><strong>Self</strong> (the default)</td>
+<td>The user is emailed a confirmation link. Until it is followed the account shows as <strong>Unconfirmed</strong>.</td>
+</tr>
+<tr>
+<td><strong>Admin</strong></td>
+<td>The user is emailed a confirmation link <em>and</em> the account is left unapproved. An administrator has to approve it as well.</td>
+</tr>
+</tbody>
+</table>
+<p>Two related settings sit beside it. <strong>Email On Account Activation</strong> emails the
+user when an administrator approves their account, and only applies under
+<strong>Admin</strong>. <strong>Notification Mail to Administrators</strong> emails the site's
+administrators when an account is created, and only applies under <strong>None</strong> or
+<strong>Self</strong>.</p>
+<p><strong>Self</strong> is the shipped default and is the right choice for most hubs: it
+costs an administrator nothing and stops the account list filling with
+addresses that do not exist. Move to <strong>Admin</strong> when you need to know who is
+joining — a hub with restricted material, or a hub in the middle of a spam
+wave, where every new signup should wait for a person to look at it. Be
+honest about the cost: <strong>Admin</strong> means somebody checks the list, and an
+unapproved account is a person who cannot use the hub until they do.</p>
+<p>Changing this setting applies only to registrations made after the change.
+Accounts already sitting unconfirmed or unapproved stay where they are, so
+switching from <strong>Admin</strong> back to <strong>Self</strong> does not release the backlog —
+approve those by hand from the account list.</p>
+<p>Accounts waiting at either gate are held on a holding page by the <strong>System -
+Unconfirmed</strong> and <strong>System - Unapproved</strong> plugins. Find them by filtering the
+Members list on <strong>- Email confirmed -</strong> or <strong>- Approved -</strong>; see
+<a href="../members/index.html#account-states">Account states</a> for how to clear each
+gate.</p>
+<h2 id="default-privacy">Default Privacy</h2>
+<p><strong>Default Privacy</strong>, on the <strong>Defaults</strong> tab of the same <strong>Options</strong> screen,
+decides whether a profile created by self-registration is visible to the rest
+of the hub or only to its owner. It matters more than it looks: a public
+profile is listed in the member directory and readable by anyone, and a hub
+whose members are, say, patients or schoolchildren does not want that.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> The manifest and the shipped data disagree about this setting,
+and the code sides with the data. The component manifest declares the option's
+default as <strong>Private</strong>; the data a hub is installed with stores <strong>Public</strong>;
+and both places in the code that apply it fall back to <strong>Public</strong> when nothing
+is stored at all. So a self-registered profile is created public unless
+somebody has explicitly saved this screen with <strong>Private</strong> selected — and on a
+hub whose stored options have lost the key, the screen shows you <strong>Private</strong>
+while new profiles are still being created public. Do not trust the displayed
+value. Set the option, save it, then register a test account and look at what
+you get.</p>
+</aside>
+<p>The setting applies at registration only, and only to self-registration.
+Accounts an administrator creates from the Members list, and accounts created
+by <a href="../memberimport/index.html">import</a>, never run that code and so are private. A
+member can change their own profile's privacy from their profile page at any
+time, and changing the option later does not revisit anyone.</p>
+<h2 id="the-registration-fields-table">The registration fields table</h2>
+<ol>
+<li>Open <strong>Users &gt; Members</strong>.</li>
+<li>Click <strong>Registration</strong> in the sub-menu. It opens on <strong>Config</strong>.</li>
+<li>Set each field's state in each of the four columns.</li>
+<li>Press <strong>Save</strong>. Changes take effect immediately.</li>
+</ol>
+<p>Each row is one field, and each column is one situation in which the hub might
+ask for it.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>When it applies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Create Account</strong></td>
+<td>The public registration form.</td>
+</tr>
+<tr>
+<td><strong>Proxy Create Account</strong></td>
+<td>Creating an account on someone else's behalf.</td>
+</tr>
+<tr>
+<td><strong>Update on Next Login</strong></td>
+<td>The prompt an existing user gets at their next login when something now required was not asked for when they registered.</td>
+</tr>
+<tr>
+<td><strong>Edit Profile</strong></td>
+<td>The user editing their own profile.</td>
+</tr>
+</tbody>
+</table>
+<p>Each cell takes one of four values.</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Required</strong></td>
+<td>Must be filled in.</td>
+</tr>
+<tr>
+<td><strong>Optional</strong></td>
+<td>May be filled in.</td>
+</tr>
+<tr>
+<td><strong>Hide</strong></td>
+<td>Not shown.</td>
+</tr>
+<tr>
+<td><strong>Read only</strong></td>
+<td>Shown but not editable.</td>
+</tr>
+</tbody>
+</table>
+<p>A cell showing <strong>n/a</strong> instead of a menu is one the field does not support.</p>
+<p>The rows are the nine account-level fields: <strong>Username</strong>, <strong>Password</strong>,
+<strong>Password Confirmation</strong>, <strong>Full Name</strong>, <strong>Email</strong>, <strong>Email Confirmation</strong>,
+<strong>OptIn</strong>, <strong>CAPTCHA</strong> and <strong>TOU</strong> (the terms of use). Everything else the form
+asks for comes from the profile builder, where each field carries its own
+required flag and access level; see
+<a href="../members/index.html#building-the-profile-form">Building the profile form</a>.</p>
+<p>Setting a field to <strong>Required</strong> in the <strong>Create Account</strong> column changes what
+new registrations must supply and touches nobody who already has an account.
+That is the safe column. <strong>Edit Profile</strong> governs what a member must supply
+when they edit their own profile — and, less obviously, what the
+<a href="../memberimport/index.html">member importer</a> validates against, so a change here can
+start failing import records.</p>
+<p><strong>Update on Next Login</strong> is the one that reaches everybody. On
+every login the session is flagged as incomplete, the <strong>Members - Profile</strong>
+plugin re-checks the profile against this column, and the flag clears the
+moment the check passes. So setting a field to <strong>Required</strong> here puts it in
+front of every logged-in user until they answer it. Setting <strong>TOU</strong> to <strong>Required</strong> in this
+column is exactly what the Members list's <strong>Reset terms of use agreements for
+all users</strong> button does.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Marking a field <strong>Required</strong> in <strong>Update on Next Login</strong> puts a
+form in front of every member of the hub, at once, the next time each of them
+logs in. There is no way to try it on a few people first and no way to
+exclude anyone. Set one field at a time, log in with an ordinary account
+immediately afterwards and check what the prompt looks like, and set the
+column back to <strong>Optional</strong> once enough people have answered — leaving it
+<strong>Required</strong> means the prompt greets every member who has not logged in for a
+year, forever.</p>
+</aside>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Nothing in this release passes the <strong>Proxy Create Account</strong> column
+to the registration check — no screen creates an account &quot;by proxy&quot;. The
+column is stored and displayed, but it currently has no effect.</p>
+</aside>
+<h2 id="incremental-registration">Incremental Registration</h2>
+<p>The second link under <strong>Registration</strong> configures incremental registration:
+rather than asking for everything at once, the hub prompts for a package of
+profile fields some time after the user registers.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Pop-over text</strong></td>
+<td>The text shown in the prompt.</td>
+</tr>
+<tr>
+<td><strong>Award per field completed</strong></td>
+<td>Points awarded for each field the user fills in.</td>
+</tr>
+<tr>
+<td><strong>Test group (name or id number)</strong></td>
+<td>Restricts the prompting to one hub group while you try it out.</td>
+</tr>
+<tr>
+<td><strong>Field groups</strong></td>
+<td>Each group says <em>beginning N hours / days / weeks after registration, prompt for</em> a list of profile fields.</td>
+</tr>
+<tr>
+<td><strong>Recurrence</strong></td>
+<td>How long to wait before asking again after each press of <em>ask me later</em>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="premis-data-import">PREMIS Data Import</h2>
+<p>The third link takes a PREMIS registration dump file and imports it. Choose the
+file and press <strong>Import</strong>; the next screen reports how many records were
+processed and lists any errors.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> This screen's toolbar carries <strong>New</strong>, <strong>Edit</strong> and <strong>Delete</strong>
+buttons that have no matching task. Pressing one just reloads the screen.</p>
+</aside>
+<h2 id="customising-the-confirmation-email">Customising the confirmation email</h2>
+<p>The registration emails are ordinary component layouts, so they are overridden
+the same way as any other view: copy the file into your template's <code>html</code>
+directory and edit the copy. That keeps your wording out of the core tree,
+where an upgrade would overwrite it.</p>
+<p>The originals live in
+<a href="https://github.com/hubzero/hubzero-cms/tree/2.4-main/core/components/com_members/site/views/emails/tmpl"><code>core/components/com_members/site/views/emails/tmpl/</code></a>.
+The ones that matter for registration are:</p>
+<table>
+<thead>
+<tr>
+<th>Layout</th>
+<th>Sent when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>confirm.php</code>, <code>confirm_html.php</code></td>
+<td>A new account needs its email address confirmed.</td>
+</tr>
+<tr>
+<td><code>create.php</code>, <code>create_html.php</code></td>
+<td>An account is created on the site.</td>
+</tr>
+<tr>
+<td><code>admincreate_plain.php</code>, <code>admincreate_html.php</code></td>
+<td>An administrator creates an account.</td>
+</tr>
+<tr>
+<td><code>approved_plain.php</code>, <code>approved_html.php</code></td>
+<td>An administrator approves an account.</td>
+</tr>
+<tr>
+<td><code>update.php</code>, <code>updateproxy.php</code>, <code>adminupdate.php</code>, <code>adminupdateproxy.php</code></td>
+<td>An account's details change.</td>
+</tr>
+</tbody>
+</table>
+<p>Each email has a plain-text and an HTML layout, and both are sent. Override
+them at
+<code>app/templates/&lt;your template&gt;/html/com_members/emails/&lt;layout&gt;.php</code>.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The confirmation email carries the account's username and the
+confirmation link. It does <strong>not</strong> carry a password.</p>
+</aside>
+<h2 id="logging-in-through-another-service">Logging in through another service</h2>
+<p>A hub can accept logins from other identity providers as well as its own.
+Each provider is an authentication plugin.</p>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Authenticates against</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Authentication - HUBzero</strong></td>
+<td>The hub's own accounts. This is the default and should stay enabled.</td>
+</tr>
+<tr>
+<td><strong>Authentication - Certificate</strong></td>
+<td>A client-side TLS certificate.</td>
+</tr>
+<tr>
+<td><strong>Authentication - CILogon</strong></td>
+<td>CILogon.</td>
+</tr>
+<tr>
+<td><strong>Authentication - Email Token</strong></td>
+<td>A one-time token emailed to the user.</td>
+</tr>
+<tr>
+<td><strong>Authentication - Facebook</strong></td>
+<td>Facebook.</td>
+</tr>
+<tr>
+<td><strong>Authentication - Globus</strong></td>
+<td>Globus.</td>
+</tr>
+<tr>
+<td><strong>Authentication - Google</strong></td>
+<td>Google.</td>
+</tr>
+<tr>
+<td><strong>Authentication - LinkedIn</strong></td>
+<td>LinkedIn.</td>
+</tr>
+<tr>
+<td><strong>Authentication - ORCID</strong></td>
+<td>ORCID.</td>
+</tr>
+<tr>
+<td><strong>Authentication - Purdue University CAS</strong></td>
+<td>Purdue's CAS.</td>
+</tr>
+<tr>
+<td><strong>Authentication - SciStarter</strong></td>
+<td>SciStarter.</td>
+</tr>
+<tr>
+<td><strong>Authentication - Shibboleth</strong></td>
+<td>A Shibboleth federation.</td>
+</tr>
+<tr>
+<td><strong>Authentication - Twitter</strong></td>
+<td>Twitter.</td>
+</tr>
+</tbody>
+</table>
+<p>Most of them need credentials from the provider, which you get by registering
+your hub as an application on their side and choosing the web application type.
+Then:</p>
+<ol>
+<li>Open <strong>Extensions &gt; Plug-in Manager</strong>.</li>
+<li>Search for the plugin.</li>
+<li>Click its name and enter the client key and secret it asks for.</li>
+<li>Set <strong>Status</strong> to <strong>Enabled</strong> and <strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>A user arriving through one of these providers gets a partially built account —
+it shows in the Members list as <strong>Incomplete</strong>, with an email address ending in
+<code>@invalid</code> — and the <strong>System - Incomplete</strong> plugin holds them on the
+registration form until they finish it.</p>
+<h2 id="tls-certificate-authentication">TLS certificate authentication</h2>
+<p>Certificate login uses two plugins.</p>
+<p><strong>Authentication - Certificate</strong> checks the certificate and ties it to an
+account. If the certificate is already linked, the user is logged straight in.
+If not, they may create an account, which links the certificate to it, or link
+it to an account they already have by supplying that account's password.</p>
+<p><strong>System - Certificate</strong> makes a certificate compulsory. With it enabled a
+certificate must be present to browse the site at all, and certificate login
+becomes the only option. Enable it the same way as the authentication plugin.</p>
+<p>Two things have to be right outside the CMS. Apache needs
+<code>SSLVerifyClient optional</code>, so that a certificate is accepted but its absence
+is handled by the routing plugin rather than by Apache, and <code>SSLOptions +StdEnvVars</code>, so the certificate's fields reach PHP. The site must also be
+forced to SSL in the global configuration.</p>
+<p>Pairing certificate login with <strong>New User Account Activation</strong> set to <strong>Admin</strong>
+gives you a user-initiated but administrator-gated flow: the user links their
+own certificate to a new account, and an administrator approves it before it
+works.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Every user needs a TLS certificate installed in their browser
+before this is usable.</p>
+</aside>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../members/index.html" rel="prev"><span>Previous</span>Members</a><a class="pager__next" href="../memberimport/index.html" rel="next"><span>Next</span>Member import</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/06-users/02-registration.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

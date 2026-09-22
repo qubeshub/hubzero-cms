@@ -208,7 +208,7 @@ if ($mode != 'preview')
 				->display();
 			?>
 		</div><!-- / .subject -->
-		<aside class="aside rankarea">
+		<aside class="aside rankarea" aria-label="<?php echo Lang::txt('Resource metadata'); ?>">
 		<?php
 		// Show metadata
 		if ($this->model->params->get('show_metadata', 1))
@@ -244,8 +244,8 @@ if ($mode != 'preview')
 					->display();
 				?>
 			</div><!-- / .subject -->
-			<div class="aside extracontent">
 			<?php
+			$asideContent = '';
 			// Show related content
 			$out = Event::trigger('resources.onResourcesSub', array($this->model, $this->option, 1));
 			if (count($out) > 0)
@@ -254,17 +254,21 @@ if ($mode != 'preview')
 				{
 					if (isset($ou['html']))
 					{
-						echo $ou['html'];
+						$asideContent .= $ou['html'];
 					}
 				}
 			}
 			// Show what's popular
 			if ($this->tab == 'about')
 			{
-				echo \Hubzero\Module\Helper::renderModules('extracontent');
+				$asideContent .= \Hubzero\Module\Helper::renderModules('extracontent');
 			}
-			?>
-		</div><!-- / .aside extracontent -->
+
+			if (trim($asideContent) !== '') : ?>
+			<div class="aside extracontent">
+				<?php echo $asideContent; ?>
+			</div><!-- / .aside extracontent -->
+			<?php endif; ?>
 		</div>
 	</section>
 
@@ -279,7 +283,7 @@ if ($mode != 'preview')
 			'id'     => $this->model->id
 		);
 		// Prevent SQL injection vulnerability by doing input validation on sortby
-		if (!in_array($filters['sortby'], array('date', 'date_published', 'date_created', 'date_modified', 'title', 'rating', 'ranking', 'random')))
+		if (!in_array($filters['sortby'], array('ordering', 'date', 'date_published', 'date_created', 'date_modified', 'title', 'rating', 'ranking', 'random')))
 		{
 			App::abort(403, Lang::txt('Invalid sort value'));
 		}

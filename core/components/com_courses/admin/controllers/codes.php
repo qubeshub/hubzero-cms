@@ -13,6 +13,7 @@ use Request;
 use Route;
 use Lang;
 use App;
+use Config;
 
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'course.php';
 
@@ -312,7 +313,7 @@ class Codes extends AdminController
 		$res = '';
 		for ($i = 0; $i < 10; $i++)
 		{
-			$res .= $chars[mt_rand(0, strlen($chars)-1)];
+			$res .= $chars[random_int(0, strlen($chars)-1)];
 		}
 		return $res;
 	}

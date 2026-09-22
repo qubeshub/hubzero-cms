@@ -18,6 +18,11 @@ use Route;
 use Lang;
 use User;
 use App;
+use Component;
+use Date;
+use Event;
+use Filesystem;
+use Notify;
 
 /**
  * Manage publications
@@ -294,6 +299,12 @@ class Items extends AdminController
 				if ($pContent->load($attachId))
 				{
 					$pContent->title = $attach['title'];
+					
+					if (!empty($attach['attribs']))
+					{
+						$pContent->attribs = $attach['attribs'];
+					}
+					
 					$pContent->store();
 				}
 			}
@@ -328,22 +339,17 @@ class Items extends AdminController
 	public function editauthorTask()
 	{
 		// Incoming
-		$author = Request::getInt('author', 0);
+		$author_id = Request::getInt('author', 0);
 
 		$this->view->setLayout('editauthor');
 
-		$this->view->author = new Tables\Author($this->database);
-		if ($this->_task == 'editauthor' && !$this->view->author->load($author))
+		$authorTblObj = new Tables\Author($this->database);
+		$this->view->author = $authorTblObj->getAuthorById($author_id);
+		
+		if ($this->_task == 'editauthor' && !$this->view->author)
 		{
 			throw new Exception(Lang::txt('COM_PUBLICATIONS_ERROR_NO_AUTHOR_RECORD'), 404);
 			return;
-		}
-		
-		if (!empty($this->view->author->user_id))
-		{
-			$user = \Components\Members\Models\Member::oneOrNew($this->view->author->user_id);
-			$this->view->author->orcid = $user->get('orcid');
-			$this->view->author->organization = $user->get('organization');
 		}
 
 		// Version ID
@@ -1924,6 +1930,20 @@ class Items extends AdminController
 
 		// Set pub assoc and load curation
 		$pub->setCuration();
+
+		// Async: queue the (re)build for the background worker instead of
+		// building inline, and drop the existing link so a stale bundle isn't
+		// served while it rebuilds (gated; off = the legacy synchronous rebuild
+		// below).
+		if ((int) \Component::params('com_publications')->get('bundle_async', 0))
+		{
+			require_once \Component::path('com_publications') . '/models/bundlequeue.php';
+			\Components\Publications\Models\BundleQueue::enqueueVersion($pub->get('version_id'));
+			$pub->_curationModel->removeLink();
+			$pub->publication->checkin();
+			App::redirect($url, Lang::txt('COM_PUBLICATIONS_BUNDLE_QUEUED'), 'success');
+			return;
+		}
 
 		// Produce archival package
 		if (!$pub->_curationModel->package(true))

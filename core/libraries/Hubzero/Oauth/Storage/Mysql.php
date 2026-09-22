@@ -189,7 +189,7 @@ class Mysql
 		}
 
 		// make sure stored secret matches incoming
-		if ($client['client_secret'] != $client_secret)
+		if (!hash_equals((string) $client['client_secret'], (string) $client_secret))
 		{
 			return false;
 		}
@@ -623,8 +623,10 @@ class Mysql
 		$application->set('created_by', \User::get('id'));
 		$application->set('state', 1);
 		$application->set('hub_account', 1);
-		$application->save();
-
-		return true;
+		// Report whether it actually saved. Returning true regardless left the
+		// caller believing a client existed, so it looked one up, found nothing,
+		// and handed a null client id onwards; the validation failure surfaced
+		// as an unrelated warning several layers away.
+		return $application->save();
 	}
 }

@@ -12,6 +12,8 @@ use Components\Resources\Models\Type;
 use Components\Tags\Models\Cloud;
 use Hubzero\Component\ApiController;
 use Component;
+use Config;
+use User;
 use Exception;
 use stdClass;
 use Request;
@@ -111,9 +113,20 @@ class Entriesv1_1 extends ApiController
 					->resetDepth();
 		}
 
-		if ($filters['type'])
+		if ($filters['type'] !== '')
 		{
-			$query->whereEquals($r . '.type', $filters['type']);
+			// `type` is documented as a type name, but was compared straight
+			// against the numeric column, so only ids ever matched. Resolve an
+			// alias to its id, and let an unknown one match nothing rather
+			// than falling through and matching everything.
+			if (!is_numeric($filters['type']))
+			{
+				$type = Type::oneByAlias($filters['type']);
+
+				$filters['type'] = ($type && $type->get('id')) ? (int) $type->get('id') : -1;
+			}
+
+			$query->whereEquals($r . '.type', (int) $filters['type']);
 		}
 
 		$query->whereEquals($r . '.publish_up', '0000-00-00 00:00:00', 1)
@@ -127,6 +140,26 @@ class Entriesv1_1 extends ApiController
 			->resetDepth();
 
 		$query->whereEquals($r . '.published', Entry::STATE_PUBLISHED);
+
+		// Restrict to what the caller may actually see. Without this the
+		// endpoint returned registered-, protected- and private-level entries
+		// to anonymous callers: `standalone`, `published` and the publish
+		// window were the only filters applied.
+		//
+		// Same rule the site views use: public for everyone, plus
+		// registered-level once authenticated. Component administrators keep
+		// the unrestricted view they had.
+		if (!User::authorise('core.admin', 'com_resources'))
+		{
+			$access = array(0);   // public
+
+			if (!User::isGuest())
+			{
+				$access[] = 1;    // registered
+			}
+
+			$query->whereIn($r . '.access', $access);
+		}
 
 		switch ($filters['sortby'])
 		{
@@ -436,6 +469,9 @@ class Entriesv1_1 extends ApiController
 	public function renderlatexTask()
 	{
 		$expression = Request::getString('expression', '');
+		// Defensive: bound the input and strip TeX shell-escape primitives
+		$expression = substr($expression, 0, 3000);
+		$expression = str_ireplace(array('\\write18', '\\input', '\\openin', '\\openout'), '', $expression);
 
 		$dir = PATH_APP . DS . 'cache' . DS . 'ckeditor' . DS . 'hubzeroequation' . DS;
 		$filename = uniqid('equation_');
@@ -470,11 +506,14 @@ class Entriesv1_1 extends ApiController
 		try
 		{
 			// execute latex to build dvi
-			$command = 'cd ' . $dir . '; /usr/bin/latex ' . $filename . '.tex < /dev/null |grep ^!|grep -v Emergency > ' . $dir . DS . $filename . '.error 2> /dev/null 2>&1';
+			// Restrict TeX file access to the working dir (openin_any/openout_any=p) and
+			// disable shell-escape so a \input{}/\write18{} in the expression cannot read
+			// arbitrary files or run commands; escape the paths as defence in depth.
+			$command = 'cd ' . escapeshellarg($dir) . '; openin_any=p openout_any=p timeout 20 /usr/bin/latex -no-shell-escape -halt-on-error -interaction=nonstopmode ' . escapeshellarg($filename . '.tex') . ' < /dev/null |grep ^!|grep -v Emergency > ' . escapeshellarg($dir . DS . $filename . '.error') . ' 2> /dev/null 2>&1';
 			exec($command, $output_lines, $exit_status);
 
 			// execute dvi2png to build png
-			$command = "/usr/bin/dvipng -bg 'transparent' -q -T tight -D 100 -o " . $dir . DS . $filename . '.png '. $dir . DS . $filename . '.dvi 2>&1';
+			$command = "/usr/bin/dvipng -bg 'transparent' -q -T tight -D 100 -o " . escapeshellarg($dir . DS . $filename . '.png') . ' ' . escapeshellarg($dir . DS . $filename . '.dvi') . ' 2>&1';
 			exec($command, $output_lines, $exit_status);
 
 			if ($exit_status != 0)
@@ -507,7 +546,7 @@ class Entriesv1_1 extends ApiController
 		$object->expression = $expression;
 
 		// clean up our cache mess
-		shell_exec('rm ' . $dir . $filename . '.*');
+		shell_exec('rm ' . escapeshellarg($dir . $filename) . '.*');
 
 		$this->send($object);
 	}

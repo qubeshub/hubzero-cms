@@ -189,11 +189,16 @@ class Request extends BaseRequest
 	{
 		$str = $this->getVar($key, $default, $hash);
 		$str = is_array($str) ? self::_flatten('', $str) : $str;
+		$str = trim($str === null ? '' : (string) $str);
 
-		if (preg_match('/-?[0-9]+/', $str == null ? '' : $str, $matches))
+		// Read only a LEADING integer (whitespace already trimmed above). The
+		// match is anchored so digits are never scavenged from the middle of
+		// arbitrary text: "jesus1993coral@gmail.com" returns the default, not
+		// 1993 -- the unanchored match let an email typed into an id field
+		// resolve to a bogus user id (collaborator/author "look up by ID").
+		if (preg_match('/^-?[0-9]+/', $str, $matches))
 		{
-			$result = $matches[0];
-			return (!is_null($result) ? (int) $result : $default);
+			return (int) $matches[0];
 		}
 
 		return $default;
@@ -223,9 +228,19 @@ class Request extends BaseRequest
 	 */
 	public function getFloat($name, $default = 0.0, $hash = 'input')
 	{
-		$result = $this->getVar($key, $default, $hash);
+		$result = $this->getVar($name, $default, $hash);
 		$result = is_array($result) ? self::_flatten('', $result) : $result;
-		return preg_replace(static::$filters['float'], '', $result);
+		$result = trim($result === null ? '' : (string) $result);
+
+		// Anchored, for the reason getInt() is: an unanchored match scavenges
+		// digits out of the middle of arbitrary text, so a word typed into a
+		// numeric field would resolve to a number rather than the default.
+		if (preg_match('/^-?[0-9]+(\.[0-9]+)?/', $result, $matches))
+		{
+			return (float) $matches[0];
+		}
+
+		return $default;
 	}
 
 	/**
@@ -659,7 +674,14 @@ class Request extends BaseRequest
 		}
 		else
 		{
-			return $this->$source->get($key, $default, true);
+			if (is_array($default))
+			{
+				return $this->$source->all($key, $default, true);
+			}
+			else
+			{
+				return $this->$source->get($key, $default, true);
+			}
 		}
 	}
 
@@ -760,7 +782,12 @@ class Request extends BaseRequest
 					break;
 				case 'float':
 					$new_state = (string) self::_flatten('', $new_state);
-					$new_state = (float) preg_replace('/-?[0-9]+(\.[0-9]+)?/', '', $new_state);
+					// Anchored match, as getFloat() does. This was a preg_replace()
+					// that stripped the digits out and cast what was left, so every
+					// float state resolved to 0.0 whatever was submitted.
+					$new_state = preg_match('/^-?[0-9]+(\.[0-9]+)?/', trim($new_state), $m)
+						? (float) $m[0]
+						: (float) $default;
 					break;
 				case 'string':
 					$new_state = (string) self::_flatten('', $new_state);

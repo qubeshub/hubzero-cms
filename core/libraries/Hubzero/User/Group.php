@@ -521,9 +521,9 @@ class Group extends Obj
 
 			$list = $this->$property;
 
-			if (!is_null($list) && !is_array($list))
+			if (!is_array($list))
 			{
-				$list = array($list);
+				$list = is_null($list) ? array() : array($list);
 			}
 
 			$ulist = null;
@@ -541,6 +541,16 @@ class Group extends Obj
 				$tlist .= '(' . $db->quote($this->gidNumber) . ',' . $db->quote($value) . ')';
 			}
 
+			// Rows already in this table, used to count real changes below.
+			// The insert is now an upsert rather than a REPLACE, and MySQL
+			// reports zero affected rows for a row that does not actually
+			// change, so the driver's count can no longer tell us whether
+			// anything happened.
+			$query = "SELECT uidNumber FROM `$aux_table` WHERE gidNumber=" . $db->quote($this->gidNumber);
+			$db->setQuery($query);
+
+			$aExistingRows = $db->loadColumn() ?: array();
+
 			// @FIXME: I don't have a better solution yet. But the next refactoring of this class
 			// should eliminate the ability to read the entire member table due to problems with
 			// scale on a large (thousands of members) groups. The add function should track the members
@@ -553,41 +563,68 @@ class Group extends Obj
 
 			if (in_array($property, array('members', 'managers')))
 			{
-				$query = "SELECT uidNumber FROM `#__xgroups_members` WHERE gidNumber=" . $this->gidNumber;
+				// Deliberately diffed against the *members* table rather than
+				// $aExistingRows: a promoted user is written to both tables in
+				// this same loop (members first), so diffing managers against
+				// the managers table would fire a second enrollment event for
+				// somebody who was just enrolled.
+				$query = "SELECT uidNumber FROM `#__xgroups_members` WHERE gidNumber=" . (int) $this->gidNumber;
 				$db->setQuery($query);
 
 				// compile current list of members in this group
-				$aExistingUserMembership = array();
-
-				if (($results = $db->loadAssoc()))
-				{
-					foreach ($results as $uid)
-					{
-						$aExistingUserMembership[] = $uid;
-					}
-				}
+				$aExistingUserMembership = $db->loadColumn() ?: array();
 
 				// see who is new, merge with previous additions so we have a complete list after we are done
 				$aNewUserGroupEnrollments = array_merge($aNewUserGroupEnrollments, array_diff($list, $aExistingUserMembership));
 
 			}
 
-			if (is_array($list) && count($list) > 0)
+			// Count what this save really changes, from the lists rather than
+			// from the driver, so an unchanged roster reports zero and a
+			// changed one reports the rows added plus the rows dropped.
+			$dropped = array_diff($aExistingRows, $list);
+
+			$affected += count(array_diff($list, $aExistingRows));
+			$affected += count($dropped);
+
+			// Anyone this save drops from the roster leaves the same record
+			// behind as one the reaper takes, so the history is a complete
+			// account of how memberships ended rather than only the automatic
+			// ones. Done before the delete below, while the row still exists.
+			if ($property == 'members' && !empty($dropped))
+			{
+				// One statement for the whole set, reading the term and the
+				// manager flag from the tables. It has to run here, before the
+				// delete below, and while `managers` is still untouched -
+				// that property is handled later in this same loop, so
+				// somebody dropped from both lists is still recorded as the
+				// manager they were.
+				Group\Membership::archiveMembers(
+					$this->gidNumber,
+					$dropped,
+					Group\Membership::REASON_MANUAL,
+					(int) \User::get('id') ?: null
+				);
+			}
+
+			if (count($list) > 0)
 			{
 				if (in_array($property, array('members', 'managers', 'applicants', 'invitees')))
 				{
-					$query = "REPLACE INTO $aux_table (gidNumber,uidNumber) VALUES $tlist;";
+					// Not REPLACE: that deletes and re-inserts, which resets
+					// every other column on the row (membership expiration,
+					// and the surrogate id) on any unrelated roster change.
+					// The ON DUPLICATE clause is a deliberate no-op.
+					$query = "INSERT INTO $aux_table (gidNumber,uidNumber) VALUES $tlist"
+						. " ON DUPLICATE KEY UPDATE `gidNumber`=VALUES(`gidNumber`);";
 				}
 
 				$db->setQuery($query);
 
-				if ($db->query())
-				{
-					$affected += $db->getAffectedRows();
-				}
+				$db->query();
 			}
 
-			if (!is_array($list) || count($list) == 0)
+			if (count($list) == 0)
 			{
 				if (in_array($property, array('members', 'managers', 'applicants', 'invitees')))
 				{
@@ -605,10 +642,15 @@ class Group extends Obj
 
 			$db->setQuery($query);
 
-			if ($db->query())
-			{
-				$affected += $db->getAffectedRows();
-			}
+			$db->query();
+		}
+
+		// Give new members the group's default membership term, if it sets one.
+		// Done here because this is the one place every enrollment path runs
+		// through, and before the enrollment event so listeners see the term.
+		if (!empty($aNewUserGroupEnrollments))
+		{
+			Group\Membership::applyDefaultTerm($this->gidNumber, $aNewUserGroupEnrollments);
 		}
 
 		// After SQL is done and has no errors, fire off onGroupUserEnrolledEvents
@@ -662,6 +704,10 @@ class Group extends Obj
 		{
 			return false;
 		}
+
+		// Keep a record of who was in the group, and on what terms, before
+		// the rows go away
+		Group\Membership::archiveGroup($this->gidNumber, Group\Membership::REASON_GROUP);
 
 		$db->setQuery("DELETE FROM `#__xgroups_applicants` WHERE gidNumber=" . $db->quote($this->gidNumber) . ";");
 		$db->query();
@@ -1198,6 +1244,23 @@ class Group extends Obj
 			$filters['fields'][] = 'cn';
 		}
 
+		// Only allow plain column identifiers (and the COUNT(*) aggregate) in the
+		// select list; callers may pass this straight from request input.
+		$safeFields = array();
+		foreach ((array) $filters['fields'] as $f)
+		{
+			$f = trim($f);
+			if ($f === 'COUNT(*)' || preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/', $f))
+			{
+				$safeFields[] = $f;
+			}
+		}
+		if (empty($safeFields))
+		{
+			$safeFields[] = 'cn';
+		}
+		$filters['fields'] = $safeFields;
+
 		$field = implode(',', $filters['fields']);
 
 		$query = "SELECT $field FROM `#__xgroups`";
@@ -1219,14 +1282,14 @@ class Group extends Obj
 					$query .= 'description ASC';
 					break;
 				default:
-					$query .= $filters['sortby'];
+					$query .= (preg_replace('/[^a-zA-Z0-9_,. ]/', '', $filters['sortby']) ?: '1');
 					break;
 			}
 		}
 
 		if (isset($filters['limit']) && $filters['limit'] != 'all')
 		{
-			$query .= " LIMIT " . $filters['start'] . "," . $filters['limit'];
+			$query .= " LIMIT " . (int) (isset($filters['start']) ? $filters['start'] : 0) . "," . (int) $filters['limit'];
 		}
 
 		$query .= ";";

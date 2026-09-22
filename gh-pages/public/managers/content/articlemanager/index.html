@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Article Manager · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="The Article Manager lists every article on the hub and opens the editor for one. Reach it at Content → Article Manager , or directly at . The screen is titled…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/content/articlemanager/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Article Manager</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#what-articles-are-for">What articles are for</a></li>
+<li class="toc__item toc__item--l2"><a href="#worked-example-an-about-this-hub-page">Worked example: an &quot;About this hub&quot; page</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-article-list">The article list</a></li>
+<li class="toc__item toc__item--l3"><a href="#batch-processing">Batch processing</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-editor">The editor</a></li>
+<li class="toc__item toc__item--l2"><a href="#featured-articles">Featured articles</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-publishing-workflow">The publishing workflow</a></li>
+<li class="toc__item toc__item--l2"><a href="#categories">Categories</a></li>
+<li class="toc__item toc__item--l2"><a href="#options">Options</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Content</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Article Manager</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Article Manager</h1>
+        </header>
+        
+        <div class="prose">
+<p>The Article Manager lists every article on the hub and opens the editor for
+one. Reach it at <strong>Content → Article Manager</strong>, or directly at
+<code>/administrator/index.php?option=com_content</code>. The screen is titled <strong>Article
+Manager: Articles</strong>, and carries a submenu with two entries, <strong>Articles</strong> and
+<strong>Categories</strong>.</p>
+<p>You come here to write or fix one of the hub's own pages, and for nothing
+else. Almost every change on this screen is reversible: unpublishing takes a
+page off the site and republishing brings it back unchanged, and <strong>Delete</strong>
+sets a state rather than removing anything. The one thing that cannot be
+undone from the interface is losing an unsaved edit, which is why the check
+in <strong>Check In</strong> exists. Work here with a free hand.</p>
+<h2 id="what-articles-are-for">What articles are for</h2>
+<p>An article is a page of the hub's own prose, written by whoever runs the hub:
+the About page, the acceptable use policy, the instructions for citing the
+hub's data, a notice about next month's maintenance window. If you type it
+once and visitors only read it, it is an article.</p>
+<p>Most of a hub's content is not an article, and a manager who does not know
+that ends up building the whole hub out of them. Tools, datasets and their
+documentation are resources. Formally released datasets are publications.
+Pages members edit themselves are wiki pages. A group's own pages belong to
+the group. Questions and answers, forum threads, blog entries, support
+tickets, knowledge base entries and courses each have their own component,
+their own permissions, and their own chapter in
+<a href="../../components/index.html">Components</a>. Those components hold far more than
+text — authorship, versions, tags, ratings, review — and an article holds
+none of it.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> An article has no address and no place in the navigation. Both
+come from a menu item that points at it, and nothing you set on the article
+puts it in a menu. See <a href="../urls/index.html">URLs</a>.</p>
+</aside>
+<h2 id="worked-example-an-about-this-hub-page">Worked example: an &quot;About this hub&quot; page</h2>
+<p>Nearly every hub needs a page saying who runs it, what it is for, and who to
+write to. It is the first article most managers create, and it exercises
+everything in this chapter. The rest of the chapter refers back to it.</p>
+<ol>
+<li>
+<p><strong>Decide whether it needs a category.</strong> A category does two jobs: it groups
+articles in the list and the batch panel, and — for an article that no menu
+item points at — it supplies the front of the URL. A single About page
+reached through a menu item needs neither, so leaving it in
+<strong>Uncategorised</strong> is a defensible answer. Create a category when you can
+already see the second and third article coming: an About section that will
+also hold a contact page and an acknowledgements page. To create one, go to
+<strong>Content → Category Manager → New</strong>, set <strong>Title</strong> to <code>About</code>, leave
+<strong>Alias</strong> blank so it is generated as <code>about</code>, leave <strong>Parent Item</strong> at
+<strong>- No parent -</strong>, and select <strong>Save &amp; Close</strong>. This example uses that
+category.</p>
+</li>
+<li>
+<p><strong>Write the article.</strong> Go to <strong>Content → Article Manager → New</strong>. Set
+<strong>Title</strong> to <code>About this hub</code>. Leave <strong>Alias</strong> blank; it is generated as
+<code>about-this-hub</code>. Set <strong>Category</strong> to <strong>About</strong>. Most of the rest arrives
+with the value you want: <strong>Status</strong> is <strong>Published</strong>, <strong>Language</strong> is
+<strong>All</strong>, <strong>Start Publishing</strong> is now, and every panel down the right is set
+to <strong>Use Global</strong>. Check that <strong>Access</strong> reads <strong>Public</strong>, and fill in
+<strong>Meta Description</strong> under <strong>Metadata Options</strong> — the sentence a search
+engine prints under the page title. Leave everything else alone.</p>
+</li>
+<li>
+<p><strong>Type the body.</strong> <strong>Article Text</strong> opens in whichever editor plugin the
+<strong>Default Editor</strong> setting names, at <strong>Site → Global Configuration</strong> on the
+<strong>Site</strong> tab. The installer writes <code>ckeditor</code> into the hub's configuration,
+so on a stock hub you get <strong>Editor - CKEditor</strong>: a <strong>Format</strong> menu for
+headings, the usual bold and italic, lists, blockquote and alignment,
+<strong>Link</strong>, <strong>Image</strong> and <strong>Table</strong>, and find and replace. There is no
+<strong>Source</strong> button until someone turns <strong>Source View</strong> on at <strong>Extensions →
+Plugin Manager → Editor - CKEditor</strong>. Write the page as prose and take
+headings from the <strong>Format</strong> menu rather than setting fonts and colours by
+hand; the template supplies the appearance. Under the text area sit four
+more buttons, one per enabled button plugin: <strong>Article</strong>, which inserts a
+link to another article; <strong>Image</strong>, which opens the shared library from
+<strong>Content → Media Manager</strong> and can upload into it; <strong>Page Break</strong>; and
+<strong>Read More</strong>, which marks where the intro text ends. Use <strong>Image</strong> for
+pictures — the <strong>Image</strong> button in CKEditor's own toolbar is a different
+dialog that only takes a URL, because a stock hub gives it no server to
+browse. Select <strong>Save &amp; Close</strong>.</p>
+</li>
+<li>
+<p><strong>Publish it.</strong> The article is published already, because <strong>Status</strong>
+defaults to <strong>Published</strong>; the list shows it as such in the <strong>Status</strong>
+column. <strong>Status</strong> and <strong>Access</strong> are different questions. <strong>Status</strong> decides
+whether the article exists for the site at all: an unpublished article
+answers 404, even to someone following a menu item straight at it. <strong>Access</strong>
+decides who may read the body of an article that does exist. A published
+article whose <strong>Access</strong> is <strong>Registered</strong> still renders its title to a
+guest; only the body is withheld, and the guest is shown the intro text and
+a link to log in only where <strong>Show Unauthorised Links</strong> is on. The
+category's access level counts too — a <strong>Public</strong> article filed in a
+<strong>Registered</strong> category is not readable by a guest. Leave both at
+<strong>Published</strong> and <strong>Public</strong> for an About page.</p>
+</li>
+<li>
+<p><strong>Make it reachable.</strong> Publishing does not put the page anywhere. Go to
+<strong>Menus</strong>, open the menu you want it in, and select <strong>New</strong>. Set <strong>Menu
+Item Type</strong> to <strong>Articles → Single Article</strong>, choose <strong>About this hub</strong> in
+the <strong>Select Article</strong> field, set <strong>Menu Title</strong> to <code>About</code>, and leave
+<strong>Alias</strong> blank so it is generated as <code>about</code>. Save, and the page answers
+at <code>/about</code>. <a href="../../menus/index.html">Menus</a> covers the rest of that form, nesting
+items to build an About section, and showing the menu with a module.</p>
+</li>
+<li>
+<p><strong>Check it on the site.</strong> Open <code>/about</code> in a browser where you are not
+logged in to the hub; that is what a visitor sees. The menu item's route is
+the address to publish and to link to. Had you skipped the menu item, the
+article would have answered at its category path instead,
+<code>/about/about-this-hub</code>. A 404 means the article is not published, the menu
+item is not published, or the menu item points at something else.
+<a href="../urls/index.html">URLs</a> explains how the address is decided.</p>
+</li>
+</ol>
+<h2 id="the-article-list">The article list</h2>
+<p>Seven filters sit above the list, and a search box.</p>
+<table>
+<thead>
+<tr>
+<th>Filter</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Filter:</strong></td>
+<td>Matches the search text against the article title or alias.</td>
+</tr>
+<tr>
+<td><strong>- Select Status -</strong></td>
+<td>Published, Unpublished, Archived, Trashed, or All.</td>
+</tr>
+<tr>
+<td><strong>- Select Category -</strong></td>
+<td>One category. Articles in its children are not included.</td>
+</tr>
+<tr>
+<td><strong>- Select Access -</strong></td>
+<td>One access level.</td>
+</tr>
+<tr>
+<td><strong>- Select Max Levels -</strong></td>
+<td>Nothing. See the warning below.</td>
+</tr>
+<tr>
+<td><strong>- Select Author -</strong></td>
+<td>Nothing.</td>
+</tr>
+<tr>
+<td><strong>- Select Language -</strong></td>
+<td>Nothing.</td>
+</tr>
+</tbody>
+</table>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Only the search box and the Status, Category, and Access
+filters work. The controller reads <strong>Max Levels</strong>, <strong>Author</strong>, and
+<strong>Language</strong> from the request and stores them, but never applies them to
+the query; the Author and Max Levels menus are also handed empty option
+lists, so they have nothing in them to pick. The search box's placeholder
+offers an <code>ID:</code> prefix that the list does not implement either.</p>
+</aside>
+<p>With no status filter set, the list shows everything except trashed
+articles. To see trashed articles, set <strong>- Select Status -</strong> to <strong>Trashed</strong>.</p>
+<p>To find the About this hub article from the worked example, type <code>about</code> in
+the search box — it matches the title and the alias — or set <strong>- Select
+Category -</strong> to <strong>About</strong>. An article filed in a category nested under About
+does not appear under that filter.</p>
+<p>The columns are <strong>Title</strong> (with the alias beneath it), <strong>Status</strong>,
+<strong>Category</strong>, <strong>Ordering</strong>, <strong>Access</strong>, <strong>Created by</strong>, <strong>Date</strong>,
+<strong>Language</strong>, and <strong>ID</strong>. Every column heading except Ordering sorts. Sort by
+<strong>Ordering</strong> to enable the up and down arrows and the ordering boxes;
+ordering is kept per category, so the list is grouped by category while you
+reorder it.</p>
+<p>Selecting the checkboxes of one or more articles enables the toolbar
+buttons:</p>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>New</strong></td>
+<td>Opens an empty article.</td>
+</tr>
+<tr>
+<td><strong>Edit</strong></td>
+<td>Opens the selected article. Clicking the title does the same.</td>
+</tr>
+<tr>
+<td><strong>Publish</strong> / <strong>Unpublish</strong></td>
+<td>Sets the state to Published or Unpublished.</td>
+</tr>
+<tr>
+<td><strong>Archive</strong></td>
+<td>Sets the state to Archived.</td>
+</tr>
+<tr>
+<td><strong>Check In</strong></td>
+<td>Releases an article left checked out by someone else.</td>
+</tr>
+<tr>
+<td><strong>Delete</strong></td>
+<td>Sets the state to Trashed. It does not delete anything.</td>
+</tr>
+<tr>
+<td><strong>Options</strong></td>
+<td>The component's configuration.</td>
+</tr>
+</tbody>
+</table>
+<p>Each button skips articles you lack <code>core.edit.state</code> on and reports the ones
+it skipped.</p>
+<h3 id="batch-processing">Batch processing</h3>
+<p>Below the list, administrators who hold <strong>Create</strong>, <strong>Edit</strong>, and <strong>Edit
+State</strong> on <code>com_content</code> get a <strong>Batch process the selected articles</strong>
+panel. It sets the access level and the language of the checked articles,
+and moves or copies them into another category. Choosing a target category
+is mandatory — the batch is refused without one, even if all you wanted to
+change was the access level. Copying leaves the originals alone and applies
+the other changes to the copies.</p>
+<h2 id="the-editor">The editor</h2>
+<p><strong>New</strong> or <strong>Edit</strong> opens <strong>Article Manager: Add New Article</strong> or <strong>Article
+Manager: Edit Article</strong>. The toolbar is <strong>Save</strong>, <strong>Save &amp; Close</strong>, <strong>Save as
+Copy</strong>, <strong>Save &amp; New</strong>, <strong>Cancel</strong>, and <strong>Help</strong>. <strong>Save as Copy</strong> and
+<strong>Save &amp; New</strong> both blank the alias, reset the created and start-publishing
+dates to now, and clear the finish-publishing date.</p>
+<p>The main column holds:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Title</strong></td>
+<td>Required.</td>
+</tr>
+<tr>
+<td><strong>Alias</strong></td>
+<td>The article's own slug. Leave it blank and it is generated from the title.</td>
+</tr>
+<tr>
+<td><strong>Category</strong></td>
+<td>Required. Lists only the categories you may create in. A new article defaults to <strong>Uncategorised</strong>.</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Published, Unpublished, Archived, or Trashed. Read-only without <code>core.edit.state</code>.</td>
+</tr>
+<tr>
+<td><strong>Access</strong></td>
+<td>The viewing level. A stock hub ships three: <strong>Public</strong>, <strong>Registered</strong>, and <strong>Special</strong>. See <a href="../../users/accesslevels/index.html">Access levels</a>.</td>
+</tr>
+<tr>
+<td><strong>Featured</strong></td>
+<td>Yes or No. See the warning below.</td>
+</tr>
+<tr>
+<td><strong>Language</strong></td>
+<td><strong>All</strong>, or one installed content language.</td>
+</tr>
+<tr>
+<td><strong>Article Text</strong></td>
+<td>The body, in the site's default editor. On a stock hub that is <strong>Editor - CKEditor</strong>; see step 3 of the worked example.</td>
+</tr>
+</tbody>
+</table>
+<p>The right column shows the article's ID, who created it and when, and who
+last modified it and when, above a stack of collapsible panels:</p>
+<table>
+<thead>
+<tr>
+<th>Panel</th>
+<th>Holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Publishing Options</strong></td>
+<td><strong>Start Publishing</strong> and <strong>Finish Publishing</strong>, plus <strong>Revision</strong> and <strong>Hits</strong> once the article has them. Both dates are shown in your own time zone, and the abbreviation is printed next to the label.</td>
+</tr>
+<tr>
+<td><strong>Article Options</strong></td>
+<td>Per-article overrides for everything on the component's <strong>Articles</strong> options — Show Title, Show Author, Show Hits, and the rest. Each defaults to <strong>Use Global</strong>.</td>
+</tr>
+<tr>
+<td><strong>Key Reference</strong></td>
+<td>A free-text field for tying the article to a record in another system.</td>
+</tr>
+<tr>
+<td><strong>Configure Edit Screen</strong></td>
+<td>Only for administrators. Turns the Publishing Options and Article Options panels on or off for everyone, and turns on the <strong>Images and links</strong> panel.</td>
+</tr>
+<tr>
+<td><strong>Images and links</strong></td>
+<td>Intro and full-article images with alt text, captions and float, and three arbitrary links. Hidden unless <strong>Configure Edit Screen</strong> turns it on.</td>
+</tr>
+<tr>
+<td><strong>Metadata Options</strong></td>
+<td>Meta description, keywords, robots, author, and content rights.</td>
+</tr>
+</tbody>
+</table>
+<p>Administrators also get a <strong>Permissions</strong> block across the foot of the form,
+setting Delete, Edit, and Edit State for this one article.</p>
+<p>Opening an article checks it out to you. Leaving with <strong>Save &amp; Close</strong> or
+<strong>Cancel</strong> checks it back in; closing the browser tab does not, which is what
+<strong>Check In</strong> on the list is for.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> The <strong>Featured</strong> field writes to the article's <code>featured</code>
+column, but the site's <strong>Featured Articles</strong> page reads a separate
+<code>#__content_frontpage</code> table that nothing in the administrator interface
+writes to. Setting <strong>Featured</strong> to <strong>Yes</strong> therefore has no visible effect.
+The administrator's own Featured Articles screen is unreachable — its menu
+entry is commented out, and the code behind it refers to a model class that
+does not exist. Both are recorded with the project.</p>
+</aside>
+<h2 id="featured-articles">Featured articles</h2>
+<p>The <strong>Featured</strong> field on the article, and the <strong>Featured Articles</strong> menu item
+type that lists featured articles, look like the way to choose what appears on
+a hub's front page. They are not. As the warning above records, the field
+writes one place and the site's featured page reads another, and nothing fills
+the table it reads; the page's query joins that table, so it matches no
+articles at all. A <strong>Featured Articles</strong> page is empty whatever <strong>Featured</strong>
+is set to, and setting <strong>Featured</strong> to <strong>Yes</strong> does nothing you can see.</p>
+<p>Set the home page with a menu item instead: open the item you want as the
+front page and set <strong>Default Page</strong> to <strong>Yes</strong>. A <strong>Single Article</strong> item
+pointed at the About this hub article is a serviceable front page for a new
+hub. See <a href="../../menus/index.html">Menus</a>.</p>
+<h2 id="the-publishing-workflow">The publishing workflow</h2>
+<p>An article has one of four states.</p>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Published</strong></td>
+<td>Visible on the site, subject to the access level and the publishing dates.</td>
+</tr>
+<tr>
+<td><strong>Unpublished</strong></td>
+<td>Not visible.</td>
+</tr>
+<tr>
+<td><strong>Archived</strong></td>
+<td>Not in ordinary listings; reachable through an <strong>Archived Articles</strong> menu item.</td>
+</tr>
+<tr>
+<td><strong>Trashed</strong></td>
+<td>Not visible, and hidden from the article list until you filter for it.</td>
+</tr>
+</tbody>
+</table>
+<p>Unpublish the About this hub article while you rewrite it and the menu item
+stays in the menu, but a visitor who follows it gets a 404 — the site refuses
+an article that is not published, whether it was reached by menu item or by
+category path. You keep seeing it, because anyone holding <code>core.edit</code> or
+<code>core.edit.state</code> on <code>com_content</code> is served unpublished articles as well.
+Archived articles are served to everyone: archiving takes the article out of
+the listings, but a menu item pointed straight at it still opens it.</p>
+<p><strong>Start Publishing</strong> and <strong>Finish Publishing</strong> narrow a published article to
+a window. An article published with a start date in the future stays hidden
+until then.</p>
+<p>To recover a trashed article, filter the list by <strong>Trashed</strong>, open the
+article, and set <strong>Status</strong> back to <strong>Published</strong>.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Hubzero 2.4 has no permanent delete for articles. The toolbar
+button reads <strong>Delete</strong> but runs the trash task, and no controller task
+removes the row. An article set to Trashed stays in the database until
+someone removes it outside the interface.</p>
+</aside>
+<h2 id="categories">Categories</h2>
+<p>Articles are filed in categories, and categories are what the URL of an
+article without a menu item is built from. They are managed by a separate
+component, <code>com_categories</code>, which serves every extension that has
+categories; the Article Manager's <strong>Categories</strong> submenu entry and
+<strong>Content → Category Manager</strong> both open it filtered to <code>com_content</code>.</p>
+<p>The list is titled <strong>Category Manager: Articles</strong> and behaves like the
+article list: a search box over the title and description, and filters for
+<strong>Max Levels</strong>, <strong>Status</strong>, <strong>Access</strong>, and <strong>Language</strong> — all four of which
+work here. Categories nest, so the list is a tree ordered by position, and
+the same <strong>New</strong>, <strong>Edit</strong>, <strong>Publish</strong>, <strong>Unpublish</strong>, <strong>Archive</strong>, <strong>Check
+In</strong>, <strong>Delete</strong>, and <strong>Options</strong> toolbar applies. As with articles,
+<strong>Delete</strong> trashes rather than deletes.</p>
+<p>A category has a <strong>Title</strong>, an <strong>Alias</strong>, a <strong>Parent Item</strong>, a <strong>Status</strong>, an
+<strong>Access</strong> level, a <strong>Language</strong>, and a <strong>Description</strong>, plus panels for
+options, metadata, and — for administrators — permissions. The permissions
+you set on a category are inherited by the articles in it.</p>
+<p>The <strong>About</strong> category from the worked example is as plain as a category
+gets: a title, an alias generated from it, no parent. Its alias is what puts
+the article at <code>/about/about-this-hub</code> when no menu item points at it, and any
+permissions set on it are inherited by every article filed there.</p>
+<p>A stock hub installs an <strong>Uncategorised</strong> category, which new articles
+default to. An article in <strong>Uncategorised</strong> is reachable at
+<code>/{article-alias}</code> with nothing in front of it; see <a href="../urls/index.html">URLs</a>.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> An article belongs to exactly one category. There is no way to
+file one under two. If a page needs to appear in two places, point two menu
+items at the same article rather than duplicating it.</p>
+</aside>
+<h2 id="options">Options</h2>
+<p>Most hubs never open this screen. The shipped defaults produce an ordinary
+article page — title shown, author shown, hits shown — and the settings that
+matter for a specific page are better set on the article or the menu item,
+where they affect one page rather than all of them. Come here only when you
+want the same change on every article: the byline off across the whole hub,
+say, because a single office writes all of them.</p>
+<p><strong>Options</strong> on either list opens the <code>com_content</code> configuration: the site
+defaults for article, category, blog, and list layouts, the integration
+settings, and the component-wide permissions. Every parameter is listed in
+the
+<a href="../../../reference/configuration/components/content/index.html">Content configuration reference</a>.</p>
+<p>On a single-article layout the precedence is straightforward: a setting on
+the article wins over the same setting on the menu item, which wins over the
+global here. A setting left at <strong>Use Global</strong> falls through to the next level
+up. So setting <strong>Show Author</strong> to <strong>Hide</strong> in the About this hub article's
+<strong>Article Options</strong> panel drops the byline from <code>/about</code>, whatever the menu
+item and the global say.</p>
+<p>Blog and featured layouts invert that. There the menu item's setting wins,
+and the article's value is used only where the menu item's setting is
+<strong>Use Article</strong>; if the article has nothing set, the global is used.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../index.html" rel="prev"><span>Previous</span>Content</a><a class="pager__next" href="../categories/index.html" rel="next"><span>Next</span>Categories</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/08-content/articlemanager.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

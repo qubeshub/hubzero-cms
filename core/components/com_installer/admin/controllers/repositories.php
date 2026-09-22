@@ -16,6 +16,8 @@ use Event;
 use StdClass;
 use Route;
 use App;
+use Lang;
+use User;
 
 /**
  * Repositories Controller
@@ -148,6 +150,14 @@ class Repositories extends AdminController
 	{
 		// Check for request forgeries
 		Request::checkToken();
+
+		if (
+			!User::authorise('core.edit', $this->_option)
+			&& !User::authorise('core.create', $this->_option)
+		)
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 
 		$temp = new StdClass;
 		$alias             = Request::getString('alias', '', 'post');

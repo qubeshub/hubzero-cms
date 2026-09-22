@@ -283,7 +283,7 @@ $legacy = array(
 		</div>
 	<?php endif; ?>
 
-	<ul id="profile">
+	<ul id="profile" hidden>
 		<?php if ($isUser && (Field::state('registrationFullname', 'RRRR', 'edit') != Components\Members\Models\Profile\Field::STATE_HIDDEN)) : ?>
 			<li class="profile-name section hidden">
 				<div class="section-content">
@@ -784,7 +784,11 @@ $legacy = array(
 
 				if (empty($value))
 				{
-					$cls[] = ($isUser) ? 'hidden' : 'hide';
+					if (!$isUser)
+					{
+						continue;
+					}
+					$cls[] = 'hidden';
 				}
 				?>
 				<li class="<?php echo implode(' ', $cls); ?> section" id="input-section-<?php echo $this->escape($field->get('name')); ?>">

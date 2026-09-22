@@ -12,6 +12,7 @@ use Hubzero\Database\Value\Raw;
 use Hubzero\Form\Form;
 use Lang;
 use Date;
+use User;
 
 require_once __DIR__ . DS . 'attachment.php';
 require_once __DIR__ . DS . 'tags.php';
@@ -52,6 +53,18 @@ class Post extends Relational
 	);
 
 	/**
+	 * Longest comment that can be stored, in bytes
+	 *
+	 * The column is a TEXT, which holds 65535 bytes. Stay beneath that: without
+	 * strict SQL mode an oversize value is truncated rather than refused, which
+	 * cuts the markup mid-tag and leaves an unclosed element to disturb the
+	 * layout of the whole thread.
+	 *
+	 * @var  int
+	 */
+	const MAX_COMMENT_BYTES = 60000;
+
+	/**
 	 * Automatically fillable fields
 	 *
 	 * @var  array
@@ -59,7 +72,11 @@ class Post extends Relational
 	public $always = array(
 		'title',
 		'scope',
-		'asset_id'
+		'asset_id',
+		'parent',
+		'thread',
+		'scope_sub_id',
+		'object_id'
 	);
 
 	/**
@@ -111,6 +128,18 @@ class Post extends Relational
 				return Lang::txt('comment cannot be empty');
 			}
 
+			// strlen() counts bytes, which is what the column limits. Checked
+			// before the duplicate lookup below so an oversize post is refused
+			// without a query.
+			if (strlen($data['comment']) > self::MAX_COMMENT_BYTES)
+			{
+				return Lang::txt(
+					'Post is too long: %s bytes of markup, and the limit is %s.',
+					number_format(strlen($data['comment'])),
+					number_format(self::MAX_COMMENT_BYTES)
+				);
+			}
+
 			if (!isset($data['created_by']) || !$data['created_by'])
 			{
 				$data['created_by'] = User::get('id');
@@ -138,6 +167,71 @@ class Post extends Relational
 
 			return false;
 		});
+	}
+
+	/**
+	 * Normalises an optional foreign key
+	 *
+	 * The post forms submit an empty string for these whenever there is nothing
+	 * to point at, and the columns are integers that do not accept null. A
+	 * strict SQL mode refuses the empty string outright, so a new thread cannot
+	 * be created at all; a lenient one quietly coerces it to zero, which is what
+	 * these columns already mean by absent.
+	 *
+	 * @param   array   $data   the data being saved
+	 * @param   string  $field  the column to read
+	 * @return  int
+	 */
+	protected function optionalId($data, $field)
+	{
+		return (isset($data[$field]) && $data[$field] !== '') ? (int) $data[$field] : 0;
+	}
+
+	/**
+	 * Generates automatic parent value
+	 *
+	 * @param   array  $data  the data being saved
+	 * @return  int
+	 */
+	public function automaticParent($data)
+	{
+		return $this->optionalId($data, 'parent');
+	}
+
+	/**
+	 * Generates automatic thread value
+	 *
+	 * A new thread has none until it has been saved and can take its own id;
+	 * that happens after the insert, and zero reads as absent until then.
+	 *
+	 * @param   array  $data  the data being saved
+	 * @return  int
+	 */
+	public function automaticThread($data)
+	{
+		return $this->optionalId($data, 'thread');
+	}
+
+	/**
+	 * Generates automatic scope_sub_id value
+	 *
+	 * @param   array  $data  the data being saved
+	 * @return  int
+	 */
+	public function automaticScopeSubId($data)
+	{
+		return $this->optionalId($data, 'scope_sub_id');
+	}
+
+	/**
+	 * Generates automatic object_id value
+	 *
+	 * @param   array  $data  the data being saved
+	 * @return  int
+	 */
+	public function automaticObjectId($data)
+	{
+		return $this->optionalId($data, 'object_id');
 	}
 
 	/**
@@ -625,56 +719,85 @@ class Post extends Relational
 			$this->set('rgt', 1);
 		}
 
-		if ($this->isNew() && $this->get('parent'))
+		if ($isNew && $this->get('parent'))
 		{
 			$parent = $this->parent();
 
-			if (!$parent)
+			// parent() returns false (or a blank model) when the id does not
+			// resolve, so guard against both before using it as a tree anchor.
+			if (!$parent || !$parent->get('id'))
 			{
 				$this->addError(Lang::txt('Parent node does not exist.'));
 				return false;
 			}
 
-			// Get the reposition data for shifting the tree and re-inserting the node.
-			if (!($reposition = $this->getTreeRepositionData($parent, 2, 'last-child')))
-			{
-				// Error message set in getNode method.
-				return false;
-			}
+			// The forum tables are MyISAM, which supports neither transactions
+			// nor row-level locking, so concurrent replies to the same thread
+			// (e.g. a double-submit) would interleave the nested-set shifts
+			// below and corrupt the lft/rgt values -- leaving orphaned rows at
+			// lft/rgt = 0 or overlapping ranges (support ticket #2159).
+			// Serialize them with an advisory, thread-scoped named lock.
+			$db   = \App::get('db');
+			$lock = 'com_forum.thread.' . (int) $parent->get('thread');
+			$db->setQuery('SELECT GET_LOCK(' . $db->quote($lock) . ', 10)');
+			$db->loadResult();
 
-			// Shift left values.
-			$query = $this->getQuery()
-				->update($this->getTableName())
-				->set(['lft' => new Raw('lft + 2')])
-				->where($reposition->left_where['col'], $reposition->left_where['op'], $reposition->left_where['val'])
-				->whereEquals('scope', $parent->get('scope'))
-				->whereEquals('scope_id', $parent->get('scope_id'))
-				->whereEquals('thread', $parent->get('thread'));
-			if (!$query->execute())
+			try
 			{
-				$this->addError($query->getError());
-				return false;
-			}
+				// Re-read the parent inside the lock: a concurrent reply may
+				// have shifted the tree since it was first loaded above.
+				$parent = $this->parent();
 
-			// Shift right values.
-			$query = $this->getQuery()
-				->update($this->getTableName())
-				->set(['rgt' => new Raw('rgt + 2')])
-				->where($reposition->right_where['col'], $reposition->right_where['op'], $reposition->right_where['val'])
-				->whereEquals('scope', $parent->get('scope'))
-				->whereEquals('scope_id', $parent->get('scope_id'))
-				->whereEquals('thread', $parent->get('thread'));
-			if (!$query->execute())
+				// Get the reposition data for shifting the tree and re-inserting the node.
+				if (!($reposition = $this->getTreeRepositionData($parent, 2, 'last-child')))
+				{
+					// Error message set in getNode method.
+					return false;
+				}
+
+				// Shift left values.
+				$query = $this->getQuery()
+					->update($this->getTableName())
+					->set(['lft' => new Raw('lft + 2')])
+					->where($reposition->left_where['col'], $reposition->left_where['op'], $reposition->left_where['val'])
+					->whereEquals('scope', $parent->get('scope'))
+					->whereEquals('scope_id', $parent->get('scope_id'))
+					->whereEquals('thread', $parent->get('thread'));
+				if (!$query->execute())
+				{
+					$this->addError($query->getError());
+					return false;
+				}
+
+				// Shift right values.
+				$query = $this->getQuery()
+					->update($this->getTableName())
+					->set(['rgt' => new Raw('rgt + 2')])
+					->where($reposition->right_where['col'], $reposition->right_where['op'], $reposition->right_where['val'])
+					->whereEquals('scope', $parent->get('scope'))
+					->whereEquals('scope_id', $parent->get('scope_id'))
+					->whereEquals('thread', $parent->get('thread'));
+				if (!$query->execute())
+				{
+					$this->addError($query->getError());
+					return false;
+				}
+
+				$this->set('lft', $reposition->new_lft);
+				$this->set('rgt', $reposition->new_rgt);
+
+				$result = parent::save();
+			}
+			finally
 			{
-				$this->addError($query->getError());
-				return false;
+				$db->setQuery('SELECT RELEASE_LOCK(' . $db->quote($lock) . ')');
+				$db->loadResult();
 			}
-
-			$this->set('lft', $reposition->new_lft);
-			$this->set('rgt', $reposition->new_rgt);
 		}
-
-		$result = parent::save();
+		else
+		{
+			$result = parent::save();
+		}
 
 		if ($result)
 		{
@@ -745,8 +868,8 @@ class Post extends Relational
 	 */
 	protected function getTreeRepositionData($referenceNode, $nodeWidth, $position = 'before')
 	{
-		// Make sure the reference an object with a left and right id.
-		if (!is_object($referenceNode) && isset($referenceNode->lft) && isset($referenceNode->rgt))
+		// Make sure the reference is an object with a left and right id.
+		if (!is_object($referenceNode) || !isset($referenceNode->lft) || !isset($referenceNode->rgt))
 		{
 			return false;
 		}

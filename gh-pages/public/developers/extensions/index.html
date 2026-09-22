@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Extensions · Developers · Hubzero Documentation</title>
+  <meta name="description" content="Everything a hub does beyond serving a request is an extension. The CMS itself is a thin application that boots a container, works out which component owns the…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/developers/extensions/">
+  <link rel="icon" href="../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../index.html">
+      <img class="brand__mark" src="../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../search-index.json" data-base="../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../docs/index.html">About</a>
+      <a href="../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../index.html">Developers</a>
+        <nav aria-label="Developers contents">
+<ul class="tree">
+<li class="tree__section"><details><summary><a class="tree__link" href="../getting-started/index.html">Getting started</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/releasenotes/index.html">Release notes</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/fileaccess/index.html">Accessing files</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/databaseaccess/index.html">Direct database access</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/upgrade/index.html">Upgrade guide</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/browsersupport/index.html">Browser support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/devenvironment/index.html">Development environment</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../tutorials/index.html">Video tutorials</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../foundation/index.html">Foundation</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../foundation/structure/index.html">Application structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../foundation/constants/index.html">Constants</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../foundation/autoloading/index.html">Autoloading</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../foundation/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../foundation/extensions/index.html">Extensions</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../foundation/facades/index.html">Facades</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../foundation/providers/index.html">Service providers</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../services/index.html">Services</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../services/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../services/filesystem/index.html">Filesystem</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../services/session/index.html">Session</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../services/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../services/server/index.html">Server</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../basics/index.html">The basics</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../basics/requests/index.html">Requests</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/responses/index.html">Responses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/config/index.html">Config</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/user/index.html">Users &amp; profiles</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/debugging/index.html">Debugging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/cron/index.html">Scheduled tasks</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/dates/index.html">Dates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/redirect/index.html">Redirect</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../database/index.html">Database</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link is-active" href="index.html" aria-current="page">Extensions</a></summary><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#which-kind-do-you-want">Which kind do you want</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-four-kinds">The four kinds</a></li>
+<li class="toc__item toc__item--l3"><a href="#components">Components</a></li>
+<li class="toc__item toc__item--l3"><a href="#plugins">Plugins</a></li>
+<li class="toc__item toc__item--l3"><a href="#modules">Modules</a></li>
+<li class="toc__item toc__item--l3"><a href="#templates">Templates</a></li>
+<li class="toc__item toc__item--l2"><a href="#where-extensions-live">Where extensions live</a></li>
+<li class="toc__item toc__item--l2"><a href="#how-an-extension-is-found">How an extension is found</a></li>
+<li class="toc__item toc__item--l2"><a href="#in-this-section">In this section</a></li>
+</ol><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="extreqs/index.html">Requirements</a></li>
+<li class="tree__leaf"><a class="tree__link" href="parameters/index.html">Parameters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="deployext/index.html">Deploying extensions</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../modules/index.html">Modules</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../modules/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../components/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/models/index.html">Models</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/routing/index.html">Routing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/packaging/index.html">Packaging</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../plugins/index.html">Plugins</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../plugins/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../templates/index.html">Templates</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../templates/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/designing/index.html">Designing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/layouts/index.html">Page layouts</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/css/index.html">Cascading style sheets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/javascript/index.html">JavaScript</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/overrides/index.html">Output overrides</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/socicons/index.html">Socicons</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/fontcons/index.html">Fontcons</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/elements/index.html">Elements and typography</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/accessibility/index.html">Accessibility</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../muse/index.html">Muse</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../supergroups/index.html">Super Groups</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/templating-system/index.html">Templating system</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/page-templates/index.html">Page templates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/custom-macros/index.html">Custom macros</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/php-pages/index.html">PHP pages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/databases/index.html">Databases</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/components/index.html">Components</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups-gitlab/index.html">Super groups with GitLab</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../testing/index.html">Testing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../api/index.html">REST API</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../aws/index.html">AWS</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../contributing/index.html">Contributing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../conventions/index.html">Conventions</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Developers</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Extensions</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Developers</p>
+          <h1>Extensions</h1>
+        </header>
+        
+        <div class="prose">
+<p>Everything a hub does beyond serving a request is an extension. The CMS
+itself is a thin application that boots a container, works out which
+component owns the URL, and asks a template to draw the result; the features
+— resources, groups, projects, publications, the wiki — are components,
+plugins, modules and templates sitting on top of it.</p>
+<p>This section covers what all four kinds have in common: what a package must
+contain, how parameters are declared, how strings are translated, and how
+code gets onto a running hub. Each kind then has its own chapter set —
+<a href="../components/index.html">Components</a>, <a href="../plugins/index.html">Plugins</a>,
+<a href="../modules/index.html">Modules</a>, <a href="../templates/index.html">Templates</a> — for
+the parts that differ.</p>
+<p>Read this section once before you start, and the four rules it establishes
+will save you the four days they otherwise cost: an extension is a row in a
+table, that row comes from a migration, every facade must be imported, and
+every visible string comes from a language file whose client you have to get
+right.</p>
+<h2 id="which-kind-do-you-want">Which kind do you want</h2>
+<p>Decide by asking what owns the page.</p>
+<table>
+<thead>
+<tr>
+<th>The thing you are adding</th>
+<th>Kind</th>
+<th>Because</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A screen with records behind it — booking a lab's instruments</td>
+<td>Component</td>
+<td>it owns the URL and the request</td>
+</tr>
+<tr>
+<td>A reaction to something happening — mirroring a publication to an external service when it is saved</td>
+<td>Plugin</td>
+<td>it owns no page and answers events</td>
+</tr>
+<tr>
+<td>A block that appears beside other people's pages — the instruments free right now</td>
+<td>Module</td>
+<td>it renders into a template position</td>
+</tr>
+<tr>
+<td>A different look for a partner institution</td>
+<td>Template</td>
+<td>it is the page around everything else</td>
+</tr>
+</tbody>
+</table>
+<p>Pick wrong and you fight the framework. A component that only ever renders a
+sidebar box competes for a URL it never uses; a plugin that wants a settings
+screen of its own is a component with the wrong base class.</p>
+<p>The worked example carried through the component chapters — <code>com_bookings</code>,
+which books a lab's instruments — is referred to here too, along with the
+<code>bookings</code> plugin group it triggers.</p>
+<h2 id="the-four-kinds">The four kinds</h2>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>Lives in</th>
+<th>Owns</th>
+<th>Registered as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Component</td>
+<td><code>components/com_{name}</code></td>
+<td>The page's main content, one per request</td>
+<td><code>type = 'component'</code></td>
+</tr>
+<tr>
+<td>Plugin</td>
+<td><code>plugins/{group}/{name}</code></td>
+<td>A response to an event</td>
+<td><code>type = 'plugin'</code>, <code>folder = '{group}'</code></td>
+</tr>
+<tr>
+<td>Module</td>
+<td><code>modules/mod_{name}</code></td>
+<td>A block in a template position</td>
+<td><code>type = 'module'</code></td>
+</tr>
+<tr>
+<td>Template</td>
+<td><code>templates/{name}</code></td>
+<td>The page around the component</td>
+<td><code>type = 'template'</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="components">Components</h3>
+<p>A component is an application in its own right: its own controllers, models,
+database tables, routes, views and administrative interface. Exactly one
+component handles each request — the one named by <code>option</code> in the URL, which
+the router derives from the menu item — and it renders into the template's
+main content area. A menu is, in effect, a switch between components.</p>
+<p>A component is the only kind with three faces: <code>site/</code> for hub visitors,
+<code>admin/</code> for the administrator interface, and <code>api/</code> for the REST API. See
+<a href="../components/index.html">Components</a>.</p>
+<h3 id="plugins">Plugins</h3>
+<p>A plugin answers events. It declares no routes and owns no page; instead its
+public methods are named after events — <code>onAfterRoute</code>, <code>onContentPrepare</code>,
+<code>onGroupView</code> — and the dispatcher calls them when something triggers one.
+Plugins are grouped by the kind of thing they extend, and the group is the
+directory: <code>plugins/authentication/</code>, <code>plugins/content/</code>,
+<code>plugins/members/</code>. Most of the CMS's pluggable behaviour — the tabs on a
+group page, the login methods, the cron jobs — is a plugin group. The
+<a href="../../reference/events/index.html">events reference</a> lists what the tree
+triggers. See <a href="../plugins/index.html">Plugins</a>.</p>
+<h3 id="modules">Modules</h3>
+<p>A module renders a small block of HTML into a named position in the
+template: a login form, a breadcrumb trail, a list of recent entries. It
+never owns the request. The same module can be published in different
+positions on different templates and appear several times with different
+parameters. See <a href="../modules/index.html">Modules</a>.</p>
+<h3 id="templates">Templates</h3>
+<p>A template is the page around whatever the component produced — the markup,
+the CSS, the positions modules render into, and the error and offline pages.
+The templates that ship are in <code>core/templates</code>: <code>kimera</code> for the site,
+<code>kameleon</code> for the administrator interface, plus <code>system</code>, <code>lucent</code> and
+<code>welcome</code>. See <a href="../templates/index.html">Templates</a>.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The old version of this page listed languages as a fifth
+extension type. A language pack is a set of INI files and an XML metadata
+file, not code, and Hubzero ships only <code>en-GB</code>. Translating is covered in
+<a href="languages/index.html">Languages</a>.</p>
+</aside>
+<h2 id="where-extensions-live">Where extensions live</h2>
+<p>Two trees hold the same shapes:</p>
+<table>
+<thead>
+<tr>
+<th>Tree</th>
+<th>What is in it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>core/</code></td>
+<td>The extensions the release ships. Updated wholesale by an upgrade.</td>
+</tr>
+<tr>
+<td><code>app/</code></td>
+<td>This hub's own extensions, and its overrides of core ones. Not in the repository.</td>
+</tr>
+</tbody>
+</table>
+<p>The loaders check <code>app/</code> before <code>core/</code> and use the first directory they
+find, so a hub replaces a core extension by putting a directory of the same
+name under <code>app/</code>. That is an all-or-nothing replacement: once
+<code>app/components/com_blog</code> exists, nothing under <code>core/components/com_blog</code>
+is used. To change a few files rather than a component, use a
+<a href="../templates/overrides/index.html">template override</a> instead.</p>
+<p>The class loader,
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Base/ClassLoader.php"><code>Hubzero\Base\ClassLoader</code></a>,
+follows the same rule for classes: <code>Components\Blog\Models\Entry</code> is looked
+for under <code>app/components/com_blog</code> first, then <code>core/components/com_blog</code>.
+Composer's PSR-4 map covers only the <code>Hubzero\</code> and <code>Bootstrap\</code> namespaces;
+every extension class comes through this loader.</p>
+<h2 id="how-an-extension-is-found">How an extension is found</h2>
+<p>Nothing scans the filesystem. Every extension has a row in the
+<code>#__extensions</code> table, and that row — not the directory — is what the
+loaders read. The row also holds the extension's parameters, in its <code>params</code>
+column.</p>
+<p>What a missing row costs depends on the kind, and only one of the four fails
+loudly:</p>
+<table>
+<thead>
+<tr>
+<th>Kind</th>
+<th>With the directory but no row</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Component</td>
+<td><strong>still runs.</strong> <code>Hubzero\Component\Loader::load()</code> manufactures a default record with <code>enabled</code> set to 1 when the query finds nothing. What is lost is everything stored against the row: the administrator's Components menu, the parameters, the permissions asset.</td>
+</tr>
+<tr>
+<td>Plugin</td>
+<td>never loads. The plugin loader selects rows <code>WHERE type = 'plugin' AND enabled &gt;= 1</code>; no row, no listener, and the event fires into nothing.</td>
+</tr>
+<tr>
+<td>Module</td>
+<td>cannot be published. The row registers the module <em>type</em>; an administrator creates instances from it.</td>
+</tr>
+<tr>
+<td>Template</td>
+<td>cannot be assigned to the site or the administrator.</td>
+</tr>
+</tbody>
+</table>
+<p>A component that exists on disk and is invisible in the administrator
+interface is the single most common symptom of a missed migration, and it is
+confusing precisely because the component's own pages work.</p>
+<p>An extension creates its own row from a
+<a href="../database/index.html#migrations">migration</a>, by calling <code>addComponentEntry()</code>,
+<code>addPluginEntry()</code>, <code>addModuleEntry()</code> or <code>addTemplateEntry()</code>. Nothing else
+creates it: there is no package installer that reads a manifest and does it
+for you. See <a href="deployext/index.html">Deploying extensions</a>.</p>
+<p><a href="../foundation/extensions/index.html">Extensions</a> in the Foundation section covers
+each loader in detail; <a href="extreqs/index.html">Requirements</a> covers what else a
+package must carry.</p>
+<h2 id="in-this-section">In this section</h2>
+<ul>
+<li><a href="extreqs/index.html">Requirements</a> — what an extension package has to contain
+before the platform will load it.</li>
+<li><a href="parameters/index.html">Parameters</a> — declaring the settings an administrator
+edits, and the field types available.</li>
+<li><a href="languages/index.html">Languages</a> — where an extension's strings go, and how
+they are named.</li>
+<li><a href="deployext/index.html">Deploying extensions</a> — installing code on a running
+hub.</li>
+</ul>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 348f0057c2</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../database/index.html" rel="prev"><span>Previous</span>Database</a><a class="pager__next" href="extreqs/index.html" rel="next"><span>Next</span>Requirements</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/developers/07-extensions/README.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

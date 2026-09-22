@@ -1,0 +1,755 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Courses · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Courses are the hub&#x27;s teaching component. A course holds a syllabus and a set of overview pages; an offering is one run of that course; a section is one cohort…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/components/courses/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Courses</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#the-hierarchy">The hierarchy</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-course-list">The course list</a></li>
+<li class="toc__item toc__item--l2"><a href="#creating-a-course">Creating a course</a></li>
+<li class="toc__item toc__item--l3"><a href="#details">Details</a></li>
+<li class="toc__item toc__item--l3"><a href="#publishing">Publishing</a></li>
+<li class="toc__item toc__item--l3"><a href="#managers">Managers</a></li>
+<li class="toc__item toc__item--l2"><a href="#course-overview-pages">Course overview pages</a></li>
+<li class="toc__item toc__item--l2"><a href="#offerings">Offerings</a></li>
+<li class="toc__item toc__item--l2"><a href="#sections">Sections</a></li>
+<li class="toc__item toc__item--l3"><a href="#details-2">Details</a></li>
+<li class="toc__item toc__item--l3"><a href="#managers-2">Managers</a></li>
+<li class="toc__item toc__item--l3"><a href="#dates-times">Dates/Times</a></li>
+<li class="toc__item toc__item--l3"><a href="#recognition-rewards">Recognition/Rewards</a></li>
+<li class="toc__item toc__item--l2"><a href="#students">Students</a></li>
+<li class="toc__item toc__item--l2"><a href="#coupon-codes">Coupon codes</a></li>
+<li class="toc__item toc__item--l2"><a href="#units-asset-groups-and-assets">Units, asset groups and assets</a></li>
+<li class="toc__item toc__item--l2"><a href="#certificates">Certificates</a></li>
+<li class="toc__item toc__item--l3"><a href="#who-can-claim-one">Who can claim one</a></li>
+<li class="toc__item toc__item--l3"><a href="#creating-a-certificate">Creating a certificate</a></li>
+<li class="toc__item toc__item--l2"><a href="#roles">Roles</a></li>
+<li class="toc__item toc__item--l2"><a href="#options">Options</a></li>
+<li class="toc__item toc__item--l2"><a href="#presentations">Presentations</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Components</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Courses</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Courses</h1>
+        </header>
+        
+        <div class="prose">
+<p>Courses are the hub's teaching component. A course holds a syllabus and a set
+of overview pages; an offering is one run of that course; a section is one
+cohort within an offering; and a section's content is a tree of units, asset
+groups and assets. Students enrol in a section.</p>
+<p>A hub needs this if it teaches: a summer school that runs every July, a
+training course new users have to take before they get a tool allowance, a
+semester class using the hub's simulation tools. If nothing on your hub has
+enrolment, a syllabus and a start date, you do not need the component and
+can stop here.</p>
+<p>It is not a place to put a set of lecture notes — a resource or a wiki page
+does that with none of this structure. What Courses adds is the machinery
+around teaching: cohorts, dates that differ per cohort, graded work,
+progress, and a certificate at the end. If nobody is enrolling and nothing
+is graded, the structure is overhead.</p>
+<p>Most of that machinery is only here, in the administrator interface. Units,
+asset groups, assets, offerings, sections, coupon codes, roles and
+certificates have no front-end equivalent, so setting up a course is
+back-office work that an instructor cannot do for themselves unless you give
+them administrator access. Budget for that: a hub running several courses
+will have someone in these screens every term.</p>
+<p>Go to <strong>Components → Courses</strong>. The submenu holds <strong>Courses</strong>, <strong>Pages</strong>,
+<strong>Students</strong>, <strong>Roles</strong>, and a <strong>Plugins</strong> link that jumps to the courses
+plugin group under <strong>Extensions → Plugins</strong>. Everything else — offerings,
+sections, units, asset groups, coupon codes, certificates — is reached by
+drilling down from the course list.</p>
+<p>Every screen needs <code>core.manage</code> on <code>com_courses</code>.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The one exception runs the other way. The gradebook is <em>not</em> in
+the administrator interface: grading, progress reports, the grading policy
+and the instructor's gradebook all live on the course pages on the site, in
+the <code>progress</code> courses plugin. So course <em>structure</em> is administrator work
+and course <em>marking</em> is instructor work, and the two are done in different
+places by different people.</p>
+</aside>
+<h2 id="the-hierarchy">The hierarchy</h2>
+<p>Get this right before you build anything, because moving content between
+levels afterwards means recreating it. The rule of thumb: a <strong>course</strong> is
+the thing that has a name in a prospectus, an <strong>offering</strong> is a year of it,
+and a <strong>section</strong> is a group of students who get their own dates. A course
+run once, for everyone, still needs all three — one offering and one
+section — because the enrolment setting and the dates live on the section.</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Reached from</th>
+<th>Holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Course</td>
+<td><strong>Components → Courses</strong></td>
+<td>Title, description, managers, a logo, overview pages, one certificate</td>
+</tr>
+<tr>
+<td>Offering</td>
+<td>the <strong>Offerings</strong> count on a course row</td>
+<td>A run of the course: start and end dates, units, its own pages</td>
+</tr>
+<tr>
+<td>Section</td>
+<td>the <strong>Sections</strong> count on an offering row</td>
+<td>A cohort: enrolment setting, dates, students, coupon codes</td>
+</tr>
+<tr>
+<td>Unit</td>
+<td>the <strong>Units</strong> count on an offering row</td>
+<td>A week or module</td>
+</tr>
+<tr>
+<td>Asset group</td>
+<td>the <strong>Asset groups</strong> count on a unit row</td>
+<td>Lectures, Homework, Exam — whatever the <strong>Default Asset Groups</strong> option names</td>
+</tr>
+<tr>
+<td>Asset</td>
+<td>inside a unit or asset group's edit form</td>
+<td>One lecture, file, video, quiz or tool</td>
+</tr>
+</tbody>
+</table>
+<p>Counts in the list are links. A count of zero shows a <strong>[ + ]</strong> or <strong>Add</strong>
+link instead, which goes straight to the new-item form at that level.</p>
+<h2 id="the-course-list">The course list</h2>
+<p><strong>Draft</strong> is the state to know about here: it makes a course visible to its
+managers and to nobody else, so a course can be built over a month without
+anyone stumbling into a half-finished syllabus.</p>
+<p>Columns: <strong>ID</strong>, <strong>Title</strong>, <strong>Alias</strong>, <strong>State</strong>, <strong>Cert.</strong>, <strong>Managers</strong>,
+<strong>Offerings</strong>, and <strong>Pages</strong>. Filters above the table are a <strong>Search</strong> box and
+a <strong>State</strong> drop-down (<em>All States</em>, Unpublished, Published, Draft, Trashed).</p>
+<p>The toolbar carries <strong>Duplicate</strong>, <strong>New</strong>, <strong>Edit</strong>, <strong>Delete</strong>, and — for
+<code>core.admin</code> — <strong>Options</strong>.</p>
+<p>The <strong>State</strong> cell is a button: clicking a published course unpublishes it,
+clicking anything else publishes it. The <strong>Cert.</strong> cell goes to the
+certificate screen for that course, and says <strong>Certificate set</strong> or <strong>No
+certificate set</strong>.</p>
+<p><img src="../../media/courses-210course.png" alt="The Cert. column showing a course with no certificate" /></p>
+<h2 id="creating-a-course">Creating a course</h2>
+<p>The scenario for the rest of this chapter: the group wants to run a
+three-day summer school in July, open only to the twenty people they invite,
+with a certificate for anyone who passes the exam. That is one course, one
+offering, one section with restricted enrolment, three units, and a
+certificate.</p>
+<p>Start with the course itself.</p>
+<ol>
+<li>Press <strong>New</strong>.</li>
+<li>Fill in the <strong>Details</strong> fieldset.</li>
+<li>Set <strong>State</strong> under <strong>Publishing</strong>.</li>
+<li>Press <strong>Save</strong>. Managers and the logo cannot be added until the course
+exists — the form says so.</li>
+<li>Add managers in the <strong>Managers</strong> panel.</li>
+<li>Drop an image into the <strong>Logo</strong> panel.</li>
+<li>Press <strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>Set <strong>State</strong> to <strong>Draft</strong> at step 3 while you build the rest. A draft
+course is visible to its managers and to nobody else, so nothing you do
+next is visible to students until you publish it.</p>
+<p>Then work down the hierarchy, using the counts in each list as links:</p>
+<ol>
+<li>On the course row, click the <strong>Offerings</strong> count and press <strong>New</strong>. Call
+it <em>2026</em> and give it the July start and end dates.</li>
+<li>On the offering row, click the <strong>Sections</strong> count. A default section
+already exists; open it, set <strong>Enrollment</strong> to <strong>Restricted (coupon code
+is required)</strong>, and save.</li>
+<li>On the section row, click the <strong>Codes</strong> cell, press <strong>Generate</strong>, ask for
+20 codes and set an expiry date. Send those out with the invitations.</li>
+<li>On the offering row, click the <strong>Units</strong> count and create one unit per
+day. Each unit gets the asset groups named by the <strong>Default Asset
+Groups</strong> option — Lectures, Homework, Exam by default.</li>
+<li>Open a unit and add its content in the <strong>Assets</strong> panel.</li>
+<li>Back on the course list, click the <strong>No certificate set</strong> icon in the
+<strong>Cert.</strong> column and follow <a href="#creating-a-certificate">Creating a
+certificate</a>.</li>
+<li>On the section's <strong>Recognition/Rewards</strong> tab, set the certificate offer
+to <strong>Yes</strong>.</li>
+<li>Publish the course.</li>
+</ol>
+<p>Read <a href="#who-can-claim-one">Who can claim one</a> before step 7. If any of your
+lecture-day quizzes are marked graded and the grading policy gives quizzes a
+weight, every one of them becomes compulsory for the certificate.</p>
+<h3 id="details">Details</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Group</strong></td>
+<td>An existing hub group to tie the course to, or <strong>None</strong></td>
+</tr>
+<tr>
+<td><strong>Alias</strong></td>
+<td>Alphanumeric. Generated from the title when left empty. Becomes part of the URL</td>
+</tr>
+<tr>
+<td><strong>Title</strong></td>
+<td>Required</td>
+</tr>
+<tr>
+<td><strong>Blurb</strong></td>
+<td>A sentence or two for the course catalogue</td>
+</tr>
+<tr>
+<td><strong>Course length</strong></td>
+<td>Free text, e.g. <code>4 weeks</code></td>
+</tr>
+<tr>
+<td><strong>Estimated Effort</strong></td>
+<td>Free text, e.g. <code>5 - 8 hours per week</code></td>
+</tr>
+<tr>
+<td><strong>Description</strong></td>
+<td>The long description</td>
+</tr>
+<tr>
+<td><strong>Tags</strong></td>
+<td>A comma-separated list of keywords</td>
+</tr>
+</tbody>
+</table>
+<h3 id="publishing">Publishing</h3>
+<p><strong>State</strong> offers <strong>Unpublished</strong>, <strong>Published</strong>, <strong>Draft</strong>, and <strong>Trashed</strong>.</p>
+<ul>
+<li><strong>Published</strong> — anyone can find the course.</li>
+<li><strong>Draft</strong> — only course managers can see it, so a course can be built
+before students arrive.</li>
+<li><strong>Unpublished</strong> — off the site.</li>
+<li><strong>Trashed</strong> — off the site and out of the default list view.</li>
+</ul>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> <strong>Trashed</strong> is not a permanent delete. Deleting is the <strong>Delete</strong>
+button on the course list.</p>
+</aside>
+<p>The right-hand column also shows read-only ID, created date and creator, and
+a <strong>Parameters</strong> fieldset for each courses plugin that offers course-level
+settings.</p>
+<h3 id="managers">Managers</h3>
+<p>The <strong>Managers</strong> panel is an embedded list of the course's managers. Add a
+person by name, and set their role. Roles come from the <strong>Roles</strong> screen.</p>
+<h2 id="course-overview-pages">Course overview pages</h2>
+<p>A page is a tab on the course or offering overview. Reach them from the
+<strong>Pages</strong> count on a course row, from the same count on an offering row, or
+from <strong>Components → Courses → Pages</strong>.</p>
+<p>The list shows <strong>ID</strong>, <strong>Title</strong>, <strong>State</strong> and <strong>Ordering</strong>.</p>
+<p>A page's edit form has:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Title</strong></td>
+<td>Required</td>
+</tr>
+<tr>
+<td><strong>Alias</strong></td>
+<td>The URL segment. Generated from the title when empty</td>
+</tr>
+<tr>
+<td><strong>Content</strong></td>
+<td>The page body, in the rich-text editor</td>
+</tr>
+<tr>
+<td><strong>Active</strong></td>
+<td><strong>Yes</strong> puts the tab on the overview; <strong>No</strong> hides it</td>
+</tr>
+</tbody>
+</table>
+<p>The read-only panel says the page's <strong>Type</strong> — <strong>Course page</strong>, <strong>Offering
+page</strong>, or <strong>User Guide</strong> — depending on whether it is attached to a course,
+an offering, or neither.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Files can only be attached after the page has been saved once.</p>
+</aside>
+<h2 id="offerings">Offerings</h2>
+<p>The <strong>Offerings</strong> count on a course row opens the offering list: <strong>Ordering</strong>,
+<strong>ID</strong>, <strong>Title</strong>, <strong>Starts</strong>, <strong>Ends</strong>, <strong>State</strong>, <strong>Sections</strong>,
+<strong>Enrollment</strong>, <strong>Units</strong>, and <strong>Pages</strong>. The toolbar carries <strong>Duplicate</strong>,
+<strong>New</strong>, <strong>Edit</strong> and <strong>Delete</strong>.</p>
+<p>An offering's edit form has:</p>
+<ul>
+<li><strong>Details</strong> — <strong>Title</strong> (required) and <strong>Alias</strong>.</li>
+<li><strong>Publishing</strong> — <strong>State</strong> (Unpublished, Published, Trashed), <strong>Starts</strong>
+and <strong>Ends</strong>.</li>
+<li><strong>Logo</strong> — an image for the offering.</li>
+<li><strong>Parameters</strong> — <strong>Progress Calculation</strong>, plus a fieldset for each courses
+plugin that offers offering-level settings.</li>
+</ul>
+<p><strong>Progress Calculation</strong> decides which assets count towards a student's
+progress bar:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Inherit from courses defaults</strong></td>
+<td>Use the component's <strong>Progress calculation based on:</strong> option</td>
+</tr>
+<tr>
+<td><strong>All published assets</strong></td>
+<td>Every published asset</td>
+</tr>
+<tr>
+<td><strong>All published, graded assets</strong></td>
+<td>Only graded assets</td>
+</tr>
+<tr>
+<td><strong>All published, video assets</strong></td>
+<td>Only videos</td>
+</tr>
+<tr>
+<td><strong>All published, manually selected assets</strong></td>
+<td>Only assets marked by the instructor</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sections">Sections</h2>
+<p>The section is where enrolment is decided, which makes it the screen you
+will come back to. A course open to the world and a course open to twelve
+named people differ only in the section's <strong>Enrollment</strong> setting and whether
+you have generated coupon codes.</p>
+<p>The <strong>Sections</strong> count on an offering row opens the section list: <strong>ID</strong>,
+<strong>Title</strong>, <strong>Alias</strong>, <strong>Default</strong>, <strong>State</strong>, <strong>Starts</strong>, <strong>Ends</strong>,
+<strong>Enrolled</strong>, and <strong>Codes</strong>. <strong>Enrolled</strong> links to the students for that
+section; <strong>Codes</strong> links to its coupon codes.</p>
+<p>A section's edit form has four tabs.</p>
+<h3 id="details-2">Details</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Offering</strong></td>
+<td>Which offering the section belongs to</td>
+</tr>
+<tr>
+<td><strong>Alias</strong></td>
+<td>Alphanumeric. Generated from the title when empty</td>
+</tr>
+<tr>
+<td><strong>Title</strong></td>
+<td>Required</td>
+</tr>
+<tr>
+<td><strong>Default section</strong></td>
+<td><strong>Yes</strong> or <strong>No</strong>. The default section supplies the dates every other section inherits</td>
+</tr>
+<tr>
+<td><strong>Enrollment</strong></td>
+<td>See below</td>
+</tr>
+<tr>
+<td><strong>State</strong></td>
+<td>Unpublished, Draft, Published, Trashed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Enrollment</strong> has three settings:</p>
+<ul>
+<li><strong>Open (anyone can join)</strong> — any hub user can enrol.</li>
+<li><strong>Restricted (coupon code is required)</strong> — only someone with a code from
+the section's <strong>Codes</strong> screen can enrol.</li>
+<li><strong>Closed (no new enrollment)</strong> — nobody new can enrol.</li>
+</ul>
+<p>The default for a new section comes from the component's <strong>Default
+Enrollment</strong> option.</p>
+<p><strong>Publishing</strong> on the same tab carries <strong>Publish start</strong>, <strong>Section starts</strong>,
+<strong>Section finishes</strong> and <strong>Publish down</strong>.</p>
+<p><strong>Parameters</strong>, also on this tab, carries:</p>
+<ul>
+<li><strong>Progress Calculation</strong> — the same list as the offering, except the first
+option reads <strong>Inherit from offering settings</strong>.</li>
+<li><strong>Preview mode</strong> — <strong>No preview offered</strong>, <strong>Yes, offer a full preview</strong>,
+or <strong>Yes, offer a preview of the first unit</strong>. This is how you let people
+look at a course before enrolling.</li>
+<li>A fieldset for each courses plugin with section-level settings. The
+<strong>Discussions</strong> plugin puts <strong>Show threads from</strong> here — <strong>All sections</strong> or
+<strong>This section only</strong>. Sticky threads show across all sections whatever this
+says.</li>
+</ul>
+<h3 id="managers-2">Managers</h3>
+<p>The section's own instructors and assistants, added the same way as course
+managers.</p>
+<h3 id="dates-times">Dates/Times</h3>
+<p>A tree of every asset in the section with a <strong>From</strong> and a <strong>To</strong> date. Dates
+are inherited from the default section for the offering, and a value set at
+one level is inherited by everything below it. Set a date here to change when
+a lecture, homework or exam becomes available in this section only.</p>
+<h3 id="recognition-rewards">Recognition/Rewards</h3>
+<p>Turning this on is not enough on its own — see
+<a href="#certificates">Certificates</a> for what a student has to do to earn one.</p>
+<ul>
+<li><strong>Offer a certificate for this seciton?</strong> — <strong>Yes</strong> or <strong>No</strong>. This only
+does anything when the course has a certificate.</li>
+<li>A <strong>Badge</strong> fieldset with the badge's enabled flag, image, provider and
+criteria.</li>
+</ul>
+<h2 id="students">Students</h2>
+<p>The <strong>Enrollment</strong> count on an offering row, the <strong>Enrolled</strong> count on a
+section row, and <strong>Components → Courses → Students</strong> all reach the same
+screen. Columns: <strong>ID</strong>, <strong>Name</strong>, <strong>Email</strong>, <strong>Course : Offering</strong>,
+<strong>Section</strong>, <strong>Cert.</strong>, and <strong>Enrolled</strong>. Filters are a <strong>Search</strong> box, an
+<strong>Offering</strong> drop-down, and a <strong>Section</strong> drop-down.</p>
+<p><strong>New</strong> opens a form asking for a <strong>User</strong>, an <strong>Offering</strong>, a <strong>Section</strong>,
+and an <strong>Enrolled</strong> date. <strong>Delete</strong> unenrols the selected students.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The controller has a <code>csv</code> task that exports the current list as
+<code>registrations.csv</code>, but nothing links to it. Reach it by hand at
+<code>index.php?option=com_courses&amp;controller=students&amp;task=csv</code>.</p>
+</aside>
+<h2 id="coupon-codes">Coupon codes</h2>
+<p>Codes are how you run a closed course without maintaining a list of
+usernames: generate fifty, send them out, and anyone with one can enrol
+themselves. Each code is single-use — the list shows when it was redeemed
+and by whom — so a code that leaks admits one extra person, not everyone.</p>
+<p>The <strong>Codes</strong> cell on a section row opens the coupon codes for that section:
+<strong>ID</strong>, <strong>Code</strong>, <strong>Created</strong>, <strong>Expires</strong>, <strong>Redeemed</strong>, and <strong>Redeemed
+by</strong>.</p>
+<p>The toolbar carries <strong>Generate</strong>, <strong>Export codes to a CSV file.</strong>, <strong>New</strong>,
+<strong>Edit</strong> and <strong>Delete</strong>. <strong>Generate</strong> opens a pop-up asking for a <strong>Number of
+codes</strong> (5 by default) and an expiry date, then creates that many codes at
+once.</p>
+<p>Codes only matter for a section whose <strong>Enrollment</strong> is <strong>Restricted</strong>.</p>
+<h2 id="units-asset-groups-and-assets">Units, asset groups and assets</h2>
+<p>The <strong>Units</strong> count on an offering row opens the unit list: <strong>ID</strong>,
+<strong>Title</strong>, <strong>Alias</strong>, <strong>State</strong>, <strong>Ordering</strong>, <strong>Asset groups</strong>, and
+<strong>Assets</strong>. The toolbar carries <strong>Duplicate</strong>, <strong>New</strong>, <strong>Edit</strong> and
+<strong>Delete</strong>.</p>
+<p>The <strong>Asset groups</strong> count opens that unit's asset groups: <strong>ID</strong>, <strong>Title</strong>,
+<strong>Alias</strong>, <strong>State</strong>, <strong>Ordering</strong>, and <strong>Assets</strong>. Its toolbar adds
+<strong>Duplicate Assets to Existing Groups</strong>, which copies a group's assets into
+other groups.</p>
+<p>Assets themselves are edited inside the unit's or asset group's edit form,
+in an embedded <strong>Assets</strong> panel. There you can <strong>Attach asset</strong> — pick an
+existing one — or <strong>Create asset</strong>, which opens the asset editor in an
+overlay. The panel lists each asset's <strong>ID</strong>, <strong>Title</strong>, <strong>Type</strong>, <strong>State</strong>
+and <strong>Ordering</strong>.</p>
+<p>To delete content:</p>
+<ol>
+<li>Go to <strong>Components → Courses</strong>, and click the course's <strong>Offerings</strong>
+count.</li>
+<li>Click the offering's <strong>Units</strong> count.</li>
+<li>To remove a whole asset group, click the unit's <strong>Asset groups</strong> count,
+tick the group, and press <strong>Delete</strong>. Confirm <em>Are you sure you want to
+remove these items?</em></li>
+<li>To remove one asset, open the unit or asset group for editing and delete
+the asset from the <strong>Assets</strong> panel.</li>
+</ol>
+<p>Deleting an asset group deletes the assets in it.</p>
+<h2 id="certificates">Certificates</h2>
+<p>A certificate is the thing students ask about, and the thing that generates
+support mail when it does not appear. Set one up only if you intend the
+course to be assessed, because a certificate nobody can earn is worse than
+no certificate at all.</p>
+<p>A course has at most one certificate: a PDF with placeholders the hub fills
+in when a student claims it.</p>
+<h3 id="who-can-claim-one">Who can claim one</h3>
+<p>Three things must all be true before the download link appears on a
+student's progress page:</p>
+<ol>
+<li>The course has a certificate.</li>
+<li>The student's section says <strong>Yes</strong> on its <strong>Recognition/Rewards</strong> tab.</li>
+<li>The student is <em>eligible for recognition</em>, which is a stricter test than
+most people expect.</li>
+</ol>
+<p>Eligibility is decided in
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/components/com_courses/models/gradebook.php"><code>gradebook.php:758</code></a>.
+The section's grading policy gives each of the three grade categories —
+exam, quiz, homework — a weight. For <strong>every category with a weight above
+zero</strong>, the student must have a score or an override on <strong>every published,
+graded asset</strong> in that category. And their overall score must be at or above
+the policy's pass threshold. Categories weighted zero are ignored
+completely.</p>
+<p>The practical consequence: a single graded item in a weighted category that
+a student never opened blocks the certificate permanently, however well they
+did on everything else. It does not matter whether the item was worth
+anything, whether the instructor meant it to count, or whether the student
+scored a hundred on the rest. Nothing on any screen explains this to the
+student or to the instructor; the link simply does not appear.</p>
+<p>The shipped grading policy weights exams at 100%, quizzes and homework at
+zero, and sets the pass threshold at 70%. On a hub that has not changed it,
+that means: every graded exam asset attempted, and 70% overall. If your
+instructors want homework to count, they change the weights in the grading
+policy interface on the course pages on the site — and the moment homework
+carries a weight, every graded homework asset becomes compulsory for the
+certificate.</p>
+<aside class="admonition admonition--tip">
+<p><strong>Tip:</strong> Before a course ends, unpublish any graded asset that was not
+meant to be assessed. An unpublished asset is not counted, and that is the
+only lever you have over this rule.</p>
+</aside>
+<h3 id="creating-a-certificate">Creating a certificate</h3>
+<p>To create one:</p>
+<ol>
+<li>On the course list, click the <strong>No certificate set</strong> icon in the course's
+<strong>Cert.</strong> column.</li>
+<li>The upload form appears. Choose a PDF and press <strong>Upload</strong>.</li>
+<li>The certificate opens in a placement canvas showing the PDF. Drag the
+placeholder buttons onto it and resize them: <strong>Login</strong>, <strong>Name</strong>,
+<strong>Date</strong>, <strong>Email</strong>, <strong>Course</strong>, <strong>Offering</strong>, <strong>Section</strong>. <strong>Clear All</strong>
+removes them all.</li>
+<li><strong>Preview</strong> in the toolbar renders the certificate as a student would see
+it.</li>
+<li>Press <strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>To remove one, open the certificate the same way — the <strong>Cert.</strong> column will
+read <strong>Certificate set</strong> — and press <strong>Delete</strong> in the toolbar.</p>
+<p>A section only offers the certificate when its <strong>Recognition/Rewards</strong> tab
+says <strong>Yes, offer a certificate.</strong> That switch decides whether the
+certificate is on offer; <a href="#who-can-claim-one">Who can claim one</a> decides
+whether any given student gets it.</p>
+<h2 id="roles">Roles</h2>
+<p><strong>Components → Courses → Roles</strong> lists the roles a manager can hold:
+<strong>ID</strong>, <strong>Alias</strong>, <strong>Title</strong>, <strong>Offering</strong>, and <strong>Total</strong> — how many people
+hold the role. A role belongs to one offering, or to <strong>None</strong> for a role
+available everywhere.</p>
+<p>A role's edit form asks for an <strong>Offering</strong>, a <strong>Title</strong> and an <strong>Alias</strong>.</p>
+<h2 id="options">Options</h2>
+<p><img src="../../media/courses-210options.png" alt="The Options button in the toolbar" /></p>
+<p>Press <strong>Options</strong> in the toolbar of the course list. <code>core.admin</code> is
+required. The full list is in the
+<a href="../../../reference/configuration/components/courses/index.html">generated parameter reference</a>.
+The ones worth knowing:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Upload path</strong></td>
+<td><code>/site/courses</code></td>
+<td>Where course pictures and files are stored</td>
+</tr>
+<tr>
+<td><strong>Default Asset Groups</strong></td>
+<td><code>Lectures, Homework, Exam</code></td>
+<td>The groups created with a new unit</td>
+</tr>
+<tr>
+<td><strong>Default Enrollment</strong></td>
+<td>Open (anyone can join)</td>
+<td>The enrolment setting a new section starts with</td>
+</tr>
+<tr>
+<td><strong>Can section owners edit grading policy?</strong></td>
+<td>Yes</td>
+<td>When No, only course instructors see the grading policy interface</td>
+</tr>
+<tr>
+<td><strong>Progress calculation based on:</strong></td>
+<td>—</td>
+<td>The hub-wide default that offerings inherit</td>
+</tr>
+<tr>
+<td><strong>Auto Approve Courses?</strong></td>
+<td>Yes</td>
+<td>When No, an administrator must approve each new course</td>
+</tr>
+<tr>
+<td><strong>Show Enrollment Numbers</strong></td>
+<td>No</td>
+<td>Show enrolment numbers and stats on each course</td>
+</tr>
+</tbody>
+</table>
+<p>To show enrolment numbers on the course pages, set <strong>Show Enrollment
+Numbers</strong> to <strong>Yes</strong> on the <strong>Basic</strong> tab and save.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The old version of this page put this setting on a <strong>Defaults</strong>
+tab. There is no such tab. The Options pop-up has <strong>Basic</strong>, then two
+fieldsets — the Passport badge keys and the Unity key — whose tab titles
+render as raw language keys because <code>config.xml</code> gives them no label.</p>
+</aside>
+<h2 id="presentations">Presentations</h2>
+<p>The old version of this page ended with a section on HUB Presenter, the
+slide-and-video presentation format. That belongs to
+<a href="../resources/index.html">Resources</a>, not to Courses: a presentation is a resource of
+an online-presentation type, whose files are assembled on the hub's file
+system and described by a <code>presentation.json</code> manifest. Nothing about it is
+configured in the Courses component.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 009ec973b7</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../collections/index.html" rel="prev"><span>Previous</span>Collections</a><a class="pager__next" href="../cpanel/index.html" rel="next"><span>Next</span>Control Panel</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/09-components/10-courses.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

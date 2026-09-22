@@ -25,6 +25,7 @@ use Lang;
 use User;
 use Date;
 use App;
+use Config;
 
 /**
  * Resources controller for creating a resource
@@ -111,8 +112,9 @@ class Create extends SiteController
 		}
 		if ($this->step)
 		{
+			$stepLabel = $this->steps[$this->step] ?? 'UNKNOWN';
 			Pathway::append(
-				Lang::txt('COM_CONTRIBUTE_STEP_NUMBER', $this->step) . ': ' . Lang::txt('COM_CONTRIBUTE_STEP_' . strtoupper($this->steps[$this->step])),
+				Lang::txt('COM_CONTRIBUTE_STEP_NUMBER', $this->step) . ': ' . Lang::txt('COM_CONTRIBUTE_STEP_' . strtoupper($stepLabel)),
 				'index.php?option=' . $this->_option . '&task=' . $this->_task . '&step=' . $this->step
 			);
 		}
@@ -1217,8 +1219,8 @@ class Create extends SiteController
 
 		$currentTagNames = App::get('db')
 			->setQuery("select tag.tag
-				from jos_tags as tag
-				left join jos_tags_object as assoc
+				from #__tags as tag
+				left join #__tags_object as assoc
 				on tag.id = assoc.tagid
 				where tbl = 'resources'
 				and objectid = $resourceId;")

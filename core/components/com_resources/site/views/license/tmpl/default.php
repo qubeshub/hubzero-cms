@@ -11,7 +11,7 @@ defined('_HZEXEC_') or die();
 $this->css();
 ?>
 <header id="content-header">
-	<h2><?php echo $this->title; ?></h2>
+	<h1><?php echo $this->title; ?></h1>
 
 	<?php if ($this->tool) { ?>
 		<?php if ($this->row->codeaccess=='@OPEN') { ?>
@@ -23,7 +23,7 @@ $this->css();
 </header><!-- / #content-header.full -->
 <section class="main section">
 	<?php if ($this->row->license) { ?>
-		<pre><?php echo $this->row->license; ?></pre>
+		<pre><code><?php echo $this->row->license; ?></code></pre>
 	<?php } else { ?>
 		<p class="warning"><?php echo Lang::txt('COM_RESOURCES_NO_LICENSE_TEXT'); ?></p>
 	<?php } ?>

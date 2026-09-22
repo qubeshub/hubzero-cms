@@ -15,6 +15,47 @@ Html::behavior('formvalidation');
 $this->js();
 ?>
 
+<style>
+/*
+ * The component Options screen opens in a popup (tmpl=component, body
+ * #component-body.contentpane). Keep the Save/Cancel buttons and the tab
+ * headers fixed and scroll only the active tab panel, so the scrollbar starts
+ * below them instead of running the full height of the popup -- and every long
+ * tab (e.g. Permissions) can be scrolled. All rules are scoped to
+ * #component-body.contentpane, so nothing outside this popup is affected.
+ */
+body#component-body.contentpane { height: 100vh; margin: 0; overflow: hidden; display: flex; flex-direction: column; }
+body#component-body.contentpane > #system-message-container { flex: 0 0 auto; }
+body#component-body.contentpane > form#component-form { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+#component-body.contentpane #component-form > fieldset { flex: 0 0 auto; }
+#component-body.contentpane #component-form > dl.tabs { flex: 0 0 auto; }
+/* overflow-y:auto alone makes overflow-x compute to auto too, which adds a
+   spurious horizontal bar on short tabs; pin it to hidden. */
+#component-body.contentpane #component-form > .current { flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; }
+/* Radio/checkbox groups emit a screen-reader legend duplicating the field label;
+   a template legend style overrides .sr-only and renders it as a stray uppercase
+   heading. Restore proper visually-hidden clipping (kept for accessibility). */
+#component-body.contentpane #component-form legend.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+/* Lay each option row out as label + control on one line, vertically centered.
+   Radio/checkbox groups label with a <span> (no <label for>), so on their own
+   they miss the label column text fields get and their control drops to its own
+   line; a flex row fixes that and also centers single-line labels against the
+   control (floated labels would top-align and sit too high). The label column
+   is a fixed width with right padding so long labels don't butt the control. */
+#component-body.contentpane #component-form .config-option-list > li { display: flex; align-items: center; }
+#component-body.contentpane #component-form .config-option-list > li > .hasTip { box-sizing: border-box; flex: 0 0 150px; padding-right: 14px; }
+#component-body.contentpane #component-form .config-option-list > li > fieldset.radio { width: auto; }
+</style>
+
+<script>
+// Suppress the admin template's always-on root scrollbar (html{overflow-y:scroll})
+// for this popup only. Done here rather than in CSS so it needs no :has() support:
+// guarded by the popup body id, it can't affect any other admin screen.
+if (document.body && document.body.id === 'component-body') {
+	document.documentElement.style.overflowY = 'hidden';
+}
+</script>
+
 <form action="<?php echo Route::url('index.php?option=' . $this->option); ?>" id="component-form" method="post" name="adminForm" autocomplete="off" class="form-validate" data-invalid-msg="<?php echo $this->escape(Lang::txt('JGLOBAL_VALIDATION_FORM_FAILED'));?>">
 	<fieldset>
 		<div class="configuration">

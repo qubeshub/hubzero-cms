@@ -10,6 +10,8 @@ namespace Components\Tools\Tables;
 use Hubzero\Database\Table;
 use User;
 use Lang;
+use Component;
+use Date;
 
 /**
  * Tools table for a Tool
@@ -128,7 +130,7 @@ class Tool extends Table
 			$query .= "JOIN #__xgroups_members AS m ON xg.gidNumber=m.gidNumber ";
 		}
 		$query .= "$filter"
-				. " ORDER BY $sortby";
+				. " ORDER BY " . (preg_replace('/[^a-zA-Z0-9_,. ]/', '', (string) $sortby) ?: '1');
 
 		return $query;
 	}

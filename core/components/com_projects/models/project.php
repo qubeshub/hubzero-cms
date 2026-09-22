@@ -28,6 +28,8 @@ use Route;
 use Date;
 use Lang;
 use User;
+use Event;
+use Request;
 
 /**
  * Project model
@@ -382,6 +384,26 @@ class Project extends Model
 		}
 
 		if ($this->get('state') == 1 && !$this->inSetup())
+		{
+			return true;
+		}
+
+		return false;
+	}
+	
+	/**
+	 * Check if the project is rejected
+	 *
+	 * @return  boolean
+	 */
+	public function isRejected()
+	{
+		if (!$this->exists())
+		{
+			return false;
+		}
+
+		if ($this->get('state') == 4 && !$this->inSetup())
 		{
 			return true;
 		}

@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Member functions · Hub users · Hubzero Documentation</title>
+  <meta name="description" content="Everything about a group&#x27;s membership happens on its Members tab: inviting people, approving requests, handing out roles, promoting managers and removing…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/users/groups/groupmembers/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub users</a>
+        <nav aria-label="Hub users contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../introduction/index.html">Introduction</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../blog/index.html">Blog</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../forum/index.html">Forum</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Groups</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../createdeleteagroup/index.html">Creating and deleting a group</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Member functions</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#the-members-tab">The Members tab</a></li>
+<li class="toc__item toc__item--l2"><a href="#inviting-people">Inviting people</a></li>
+<li class="toc__item toc__item--l2"><a href="#approving-membership-requests">Approving membership requests</a></li>
+<li class="toc__item toc__item--l2"><a href="#roles">Roles</a></li>
+<li class="toc__item toc__item--l3"><a href="#creating-a-role">Creating a role</a></li>
+<li class="toc__item toc__item--l3"><a href="#assigning-a-role">Assigning a role</a></li>
+<li class="toc__item toc__item--l2"><a href="#promoting-and-demoting-managers">Promoting and demoting managers</a></li>
+<li class="toc__item toc__item--l2"><a href="#removing-a-member">Removing a member</a></li>
+<li class="toc__item toc__item--l2"><a href="#membership-end-dates">Membership end dates</a></li>
+<li class="toc__item toc__item--l2"><a href="#leaving-a-group">Leaving a group</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../groupcustom/index.html">Customization</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../groupcitations/index.html">Group citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../groupforum/index.html">Group forum</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../knowledgebase/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../dashboard/index.html">Member dashboard</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../profile/index.html">Member profile</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../questions/index.html">Questions and answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../search/index.html">Search</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../simusagedefinitions/index.html">Simulation usage definitions</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../wishlist/index.html">Wish list</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../gettingstarted/index.html">Getting started</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub users</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Groups</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Member functions</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub users</p>
+          <h1>Member functions</h1>
+        </header>
+        
+        <div class="prose">
+<p>Everything about a group's membership happens on its <strong>Members</strong> tab:
+inviting people, approving requests, handing out roles, promoting managers
+and removing members.</p>
+<p>Membership is what the rest of the group hangs off. A tab set to <strong>Group
+Members Only</strong> is readable by exactly the people on this list, and only
+members can post in the forum or edit the wiki, so getting the list right is
+the first thing a new group's manager does. This page follows <code>soilcarbon</code>,
+the multi-institution soil carbon group created in
+<a href="../createdeleteagroup/index.html">Creating and deleting a group</a>: its principal
+investigator has to bring in two postdocs who already use the hub and a
+collaborator at another university who has never heard of it, hand the lab
+manager the ability to invite people without making her a manager of
+everything, and promote the co-investigator so the group is not resting on
+one person.</p>
+<h2 id="the-members-tab">The Members tab</h2>
+<p>The tab is only open to signed-in users; a visitor is sent to the login page
+even when the tab is set to <strong>Any HUB Visitor</strong>.</p>
+<p>Four filters run along the top, each with a count:</p>
+<table>
+<thead>
+<tr>
+<th>Filter</th>
+<th>Who it lists</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Members</strong></td>
+<td>Everyone in the group</td>
+</tr>
+<tr>
+<td><strong>Managers</strong></td>
+<td>The members who manage it</td>
+</tr>
+<tr>
+<td><strong>Pending</strong></td>
+<td>People who have asked to join. Managers only</td>
+</tr>
+<tr>
+<td><strong>Invitees</strong></td>
+<td>People who have been invited but have not accepted. Managers only</td>
+</tr>
+</tbody>
+</table>
+<p>A search box sits above them. Ordinary members must search before they see
+anyone — the <strong>Members</strong> list starts empty, under the heading <strong>Search the
+group member directory</strong>, and fills in once you type a name. Managers see the
+whole list straight away.</p>
+<p>Each row shows the member's photo, name, organisation, any roles they hold
+and, if the hub uses them, the date their membership ends. An <strong>Online now</strong>
+marker shows who is signed in. <strong>Message</strong> opens a message to that person;
+<strong>Message All</strong> at the top of the list writes to everyone the current filter
+shows.</p>
+<h2 id="inviting-people">Inviting people</h2>
+<p>Inviting is how you add someone who has not asked to join. It works whatever
+the join policy is, so a <strong>Restricted</strong> or <strong>Invite Only</strong> group is not a
+closed shop — it just means the managers decide. You can invite people who
+have no hub account: they get mail with a link, and following it once they
+have registered puts them in the group.</p>
+<p>Group managers, and members holding a role with <strong>Invite New Members</strong>, can
+invite both hub members and people who have no account yet. The entry is
+missing on a <strong>Closed</strong> group.</p>
+<p>For <code>soilcarbon</code> that is one pass: the two postdocs by username, the outside
+collaborator by email address.</p>
+<ol>
+<li>Open the group.</li>
+<li>Select <strong>Invite Members</strong>, from the <strong>Group Manager</strong> menu or from the
+<strong>Members</strong> tab.</li>
+<li>In <strong>Names/Email Addresses</strong>, type names, usernames or email addresses
+separated by commas. An autocompleter suggests registered members as you
+type.</li>
+<li>Optionally write a message in <strong>Customize message sent to invitees</strong>.</li>
+<li>Select <strong>Send Invites</strong>.</li>
+</ol>
+<p>The page then reports which invitations went out and which entries it could
+not use. Someone who is already a member, already invited, or not a valid
+address comes back in the failures list.</p>
+<p>An invited hub member sees <strong>Accept Invitation</strong> and <strong>Decline Invitation</strong>
+on the group page and in the <strong>Group Invites</strong> section of <code>/groups</code>. An
+invitation sent to an email address appears in the <strong>Invitees</strong> list as the
+address itself until it is taken up.</p>
+<p>To withdraw an invitation, open the <strong>Invitees</strong> filter and select <strong>Cancel</strong>
+on the row. You can edit the note the person receives.</p>
+<h2 id="approving-membership-requests">Approving membership requests</h2>
+<p>On a <strong>Restricted</strong> group, requests land in the <strong>Pending</strong> filter, along
+with the reason each applicant gave.</p>
+<ul>
+<li><strong>Approve</strong> admits them.</li>
+<li><strong>Deny</strong> opens a form where you can edit the reply they get. Denying is not
+final: a denied user may apply again.</li>
+</ul>
+<h2 id="roles">Roles</h2>
+<p>A role is a named set of extra permissions inside one group. It lets a member
+help run the group without being made a manager. It means nothing outside the
+group: a role on <code>soilcarbon</code> gives its holder no standing anywhere else on
+the hub, and no other group can see it.</p>
+<p>Reach for one when somebody does a job for the group but should not be able
+to change everything about it. The <code>soilcarbon</code> lab manager keeps the
+membership up to date as students arrive and leave, so she gets a role called
+<em>Membership</em> carrying <strong>Invite New Members</strong> and nothing else.</p>
+<p>A role carries a name and any of three permissions:</p>
+<ul>
+<li><strong>Invite New Members</strong></li>
+<li><strong>Edit Group Settings</strong></li>
+<li><strong>Create/Edit Group Pages &amp; Categories</strong></li>
+</ul>
+<h3 id="creating-a-role">Creating a role</h3>
+<p>Following the lab manager through:</p>
+<ol>
+<li>Open the <strong>Members</strong> tab.</li>
+<li>Select <strong>Add a Member Role</strong>.</li>
+<li>Give it a <strong>Role Name</strong> and tick the permissions it should carry.</li>
+<li>Select <strong>Save</strong>.</li>
+</ol>
+<h3 id="assigning-a-role">Assigning a role</h3>
+<ol>
+<li>Find the member in the <strong>Members</strong> or <strong>Managers</strong> list.</li>
+<li>Select <strong>Assign Role</strong> on their row.</li>
+<li>Pick the role and confirm.</li>
+</ol>
+<p>A member's roles are listed on their row. The small <strong>x</strong> beside a role takes
+it away again. Selecting the role's name filters the list to everyone who
+holds it.</p>
+<h2 id="promoting-and-demoting-managers">Promoting and demoting managers</h2>
+<p>A manager can do everything: settings, pages, membership, deletion. A group
+with one manager is a group that stops working when that person is on leave
+or leaves the institution, which is why <code>soilcarbon</code> promotes its
+co-investigator as soon as the group is set up.</p>
+<p>A group can have as many managers as it needs.</p>
+<ol>
+<li>Open the <strong>Members</strong> or <strong>Managers</strong> filter.</li>
+<li>Find the member and use the arrow button on their row.</li>
+</ol>
+<p>The arrow points up for an ordinary member — select it to <strong>Promote</strong> them to
+manager. It points down for a manager — select it to <strong>Demote</strong> them. The
+change is saved immediately.</p>
+<p><img src="../../media/groupmembers-promotegroupmember.png" alt="Promoting a member to group manager from the member list" /></p>
+<p>The last remaining manager cannot be demoted or removed, so a group is never
+left without one. Demote them from the administrator interface if you really
+need to; see
+<a href="../../../managers/users/groups/index.html#membership">Groups</a>.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Making someone a manager gives them the power to promote and
+demote others, including you. Only do it for people you trust. A role is
+the smaller step: it hands over one or two specific powers and nothing
+else.</p>
+</aside>
+<h2 id="removing-a-member">Removing a member</h2>
+<p><strong>Remove</strong> on a member's row cancels their membership. You can edit the note
+they receive. A removed member may apply to join again.</p>
+<h2 id="membership-end-dates">Membership end dates</h2>
+<p>If the hub allows time-limited memberships, a manager can put an end date on
+one. When the date passes the member is removed automatically. It suits a
+group that takes people in for a fixed spell — a summer student, a visitor on
+a one-year secondment — and saves the manager remembering to clear them out.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Not every hub switches this on. Where it is off there are no end
+dates, no <strong>set an end date</strong> control, and no <strong>Membership length</strong> section
+in the group's settings.</p>
+</aside>
+<ol>
+<li>Open the <strong>Members</strong> or <strong>Managers</strong> filter.</li>
+<li>Select <strong>set an end date</strong> — or <strong>change end date</strong> — on the member's row.</li>
+<li>Set <strong>Ends on</strong>, or tick <strong>Remove the end date and make this membership
+permanent</strong>.</li>
+<li>Save.</li>
+</ol>
+<p>The hub may cap how far ahead the date can be; the form says so when it does.
+Everyone sees their own end date at the top of the member list, whether or
+not it is close.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> End dates are enforced by a scheduled job, not by the page. A
+membership that has just lapsed keeps working until the next run.</p>
+</aside>
+<h2 id="leaving-a-group">Leaving a group</h2>
+<p>Open the group, open the <strong>Group Member</strong> menu and select <strong>Cancel Group
+Membership</strong>. A manager can only leave if the group has another manager.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 42a7a5b5c7</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../createdeleteagroup/index.html" rel="prev"><span>Previous</span>Creating and deleting a group</a><a class="pager__next" href="../groupcustom/index.html" rel="next"><span>Next</span>Customization</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/users/11-groups/02-groupmembers.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

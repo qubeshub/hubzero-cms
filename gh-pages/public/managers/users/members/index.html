@@ -1,0 +1,1052 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Members · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="The Members manager is where every account on the hub is created, edited, confirmed, approved, blocked, exported and deleted. Open it under Users Members . It…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/users/members/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Members</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#which-button-to-reach-for">Which button to reach for</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-sub-menu">The sub-menu</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-account-list">The account list</a></li>
+<li class="toc__item toc__item--l3"><a href="#filters">Filters</a></li>
+<li class="toc__item toc__item--l3"><a href="#columns">Columns</a></li>
+<li class="toc__item toc__item--l3"><a href="#toolbar">Toolbar</a></li>
+<li class="toc__item toc__item--l2"><a href="#account-states">Account states</a></li>
+<li class="toc__item toc__item--l3"><a href="#confirming-an-account-by-hand">Confirming an account by hand</a></li>
+<li class="toc__item toc__item--l3"><a href="#approving-an-account">Approving an account</a></li>
+<li class="toc__item toc__item--l3"><a href="#blocking-an-account">Blocking an account</a></li>
+<li class="toc__item toc__item--l2"><a href="#editing-an-account">Editing an account</a></li>
+<li class="toc__item toc__item--l2"><a href="#resetting-the-terms-of-use">Resetting the terms of use</a></li>
+<li class="toc__item toc__item--l2"><a href="#de-identifying-members">De-identifying members</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-deleting-a-member-removes">What deleting a member removes</a></li>
+<li class="toc__item toc__item--l2"><a href="#building-the-profile-form">Building the profile form</a></li>
+<li class="toc__item toc__item--l2"><a href="#notes">Notes</a></li>
+<li class="toc__item toc__item--l2"><a href="#access">Access</a></li>
+<li class="toc__item toc__item--l2"><a href="#points">Points</a></li>
+<li class="toc__item toc__item--l2"><a href="#passwords">Passwords</a></li>
+<li class="toc__item toc__item--l2"><a href="#quotas">Quotas</a></li>
+<li class="toc__item toc__item--l2"><a href="#registration">Registration</a></li>
+<li class="toc__item toc__item--l2"><a href="#import">Import</a></li>
+<li class="toc__item toc__item--l2"><a href="#exporting-accounts">Exporting accounts</a></li>
+<li class="toc__item toc__item--l2"><a href="#plugins">Plugins</a></li>
+<li class="toc__item toc__item--l2"><a href="#members-removal-tech-notes">Members removal tech notes</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Users</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Members</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Members</h1>
+        </header>
+        
+        <div class="prose">
+<p>The Members manager is where every account on the hub is created, edited,
+confirmed, approved, blocked, exported and deleted. Open it under <strong>Users &gt;
+Members</strong>. It is <code>com_members</code>, and it owns most of what sits on the <strong>Users</strong>
+menu.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> There is no separate User Manager to keep in step with. <code>com_users</code>
+in this release has no administrator screens at all; the Members manager is
+the only place accounts are edited.</p>
+</aside>
+<h2 id="which-button-to-reach-for">Which button to reach for</h2>
+<p>Almost everything a manager does here is one of four operations on somebody
+else's live account, and they differ enormously in how much they cost.</p>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Reversible?</th>
+<th>What the account holder sees</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Block</strong> / <strong>Unblock</strong></td>
+<td>Yes, completely.</td>
+<td>Cannot log in while blocked. Nothing is lost.</td>
+</tr>
+<tr>
+<td><strong>Confirm</strong> / <strong>Unconfirm</strong>, <strong>Approve</strong> / <strong>Unapprove</strong></td>
+<td>Yes.</td>
+<td>Held on a holding page, or released from one.</td>
+</tr>
+<tr>
+<td><strong>De-identify</strong></td>
+<td><strong>No.</strong></td>
+<td>The account still exists but is blocked and anonymous.</td>
+</tr>
+<tr>
+<td><strong>Delete</strong></td>
+<td><strong>No.</strong></td>
+<td>The account and everything hung off it are gone.</td>
+</tr>
+</tbody>
+</table>
+<p>The two reversible rows cover nearly every real situation. A spam wave after a
+paper is published wants <strong>Block</strong>, not <strong>Delete</strong>: blocking a hundred signups
+takes them out of service in one press and can be undone if you catch a real
+person among them, and it leaves you the evidence to look at later. Somebody
+who has left the institution and asks to be removed wants <strong>De-identify</strong> or
+<strong>Delete</strong>, and you need to know which they mean before you press either.</p>
+<p>Nothing on this screen sends the account holder a message except <strong>Approve</strong>
+(and only when <strong>Email On Account Activation</strong> is on) and <strong>Resend
+confirmation</strong>. Blocking somebody is silent; they find out when they try to log
+in.</p>
+<h2 id="the-sub-menu">The sub-menu</h2>
+<p>A row of links sits above every Members screen. Which links appear depends on
+your permissions and on one configuration setting; the menu is built in
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/components/com_members/admin/helpers/members.php"><code>core/components/com_members/admin/helpers/members.php</code></a>.</p>
+<table>
+<thead>
+<tr>
+<th>Link</th>
+<th>Opens</th>
+<th>Shown when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Members</strong></td>
+<td>The account list.</td>
+<td>Always.</td>
+</tr>
+<tr>
+<td><strong>Notes</strong></td>
+<td>Administrator notes about accounts, and their categories.</td>
+<td>Always.</td>
+</tr>
+<tr>
+<td><strong>Access</strong></td>
+<td>Access groups and viewing levels.</td>
+<td>Always.</td>
+</tr>
+<tr>
+<td><strong>Points</strong></td>
+<td>The points system.</td>
+<td>Only when <strong>Bank Accounts</strong> is on in <strong>Options</strong>.</td>
+</tr>
+<tr>
+<td><strong>Passwords</strong></td>
+<td>Password rules and the password blacklist.</td>
+<td>Only for a Super User (<code>core.admin</code>).</td>
+</tr>
+<tr>
+<td><strong>Quotas</strong></td>
+<td>Disk quotas, quota classes and quota import.</td>
+<td>Always.</td>
+</tr>
+<tr>
+<td><strong>Registration</strong></td>
+<td>Which fields registration asks for.</td>
+<td>Always.</td>
+</tr>
+<tr>
+<td><strong>Import</strong></td>
+<td>Bulk member import and import hooks.</td>
+<td>Only for a Super User (<code>core.admin</code>).</td>
+</tr>
+<tr>
+<td><strong>Plugins</strong></td>
+<td>The hub's <code>members</code> plugins.</td>
+<td>Always.</td>
+</tr>
+</tbody>
+</table>
+<p>There is <strong>no Export link</strong>. Export is a toolbar button on the account list;
+see <a href="#exporting-accounts">Exporting accounts</a>.</p>
+<h2 id="the-account-list">The account list</h2>
+<p>The list opens on every account on the hub, newest registration first.</p>
+<h3 id="filters">Filters</h3>
+<table>
+<thead>
+<tr>
+<th>Filter</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Search</td>
+<td>A number matches the account id exactly; anything else matches anywhere inside the name, username or email. <strong>Go</strong> submits, and <strong>Reset</strong> clears the filter bar.</td>
+</tr>
+<tr>
+<td><strong>- Email confirmed -</strong></td>
+<td><strong>Confirmed</strong> or <strong>Unconfirmed</strong>.</td>
+</tr>
+<tr>
+<td><strong>Access</strong></td>
+<td>An access level.</td>
+</tr>
+<tr>
+<td><strong>- State -</strong></td>
+<td><strong>Enabled</strong> or <strong>Disabled</strong>, that is, not blocked or blocked.</td>
+</tr>
+<tr>
+<td><strong>- Approved -</strong></td>
+<td><strong>Unapproved</strong>, <strong>Manually approved</strong> or <strong>Automatically approved</strong>.</td>
+</tr>
+<tr>
+<td><strong>- Group -</strong></td>
+<td>An access group.</td>
+</tr>
+<tr>
+<td><strong>- Registration Date -</strong></td>
+<td>Today, the past week, month, three months, six months or year, or older than a year.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="columns">Columns</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ID</td>
+<td>The account's numeric id. Sortable.</td>
+</tr>
+<tr>
+<td>Name</td>
+<td>Shown as <em>surname, given name middle name</em>, rebuilt from the full name when the parts are empty. Click it to edit the account. Sortable.</td>
+</tr>
+<tr>
+<td>Username</td>
+<td>Sortable.</td>
+</tr>
+<tr>
+<td>E-Mail</td>
+<td>Sortable.</td>
+</tr>
+<tr>
+<td>Access Groups</td>
+<td>Every access group the account belongs to.</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>The account's state, with a drop-down of the actions available from it. See <a href="#account-states">Account states</a>.</td>
+</tr>
+<tr>
+<td>Registered</td>
+<td>Sortable.</td>
+</tr>
+<tr>
+<td>Last Visit</td>
+<td><em>Never</em> if the account has never logged in. Sortable.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="toolbar">Toolbar</h3>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Options</strong></td>
+<td>The component's configuration. See the generated <a href="../../../reference/configuration/components/members/index.html">Members configuration reference</a>. Super User only.</td>
+</tr>
+<tr>
+<td><strong>Profile</strong></td>
+<td>Opens the profile builder. See <a href="#building-the-profile-form">Building the profile form</a>. Super User only.</td>
+</tr>
+<tr>
+<td><strong>Export</strong></td>
+<td>Downloads the accounts matching the current filters as CSV. Super User only.</td>
+</tr>
+<tr>
+<td><strong>Reset terms of use agreements for all users</strong></td>
+<td>See <a href="#resetting-the-terms-of-use">Resetting the terms of use</a>.</td>
+</tr>
+<tr>
+<td><strong>Confirm</strong> / <strong>Unconfirm</strong></td>
+<td>Marks the checked accounts' email addresses confirmed or unconfirmed.</td>
+</tr>
+<tr>
+<td><strong>Block</strong> / <strong>Unblock</strong></td>
+<td>See <a href="#blocking-an-account">Blocking an account</a>.</td>
+</tr>
+<tr>
+<td><strong>New</strong>, <strong>Edit</strong>, <strong>Delete</strong></td>
+<td>Create, edit or delete accounts. Delete asks for confirmation first.</td>
+</tr>
+<tr>
+<td><strong>De-identify Members</strong></td>
+<td>See <a href="#de-identifying-members">De-identifying members</a>. Needs the <strong>Deidentify</strong> permission.</td>
+</tr>
+<tr>
+<td><strong>Help</strong></td>
+<td>The built-in help screen.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Confirm</strong>, <strong>Unconfirm</strong>, <strong>Block</strong>, <strong>Unblock</strong>, <strong>Reset terms of use
+agreements</strong> and the status drop-downs all require <code>core.edit.state</code>.</p>
+<h2 id="account-states">Account states</h2>
+<p>An account carries three separate flags, and the <strong>Status</strong> column shows the
+first one that applies.</p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+<th>Actions offered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Blocked</strong></td>
+<td><code>block</code> is set. The account cannot log in.</td>
+<td><strong>Unblock</strong></td>
+</tr>
+<tr>
+<td><strong>Incomplete (<em>authenticator</em>)</strong></td>
+<td>The account was started through a third-party authenticator and never finished. Its email address ends in <code>@invalid</code>.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><strong>Unconfirmed</strong></td>
+<td>The email address has not been confirmed.</td>
+<td><strong>Confirm email</strong>, <strong>Resend confirmation</strong>, <strong>Block</strong></td>
+</tr>
+<tr>
+<td><strong>Not Approved</strong></td>
+<td>Email confirmed, but the account still needs an administrator's approval.</td>
+<td><strong>Approve</strong>, <strong>Block</strong></td>
+</tr>
+<tr>
+<td><strong>Approved</strong></td>
+<td>Email confirmed and account approved. This is a working account.</td>
+<td><strong>Unapprove</strong>, <strong>Block</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Confirmation and approval are two different gates. Which of them a new
+registration has to pass is set by <strong>New User Account Activation</strong> on the
+<strong>Options</strong> screen: <strong>None</strong> confirms the account outright, <strong>Self</strong> emails the
+user a confirmation link, and <strong>Admin</strong> emails the link <em>and</em> leaves the
+account unapproved until someone approves it. The <strong>System - Unconfirmed</strong> and
+<strong>System - Unapproved</strong> plugins are what hold such a user on a holding page
+until the gate is passed.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> There is no administrator dashboard module listing accounts awaiting
+approval. Filter the account list by <strong>- Approved -</strong> → <strong>Unapproved</strong>
+instead.</p>
+</aside>
+<h3 id="confirming-an-account-by-hand">Confirming an account by hand</h3>
+<ol>
+<li>Open <strong>Users &gt; Members</strong>.</li>
+<li>Find the account.</li>
+<li>Either open its <strong>Status</strong> drop-down and choose <strong>Confirm email</strong>, or check
+the box beside it and press <strong>Confirm</strong> in the toolbar.</li>
+</ol>
+<p><strong>Resend confirmation</strong> on the same drop-down issues a fresh confirmation code
+and emails it again.</p>
+<h3 id="approving-an-account">Approving an account</h3>
+<p>Open the account's <strong>Status</strong> drop-down and choose <strong>Approve</strong>. If <strong>Email On
+Account Activation</strong> is on in <strong>Options</strong>, approving also emails the user to
+say the account is ready.</p>
+<h3 id="blocking-an-account">Blocking an account</h3>
+<p>Blocking is the way to take an account out of service without deleting it —
+for a spam signup, or for someone who no longer wants an account. A blocked
+account can be unblocked later with nothing lost.</p>
+<ol>
+<li>Open <strong>Users &gt; Members</strong>.</li>
+<li>Find the account.</li>
+<li>Either open its <strong>Status</strong> drop-down and choose <strong>Block</strong>, or check the box
+beside it and press <strong>Block</strong> in the toolbar.</li>
+</ol>
+<p>You cannot block your own account.</p>
+<h2 id="editing-an-account">Editing an account</h2>
+<p>Click a name in the list, or check it and press <strong>Edit</strong>. The record opens on
+six tabs; the last three appear only once the account exists, and plugins may
+add more.</p>
+<table>
+<thead>
+<tr>
+<th>Tab</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Account</strong></td>
+<td>Name, username, email, access groups, and the account's state flags.</td>
+</tr>
+<tr>
+<td><strong>Profile</strong></td>
+<td>The profile fields defined in the profile builder.</td>
+</tr>
+<tr>
+<td><strong>Password</strong></td>
+<td>The current password hash, a <strong>New Password</strong> field, the password rules, and the shadow values: <strong>Last changed on</strong>, <strong>Valid for (days)</strong>, <strong>Warning at (days)</strong> and <strong>Expires on</strong>. Shown only with <code>core.admin</code> or <code>core.edit</code>.</td>
+</tr>
+<tr>
+<td><strong>Groups</strong></td>
+<td>The hub groups the account belongs to, as member or manager.</td>
+</tr>
+<tr>
+<td><strong>Hosts</strong></td>
+<td>The hosts the account may reach.</td>
+</tr>
+<tr>
+<td><strong>Messaging</strong></td>
+<td>The account's message delivery settings.</td>
+</tr>
+</tbody>
+</table>
+<p>Save with <strong>Save</strong> or <strong>Save &amp; Close</strong>; <strong>Save &amp; New</strong> saves and opens a blank
+record.</p>
+<p>Everything on the <strong>Account</strong> tab takes effect at once. Changing the ticked
+<a href="../accessgroups/index.html">access groups</a> changes what that person may do on their
+next page load; they are not logged out and not told.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> An account you create here is created with a private profile. The
+<strong>Default Privacy</strong> option applies only to people who register themselves —
+see <a href="../registration/index.html#default-privacy">Default Privacy</a> — and neither this
+form nor the <a href="../memberimport/index.html">importer</a> runs that code. If a hub-created
+account should appear in the member directory, its owner sets that from their
+own profile page.</p>
+</aside>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> If your browser fills in passwords automatically, check the
+<strong>Password</strong> tab before saving. An autofilled <strong>New Password</strong> field silently
+replaces the user's password with one of your own saved passwords.</p>
+</aside>
+<h2 id="resetting-the-terms-of-use">Resetting the terms of use</h2>
+<p>When the hub's terms of use change, every existing acceptance can be cleared so
+that users have to accept the new text.</p>
+<ol>
+<li>Open <strong>Users &gt; Members</strong>.</li>
+<li>Press <strong>Reset terms of use agreements for all users</strong> in the toolbar.</li>
+<li>Log in to the site to confirm the acceptance prompt appears.</li>
+</ol>
+<p>The button does two things: it clears the recorded agreement on every account,
+and it sets the <strong>TOU</strong> row's <strong>Update on Next Login</strong> column on the
+<a href="../registration/index.html">Registration</a> screen to <strong>Required</strong>, which is what
+actually puts the prompt in front of the user.</p>
+<h2 id="de-identifying-members">De-identifying members</h2>
+<p>De-identification is for the case where somebody has to disappear from the hub
+but the hub's statistics and history must stay intact — a data-protection
+request, or a person who has withdrawn consent. It is the middle option between
+blocking, which keeps everything, and deleting, which removes the account row
+and the record that anyone was ever there. Reach for it when the requirement is
+&quot;remove their personal information&quot;, not &quot;remove their account&quot;.</p>
+<p>Available from release 2.2.26. De-identification strips personally
+identifiable information from the database. Some rows are deleted outright;
+elsewhere fields are emptied or replaced with generated values (<code>anonUsername_</code>
+plus the account id) that cannot be mapped back. The account row itself
+survives, blocked and anonymous, so that statistics stay intact.</p>
+<ol>
+<li>Open <strong>Users &gt; Members</strong> and press <strong>Options</strong>. On the <strong>Permissions</strong> tab,
+set <strong>Deidentify</strong> to <em>Allowed</em> for the group that should hold it. Save and
+close.</li>
+<li>Check the accounts to de-identify in the list.</li>
+<li>Press <strong>De-identify Members</strong> in the toolbar — the eye icon next to the
+delete button.</li>
+<li>The list redraws with the anonymised values, and a success message names the
+accounts that were processed.</li>
+</ol>
+<p>The work is done by the <code>user.onUserDeidentify</code> event. Three plugins listen for
+it. <strong>User - HUBzero</strong> does most of it, clearing or deleting rows in the user
+profile, support ticket, session and session geo, profile completion award,
+newsletter mailing, message, media tracking, jobs, feedback, event
+registration, blog entry and comment, cart, authentication link, group
+membership, extended profile, wishlist and wiki attachment, quota log,
+authentication log, password and password history, and points subscription
+tables. <strong>User - Middleware</strong> anonymises the tool session, job, file
+permission, view permission and view log tables in the middleware database.
+<strong>User - Ldap</strong> re-syncs the directory entry.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> De-identification cannot be undone, and no record of the original
+values is kept.</p>
+</aside>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> De-identification does not delete the account's home directory. It
+clears <code>homeDirectory</code> on the account row and sets it to <code>/home/anonymous</code> on
+the extended profile; removing the directory itself is a job for whatever
+manages home directories on the hub.</p>
+</aside>
+<h2 id="what-deleting-a-member-removes">What deleting a member removes</h2>
+<p>Read this before you use <strong>Delete</strong>, because the button gives no indication of
+its reach and there is no undo. Deleting is rarely the right answer on a live
+hub: it takes an account's work with it, it leaves other people's pages
+referring to somebody who no longer exists, and it cannot be distinguished
+afterwards from data that was never there. Use it for accounts that never
+should have existed. For everything else, block or de-identify.</p>
+<p>Deleting an account with the toolbar's <strong>Delete</strong> button is not the same as
+de-identifying it. Delete removes the account row and cascades through
+everything hung off it. This section replaces the older
+<a href="#members-removal-tech-notes">Members removal tech notes</a> page.</p>
+<p>Deleting needs <code>core.delete</code> on <code>com_members</code>, and refuses to remove a Super
+User unless you are one yourself. For each checked account it calls <code>destroy()</code>
+on the member model:</p>
+<pre><code class="language-php">	public function destroy()
+	{
+		$data = $this-&gt;toArray();
+
+		Event::trigger('user.onUserBeforeDelete', array($data));
+
+		// Remove profile fields
+		foreach ($this-&gt;profiles()-&gt;rows() as $field)
+		{
+			if (!$field-&gt;destroy())
+			{
+				$this-&gt;addError($field-&gt;getError());
+				return false;
+			}
+		}
+
+		// Remove notes
+		foreach ($this-&gt;notes()-&gt;rows() as $note)
+		{
+			if (!$note-&gt;destroy())
+			{
+				$this-&gt;addError($note-&gt;getError());
+				return false;
+			}
+		}
+
+		// Remove hosts
+		foreach ($this-&gt;hosts()-&gt;rows() as $host)
+		{
+			if (!$host-&gt;destroy())
+			{
+				$this-&gt;addError($host-&gt;getError());
+				return false;
+			}
+		}
+
+		// Remove tags
+		$this-&gt;tag('');
+
+		// Attempt to delete the record
+		$result = parent::destroy();
+
+		if ($result)
+		{
+			Event::trigger('user.onUserAfterDelete', array($data, true, $this-&gt;getError()));
+		}
+
+		return $result;
+	}
+</code></pre>
+<p>So the account's own profile field values, notes, hosts and tags go with it,
+and the <code>user.onUserAfterDelete</code> event carries the deletion outward. Seven
+plugins listen for it.</p>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>What it removes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>User - Xusers</strong></td>
+<td>Hub group memberships, the extended profile, every authentication link, and the account's disk quota. Then fires <code>members.onMemberAfterDelete</code> for anything listening further out.</td>
+</tr>
+<tr>
+<td><strong>User - HUBzero</strong></td>
+<td>The account's sessions.</td>
+</tr>
+<tr>
+<td><strong>User - Middleware</strong></td>
+<td>Rows in <code>#__users_quotas</code> and <code>#__users_tool_preferences</code>.</td>
+</tr>
+<tr>
+<td><strong>User - Ldap</strong></td>
+<td>Re-syncs the directory, which removes the entry.</td>
+</tr>
+<tr>
+<td><strong>User - Geo</strong></td>
+<td>Removes the account from the hub group named in the plugin's <strong>group</strong> parameter, if one is set.</td>
+</tr>
+<tr>
+<td><strong>User - US</strong></td>
+<td>Removes the account from the <code>location_us</code> hub group.</td>
+</tr>
+<tr>
+<td><strong>User - D1</strong></td>
+<td>Removes the account from the <code>d1_nation</code> hub group.</td>
+</tr>
+</tbody>
+</table>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> <code>user.onUserAfterDelete</code> is fired twice — once by <code>destroy()</code> and
+again by the controller immediately afterwards — so every one of those
+plugins runs twice per deleted account. The work is idempotent, so the
+outcome is correct, but a deletion does roughly twice the work it needs to.</p>
+</aside>
+<h2 id="building-the-profile-form">Building the profile form</h2>
+<p>The profile builder is where a hub decides what it wants to know about its
+members. Most hubs edit it once, early — adding an institution, a department, a
+funding source — and then leave it alone. It is worth knowing that it is a live
+schema: adding a required field changes what the registration form asks for
+next time somebody signs up, and a field you delete takes its stored answers
+with it. Add fields freely; remove them only when you are sure nobody's answers
+matter.</p>
+<p><strong>Profile</strong> in the account list toolbar opens the profile builder, which
+defines the fields that make up a member profile — the same fields the
+registration form and the account's <strong>Profile</strong> tab draw on. The form itself
+fills the page; a panel beside it carries two tabs, <strong>Add new field</strong> and
+<strong>Edit field</strong>.</p>
+<p><strong>Add new field</strong> lists the field types you can drag or click onto the form.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Renders as</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Text</strong></td>
+<td>A single-line text box.</td>
+</tr>
+<tr>
+<td><strong>Paragraph</strong></td>
+<td>A multi-line text box.</td>
+</tr>
+<tr>
+<td><strong>Checkboxes</strong></td>
+<td>A list of options, any number selectable.</td>
+</tr>
+<tr>
+<td><strong>Multiple Choice</strong></td>
+<td>A list of options, one selectable.</td>
+</tr>
+<tr>
+<td><strong>Dropdown</strong></td>
+<td>A select box, one selectable.</td>
+</tr>
+<tr>
+<td><strong>Country</strong></td>
+<td>A select box of countries, filled in automatically.</td>
+</tr>
+<tr>
+<td><strong>Date</strong> / <strong>Time</strong> / <strong>Date/Time</strong></td>
+<td>A date, a time, or a full timestamp.</td>
+</tr>
+<tr>
+<td><strong>Number</strong> / <strong>Price</strong> / <strong>Range</strong></td>
+<td>Numeric inputs.</td>
+</tr>
+<tr>
+<td><strong>Email</strong> / <strong>Website</strong></td>
+<td>Text boxes for an address or a URL.</td>
+</tr>
+<tr>
+<td><strong>ORCID</strong></td>
+<td>A text box for an ORCID identifier.</td>
+</tr>
+<tr>
+<td><strong>Address</strong></td>
+<td>Street, city, region, postal code and country.</td>
+</tr>
+<tr>
+<td><strong>Tags</strong></td>
+<td>Keywords separated by commas or semicolons.</td>
+</tr>
+<tr>
+<td><strong>Hidden</strong></td>
+<td>A hidden input.</td>
+</tr>
+<tr>
+<td><strong>Section Break</strong></td>
+<td>A heading with no input, for grouping the form.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Edit field</strong> configures the selected field: its <strong>Label</strong>, a longer
+description, its <strong>Viewing level</strong>, and the <strong>Required</strong>, <strong>Read only</strong> and
+<strong>Disabled</strong> checkboxes. Fields with options — Checkboxes, Multiple Choice,
+Dropdown — get a row per option with a label, an optional separate value, and a
+<strong>Dependent fields</strong> box naming the fields that should appear when that option
+is chosen.</p>
+<p>Working in the builder:</p>
+<ul>
+<li><strong>Add a field.</strong> Click or drag its type from <strong>Add new field</strong>, then fill in
+the label and options on <strong>Edit field</strong>.</li>
+<li><strong>Duplicate a field.</strong> Hover the field and press the <strong>Duplicate Field</strong>
+icon.</li>
+<li><strong>Remove a field.</strong> Hover the field and press the <strong>Remove Field</strong> icon.</li>
+<li><strong>Reorder fields.</strong> Drag a field up or down.</li>
+</ul>
+<p>The builder's toolbar has <strong>Save</strong>, <strong>Save &amp; Close</strong> and <strong>Cancel</strong> only —
+there is no <strong>Save &amp; New</strong>. Nothing is written until you save.</p>
+<h2 id="notes">Notes</h2>
+<p><strong>Notes</strong> manages the notes administrators keep <em>about</em> accounts — they are not
+something users write. A note has a subject, a body, a category, a review date
+and a state, and it hangs off one account.</p>
+<p>Two links sit under the tab: <strong>User Notes</strong>, the list itself, and <strong>Note
+Categories</strong>, which opens <code>com_categories</code> scoped to <code>com_members</code>.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Most of the User Notes toolbar does nothing in this release, and
+the column sort links fail outright. <a href="../user-notes/index.html">User notes</a> sets out
+what works and what does not; read it before you rely on this screen.</p>
+</aside>
+<h2 id="access">Access</h2>
+<p><strong>Access</strong> covers the two halves of the permission system.</p>
+<p><strong>Access Groups</strong> are the buckets permissions are granted to: Public, Manager,
+Administrator, Registered, Author, Editor, Publisher and Super Users by
+default, arranged as a tree. The <strong>Users in group</strong> column counts the accounts
+in each. To add one, press <strong>New</strong>, give it a <strong>Group Title</strong>, pick a <strong>Group
+Parent</strong>, and <strong>Save &amp; Close</strong>.</p>
+<p><strong>Viewing Levels</strong> are the named levels content is tagged with. To add one,
+open the <strong>Viewing Levels</strong> link, press <strong>New</strong>, give it a <strong>Level Title</strong>,
+check the groups under <strong>Access Groups Having Viewing Access</strong>, and <strong>Save &amp;
+Close</strong>.</p>
+<p>See <a href="../accessgroups/index.html">Access Groups</a> and
+<a href="../accesslevels/index.html">Access Levels</a>.</p>
+<h2 id="points">Points</h2>
+<p>Points are the hub's internal currency, awarded for taking part. The <strong>Points</strong>
+link appears only when <strong>Bank Accounts</strong> is on in the component's <strong>Options</strong>.
+Turn that option on only if your hub is actually going to use points for
+something — leaving it off keeps four screens and a column of numbers out of
+the way of everyone who is not.</p>
+<p>Four sub-links:</p>
+<ul>
+<li><strong>Summary</strong> — the top earners and how points were earned.</li>
+<li><strong>Look up User Balance</strong> — a single account's balance.</li>
+<li><strong>Configuration</strong> — the award table.</li>
+<li><strong>Batch Transaction</strong> — deposit to or withdraw from many accounts at once.</li>
+</ul>
+<p>The configuration screen is a table of fifty numbered rows, each with
+<strong>Points</strong>, <strong>Alias</strong> and <strong>Description</strong>. The alias is the key a component
+passes when it awards points, so the rows you fill in are the ones your hub's
+components actually use. A hub running the Answers component typically fills in
+these seven:</p>
+<table>
+<thead>
+<tr>
+<th>Alias</th>
+<th>Awarded for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ask</code></td>
+<td>Posting a question.</td>
+</tr>
+<tr>
+<td><code>answer</code></td>
+<td>Posting an answer.</td>
+</tr>
+<tr>
+<td><code>questionvote</code></td>
+<td>Rating a question.</td>
+</tr>
+<tr>
+<td><code>answervote</code></td>
+<td>Rating an answer.</td>
+</tr>
+<tr>
+<td><code>accepted</code></td>
+<td>Having your answer accepted as the best one.</td>
+</tr>
+<tr>
+<td><code>abusereport</code></td>
+<td>An abuse report that an administrator upholds.</td>
+</tr>
+<tr>
+<td><code>reviewvote</code></td>
+<td>Rating a review.</td>
+</tr>
+</tbody>
+</table>
+<p>Fill in <strong>Points</strong>, <strong>Alias</strong> and <strong>Description</strong> on a row and press <strong>Save
+Configuration</strong>.</p>
+<p><img src="../../media/members-points-config.png" alt="The points configuration screen, a numbered table of Points, Alias and Description rows" /></p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> That screenshot is from an older release. Its sub-menu shows an
+<strong>Export</strong> tab, which no longer exists — export is a toolbar button on the
+account list.</p>
+</aside>
+<h2 id="passwords">Passwords</h2>
+<p>Two sub-links.</p>
+<p><strong>Password Rules</strong> lists the rules a password must satisfy, with columns
+<strong>Id</strong>, <strong>Rule</strong>, <strong>Description</strong>, <strong>Ordering</strong> and <strong>Enabled</strong>. Opening a rule
+adds its <strong>Value</strong>, <strong>Failure message</strong>, <strong>Class</strong> and <strong>Group</strong>. The shipped
+set matches current security guidance and is meant to stay enabled.</p>
+<p><strong>Password Blacklist</strong> is a list of words that may not be used as passwords —
+somewhere to put obvious choices and words specific to your hub. To add one:</p>
+<ol>
+<li>Open <strong>Users &gt; Members &gt; Passwords</strong>, then <strong>Password Blacklist</strong>.</li>
+<li>Press <strong>New</strong>.</li>
+<li>Type the word in the <strong>Word</strong> box.</li>
+<li><strong>Save &amp; Close</strong>.</li>
+</ol>
+<h2 id="quotas">Quotas</h2>
+<p>Disk quotas exist for hubs whose members get real storage — home directories,
+tool sessions, uploads. If your hub does not hand out storage, leave <strong>Manage
+Quotas</strong> off and ignore these screens entirely. Where quotas do apply, the usual
+job is the one-off: a group has filled its allocation and needs more, which
+means changing that account's quota class or its individual limits.</p>
+<p>Three sub-links, and they only matter when <strong>Manage Quotas</strong> is on in
+<strong>Options</strong>.</p>
+<p><strong>Member disk quotas</strong> lists accounts and their quotas. To change one, find the
+account, open it, change its quota class or its individual limits, and <strong>Save &amp;
+Close</strong>.</p>
+<p><strong>Quota classes</strong> are reusable sets of limits. Press <strong>New</strong> and fill in:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Alias</strong></td>
+<td>The class's short name.</td>
+</tr>
+<tr>
+<td><strong>Soft blocks limit</strong></td>
+<td>Soft limit on disk blocks.</td>
+</tr>
+<tr>
+<td><strong>Hard blocks limit</strong></td>
+<td>Hard limit on disk blocks.</td>
+</tr>
+<tr>
+<td><strong>Soft files limit</strong></td>
+<td>Soft limit on file count.</td>
+</tr>
+<tr>
+<td><strong>Hard files limit</strong></td>
+<td>Hard limit on file count.</td>
+</tr>
+<tr>
+<td><strong>User Access Groups</strong></td>
+<td>Access groups whose members get this class automatically.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Import quotas</strong> seeds the tables from the filesystem. Paste the contents of a
+<code>quota.conf</code> file into the <strong>Conf file</strong> box, tick <strong>Overwrite matching
+existing entries?</strong> if you want existing rows replaced, and press <strong>Import</strong>.
+Accounts named in the file that have no quota row yet are listed underneath so
+you can import them in a second pass.</p>
+<h2 id="registration">Registration</h2>
+<p><strong>Registration</strong> controls which fields the hub asks for, and when. It has three
+sub-links: <strong>Config</strong>, <strong>Incremental Registration</strong> and <strong>PREMIS Data Import</strong>.
+See <a href="../registration/index.html">Registration</a>.</p>
+<h2 id="import">Import</h2>
+<p><strong>Import</strong> bulk-creates and bulk-updates accounts from a data file, and manages
+the hooks that can transform records on the way in. Super User only. See
+<a href="../memberimport/index.html">Member import</a>.</p>
+<h2 id="exporting-accounts">Exporting accounts</h2>
+<p><strong>Export</strong> in the account list toolbar downloads a CSV of accounts. Two things
+about it are worth knowing:</p>
+<ul>
+<li>It exports <strong>the accounts matching the filters currently applied to the
+list</strong>, not always every account. Clear the filters first if you want the
+whole hub.</li>
+<li>The columns are generated from the accounts table plus every field in the
+profile builder, so the file's shape follows your hub's profile schema.
+Passwords are never included.</li>
+</ul>
+<p>The download is served as <code>members.csv</code>.</p>
+<h2 id="plugins">Plugins</h2>
+<p><strong>Plugins</strong> lists the hub's <code>members</code> plugins. It is a screen of its own, not
+the Plugin Manager, though it works the same way. These plugins are what put
+the tabs on a member's public profile and the panels on the member dashboard,
+so publishing and unpublishing them is how you decide what the member area
+contains.</p>
+<p>To publish or unpublish: check the plugin, press <strong>Publish</strong> or <strong>Unpublish</strong>,
+and the <strong>Status</strong> column changes. Reordering needs <code>core.edit.state</code> on
+<code>com_plugins</code>.</p>
+<p>The <strong>Members - Dashboard</strong> plugin has a <strong>Manage</strong> link in its own column,
+which opens the default dashboard layout:</p>
+<ol>
+<li>Drag modules to move them; drag the lower-right corner to resize.</li>
+<li><strong>Add Modules</strong> adds one to the layout.</li>
+<li><strong>Push Module to Users</strong> puts one module onto existing members'
+dashboards. Fill in the module, column, position, width and height, then
+press <strong>Push Module</strong>.</li>
+</ol>
+<p>Changes are saved as they are made and apply to members who have not yet
+rearranged their own dashboard.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Pushing a module writes to every member's dashboard. The screen
+says so itself: it is resource-intensive and should not be done often.</p>
+</aside>
+<h2 id="members-removal-tech-notes">Members removal tech notes</h2>
+<p>This page used to hold pasted excerpts of the code that runs when a member is
+deleted. That material now lives in the Members manager chapter, checked
+against the current source and with the plugin cascade written out:</p>
+<ul>
+<li><a href="#what-deleting-a-member-removes">What deleting a member removes</a></li>
+</ul>
+<p>Two neighbouring sections cover the operations people usually mean when they
+ask about removing a member:</p>
+<ul>
+<li><a href="#blocking-an-account">Blocking an account</a> — take an account out
+of service without losing anything.</li>
+<li><a href="#de-identifying-members">De-identifying members</a> — strip personally
+identifiable information but keep the account row.</li>
+</ul>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../index.html" rel="prev"><span>Previous</span>Users</a><a class="pager__next" href="../registration/index.html" rel="next"><span>Next</span>Registration</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/06-users/01-members.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

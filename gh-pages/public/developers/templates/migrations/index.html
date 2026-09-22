@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Migrations · Developers · Hubzero Documentation</title>
+  <meta name="description" content="Copying a template into place is not enough. The CMS only knows about a template that has a row in and a style in . A migration puts those rows there. Why this…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/developers/templates/migrations/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Developers</a>
+        <nav aria-label="Developers contents">
+<ul class="tree">
+<li class="tree__section"><details><summary><a class="tree__link" href="../../getting-started/index.html">Getting started</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/releasenotes/index.html">Release notes</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/fileaccess/index.html">Accessing files</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/databaseaccess/index.html">Direct database access</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/upgrade/index.html">Upgrade guide</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/browsersupport/index.html">Browser support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/devenvironment/index.html">Development environment</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tutorials/index.html">Video tutorials</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../foundation/index.html">Foundation</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/structure/index.html">Application structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/constants/index.html">Constants</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/autoloading/index.html">Autoloading</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/extensions/index.html">Extensions</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/facades/index.html">Facades</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/providers/index.html">Service providers</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../services/index.html">Services</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../services/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/filesystem/index.html">Filesystem</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/session/index.html">Session</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/server/index.html">Server</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../basics/index.html">The basics</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../basics/requests/index.html">Requests</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/responses/index.html">Responses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/config/index.html">Config</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/user/index.html">Users &amp; profiles</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/debugging/index.html">Debugging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/cron/index.html">Scheduled tasks</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/dates/index.html">Dates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/redirect/index.html">Redirect</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../database/index.html">Database</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extreqs/index.html">Requirements</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/parameters/index.html">Parameters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/deployext/index.html">Deploying extensions</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../modules/index.html">Modules</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../modules/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/models/index.html">Models</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/routing/index.html">Routing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/packaging/index.html">Packaging</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../plugins/index.html">Plugins</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Templates</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Migrations</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#why-this-exists">Why this exists</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-smallest-one-that-works">The smallest one that works</a></li>
+<li class="toc__item toc__item--l2"><a href="#addtemplateentry">addTemplateEntry</a></li>
+<li class="toc__item toc__item--l2"><a href="#deletetemplateentry">deleteTemplateEntry</a></li>
+<li class="toc__item toc__item--l2"><a href="#when-the-template-does-not-appear">When the template does not appear</a></li>
+<li class="toc__item toc__item--l2"><a href="#other-macros">Other macros</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../designing/index.html">Designing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../layouts/index.html">Page layouts</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../css/index.html">Cascading style sheets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../javascript/index.html">JavaScript</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../overrides/index.html">Output overrides</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../socicons/index.html">Socicons</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../fontcons/index.html">Fontcons</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../elements/index.html">Elements and typography</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../accessibility/index.html">Accessibility</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../muse/index.html">Muse</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../supergroups/index.html">Super Groups</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/templating-system/index.html">Templating system</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/page-templates/index.html">Page templates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/custom-macros/index.html">Custom macros</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/php-pages/index.html">PHP pages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/databases/index.html">Databases</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/components/index.html">Components</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups-gitlab/index.html">Super groups with GitLab</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../testing/index.html">Testing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../api/index.html">REST API</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../aws/index.html">AWS</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../contributing/index.html">Contributing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../conventions/index.html">Conventions</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Developers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Templates</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Migrations</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Developers</p>
+          <h1>Migrations</h1>
+        </header>
+        
+        <div class="prose">
+<p>Copying a template into place is not enough. The CMS only knows about a
+template that has a row in <code>#__extensions</code> and a style in <code>#__template_styles</code>.
+A migration puts those rows there.</p>
+<h2 id="why-this-exists">Why this exists</h2>
+<p>Nothing scans the filesystem for templates. The administrator's template list
+is a query against <code>#__extensions</code>, and
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Template/Loader.php"><code>Hubzero\Template\Loader</code></a>
+resolves a request to a directory by joining <code>#__template_styles</code> to that same
+table. A directory with no rows behind it is invisible: it does not appear in
+the administrator, it cannot be picked by a menu item, and <code>?templateStyle=</code>
+cannot reach it.</p>
+<p>The migration is how those rows get written on every hub that installs your
+template, in a form that can be reversed. Writing them by hand with SQL works
+once, on your own machine, and is forgotten the first time the template is
+deployed anywhere else.</p>
+<p>Every extension type can carry a <code>migrations</code> directory, and templates are no
+exception:</p>
+<pre><code>app/templates/northgate/
+    css/
+    html/
+    img/
+    js/
+    language/
+    migrations/
+        Migration20260910102219TplNorthgate.php
+    component.php
+    error.php
+    index.php
+    templateDetails.xml
+    template_thumbnail.png
+    favicon.ico
+</code></pre>
+<p><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Content/Migration.php"><code>Hubzero\Content\Migration</code></a>
+scans every directory under <code>core/templates</code> and <code>app/templates</code> for a
+<code>migrations</code> subdirectory, alongside the component, module and plugin trees.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> See the <a href="../../database/index.html#migrations">migrations chapter</a> for
+the file naming rules, the <code>up()</code>/<code>down()</code> contract and how to run them.</p>
+</aside>
+<h2 id="the-smallest-one-that-works">The smallest one that works</h2>
+<p>A template usually needs one migration, and it usually does one thing: call
+<code>addTemplateEntry()</code>. This is the whole of <code>northgate</code>'s:</p>
+<pre><code class="language-php">&lt;?php
+/**
+ * Migration script for the Northgate site template
+ */
+
+use Hubzero\Content\Migration\Base;
+
+// No direct access
+defined('_HZEXEC_') or die();
+
+class Migration20260910102219TplNorthgate extends Base
+{
+	public function up()
+	{
+		// element, title, client (0 = site), enabled, home
+		$this-&gt;addTemplateEntry('northgate', 'Northgate University', 0, 1, 0);
+	}
+
+	public function down()
+	{
+		$this-&gt;deleteTemplateEntry('northgate', 0);
+	}
+}
+</code></pre>
+<p>Run it:</p>
+<pre><code class="language-bash">php core/bin/muse migration -f -e=tpl_northgate
+</code></pre>
+<p>The template now appears under <strong>Extensions → Templates</strong> and can be made the
+site's default style. Compare the shipped <code>kimera</code> one, which differs only in
+its arguments:</p>
+<pre><code class="language-php">&lt;?php
+/**
+ * @package    hubzero-cms
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
+ * @license    http://opensource.org/licenses/MIT MIT
+ */
+
+use Hubzero\Content\Migration\Base;
+
+// No direct access
+defined('_HZEXEC_') or die();
+
+/**
+ * Migration script for adding entry for Template - Kimera plugin
+ **/
+class Migration20170831000000TplKimera extends Base
+{
+	/**
+	 * Up
+	 **/
+	public function up()
+	{
+		$this-&gt;addTemplateEntry('kimera', 'kimera', 0, 1, 1, null, 1);
+	}
+
+	/**
+	 * Down
+	 **/
+	public function down()
+	{
+		$this-&gt;deleteTemplateEntry('kimera', 0);
+	}
+}
+</code></pre>
+<p><code>up()</code> registers the template; <code>down()</code> removes it again. That is the whole
+job. The macro writes the <code>#__extensions</code> row and, if <code>#__template_styles</code>
+exists, the style row too.</p>
+<h2 id="addtemplateentry">addTemplateEntry</h2>
+<pre><code class="language-php">$this-&gt;addTemplateEntry($element, $name, $client, $enabled, $home, $styles, $protected);
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Argument</th>
+<th>Default</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>$element</code></td>
+<td>—</td>
+<td>The template's directory name. A leading <code>tpl_</code> is stripped.</td>
+</tr>
+<tr>
+<td><code>$name</code></td>
+<td><code>null</code></td>
+<td>The style title shown in the admin. Defaults to a title-cased <code>$element</code>.</td>
+</tr>
+<tr>
+<td><code>$client</code></td>
+<td><code>1</code></td>
+<td><code>0</code> for the site, <code>1</code> for the administrator.</td>
+</tr>
+<tr>
+<td><code>$enabled</code></td>
+<td><code>1</code></td>
+<td>Whether the extension row is enabled.</td>
+</tr>
+<tr>
+<td><code>$home</code></td>
+<td><code>0</code></td>
+<td>Whether this becomes the client's default style. Setting it clears <code>home</code> on every other style for that client.</td>
+</tr>
+<tr>
+<td><code>$styles</code></td>
+<td><code>null</code></td>
+<td>An array of style parameters, JSON-encoded into the style row.</td>
+</tr>
+<tr>
+<td><code>$protected</code></td>
+<td><code>0</code></td>
+<td>Intended to mark the template as a core one.</td>
+</tr>
+</tbody>
+</table>
+<p>Note the default client is the <strong>administrator</strong>. A site template must pass
+<code>0</code> explicitly. This is the mistake to expect:</p>
+<pre><code class="language-php">// Wrong: registers a site template as an administrator style
+$this-&gt;addTemplateEntry('northgate', 'Northgate University');
+</code></pre>
+<p>It fails quietly. The rows are written, the migration reports success, and the
+template never appears in the site template list — because
+<code>getTemplate()</code> filters on <code>client_id</code> in both tables. Filter the administrator
+template list by <strong>Administrator</strong> and there it is, alongside <code>kameleon</code>.</p>
+<p><code>installTemplateEntry()</code> is the same macro with <code>$enabled</code> and <code>$home</code> both
+forced to <code>1</code>:</p>
+<pre><code class="language-php">$this-&gt;installTemplateEntry($element, $name, $client, $styles, $protected);
+</code></pre>
+<p>Use it only when the template genuinely should take over the hub the moment it
+is installed. <code>northgate</code> uses <code>addTemplateEntry</code> with <code>$home = 0</code> so that
+someone chooses the switch-over.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> The <code>$protected</code> argument is accepted but not used.
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Content/Migration/Macros/AddTemplateEntry.php"><code>AddTemplateEntry</code></a>
+writes a literal <code>'protected' =&gt; 0</code> into the <code>#__extensions</code> row, so the
+shipped templates that pass <code>1</code> are registered unprotected. Templates the
+CMS treats as protected are read from <code>core/templates</code>; unprotected ones
+from <code>app/templates</code>, so this matters for a template that lives in <code>core/</code>.</p>
+</aside>
+<h2 id="deletetemplateentry">deleteTemplateEntry</h2>
+<pre><code class="language-php">$this-&gt;deleteTemplateEntry($element, $client);
+</code></pre>
+<p><code>$client</code> defaults to <code>1</code>, so a site template's <code>down()</code> must pass <code>0</code> — the
+same trap in reverse, and this one leaves the rows behind instead of removing
+them. The macro removes the extension row and every style row for that
+template, then — if it has just removed the client's default style — promotes
+the most recently added remaining style to <code>home</code> so the client is never left
+without one.</p>
+<h2 id="when-the-template-does-not-appear">When the template does not appear</h2>
+<p>Four things go wrong here, in rough order of frequency.</p>
+<p><strong>The migration never ran.</strong> <code>muse migration</code> without <code>-f</code> lists what is
+pending and changes nothing. Run it with <code>-f</code>.</p>
+<p><strong>The file name and the class name disagree.</strong> The runner takes the class name
+from the file name and skips the file with a warning —
+<code>Migration20260910102219TplNorthgate does not have a class of the same name</code> —
+rather than failing. A template copied from <code>kimera</code> keeps
+<code>Migration20170831000000TplKimera.php</code> and its class, so the file matches
+itself and runs <em>kimera's</em> registration a second time, or fatals on the
+duplicate class name if the shipped <code>kimera</code> is still installed. Rename both.</p>
+<p><strong>The list is cached.</strong> <code>Loader::getTemplate()</code> caches the whole template list
+per client under <code>com_templates.templates{client_id}</code> for the hub's <code>cachetime</code>
+— fifteen minutes by default. A freshly registered style can take that long to
+become selectable. Clear the cache rather than re-running the migration.</p>
+<p><strong>The row exists and the directory does not.</strong> These are independent. The
+install data ships <code>#__extensions</code> rows for <code>hubbasic</code>, <code>hubbasic2012</code>,
+<code>hubbasic2013</code> and <code>hubbasicadmin</code>, none of which are directories in this
+repository, and they are listed in the administrator all the same. A style
+whose directory has no <code>index.php</code> silently falls back to <code>core/templates/system</code>
+at render time. So a name in the template list is not evidence that a template
+is there.</p>
+<h2 id="other-macros">Other macros</h2>
+<p>The macros live in
+<a href="https://github.com/hubzero/hubzero-cms/tree/2.4-main/core/libraries/Hubzero/Content/Migration/Macros"><code>core/libraries/Hubzero/Content/Migration/Macros</code></a>
+and are reached through <code>__call()</code> on the migration base class, so any file in
+that directory is callable as <code>$this-&gt;methodName()</code>.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> <code>Macros/EnableTemplate.php</code> declares a class named
+<code>EnableComponent</code>, not <code>EnableTemplate</code>, so <code>$this-&gt;enableTemplate()</code> throws
+<code>BadMethodCallException</code>. Enable a template with the <code>$enabled</code> argument to
+<code>addTemplateEntry()</code> instead.</p>
+</aside>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 91d03d0a23</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../index.html" rel="prev"><span>Previous</span>Templates</a><a class="pager__next" href="../languages/index.html" rel="next"><span>Next</span>Languages</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/developers/11-templates/01-migrations.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

@@ -40,13 +40,49 @@ class plgSystemUnapproved extends \Hubzero\Plugin\Plugin
 			$current .= ($task       = Request::getWord('task', false)) ? '.' . $task : '';
 			$current .= ($view       = Request::getWord('view', false)) ? '.' . $view : '';
 
+			// Always let the registration/confirmation controller through so an
+			// unapproved user can still confirm their email address, resend the
+			// confirmation, or change it. Email confirmation and admin approval
+			// are separate gates -- blocking confirmation until approval traps
+			// users who need to confirm first. The hardcoded exceptions match on
+			// the exact option.controller.task.view string, so a stray '.profiles'
+			// view segment (as on /members/register/resend) silently broke the
+			// match and left unapproved users unable to confirm at all.
+			$isRegister = (Request::getWord('option') == 'com_members'
+				&& (Request::getWord('controller') == 'register' || Request::getWord('view') == 'register'));
+
+			// Pull current user data from DB rather than cached session value.
+			// Proper fix should reload the session value
+			$user = \Hubzero\User\User::oneByUsername(User::get('username'));
+
 			// If guest, proceed as normal and they'll land on the login page
-			if (!in_array($current, $exceptions) && !User::get('approved'))
+			if (!in_array($current, $exceptions) && !$isRegister && !$user->get('approved'))
 			{
+				$originalOption = Request::getWord('option', '');
+
 				Request::setVar('option', 'com_members');
 				Request::setVar('task', 'unapproved');
 
 				$this->event->stop();
+
+				// The site's front-page template only renders the component
+				// position on non-default menu items, so the in-place swap above
+				// produces no visible output on the home page -- the user just
+				// sees the landing page instead of the "account pending approval"
+				// notice. On the default menu item, redirect to the real URL so
+				// we land on a page whose template shows the component. The
+				// $originalOption guard keeps this from firing on the redirect
+				// target itself (com_members), so it can't loop.
+				if (!in_array($originalOption, array('com_members')))
+				{
+					$menu = App::get('menu');
+
+					if (is_object($menu->getActive()) && is_object($menu->getDefault())
+						&& $menu->getActive()->id == $menu->getDefault()->id)
+					{
+						App::redirect(Route::url('index.php?option=com_members&task=unapproved'));
+					}
+				}
 			}
 		}
 	}

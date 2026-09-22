@@ -39,7 +39,7 @@ $this->css();
 				<div class="grid">
 					<div class="col span6">
 						<div class="form-group">
-							<label for="field-closed" id="comment-anonymous-label">
+							<label for="field-closed" class="comment-anonymous-label">
 								<input class="option form-control" type="checkbox" name="fields[closed]" id="field-closed" value="3"<?php if ($this->category->get('closed')) { echo ' checked="checked"'; } ?> />
 								<?php echo Lang::txt('COM_FORUM_FIELD_CLOSED'); ?>
 							</label>
@@ -50,8 +50,7 @@ $this->css();
 							<label for="field-access">
 								<?php echo Lang::txt('COM_FORUM_FIELD_VIEW_ACCESS'); ?>
 								<select class="form-control" name="fields[access]" id="field-access">
-									<option value="1"<?php if ($this->category->get('access') == 1) { echo ' selected="selected"'; } ?>><?php echo Lang::txt('COM_FORUM_FIELD_READ_ACCESS_OPTION_PUBLIC'); ?></option>
-									<option value="2"<?php if ($this->category->get('access') == 2) { echo ' selected="selected"'; } ?>><?php echo Lang::txt('COM_FORUM_FIELD_READ_ACCESS_OPTION_REGISTERED'); ?></option>
+									<?php echo Html::select('options', Html::access('assetgroups'), 'value', 'text', $this->category->get('access')); ?>
 								</select>
 							</label>
 						</div>

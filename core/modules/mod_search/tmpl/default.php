@@ -7,10 +7,13 @@
 
 // no direct access
 defined('_HZEXEC_') or die;
+
+$inputId = 'searchword' . (self::$instances > 1 ? $this->module->id : '');
+$formId  = 'searchform' . (self::$instances > 1 ? $this->module->id : '');
 ?>
-<form action="<?php echo Route::url('index.php?option=com_search'); ?>" method="get" id="searchform<?php echo (self::$instances) > 1 ? $this->module->id : ''; ?>" class="<?php echo $moduleclass_sfx; ?>searchform">
+<form action="<?php echo Route::url('index.php?option=com_search'); ?>" method="get" id="searchform<?php echo (self::$instances) > 1 ? $this->module->id : ''; ?>" class="<?php echo $moduleclass_sfx; ?>searchform" role="search" aria-label="<?php echo $text; ?>">
 	<fieldset>
-		<legend><?php echo $text; ?></legend>
+		<legend aria-hidden="true"><?php echo $text; ?></legend>
 
 		<?php
 			$output  = '<label for="searchword' . (self::$instances > 1 ? $this->module->id : '') . '" class="' . $moduleclass_sfx . 'searchword-label" id="searchword-label' . (self::$instances > 1 ? $this->module->id : '') . '">' . $label . '</label>';

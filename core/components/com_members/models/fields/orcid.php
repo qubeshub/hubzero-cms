@@ -12,6 +12,8 @@ use Document;
 use Route;
 use Lang;
 use User;
+use Component;
+use Request;
 
 /**
  * Supports a URL text field
@@ -62,8 +64,8 @@ class Orcid extends Text
 
 		$html = array();
 
-		$html[] = '<div class="grid">';
-		$html[] = '	<div class="col span9">';
+		$html[] = '<div class="orcid-field">';
+		$html[] = '	<div class="orcid-input">';
 		$html[] = '		<input ' . $attr . ' placeholder="####-####-####-####" />';
 		$html[] = '		<input type="hidden" name="base_uri" id="base_uri" value="' . rtrim(Request::base(true), '/') . '" />';
 		$html[] = '	</div>';
@@ -77,47 +79,49 @@ class Orcid extends Text
 		{
 			$profile = \Components\Members\Models\Member::oneOrFail($userID);
 		}
-		
-		$html[] = '	<div class="col span3 omega">';
+
+		$oauthConfigured = ($srv !== 'public' && !empty($clientID) && !empty($redirectURI));
+		$isSandbox = ($srv === 'sandbox');
+
+		$html[] = '	<div class="orcid-actions">';
 		if ($userID != 0 && !empty($profile->get('orcid')))
 		{
 			$html[] = '<p>' . Lang::txt('COM_MEMBERS_PROFILE_ORCID_ID_AUTHORIZED') . '</p>';
 		}
-		else
+		elseif ($oauthConfigured)
 		{
 			$html[] = '     <a id="authorize-orcid" class="btn" href="https://';
-			if ($config->get('orcid_service', 'members') == 'sandbox')
+			if ($isSandbox)
 			{
 				$html[] = 'sandbox.';
 			}
 			$html[] = 'orcid.org/oauth/authorize?client_id=' . $clientID . htmlspecialchars('&') . 'response_type=code' . htmlspecialchars('&') . 'scope=/authenticate' . htmlspecialchars('&'). 'redirect_uri=' . urlencode($redirectURI)
-			. '" rel="nofollow external">' . '<img src="' . Request::root(true) . 'core/components/com_members/site/assets/img/orcid_16x16.png" class="logo" width="20" height="20" alt="iD"/>'
-			. Lang::txt('COM_MEMBERS_PROFILE_ORCID_CREATE_OR_CONNECT') . '</a>';
+			. '" rel="nofollow external">' . '<img src="' . Request::root(true) . 'core/components/com_members/site/assets/img/orcid_16x16.png" class="logo" width="20" height="20" alt="" role="presentation"/>'
+			. ' ' . Lang::txt('COM_MEMBERS_PROFILE_ORCID_CREATE_OR_CONNECT') . '</a>';
 		}
-		$html[] = '	</div>';
-		
+
 		// Grant permission to manage ORCID record
 		$permissionURI = $config->get('orcid_' . $srv . '_permission_uri', '');
-		$html[] = '	<div class="col span3 omega">';
+		$permissionConfigured = ($oauthConfigured && !empty($permissionURI));
 		if ($userID != 0 && !empty($profile->get('orcid')) && !empty($profile->get('access_token')))
 		{
 			$html[] = '<p>' . Lang::txt('COM_MEMBERS_PROFILE_ORCID_PERMISSION_AUTHORIZED') . '</p>';
 		}
-		else
+		elseif ($permissionConfigured)
 		{
 			$html[] = '     <a id="grant-orcid-management-permission" class="btn" href="https://';
-			if ($config->get('orcid_service', 'members') == 'sandbox')
+			if ($isSandbox)
 			{
 				$html[] = 'sandbox.';
 			}
 			$html[] = 'orcid.org/oauth/authorize?client_id=' . $clientID . htmlspecialchars('&') . 'response_type=code' . htmlspecialchars('&') . 'scope=/read-limited%20/activities/update%20/person/update' . htmlspecialchars('&'). 'redirect_uri=' . urlencode($permissionURI)
-			. '" rel="nofollow external">' . '<img src="' . Request::root(true) . 'core/components/com_members/site/assets/img/orcid_16x16.png" class="logo" width="20" height="20" alt="iD"/>'
-			. Lang::txt('COM_MEMBERS_PROFILE_ORCID_GRANT_PERMISSION') . '</a>';
+			. '" rel="nofollow external">' . '<img src="' . Request::root(true) . 'core/components/com_members/site/assets/img/orcid_16x16.png" class="logo" width="20" height="20" alt="" role="presentation"/>'
+			. ' ' . Lang::txt('COM_MEMBERS_PROFILE_ORCID_GRANT_PERMISSION') . '</a>';
 		}
 		$html[] = '	</div>';
-		
+
 		$html[] = '</div>';
-		$html[] = '<p><img src="' . Request::root(true)  . 'core/components/com_members/site/assets/img/orcid-logo.png" width="80" alt="ORCID" /> ' . Lang::txt('COM_MEMBERS_PROFILE_ORCID_ABOUT') . '</p>';
+		$html[] = '<p class="orcid-about"><img src="' . Request::root(true)  . 'core/components/com_members/site/assets/img/orcid-logo.png" width="80" alt="" role="presentation" /> ' . Lang::txt('COM_MEMBERS_PROFILE_ORCID_ABOUT') . '</p>';
 
 		Behavior::framework(true);
 		Behavior::modal();

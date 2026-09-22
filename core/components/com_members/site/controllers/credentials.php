@@ -16,12 +16,38 @@ use Route;
 use Lang;
 use User;
 use App;
+use Log;
 
 /**
  * Members controller class for profiles
  */
 class Credentials extends SiteController
 {
+	/**
+	 * Finish a recovery step. When the request is flagged no_html -- the AJAX
+	 * modal flow the site's forgot-username/forgot-password forms use -- emit a
+	 * { success, message } JSON envelope and stop; otherwise perform the normal
+	 * redirect. Mirrors settingpasswordTask's existing no_html handling.
+	 *
+	 * @param   string  $url      Destination URL (normal, non-AJAX flow)
+	 * @param   string  $message  User-facing message
+	 * @param   string  $type     Message type ('passed'/'message' = success, 'warning'/'error' = failure)
+	 * @return  void
+	 */
+	protected function finish($url, $message = '', $type = 'message')
+	{
+		if (Request::getInt('no_html', 0))
+		{
+			echo json_encode(array(
+				'success' => !in_array($type, array('error', 'warning'), true),
+				'message' => $message
+			));
+			exit;
+		}
+
+		App::redirect($url, $message, $type);
+	}
+
 	/**
 	 * Default task
 	 *
@@ -61,7 +87,7 @@ class Credentials extends SiteController
 		// Get the email address
 		if (!$email = trim(Request::getString('email', false)))
 		{
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=remind', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_MISSING_EMAIL'),
 				'warning'
@@ -72,7 +98,7 @@ class Credentials extends SiteController
 		// Make sure it looks like a valid email address
 		if (!\Hubzero\Utility\Validate::email($email))
 		{
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=remind', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_INVALID_EMAIL'),
 				'warning'
@@ -86,7 +112,7 @@ class Credentials extends SiteController
 		// Make sure we have at least one
 		if ($users->count() < 1)
 		{
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=remind', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_USER_NOT_FOUND'),
 				'warning'
@@ -127,7 +153,7 @@ class Credentials extends SiteController
 		{
 			Log::error('Members username reminder email failed[1]: ' . Lang::txt('Failed to mail %s', $email));
 
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=remind', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_FIAILED_TO_SEND_MAIL'),
 				'warning'
@@ -136,7 +162,7 @@ class Credentials extends SiteController
 		}
 
 		// Everything went well...go to the login page
-		App::redirect(
+		$this->finish(
 			Route::url('index.php?option=com_login', false),
 			Lang::txt('COM_MEMBERS_CREDENTIALS_EMAIL_SENT'),
 			'passed'
@@ -167,7 +193,7 @@ class Credentials extends SiteController
 		// Grab the incoming username
 		if (!$username = trim(Request::getString('username', false)))
 		{
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=reset', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_MISSING_USERNAME'),
 				'warning'
@@ -192,7 +218,7 @@ class Credentials extends SiteController
 
 		if (!\Components\Members\Helpers\Utility::$validator($username))
 		{
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=reset', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_INVALID_USERNAME'),
 				'warning'
@@ -206,7 +232,7 @@ class Credentials extends SiteController
 		// Make sure we have at least one and not more than one
 		if ($user->count() < 1)
 		{
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=reset', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_USER_NOT_FOUND'),
 				'warning'
@@ -215,7 +241,7 @@ class Credentials extends SiteController
 		}
 		else if ($user->count() > 1)
 		{
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=reset', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_MULTIPLE_RESULTS'),
 				'warning'
@@ -229,7 +255,7 @@ class Credentials extends SiteController
 		// Make sure the user isn't blocked
 		if ($user->get('block'))
 		{
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=reset', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_USER_NOT_FOUND'),
 				'warning'
@@ -240,7 +266,7 @@ class Credentials extends SiteController
 		// Make sure the user isn't a super admin
 		if ($user->authorise('core.admin'))
 		{
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=reset', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_USER_IS_SUPER'),
 				'warning'
@@ -251,7 +277,7 @@ class Credentials extends SiteController
 		// Make sure the user has not exceeded the reset limit
 		if ($this->hasExceededResetLimit($user))
 		{
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=reset', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_EXCEEDED_LIMIT'),
 				'warning'
@@ -302,7 +328,7 @@ class Credentials extends SiteController
 		{
 			Log::error('Members password reset email failed[2]: ' . Lang::txt('Failed to mail %s', $user->get('email')));
 
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=remind', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_FIAILED_TO_SEND_MAIL'),
 				'warning'
@@ -314,7 +340,7 @@ class Credentials extends SiteController
 		User::setState('com_members.reset.user', $user->get('id'));
 
 		// Everything went well...go to the token verification page
-		App::redirect(
+		$this->finish(
 			Route::url('index.php?option=' . $this->_option . '&task=verify', false),
 			Lang::txt('COM_MEMBERS_CREDENTIALS_EMAIL_SENT'),
 			'passed'
@@ -345,7 +371,7 @@ class Credentials extends SiteController
 		// Grab the token (not to be confused with the CSRF token above!)
 		if (!$token = trim(Request::getString('token', false)))
 		{
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=verify', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_MISSING_TOKEN'),
 				'warning'
@@ -363,7 +389,7 @@ class Credentials extends SiteController
 		}
 		catch (Exception $e)
 		{
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=reset', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_TOKENS_MISSING'),
 				'warning'
@@ -375,7 +401,7 @@ class Credentials extends SiteController
 
 		if (!isset($parts[1]))
 		{
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=verify', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_USER_NOT_FOUND'),
 				'warning'
@@ -389,7 +415,7 @@ class Credentials extends SiteController
 		// Verify the token
 		if (!($crypt == $testcrypt))
 		{
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=verify', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_USER_NOT_FOUND'),
 				'warning'
@@ -400,7 +426,7 @@ class Credentials extends SiteController
 		// Make sure the user isn't blocked
 		if ($user->get('block'))
 		{
-			App::redirect(
+			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=verify', false),
 				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_USER_NOT_FOUND'),
 				'warning'
@@ -412,7 +438,7 @@ class Credentials extends SiteController
 		User::setState('com_members.reset.token', $crypt . ':' . $salt);
 
 		// Everything went well...go to the actual change password page
-		App::redirect(
+		$this->finish(
 			Route::url('index.php?option=' . $this->_option . '&task=setpassword', false),
 			Lang::txt('COM_MEMBERS_CREDENTIALS_TOKEN_CONFIRMED'),
 			'passed'

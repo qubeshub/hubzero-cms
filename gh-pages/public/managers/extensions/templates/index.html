@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Template Manager · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="A template controls how a page looks: the skeleton HTML, the stylesheets, the scripts, and the module positions the page offers. The Template Manager sets…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/extensions/templates/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Template Manager</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#what-this-is-not">What this is not</a></li>
+<li class="toc__item toc__item--l2"><a href="#templates-and-styles">Templates and styles</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-styles-tab">The Styles tab</a></li>
+<li class="toc__item toc__item--l3"><a href="#toolbar">Toolbar</a></li>
+<li class="toc__item toc__item--l3"><a href="#editing-a-style">Editing a style</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-templates-tab">The Templates tab</a></li>
+<li class="toc__item toc__item--l2"><a href="#module-positions">Module positions</a></li>
+<li class="toc__item toc__item--l2"><a href="#changing-the-administrator-colours">Changing the administrator colours</a></li>
+<li class="toc__item toc__item--l2"><a href="#giving-kimera-a-background-image">Giving kimera a background image</a></li>
+<li class="toc__item toc__item--l2"><a href="#options">Options</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Extensions</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Template Manager</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Template Manager</h1>
+        </header>
+        
+        <div class="prose">
+<p>A template controls how a page looks: the skeleton HTML, the stylesheets, the
+scripts, and the module positions the page offers. The Template Manager sets
+which template the site and the administrator interface use, tunes each
+template's parameters, and edits template source files.</p>
+<p>Select <strong>Extensions</strong> → <strong>Template Manager</strong>, or go to
+<code>/administrator/index.php?option=com_templates</code>. The screen has two tabs,
+<strong>Styles</strong> and <strong>Templates</strong>. Styles opens first.</p>
+<p>Most hubs open this screen exactly twice: once just after installation, to
+move the site off the splash template it is installed with, and once to pick
+administrator colours that distinguish the live hub from the test one. After
+that it is left alone for years. If your hub already looks the way you expect
+and the administrator interface is a colour you can live with, you can stop
+here.</p>
+<h2 id="what-this-is-not">What this is not</h2>
+<p>It is not where the site's appearance is designed. Changing colours,
+typography or layout beyond the handful of parameters a template exposes
+means editing or writing a template, which belongs in <code>app/templates/</code> and is
+a developer's job; see <a href="../../../developers/templates/overrides/index.html">Output
+overrides</a>.</p>
+<p>It is not where module positions are chosen either. The template <em>offers</em>
+positions; the <a href="../modules/index.html">Module Manager</a> puts modules into them.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Making a different style the default changes the site for
+every visitor from that moment, and it is not only a change of appearance.
+Templates declare different positions, so a module sitting in a position
+the new template does not draw disappears without a word. Check the site
+immediately afterwards, and see <a href="../modules/index.html#positions">Positions</a>.</p>
+</aside>
+<h2 id="templates-and-styles">Templates and styles</h2>
+<p>A <strong>template</strong> is the code: a directory containing <code>index.php</code>,
+<code>templateDetails.xml</code>, stylesheets, and optionally layout overrides. A
+<strong>style</strong> is a saved set of one template's parameters. You assign styles, not
+templates, and one template can have as many styles as you want — a blue one
+and a green one, say — with different menu items using each.</p>
+<p>Templates ship in <a href="https://github.com/hubzero/hubzero-cms/tree/2.4-main/core/templates"><code>core/templates/</code></a>; a hub's own
+go in <code>app/templates/</code>, which takes precedence over a core template of the
+same name.</p>
+<table>
+<thead>
+<tr>
+<th>Template</th>
+<th>Client</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>hubzero</strong></td>
+<td>Site</td>
+<td>The current site template, in <code>app/templates/</code>. Declares <code>breadcrumbs</code> and <code>endpage</code> as positions and drops <code>introblock</code>.</td>
+</tr>
+<tr>
+<td><strong>kimera</strong></td>
+<td>Site</td>
+<td>The older standard site template. Parameters for header style, primary and secondary colour, background pattern or image.</td>
+</tr>
+<tr>
+<td><strong>lucent</strong></td>
+<td>Site</td>
+<td>An older site template again. Same declared positions as kimera, no parameters.</td>
+</tr>
+<tr>
+<td><strong>Welcome</strong></td>
+<td>Site</td>
+<td>A pre-launch splash template. It draws no modules at all. Its <strong>Template</strong> parameter names the template to switch to, <code>kimera</code> by default.</td>
+</tr>
+<tr>
+<td><strong>kameleon (admin)</strong></td>
+<td>Administrator</td>
+<td>The administrator template. Parameters for header style and colour theme.</td>
+</tr>
+</tbody>
+</table>
+<p><code>core/templates/system</code> is not a selectable template. It holds the shared
+error and module-chrome layouts every template falls back on.</p>
+<h2 id="the-styles-tab">The Styles tab</h2>
+<p>A style is what is actually assigned, so this tab is where the site's
+appearance is decided. Three styles ship in the install data:</p>
+<table>
+<thead>
+<tr>
+<th>Style</th>
+<th>Template</th>
+<th>Client</th>
+<th>Default on a fresh install</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Welcome Template</strong></td>
+<td>welcome</td>
+<td>Site</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>kameleon (admin)</strong></td>
+<td>kameleon</td>
+<td>Administrator</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>HUBzero Standard Site Template - 2015</strong></td>
+<td>kimera</td>
+<td>Site</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>The site default being <strong>Welcome Template</strong> is the single most surprising
+thing about a new hub. That template draws no modules at all, so the hub
+looks empty until the default is moved to the kimera style — which is what
+the <strong>Get started</strong> link on the splash page does, and what selecting the
+kimera style and pressing <strong>Default</strong> here does. See <a href="../modules/index.html#why-a-fresh-hub-looks-empty">Why a fresh hub looks
+empty</a>.</p>
+<p>The list shows every saved style. Its columns:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Preview</td>
+<td>For a site style, a link that opens the style in a new tab. Administrator styles cannot be previewed.</td>
+</tr>
+<tr>
+<td><strong>Style</strong></td>
+<td>The style name. Click it to edit.</td>
+</tr>
+<tr>
+<td><strong>Client</strong></td>
+<td>Site or Administrator.</td>
+</tr>
+<tr>
+<td><strong>Template</strong></td>
+<td>The template the style belongs to.</td>
+</tr>
+<tr>
+<td><strong>Default</strong></td>
+<td>Whether this is the default style for its client.</td>
+</tr>
+<tr>
+<td><strong>Assigned</strong></td>
+<td>Whether any menu items point at this style.</td>
+</tr>
+<tr>
+<td><strong>ID</strong></td>
+<td>The row's primary key.</td>
+</tr>
+</tbody>
+</table>
+<p>A search box matches the style name; two drop-downs filter by
+<strong>- Select Template -</strong> and by client.</p>
+<p>The Preview links only appear when <strong>Preview Module Positions</strong> is enabled in
+<strong>Options</strong>.</p>
+<h3 id="toolbar">Toolbar</h3>
+<table>
+<thead>
+<tr>
+<th>Button</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Default</strong></td>
+<td>Makes the selected style the default for its client.</td>
+</tr>
+<tr>
+<td><strong>Edit</strong></td>
+<td>Opens the selected style.</td>
+</tr>
+<tr>
+<td><strong>Duplicate</strong></td>
+<td>Copies the selected styles.</td>
+</tr>
+<tr>
+<td><strong>Delete</strong></td>
+<td>Deletes the selected styles. The default style cannot be deleted.</td>
+</tr>
+<tr>
+<td><strong>Options</strong></td>
+<td>Component settings and permissions.</td>
+</tr>
+<tr>
+<td><strong>Help</strong></td>
+<td>Opens the built-in help screen.</td>
+</tr>
+</tbody>
+</table>
+<p>There is no <strong>New</strong> button. New styles are made by duplicating an existing
+one.</p>
+<h3 id="editing-a-style">Editing a style</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Style Name</strong></td>
+<td>Required.</td>
+</tr>
+<tr>
+<td><strong>Default</strong></td>
+<td>For a site style, <strong>No</strong> or <strong>All</strong>. For an administrator style, a Yes/No radio.</td>
+</tr>
+<tr>
+<td><strong>Menus assignment</strong></td>
+<td>Site styles only, and only if you can edit menus and change state. Ticks the menu items that should use this style.</td>
+</tr>
+</tbody>
+</table>
+<p>The right-hand column shows the style's ID, the template's description from
+<code>templateDetails.xml</code>, the template name and the client, none of them
+editable. Below them the template's own parameters appear in collapsible
+panels — <strong>Basic Options</strong> and <strong>Advanced Options</strong> for kimera. A template
+with no parameters shows <em>No options found for this template.</em></p>
+<h2 id="the-templates-tab">The Templates tab</h2>
+<p>This tab lists the installed templates themselves, with a thumbnail, the
+template name, the client, and the version, date and author read from
+<code>templateDetails.xml</code>. Its only toolbar buttons are <strong>Options</strong> and <strong>Help</strong>;
+templates are not created, enabled or deleted here.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The list comes from the extensions table, not from the
+filesystem, and the shipped install data registers four templates whose
+directories are not in the tree: <code>hubbasic</code>, <code>hubbasic2012</code>, <code>hubbasic2013</code>
+and <code>hubbasicadmin</code>. They appear here with no version, date or author,
+because there is no manifest to read them from. They are leftovers from
+older releases. Ignore them, and do not assign a style to one.</p>
+</aside>
+<p>Click a template name to open <strong>Template Manager: Customise Template</strong>. That
+screen lists the template's editable files in three groups, each entry a link
+to a plain-text source editor with <strong>Save</strong>, <strong>Save &amp; Close</strong> and <strong>Cancel</strong>:</p>
+<ul>
+<li><strong>Template Master Files</strong> — the page skeletons the platform looks for by
+name: <code>index.php</code>, <code>error.php</code>, <code>print.php</code>, <code>component.php</code>, <code>offline.php</code>,
+<code>group.php</code>, <code>email.php</code>.</li>
+<li><strong>Assets</strong> — every other <code>.css</code>, <code>.less</code>, <code>.scss</code>, <code>.js</code> or <code>.php</code> file in
+the template.</li>
+<li><strong>Overrides</strong> — everything under the template's <code>html/</code> directory, which is
+where a template replaces a component's or module's own layout.</li>
+</ul>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> Files under <code>core/</code> belong to the platform and are replaced on
+upgrade. Edit a template only after copying it into <code>app/templates/</code>.</p>
+</aside>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The <strong>Copy Template</strong> form on this screen does not work. It posts
+a <code>copy</code> task that the templates controller does not implement, so the
+submission silently returns you to the list without creating anything. Copy
+a template on the filesystem instead.</p>
+</aside>
+<h2 id="module-positions">Module positions</h2>
+<p>Each template declares the positions it offers in <code>templateDetails.xml</code>. The
+<a href="../modules/index.html">Module Manager</a> reads that list when you pick a position for
+a module. kimera and lucent both declare:</p>
+<p><code>footer</code>, <code>banner</code>, <code>welcome</code>, <code>left</code>, <code>right</code>, <code>helppane</code>, <code>user3</code>,
+<code>introblock</code>, <code>notices</code>, <code>search</code></p>
+<p>hubzero declares:</p>
+<p><code>footer</code>, <code>banner</code>, <code>welcome</code>, <code>left</code>, <code>right</code>, <code>helppane</code>, <code>user3</code>,
+<code>notices</code>, <code>search</code>, <code>breadcrumbs</code>, <code>endpage</code></p>
+<p>kameleon declares:</p>
+<p><code>menu</code>, <code>submenu</code>, <code>toolbar</code>, <code>title</code>, <code>status</code>, <code>icon</code>, <code>cpanel</code>, <code>debug</code></p>
+<p>To see where they land, set <strong>Preview Module Positions</strong> to Enabled in
+<strong>Options</strong> and append <code>?tp=1</code> to a site URL. Every position is then drawn as
+a labelled outline, including empty ones.</p>
+<h2 id="changing-the-administrator-colours">Changing the administrator colours</h2>
+<ol>
+<li>Go to <strong>Extensions</strong> → <strong>Template Manager</strong>.</li>
+<li>On the <strong>Styles</strong> tab, select <strong>kameleon (admin)</strong> and choose <strong>Edit</strong>.</li>
+<li>Set <strong>Header</strong> to <strong>Light</strong> or <strong>Dark</strong>. Light gives a light toolbar and a
+coloured menu; Dark gives the reverse.</li>
+<li>Set <strong>Theme</strong> to one of the named colours, or to
+<strong>- Custom (color specified below) -</strong> and put a hex value in <strong>Custom
+color</strong>. The value must start with <code>#</code>.</li>
+<li>Select <strong>Save &amp; Close</strong>.</li>
+</ol>
+<h2 id="giving-kimera-a-background-image">Giving kimera a background image</h2>
+<ol>
+<li>Upload the image through <strong>Content</strong> → <strong>Media Manager</strong>.</li>
+<li>Go to <strong>Extensions</strong> → <strong>Template Manager</strong> and edit the <strong>kimera</strong> style.</li>
+<li>Open <strong>Advanced Options</strong> and put the image's path, relative to the
+document root, in <strong>Background image</strong>.</li>
+<li>Select <strong>Save &amp; Close</strong>.</li>
+</ol>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> A value in <strong>Background image</strong> overrides whatever
+<strong>Background pattern</strong> is set to under <strong>Basic Options</strong>.</p>
+</aside>
+<h2 id="options">Options</h2>
+<p><strong>Options</strong> has one setting, <code>template_positions_display</code>
+(<strong>Preview Module Positions</strong>, disabled by default), plus a permissions tab.
+See <a href="../../../reference/configuration/components/templates/index.html">the generated reference</a>.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../modules/index.html" rel="prev"><span>Previous</span>Module Manager</a><a class="pager__next" href="../plugins/index.html" rel="next"><span>Next</span>Plug-in Manager</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/10-extensions/02-templates.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

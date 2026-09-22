@@ -10,10 +10,13 @@ namespace Components\Tools\Helpers;
 use Exception;
 use Component;
 use Request;
+use Hubzero\Utility\Validate;
+use Config;
 use User;
 use Lang;
 use App;
 use stdClass;
+use Date;
 
 /**
  * Contains functions used by multiple Session/Tool modules
@@ -124,7 +127,7 @@ class Utils
 	public static function createHomeDirectory($username)
 	{
 		$dbname = \App::get('config')->get('database.db');
-		$command = "create_userhome '{$username}'";
+		$command = "create_userhome " . escapeshellarg($username);
 		//$cmd = "/bin/sh " . dirname(__DIR__) . "/scripts/mw {$command} dbname={$dbname} 2>&1 </dev/null";
 		$cmd = "/bin/sh " . dirname(__DIR__) . "/scripts/mw {$command} 2>&1 </dev/null";
 
@@ -509,7 +512,7 @@ class Utils
 		switch ($export_control)
 		{
 			case 'us':
-				if ($country != 'us')
+				if ($country != 'us' && !\Hubzero\Geocode\Geocode::is_iplocation($ip, 'pu'))
 				{
 					$export_access->valid = 0;
 					$export_access->error->message = Lang::txt('COM_TOOLS_ERROR_ACCESS_DENIED_EXPORT_USA_ONLY');
@@ -641,7 +644,9 @@ class Utils
 	{
 		$retval = true; // Assume success.
 
-		$comm = escapeshellcmd($comm);
+		// Note: callers are responsible for escaping individual argument values
+		// with escapeshellarg() before building $comm. Do not apply escapeshellcmd()
+		// here — it would corrupt the quoting produced by escapeshellarg().
 		$dbname = \App::get('config')->get('database.db');
 
 		//$cmd = "/bin/sh ". dirname(__DIR__) . "/scripts/mw $comm dbname=$dbname 2>&1 </dev/null";
@@ -649,72 +654,98 @@ class Utils
 
 		exec($cmd, $results, $status);
 
-		// Check exec status
-		if ($status != 0)
+		$execFailed = ($status != 0);
+		if ($execFailed)
 		{
-			// Uh-oh. Something went wrong...
 			$retval = false;
-			//throw new \Exception($results[0]);
 		}
 
 		if (is_array($results))
 		{
-			$results = implode('', $results);
-		}
-		$results = trim($results);
-
-		try
-		{
-			$output = @json_decode($results);
-
-			if ($output === null && json_last_error() !== JSON_ERROR_NONE)
+			// Maxwell may emit non-JSON lines before the JSON payload.
+			// Find the first line that decodes successfully instead of
+			// concatenating everything (which would produce invalid JSON).
+			$output = null;
+			foreach ($results as $line)
 			{
-				throw new \Exception(Lang::txt('COM_TOOLS_ERROR_BAD_DATA'));
-			}
-		}
-		catch (\Exception $e)
-		{
-			$output = new stdClass();
-
-			// If it's a new session, catch the session number...
-			if ($retval && preg_match("/^Session is ([0-9]+)/", $results, $sess))
-			{
-				$retval = $sess[1];
-				$output->session = $sess[1];
-			}
-			else
-			{
-				$patterns = array(
-					'id' => 'applet id=(["\'])(?:(?=(\\?))\2.)*?\1',
-					'code' => 'code=(["\'])(?:(?=(\\?))\2.)*?\1',
-					'archive' => 'archive=(["\'])(?:(?=(\\?))\2.)*?\1',
-					'class' => 'class=(["\'])(?:(?=(\\?))\2.)*?\1',
-					'height' => 'height=\"(\d+)\"',
-					'width' => 'width=\"(\d+)\"',
-					'height' => 'height=\"(\d+)\"',
-					'port' => '<param name=\"PORT\" value=\"?(\d+)\"?>',
-					'host' => '<param name=\"HOST\" value=\"?([^>]+)\"?>',
-					'encpassword' => '<param name=\"ENCPASSWORD\" value=\"?([^>]+)\"?>',
-					'name' => '<param name=\"name\" value=\"?([^>]+)\"?>',
-					'connect' => '<param name=\"CONNECT\" value=\"?([^>]+)\"?>',
-					'encoding' => '<param name=\"ENCODING\" value=\"?([^>]+)\"?>',
-					'show_local_cursor' => '<param name=\"ShowLocalCursor\" value=\"?([^>]+)\"?>',
-					'trust_all_vnc_certs' => '<param name=\"trustAllVncCerts\" value=\"?([^>]+)\"?>',
-					'offer_relogin' => '<param name=\"Offer relogin\" value=\"?([^>]+)\"?>',
-					'disable_ssl' => '<param name=\"DisableSSL\" value=\"?([^>]+)\"?>',
-					'permissions' => '<param name=\"permissions\" value=\"?([^>]+)\"?>',
-					'view_only' => '<param name=\"View Only\" value=\"?([^>]+)\"?>',
-					'show_controls' => '<param name=\"Show Controls\" value=\"?([^>]+)\"?>',
-					'debug' => '<param name=\"Debug\" value=\"?([^>]+)\"?>'
-				);
-				foreach ($patterns as $key => $pattern)
+				$decoded = json_decode(trim($line));
+				if ($decoded !== null)
 				{
-					if (preg_match("/$pattern/i", $results, $param))
+					$output = $decoded;
+					break;
+				}
+			}
+			if ($output === null)
+			{
+				// Fall back to concatenated output in case the JSON spans lines.
+				$results = trim(implode('', $results));
+				$output = json_decode($results);
+			}
+		}
+		else
+		{
+			$output = json_decode(trim($results));
+		}
+
+		if ($execFailed)
+		{
+			$defs = array_filter(array_map('trim', explode(',', Component::params('com_support')->get('emails', '{config.mailfrom}'))));
+			if ($defs)
+			{
+				$sitename = Config::get('sitename');
+				$mailfrom = Config::get('mailfrom');
+
+				$fields = [
+					'Command'           => $comm,
+					'User message'      => $output->user_message      ?? null,
+					'Technical message' => $output->technical_message ?? null,
+					'Hostname'          => $output->hostname           ?? null,
+					'Session'           => $output->session            ?? null,
+					'Username'          => $output->username           ?? null,
+					'Stack dump'        => $output->stack_dump         ?? null,
+				];
+
+				$body = 'An error occurred invoking maxwell.' . "\r\n\r\n";
+				foreach ($fields as $label => $value)
+				{
+					if ($value !== null)
 					{
-						$output->$key = trim($param[1], '"');
+						$body .= $label . ': ' . $value . "\r\n";
+					}
+				}
+
+				$message = new \Hubzero\Mail\Message();
+				$message->setSubject($sitename . ': maxwell error');
+				$message->addFrom($mailfrom, $sitename);
+				$message->addPart($body, 'text/plain');
+
+				foreach ($defs as $def)
+				{
+					if ($def === '{config.mailfrom}')
+					{
+						$def = $mailfrom;
+					}
+					if (Validate::email($def))
+					{
+						$message->setTo([$def]);
+						$message->send();
 					}
 				}
 			}
+		}
+
+		if (isset($output->exit_code) && (bool)$output->exit_code !== $execFailed)
+		{
+			\Log::warning('maxwell shell exit code and JSON exit_code disagree.'
+				. ' shell_exit_code=' . $status
+				. ' json_exit_code=' . $output->exit_code
+				. ' command=' . $comm
+				. (isset($output->user_message)      ? ' user_message='      . $output->user_message      : '')
+				. (isset($output->technical_message) ? ' technical_message=' . $output->technical_message : '')
+				. (isset($output->username)          ? ' username='          . $output->username          : '')
+				. (isset($output->session)           ? ' session='           . $output->session           : '')
+				. (isset($output->stack_dump)        ? ' stack_dump='        . $output->stack_dump        : '')
+			);
 		}
 
 		if ($output == null || (is_object($output) && count(get_object_vars($output)) <= 0))
@@ -722,6 +753,6 @@ class Utils
 			$retval = false;
 		}
 
-		return $retval;
+		return (bool)$retval;
 	}
 }

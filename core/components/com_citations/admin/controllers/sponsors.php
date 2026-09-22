@@ -15,6 +15,7 @@ use Request;
 use Notify;
 use Lang;
 use App;
+use User;
 
 /**
  * Controller class for citation types
@@ -133,7 +134,7 @@ class Sponsors extends AdminController
 	public function removeTask()
 	{
 		// Check for request forgeries
-		Request::checkToken();
+		Request::checkToken(['get', 'post']);
 
 		if (!User::authorise('core.delete', $this->_option))
 		{

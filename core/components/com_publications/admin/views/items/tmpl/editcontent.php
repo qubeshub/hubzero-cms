@@ -93,6 +93,10 @@ if ($tmpl != 'component')
 								<p>[<?php echo $attach->type; ?>] <?php echo $attach->path; ?></p>
 								<label><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_ATTACHMENT_TITLE'); ?>:</label>
 								<input type="text" name="attachments[<?php echo $attach->id; ?>][title]" maxlength="250" value="<?php echo $attach->title; ?>" />
+								<?php if ($attach->role == 3) { ?>
+									<label><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_ATTACHMENT_GALLERY_DESCRIPTION'); ?>:</label>
+									<textarea name="attachments[<?php echo $attach->id; ?>][attribs]" rows="10" cols="60" maxlength="5000" value="<?php echo $attach->attribs; ?>" placeholder="Enter up to 5000 characters..."><?php echo $attach->attribs;; ?></textarea>
+								<?php } ?>
 							</div>
 						<?php } ?>
 					<?php } else { ?>
@@ -119,8 +123,8 @@ if ($tmpl != 'component')
 					<tr>
 						<td class="key"><?php echo Lang::txt('COM_PUBLICATIONS_ELEMENT_ROLE'); ?></td>
 						<td>
-							<?php echo $element->params->role == 1 ? Lang::txt('COM_PUBLICATIONS_ELEMENT_ROLE_PRIMARY') : Lang::txt('COM_PUBLICATIONS_ELEMENT_ROLE_SECOND'); ?>
-						</td>
+							<?php echo $element->params->role == 1 ? Lang::txt('COM_PUBLICATIONS_ELEMENT_ROLE_PRIMARY') : ($element->params->role == 2 ? Lang::txt('COM_PUBLICATIONS_ELEMENT_ROLE_SECOND') : ($element->params->role == 3 ? Lang::txt('COM_PUBLICATIONS_ELEMENT_ROLE_GALLERY') : "")); ?>
+						</td> 
 					</tr>
 				</tbody>
 			</table>

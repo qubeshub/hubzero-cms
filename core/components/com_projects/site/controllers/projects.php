@@ -9,6 +9,7 @@ namespace Components\Projects\Site\Controllers;
 
 
 use Components\Projects\Tables;
+use Hubzero\Utility\Uri;
 use Components\Projects\Models;
 use Components\Projects\Helpers;
 use Components\Projects\Helpers\AccessHelper;
@@ -23,6 +24,9 @@ use User;
 use Date;
 use Lang;
 use App;
+use Filesystem;
+use Notify;
+use Session;
 
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'orm' . DS . 'description.php';
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'orm' . DS . 'description' . DS . 'field.php';
@@ -311,10 +315,14 @@ class Projects extends Base
 		{
 			$filters['sortdir'] = 'ASC';
 		}
-
-		if (!in_array($filters['filterby'], array('all', 'open', 'public', 'archived', 'pending')))
+		
+		if ($reviewer == 'sponsored' && !in_array($filters['filterby'], array('all', 'open', 'public', 'archived', 'pending')))
 		{
 			$filters['filterby'] = 'all';
+		}
+		elseif ($reviewer == 'sensitive' && !in_array($filters['filterby'], array('setting_up_in_progress', 'active', 'archived', 'deleted', 'rejected', 'pending')))
+		{
+			$filters['filterby'] = '';
 		}
 		// We're filtering by a specific state
 		// Do NOT include all projects the user may have access to as some of them may not be of this state
@@ -962,6 +970,18 @@ class Projects extends Base
 			return false;
 		}
 
+		// Re-sync the project's login (pr-<alias>) group to the new state: emptied on
+		// delete, repopulated on reinstate. sysGroup() stores the group, which fires
+		// user.onAfterStoreGroup -> the ldap plugin -> the LDAP posixGroup, so SFTP
+		// (projfs) access is revoked on delete and restored on reinstate (ticket 2802).
+		if (in_array($this->_task, array('delete', 'reinstate'), true))
+		{
+			$this->model->_tblOwner->sysGroup(
+				$this->model->get('alias'),
+				$this->config->get('group_prefix', 'pr-')
+			);
+		}
+
 		// Log activity
 		$this->_logActivity($this->model->get('id'), 'project', 'status', $this->_task, 1);
 
@@ -1010,10 +1030,19 @@ class Projects extends Base
 		$json  = base64_decode($state);
 		$json  = json_decode($json);
 
+		// is_object() alone still leaves $json->alias undefined for a well-formed
+		// but empty object, which warns and then hands a null identifier to the
+		// project model.
+		if (!is_object($json) || !isset($json->alias) || $json->alias === '')
+		{
+			App::redirect(Route::url('index.php'));
+			return;
+		}
+
 		$this->_identifier = $json->alias;
 		$this->model = new Models\Project($this->_identifier);
 
-		$service = $json->service ? $json->service : 'google';
+		$service = (isset($json->service) && $json->service) ? $json->service : 'google';
 
 		// Successful authorization grant, fetch the access token
 		if ($code)
@@ -1041,6 +1070,12 @@ class Projects extends Base
 			$return = $json->return;
 		}
 
+		// Only redirect to an internal location
+		if (empty($return) || !Uri::isInternal($return))
+		{
+			$return = Route::url('index.php');
+		}
+
 		App::redirect($return);
 	}
 
@@ -1055,7 +1090,8 @@ class Projects extends Base
 		$reviewer = Request::getWord('reviewer', '');
 		$action   = Request::getCmd('action', '');
 		$comment  = Request::getString('comment', '');
-		$approve  = Request::getInt('approve', 0);
+		$apvSens = Request::getInt('sensitive_project_review', -1);
+		$apvSpon = 0;
 		$filterby = Request::getString('filterby', 'pending');
 		$notify   = Request::getString('notify', 0, 'post');
 
@@ -1090,9 +1126,23 @@ class Projects extends Base
 			// Save approval
 			if ($reviewer == 'sensitive')
 			{
-				$approve = $approve == 1 && $this->model->get('state') == 5 ? 1 : 0; // can only approve pending project
-				$state = $approve ? 1 : $this->model->get('state');
-				$this->model->set('state', $state);
+				if (in_array($this->model->get('state'), [1,4,5]))
+				{
+					if ($apvSens == 1)
+					{
+						$state = 1;
+					}
+					elseif ($apvSens == 0)
+					{
+						$state = 4;
+					}
+					else
+					{
+						$state = $this->model->get('state');
+					}
+					
+					$this->model->set('state', $state);
+				}
 			}
 			elseif ($reviewer == 'sponsored')
 			{
@@ -1109,7 +1159,7 @@ class Projects extends Base
 				&& $params->get('grant_status') != 1 && $rejected != 1)
 				{
 					// Increase
-					$approve = 1;
+					$apvSpon = 1;
 
 					// Bump up quota
 					$premiumQuota = Helpers\Html::convertSize(floatval($this->config->get('premiumQuota', '30')), 'GB', 'b');
@@ -1123,7 +1173,7 @@ class Projects extends Base
 				// Reject
 				if ($rejected == 1 && $params->get('grant_status') != 2)
 				{
-					$approve = 2;
+					$apvSpon = 2;
 				}
 
 				$this->model->saveParam('grant_budget', $grant_budget);
@@ -1132,9 +1182,9 @@ class Projects extends Base
 				$this->model->saveParam('grant_PI', $grant_PI);
 				$this->model->saveParam('award_number', $award_number);
 				$this->model->saveParam('grant_approval', $grant_approval);
-				if ($approve)
+				if ($apvSpon)
 				{
-					$this->model->saveParam('grant_status', $approve);
+					$this->model->saveParam('grant_status', $apvSpon);
 				}
 			}
 
@@ -1143,40 +1193,43 @@ class Projects extends Base
 			{
 				$comment = \Hubzero\Utility\Str::truncate($comment, 500);
 				$comment = \Hubzero\Utility\Sanitize::stripAll($comment);
-				if (!$approve)
-				{
-					$cbase  .= '<nb:' . $reviewer . '>' . $comment . $meta . '</nb:' . $reviewer . '>';
-				}
-			}
-			if ($approve)
-			{
+				
 				if ($reviewer == 'sensitive')
 				{
-					$cbase  .= '<nb:' . $reviewer . '>' . Lang::txt('COM_PROJECTS_PROJECT_APPROVED_HIPAA');
-					$cbase  .= (trim($comment) != '') ? ' ' . $comment : '';
-					$cbase  .= $meta . '</nb:' . $reviewer . '>';
+					if ($apvSens == 1)
+					{
+						$cbase  .= '<nb:' . $reviewer . '>' . Lang::txt('COM_PROJECTS_PROJECT_APPROVED_HIPAA') . ' ' . $comment . ' ' . $meta . '</nb:' . $reviewer . '>';
+					}
+					elseif ($apvSens == 0)
+					{
+						$cbase  .= '<nb:' . $reviewer . '>' . Lang::txt('COM_PROJECTS_PROJECT_REJECTED_HIPAA') . ' ' . $comment . ' ' . $meta . '</nb:' . $reviewer . '>';
+					}
+					else
+					{
+						$cbase  .= '<nb:' . $reviewer . '>' . Lang::txt('COM_PROJECTS_PROJECT_NO_DECISION_MADE_HIPAA') . ' ' . $comment . ' ' . $meta . '</nb:' . $reviewer . '>';
+					}
 				}
-				if ($reviewer == 'sponsored')
+				elseif ($reviewer == 'sponsored')
 				{
-					if ($approve == 1)
+					if ($apvSpon == 1)
 					{
-						$cbase  .= '<nb:' . $reviewer . '>' . Lang::txt('COM_PROJECTS_PROJECT_APPROVED_SPS') . ' ' . ucfirst(Lang::txt('COM_PROJECTS_APPROVAL_CODE')) . ': ' . $grant_approval;
-						$cbase  .= (trim($comment) != '') ? '. ' . $comment : '';
-						$cbase  .= $meta . '</nb:' . $reviewer . '>';
+						$cbase  .= '<nb:' . $reviewer . '>' . Lang::txt('COM_PROJECTS_PROJECT_APPROVED_SPS') . ' ' . ucfirst(Lang::txt('COM_PROJECTS_APPROVAL_CODE')) . ': ' . $grant_approval . '. ' . $comment . $meta . '</nb:' . $reviewer . '>';
 					}
-					elseif ($approve == 2)
+					elseif ($apvSpon == 2)
 					{
-						$cbase  .= '<nb:' . $reviewer . '>' . Lang::txt('COM_PROJECTS_PROJECT_REJECTED_SPS');
-						$cbase  .= (trim($comment) != '') ? ' ' . $comment : '';
-						$cbase  .= $meta . '</nb:' . $reviewer . '>';
+						$cbase  .= '<nb:' . $reviewer . '>' . Lang::txt('COM_PROJECTS_PROJECT_REJECTED_SPS') . ' ' . $comment . ' ' . $meta . '</nb:' . $reviewer . '>';
+					}
+					else
+					{
+						$cbase  .= '<nb:' . $reviewer . '>' . $comment . $meta . '</nb:' . $reviewer . '>';
 					}
 				}
+				
+				$this->model->set('admin_notes', $cbase);
 			}
 
-			$this->model->set('admin_notes', $cbase);
-
 			// Save changes
-			if ($approve || $comment)
+			if ((in_array($apvSens, [0, 1]) || $apvSpon) || $comment)
 			{
 				if (!$this->model->store())
 				{
@@ -1218,18 +1271,25 @@ class Projects extends Base
 			}
 			else
 			{
-				if ($approve)
+				if (in_array($apvSens, [0, 1]) || $apvSpon)
 				{
 					if ($reviewer == 'sensitive')
 					{
-						$this->_setNotification(Lang::txt('COM_PROJECTS_PROJECT_APPROVED_HIPAA_MSG'));
-
+						if ($apvSens == 1)
+						{
+							$this->_setNotification(Lang::txt('COM_PROJECTS_PROJECT_APPROVED_HIPAA_MSG'));
+						}
+						elseif ($apvSens == 0)
+						{
+							$this->_setNotification(Lang::txt('COM_PROJECTS_PROJECT_REJECTED_HIPAA_MSG'));
+						}
+						
 						// Send out emails to team members
 						$this->_notifyTeam();
 					}
 					if ($reviewer == 'sponsored')
 					{
-						$notification =  $approve == 2
+						$notification =  $apvSpon == 2
 								? Lang::txt('COM_PROJECTS_PROJECT_REJECTED_SPS_MSG')
 								: Lang::txt('COM_PROJECTS_PROJECT_APPROVED_SPS_MSG');
 						$this->_setNotification($notification);
@@ -1244,9 +1304,9 @@ class Projects extends Base
 				if ($notify)
 				{
 					$activity = '';
-					if ($approve && $reviewer == 'sponsored')
+					if ($apvSpon && $reviewer == 'sponsored')
 					{
-						$activity = $approve == 2
+						$activity = $apvSpon == 2
 								? Lang::txt('COM_PROJECTS_PROJECT_REJECTED_SPS_ACTIVITY')
 								: Lang::txt('COM_PROJECTS_PROJECT_APPROVED_SPS_ACTIVITY');
 					}

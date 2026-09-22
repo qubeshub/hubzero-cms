@@ -8,6 +8,9 @@ core/vendor/**
 .vscode/**
 *.sublime-*
 .DS_Store
+# An accessibility testing library some of us keep locally to drop into a
+# page while working. Nothing in the tree loads it.
+core/assets/js/axe.min.js
 administrator/cache/**
 logs/**
 js_apps/**
@@ -21,3 +24,22 @@ config/
 favicon.ico
 .phan/**
 psalm.xml
+.claude
+.vscode
+.playwright-mcp/
+phpunit.xml
+configuration.php
+hubconfiguration.php
+.phpunit.result.cache
+.phpunit.cache/
+*.sqlite3
+/docs/_import/
+__pycache__/
+*.pyc
+
+# Working files that belong on a machine, not in the repository
+/docs/*.png
+/docs/*.html
+/docs/*.txt
+/docs/*.conf
+/docs/plan/review-findings.md

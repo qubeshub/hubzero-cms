@@ -231,7 +231,7 @@ class WikiParser
 	 */
 	private function _randomString()
 	{
-		return dechex(mt_rand(0, 0x7fffffff)) . dechex(mt_rand(0, 0x7fffffff));
+		return bin2hex(random_bytes(8));
 	}
 
 	/**
@@ -374,8 +374,13 @@ class WikiParser
 		$text = preg_replace('!<p>\s*(</?(?:table|tr|td|th|div|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)!', "$1", $text);
 		$text = preg_replace('!(</?(?:table|tr|td|th|div|ul|ol|li|pre|select|form|blockquote|p|h[1-6])[^>]*>)\s*</p>!', "$1", $text);
 
-		// Format headings and build a table of contents
-		if ($this->get('fullparse') && strstr($text, '<p>MACRO' . $this->token() . '[[TableOfContents]]' . "\n" . '</p>'))
+		// Anchor every heading (and substitute an inline [[TableOfContents]] macro if one
+		// is present). This runs on every full parse -- not only when the macro appears --
+		// so that heading id anchors exist on all pages and any table of contents (inline,
+		// sidebar, or the explicit macro) can link to them. When no macro placeholder is
+		// present, toc()'s closing str_replace is a no-op and it returns the body with the
+		// headings anchored.
+		if ($this->get('fullparse'))
 		{
 			$text = $this->toc($text);
 		}
@@ -392,7 +397,7 @@ class WikiParser
 		if (trim($this->_data['input']) && !trim($this->_data['output']))
 		{
 			$this->_data['output']  = '<p class="warning">Parsing error resulted in empty content. Displaying raw markup below.</p>';
-			$this->_data['output'] .= '<pre>' . htmlentities($this->_data['input'], ENT_COMPAT, 'UTF-8') . '</pre>';
+			$this->_data['output'] .= '<pre><code>' . htmlentities($this->_data['input'], ENT_COMPAT, 'UTF-8') . '</code></pre>';
 		}
 
 		return $this->_data['output'];
@@ -640,6 +645,11 @@ class WikiParser
 		// Are we jumping to an anchor?
 		else if (substr($href, 0, 1) == '#')
 		{
+			// Fall back to href text (minus the #) if title was stripped to empty
+			if (trim($title) === '')
+			{
+				$title = ltrim($href, '#');
+			}
 			return $this->_dataPush(array(
 				$whole,
 				'anchor',
@@ -796,11 +806,18 @@ class WikiParser
 			'scope_id' => $p->get('id')
 		);
 
+		// Fall back to pagename/href if title was stripped to empty, so links always have text
+		$displayTitle = trim($title);
+		if ($displayTitle === '')
+		{
+			$displayTitle = $p->get('pagename') ?: ltrim($href, '/#');
+		}
+
 		return $this->_dataPush(array(
 			$whole,
 			'anchor',
 			$this->_randomString(),
-			'<a class="' . $cls . '" href="' . str_replace(array('\\', '"', "'"), '', $href) . '">' . $this->glyphs(trim($title)) . '</a>'
+			'<a class="' . $cls . '" href="' . str_replace(array('\\', '"', "'"), '', $href) . '">' . $this->glyphs($displayTitle) . '</a>'
 		));
 	}
 
@@ -1160,21 +1177,26 @@ class WikiParser
 				case 'sql':
 				case 'xml':
 				case 'sh':
-					if (file_exists(PATH_CORE . '/plugins/content/geshi/geshi/geshi.php'))
-					{
-						include_once PATH_CORE . '/plugins/content/geshi/geshi/geshi.php';
-					}
-
 					$txt = preg_replace("/(\#\!$t\s*)/i", '', $txt);
 					$txt = trim($txt, "\n\r\t");
 
-					if (class_exists('GeSHi'))
+					if (class_exists('\\Highlight\\Highlighter'))
 					{
-						$geshi = new GeSHi('', $t);
-						$geshi->set_header_type(GESHI_HEADER_DIV);
-						$geshi->set_source($txt);
-
-						return '<div class="pre ' . $t . '">' . $geshi->parse_code() . '</div>';
+						static $hlLangMap = [
+							'js' => 'javascript', 'sh' => 'bash',
+							'asp' => 'vbnet', 'html4strict' => 'xml',
+						];
+						$hl = new \Highlight\Highlighter();
+						try
+						{
+							$result = $hl->highlight($hlLangMap[$t] ?? $t, $txt);
+							\Document::addStyleSheet('/core/plugins/content/geshi/assets/css/highlight.css');
+							return '<div class="pre ' . $t . '"><code class="hljs">' . $result->value . '</code></div>';
+						}
+						catch (\DomainException $e)
+						{
+							// Fall through to plain output
+						}
 					}
 
 					return '<div class="pre ' . $t . '">' . $txt . '</div>';
@@ -1184,12 +1206,12 @@ class WikiParser
 				default:
 					//$txt = preg_replace("/(\#\!$t\s*)/i", '', $txt);
 					//$txt = trim($txt, "\n\r\t");
-					return '<pre>' . $this->encodeHtml($txt) . '</pre>';
+					return '<pre><code>' . $this->encodeHtml($txt) . '</code></pre>';
 				break;
 			}
 		}
 
-		return '<pre>' . $this->encodeHtml($txt) . '</pre>';
+		return '<pre><code>' . $this->encodeHtml($txt) . '</code></pre>';
 	}
 
 	/**
@@ -1498,6 +1520,9 @@ class WikiParser
 	 */
 	private function macros($text)
 	{
+		// Guard against null content (PHP 8.1+: passing null to preg_* is deprecated)
+		$text = (string) $text;
+
 		$path = __DIR__;
 		if (is_file($path . DS . 'macro.php'))
 		{
@@ -1968,6 +1993,9 @@ class WikiParser
 	 */
 	private function headings($text)
 	{
+		// Guard against null content (PHP 8.1+: passing null to preg_* is deprecated)
+		$text = (string) $text;
+
 		for ($i = 6; $i >= 1; --$i)
 		{
 			$h = str_repeat('=', $i);
@@ -2299,6 +2327,9 @@ class WikiParser
 		$ac  = self::$_patterns['algn'] . self::$_patterns['clss'];
 		$sac = self::$_patterns['spns'] . self::$_patterns['algn'] . self::$_patterns['clss'];
 
+		$rows = array();
+		$rowMeta = array(); // Track cell types per row for thead/tbody
+
 		foreach (preg_split("/\|\|( *)$/m", $matches[2], -1, PREG_SPLIT_NO_EMPTY) as $row)
 		{
 			if (preg_match("/^({$ac}\.)(.*)/m", ltrim($row), $rmtch))
@@ -2312,6 +2343,7 @@ class WikiParser
 			}
 
 			$cells = array();
+			$cellTypes = array();
 
 			$colspan = 0;
 			// Can't use trim($row, '|') as it would remove empy (colspan) cells.
@@ -2374,14 +2406,91 @@ class WikiParser
 					$colspan = 0;
 				}
 				// Apply formatting to cell contents
+				$cell = $this->_code($cell);
 				$cell = $this->spans($cell);
 
-				$cells[] = "\t\t\t<t$ctyp$catts>$cell</t$ctyp>";
+				$cellTypes[] = $ctyp;
+				$cells[] = array('type' => $ctyp, 'atts' => $catts, 'content' => $cell);
 			}
-			$rows[] = "\t\t<tr$ratts>\n" . join("\n", $cells) . ($cells ? "\n" : '') . "\t\t</tr>";
-			unset($cells, $catts);
+			$rowMeta[] = $cellTypes;
+			$rows[] = array('ratts' => $ratts, 'cells' => $cells);
+			unset($cells, $catts, $cellTypes);
 		}
-		return "\t<table$tatts>\n" . join("\n", $rows) . "\n\t</table>\n\n";
+
+		// Determine if the first row is a header row (majority of cells are <th>)
+		$hasTheadRow = false;
+		if (!empty($rowMeta[0]))
+		{
+			$headerCount = count(array_filter($rowMeta[0], function($t) { return $t === 'h'; }));
+			$hasTheadRow = ($headerCount > 0 && $headerCount >= count($rowMeta[0]) / 2);
+		}
+
+		// Build HTML rows with scope attributes on <th> elements
+		$htmlRows = array();
+		foreach ($rows as $i => $rowData)
+		{
+			$htmlCells = array();
+			$isFirstRow = ($i === 0);
+			$allTh = (!empty($rowMeta[$i]) && count(array_unique($rowMeta[$i])) === 1 && $rowMeta[$i][0] === 'h');
+
+			foreach ($rowData['cells'] as $j => $cellData)
+			{
+				$ctyp = $cellData['type'];
+				$catts = $cellData['atts'];
+				$cell = $cellData['content'];
+
+				// Add scope to <th> elements
+				if ($ctyp === 'h')
+				{
+					if ($isFirstRow && $hasTheadRow)
+					{
+						// First row header cells are column headers
+						$catts = ' scope="col"' . $catts;
+					}
+					else if ($allTh && strpos($catts, 'colspan') !== false)
+					{
+						// Section divider row spanning all columns - use td to avoid
+						// invalid scope="colgroup" without actual <colgroup> elements
+						$ctyp = 'd';
+					}
+					else if ($j === 0 && !$allTh)
+					{
+						// First cell in a data row is a row header
+						$catts = ' scope="row"' . $catts;
+					}
+				}
+				// Promote cells in header row to <th> when hasTheadRow
+				else if ($ctyp === 'd' && $isFirstRow && $hasTheadRow)
+				{
+					$ctyp = 'h';
+					$catts = ' scope="col"' . $catts;
+				}
+				// Promote first cell in data rows to row header when table has a header row
+				else if ($ctyp === 'd' && $j === 0 && !$isFirstRow && $hasTheadRow)
+				{
+					$ctyp = 'h';
+					$catts = ' scope="row"' . $catts;
+				}
+
+				$htmlCells[] = "\t\t\t<t$ctyp$catts>$cell</t$ctyp>";
+			}
+			$htmlRows[] = "\t\t<tr" . $rowData['ratts'] . ">\n" . join("\n", $htmlCells) . ($htmlCells ? "\n" : '') . "\t\t</tr>";
+		}
+
+		// Build table with thead/tbody when first row is a header
+		$output = "\t<table$tatts>\n";
+		if ($hasTheadRow && count($htmlRows) > 1)
+		{
+			$output .= "\t<thead>\n" . $htmlRows[0] . "\n\t</thead>\n";
+			$output .= "\t<tbody>\n" . join("\n", array_slice($htmlRows, 1)) . "\n\t</tbody>\n";
+		}
+		else
+		{
+			$output .= join("\n", $htmlRows) . "\n";
+		}
+		$output .= "\t</table>\n\n";
+
+		return $output;
 	}
 
 	/**
@@ -2394,7 +2503,14 @@ class WikiParser
 		$result = '';
 		if ('' != $this->mLastSection)
 		{
-			$result = '</' . $this->mLastSection  . ">\n";
+			if ($this->mLastSection == 'pre')
+			{
+				$result = "</code></pre>\n";
+			}
+			else
+			{
+				$result = '</' . $this->mLastSection  . ">\n";
+			}
 		}
 		$this->mInPre = false;
 		$this->mLastSection = '';
@@ -2556,7 +2672,10 @@ class WikiParser
 		$output = '';
 		foreach ($textLines as $oLine)
 		{
-			if (preg_match('/(.*?)::(\s*)/sU', $oLine))
+			// WCAG fix: only treat as definition list if '::' is at end of line
+			// (prevents ::text in unformatted code from generating spurious <dt> elements)
+			$dlReplaced = preg_replace('/\s*(.*?)::[ \t]*$/', "<dl><dt>\\1</dt>\n", $oLine);
+			if (preg_match('/(.*?)::(\s*)/sU', $oLine) && ($indl || $dlReplaced !== $oLine))
 			{
 				if ($indl)
 				{
@@ -2567,7 +2686,7 @@ class WikiParser
 				else
 				{
 					//$output .= preg_replace('/\s(.*?)::(\s*)/sU', "<dl><dt>\\1</dt>\n", $oLine);
-					$output .= preg_replace('/\s*(.*?)::[ \t]*$/', "<dl><dt>\\1</dt>\n", $oLine);
+					$output .= $dlReplaced;
 				}
 				$indl = true;
 				$indd = false;
@@ -2637,6 +2756,7 @@ class WikiParser
 		$prefixLength = 0;
 		$paragraphStack = false;
 		$openlist = array();
+		$openlistReal = array(); // WCAG fix: tracks which openlist entries have real HTML elements
 		$i = 0;
 		if (!$linestart)
 		{
@@ -2679,6 +2799,12 @@ class WikiParser
 				else
 				{
 					$t = substr($oLine, $prefixLength);
+					// Not a list marker — don't treat leading spaces
+					// as list nesting depth.  Without this, indented
+					// text after a list item opens phantom nested
+					// lists, producing orphan <li> elements.
+					$prefixLength = 0;
+					$pref = $pref2 = '';
 				}
 				$this->mInPre = !empty($preOpenMatch);
 			}
@@ -2724,7 +2850,14 @@ class WikiParser
 				while ($commonPrefixLength < $lastPrefixLength)
 				{
 					$lastPrefix = $openlist[$i--];
-					$output .= $this->_closeList($lastPrefix) . '<!-- common: ' . $commonPrefixLength . ', last: ' . $lastPrefixLength . ', prefx:' . $prefixLength . ', ' . $lastPrefix . ' -->';
+					// WCAG fix: only emit closeList HTML for slots that have real HTML
+					// elements; phantom slots (from depth-skip jumps like 1→3) have no
+					// corresponding <ul><li> to close, so emitting </li></ul> for them
+					// would orphan subsequent <li> elements outside any list.
+					if (!empty($openlistReal[$i+1]))
+					{
+						$output .= $this->_closeList($lastPrefix) . '<!-- common: ' . $commonPrefixLength . ', last: ' . $lastPrefixLength . ', prefx:' . $prefixLength . ', ' . $lastPrefix . ' -->';
+					}
 					--$lastPrefixLength;
 				}
 				if ($prefixLength <= $commonPrefixLength && $commonPrefixLength > 0)
@@ -2736,15 +2869,26 @@ class WikiParser
 				while ($prefixLength > $commonPrefixLength)
 				{
 					$char = trim($pref);
+					$i++;
+					$openlist[$i] = $char;
 					if (!$listOpened)
 					{
 						$output .= $this->_openList($char);
 						$listOpened = true;
+						// WCAG fix: mark this slot as having a real HTML element.
+						// When depth jumps skip levels (e.g., 1→3), _openList is only
+						// called once; further iterations are phantom slots with no
+						// corresponding HTML. See closeList check below.
+						$openlistReal[$i] = true;
+					}
+					else
+					{
+						// Phantom slot: no <ul><li> was actually opened for this depth.
+						$openlistReal[$i] = false;
 					}
 					//if (in_array($char, array('*', '#', ':', ';')) || is_numeric($char))
 					//{
-						$i++;
-						$openlist[$i] = $char;
+					//	(already incremented $i and set $openlist[$i] above)
 					//}
 					/*if (';' == $char)
 					{
@@ -2793,7 +2937,7 @@ class WikiParser
 						if ($this->mLastSection != 'pre')
 						{
 							$paragraphStack = false;
-							$output .= $this->_closeParagraph() . '<pre>';
+							$output .= $this->_closeParagraph() . '<pre><code>';
 							$this->mLastSection = 'pre';
 						}
 						$t = substr($t, 1);
@@ -2870,15 +3014,49 @@ class WikiParser
 	 * @param   string  $text  Text to build TOC from
 	 * @return  string
 	 */
-	public function toc($text)
+	public function toc($text, $standalone = false, $depth = 0)
 	{
 		$isMain              = true;
-		$maxTocLevel         = 15;
 		$showEditLink        = true;
 		$doNumberHeadings    = false;
 		$doTocNumberHeadings = true;
 		$forceTocPosition    = true;
 		//$mShowToc            = true;
+
+		// Placement of the inline TOC. Only meaningful when not standalone (i.e.
+		// when substituting a [[TableOfContents]] macro): 'none' means the page has
+		// no macro, so we only anchor headings; otherwise the macro's mode
+		// (here|inline|sidebar|off) decides where the TOC lands. A depth given in
+		// the macro overrides any passed-in default.
+		$tocMode     = 'sidebar';
+		$placeholder = '';
+		if (!$standalone)
+		{
+			$tocMode = 'none';
+			if (preg_match('/<p>MACRO' . preg_quote($this->token(), '/') . '\[\[TableOfContents(?:\(([^)]*)\))?\]\]' . "\n" . '<\/p>/', $text ?: '', $mm))
+			{
+				$directive   = \Components\Wiki\Helpers\Parser::parseTocArgs(isset($mm[1]) ? $mm[1] : '');
+				$tocMode     = $directive['mode'];
+				$depth       = $directive['depth'];
+				$placeholder = $mm[0];
+			}
+		}
+
+		// Limit heading levels when a depth was requested. Level checks below are
+		// "toclevel < maxTocLevel", so add one; 0 means no limit.
+		$maxTocLevel = ($depth > 0) ? $depth + 1 : 15;
+
+		// Anchor for the "(Top)" link. Super groups render their own header, so
+		// point at that; regular groups sit under the sub-content header.
+		$toc_title_anchor = 'content-header';
+		if ($this->get('domain') == 'group')
+		{
+			$group = \Hubzero\User\Group::getInstance($this->get('domain_id'));
+			if ($group && !$group->isSuperGroup())
+			{
+				$toc_title_anchor = 'sub-content-header';
+			}
+		}
 
 		// Get all headlines for numbering them and adding funky stuff like [edit]
 		// links - this is for later, but we need the number of headlines right now
@@ -2934,7 +3112,15 @@ class WikiParser
 					if ($toclevel < $maxTocLevel)
 					{
 						$prevtoclevel = $toclevel;
-						$toc .= $this->_tocIndent();
+						if ($toc == '')
+						{
+							$toc .= $this->_tocIndent($toclevel);
+							$toc .= $this->_tocLine($toc_title_anchor, '(Top)', '', 1);
+						}
+						else
+						{
+							$toc .= $this->_tocIndent($toclevel);
+						}
 						$numVisible++;
 					}
 				}
@@ -3099,12 +3285,59 @@ class WikiParser
 			$i++;
 		}
 
-		$output  = '<div class="article-toc">' . "\n";
+		// Ensure at least a "(Top)" entry when there were no sub-headings
+		if ($toc == '')
+		{
+			$toc .= $this->_tocIndent($toclevel);
+			$toc .= $this->_tocLine($toc_title_anchor, '(Top)', '', 1);
+		}
+
+		$output  = '<div class="article-toc' . (!$standalone ? ' macro-toc' : '') . '">' . "\n";
 		$output .= '<h3 class="article-toc-heading">Contents</h3>' . "\n";
 		$output .= $toc . "\n";
 		$output .= '</div>' . "\n";
 
-		return str_replace('<p>MACRO' . $this->token() . '[[TableOfContents]]' . "\n" . '</p>', $output, $full);
+		// Standalone: return just the TOC (for placement in a sidebar/aside).
+		if ($standalone)
+		{
+			return $output;
+		}
+
+		// No explicit macro: headings in $full are already anchored. Apply the
+		// automatic-TOC setting -- only 'inline' places anything in the body
+		// (sidebar is handled by the view, off does nothing), and only once the
+		// page meets the heading threshold.
+		if ($tocMode == 'none' || $placeholder == '')
+		{
+			$autoMode      = $this->get('automatic_toc', 'off');
+			$autoThreshold = (int) $this->get('toc_threshold', 4);
+
+			if ($autoMode == 'inline' && $numVisible > 0 && $numMatches >= $autoThreshold)
+			{
+				return $output . "\n" . $full;
+			}
+
+			return $full;
+		}
+
+		// Place the inline TOC per the macro's mode. Only one TOC renders per page;
+		// the view suppresses the sidebar when the macro is here/inline/off.
+		switch ($tocMode)
+		{
+			case 'here':
+				// At the macro's own position
+				return str_replace($placeholder, $output, $full);
+
+			case 'inline':
+				// At the top of the content
+				return $output . "\n" . str_replace($placeholder, '', $full);
+
+			case 'sidebar':
+			case 'off':
+			default:
+				// Rendered in the sidebar by the view, or not at all
+				return str_replace($placeholder, '', $full);
+		}
 	}
 
 	/**
@@ -3127,9 +3360,9 @@ class WikiParser
 	 *
 	 * @return  string
 	 */
-	private function _tocIndent()
+	private function _tocIndent($toclevel)
 	{
-		return "\n<ul>";
+		return "\n<ul class='toc-list'" . ($toclevel > 1 ? " style='display: none;'" : "") . ">";
 	}
 
 	/**
@@ -3157,11 +3390,14 @@ class WikiParser
 		$url = $this->get('url');
 		$url = $url ?: 'index.php?option=' . $this->get('option') . '&scope=' . $this->get('scope') . '&pagename=' . $this->get('pagename');
 
-		return "\n" . '<li class="toclevel-' . $level . '">' .
-						'<a href="' . Route::url($url) . '#' . $anchor . '">' .
-							'<span class="tocnumber">' . $tocnumber . ' </span>' .
-							'<span class="toctext">' . $tocLine . '</span>' .
-						'</a>';
+		return "\n" . '<li class="toclevel toclevel-' . $level . '">' .
+						'<div class="toc-item">' .
+							'<button class="toggle-button" aria-expanded="false" aria-label="Toggle subsection"></button>' .
+							'<a href="' . Route::url($url) . '#' . $anchor . '">' .
+								'<span class="tocnumber">' . $tocnumber . ' </span>' .
+								'<span class="toctext">' . $tocLine . '</span>' .
+							'</a>' .
+						'</div>';
 	}
 
 	/**

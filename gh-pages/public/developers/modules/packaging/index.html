@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Packaging · Developers · Hubzero Documentation</title>
+  <meta name="description" content="A module is distributed as its own directory, exactly as it will sit on disk after installation. Two manifests describe it: , which the package manager reads,…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/developers/modules/packaging/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Developers</a>
+        <nav aria-label="Developers contents">
+<ul class="tree">
+<li class="tree__section"><details><summary><a class="tree__link" href="../../getting-started/index.html">Getting started</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/releasenotes/index.html">Release notes</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/fileaccess/index.html">Accessing files</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/databaseaccess/index.html">Direct database access</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/upgrade/index.html">Upgrade guide</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/browsersupport/index.html">Browser support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/devenvironment/index.html">Development environment</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tutorials/index.html">Video tutorials</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../foundation/index.html">Foundation</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/structure/index.html">Application structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/constants/index.html">Constants</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/autoloading/index.html">Autoloading</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/extensions/index.html">Extensions</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/facades/index.html">Facades</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/providers/index.html">Service providers</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../services/index.html">Services</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../services/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/filesystem/index.html">Filesystem</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/session/index.html">Session</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/server/index.html">Server</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../basics/index.html">The basics</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../basics/requests/index.html">Requests</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/responses/index.html">Responses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/config/index.html">Config</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/user/index.html">Users &amp; profiles</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/debugging/index.html">Debugging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/cron/index.html">Scheduled tasks</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/dates/index.html">Dates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/redirect/index.html">Redirect</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../database/index.html">Database</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extreqs/index.html">Requirements</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/parameters/index.html">Parameters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/deployext/index.html">Deploying extensions</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Modules</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Packaging</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#package-layout">Package layout</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-composer-manifest">The Composer manifest</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-xml-manifest">The XML manifest</a></li>
+<li class="toc__item toc__item--l2"><a href="#parameters">Parameters</a></li>
+<li class="toc__item toc__item--l2"><a href="#installing">Installing</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/models/index.html">Models</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/routing/index.html">Routing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/packaging/index.html">Packaging</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../plugins/index.html">Plugins</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../templates/index.html">Templates</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../templates/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/designing/index.html">Designing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/layouts/index.html">Page layouts</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/css/index.html">Cascading style sheets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/javascript/index.html">JavaScript</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/overrides/index.html">Output overrides</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/socicons/index.html">Socicons</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/fontcons/index.html">Fontcons</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/elements/index.html">Elements and typography</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../templates/accessibility/index.html">Accessibility</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../muse/index.html">Muse</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../supergroups/index.html">Super Groups</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/templating-system/index.html">Templating system</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/page-templates/index.html">Page templates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/custom-macros/index.html">Custom macros</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/php-pages/index.html">PHP pages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/databases/index.html">Databases</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/components/index.html">Components</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups-gitlab/index.html">Super groups with GitLab</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../testing/index.html">Testing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../api/index.html">REST API</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../aws/index.html">AWS</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../contributing/index.html">Contributing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../conventions/index.html">Conventions</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Developers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Modules</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Packaging</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Developers</p>
+          <h1>Packaging</h1>
+        </header>
+        
+        <div class="prose">
+<p>A module is distributed as its own directory, exactly as it will sit on disk
+after installation. Two manifests describe it: <code>composer.json</code>, which the
+package manager reads, and <code>mod_upcoming_bookings.xml</code>, which the CMS reads
+for the name, the client, and the parameter form shown in the Module Manager.</p>
+<p>The XML is the one that changes what an administrator sees. Every field you
+want on the module's edit screen has to be declared there; a parameter your
+code reads but the manifest does not declare has no way of being set.</p>
+<h2 id="package-layout">Package layout</h2>
+<pre><code>mod_upcoming_bookings/
+    assets/css/mod_upcoming_bookings.css
+    language/en-GB/en-GB.mod_upcoming_bookings.ini
+    language/en-GB/en-GB.mod_upcoming_bookings.sys.ini
+    migrations/Migration20260101000000ModUpcomingBookings.php
+    tmpl/default.php
+    tmpl/index.html
+    composer.json
+    helper.php
+    index.html
+    mod_upcoming_bookings.php
+    mod_upcoming_bookings.xml
+</code></pre>
+<p>Nothing is rearranged on install. Whatever is in the package appears under
+<code>app/modules/mod_upcoming_bookings</code>.</p>
+<h2 id="the-composer-manifest">The Composer manifest</h2>
+<pre><code class="language-json">{
+	&quot;name&quot;: &quot;myorg/mod_upcoming_bookings&quot;,
+	&quot;description&quot;: &quot;A user's next instrument reservations&quot;,
+	&quot;type&quot;: &quot;hubzero-module&quot;,
+	&quot;keywords&quot;: [&quot;hubzero&quot;],
+	&quot;homepage&quot;: &quot;https://example.org&quot;,
+	&quot;license&quot;: &quot;MIT&quot;,
+	&quot;require&quot;: {
+		&quot;php&quot;: &quot;^5.4&quot;,
+		&quot;myorg/com_bookings&quot;: &quot;dev-master&quot;
+	}
+}
+</code></pre>
+<p>The <code>type</code> must be <code>hubzero-module</code>. The recognised types are
+<code>hubzero-component</code>, <code>hubzero-module</code>, <code>hubzero-plugin</code>, and
+<code>hubzero-template</code>; the installer uses the type to decide where the package
+belongs.</p>
+<p>Declare the component you read from, as above. <code>mod_mygroups</code> does the same
+with <code>&quot;hubzero/com_groups&quot;: &quot;dev-master&quot;</code>, because it reads
+<code>Components\Groups\Models\Recent</code>. This is documentation with teeth in one
+direction only — nothing at render time checks it, so a module installed
+without its component fails when someone loads a page, with a &quot;class not
+found&quot; fatal naming a component nobody realised was missing.</p>
+<p>Unlike a plugin, a module needs no <code>extra.install-directory</code>: the package name
+already determines the directory.</p>
+<h2 id="the-xml-manifest">The XML manifest</h2>
+<p>The XML manifest is what the CMS itself reads. It is required, it is named
+after the module, and it is not listed in its own <code>&lt;files&gt;</code> block.</p>
+<pre><code class="language-xml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;extension version=&quot;1.5.0&quot; client=&quot;site&quot; type=&quot;module&quot;&gt;
+	&lt;name&gt;mod_mygroups&lt;/name&gt;
+	&lt;author&gt;HUBzero&lt;/author&gt;
+	&lt;authorUrl&gt;hubzero.org&lt;/authorUrl&gt;
+	&lt;authorEmail&gt;support@hubzero.org&lt;/authorEmail&gt;
+	&lt;copyright&gt;Copyright (c) 2005-2020 The Regents of the University of California.&lt;/copyright&gt;
+	&lt;license&gt;http://opensource.org/licenses/MIT MIT&lt;/license&gt;
+	&lt;description&gt;MOD_MYGROUPS_XML_DESCRIPTION&lt;/description&gt;
+	&lt;files&gt;
+		&lt;filename module=&quot;mod_mygroups&quot;&gt;mod_mygroups.php&lt;/filename&gt;
+		&lt;filename&gt;index.html&lt;/filename&gt;
+		&lt;filename&gt;helper.php&lt;/filename&gt;
+		&lt;filename&gt;tmpl/index.html&lt;/filename&gt;
+		&lt;filename&gt;tmpl/default.php&lt;/filename&gt;
+		&lt;filename&gt;assets/css/mod_mygroups.css&lt;/filename&gt;
+	&lt;/files&gt;
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Element or attribute</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>type=&quot;module&quot;</code></td>
+<td>Required; identifies the extension type.</td>
+</tr>
+<tr>
+<td><code>client=&quot;site&quot;</code></td>
+<td><code>site</code> or <code>administrator</code>. Must agree with the <code>$client</code> argument in the registration migration.</td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td>The manifest format version, not the module's version.</td>
+</tr>
+<tr>
+<td><code>&lt;name&gt;</code></td>
+<td>The element name, <code>mod_upcoming_bookings</code>. Used as the default title of new instances.</td>
+</tr>
+<tr>
+<td><code>&lt;description&gt;</code></td>
+<td>A language key, resolved from the <code>.sys.ini</code> file.</td>
+</tr>
+<tr>
+<td><code>&lt;files&gt;</code></td>
+<td>Every file to install. The <code>module</code> attribute on one <code>&lt;filename&gt;</code> marks the entry point.</td>
+</tr>
+<tr>
+<td><code>&lt;languages&gt;</code></td>
+<td>Translation files to copy into place.</td>
+</tr>
+<tr>
+<td><code>&lt;config&gt;</code></td>
+<td>The parameter form.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="parameters">Parameters</h2>
+<p><code>&lt;config&gt;</code> holds one <code>&lt;fields name=&quot;params&quot;&gt;</code> element containing one or more
+<code>&lt;fieldset&gt;</code>s, which become the tabs of the Module Manager's edit form. Each
+<code>&lt;field&gt;</code> is one parameter, readable afterwards as
+<code>$this-&gt;params-&gt;get('name')</code>:</p>
+<pre><code class="language-xml">	&lt;config&gt;
+		&lt;fields name=&quot;params&quot;&gt;
+			&lt;fieldset name=&quot;basic&quot;&gt;
+				&lt;field name=&quot;moduleclass_sfx&quot; type=&quot;text&quot; default=&quot;&quot; label=&quot;MOD_MYGROUPS_PARAM_CLASS_LABEL&quot; description=&quot;MOD_MYGROUPS_PARAM_CLASS_DESC&quot; /&gt;
+				&lt;field name=&quot;limit&quot; type=&quot;text&quot; default=&quot;5&quot; label=&quot;MOD_MYGROUPS_PARAM_LIMIT_LABEL&quot; description=&quot;MOD_MYGROUPS_PARAM_LIMIT_DESC&quot; member_dashboard=&quot;1&quot; /&gt;
+				&lt;field name=&quot;include_archived&quot; type=&quot;list&quot; default=&quot;1&quot; label=&quot;MOD_MYGROUPS_PARAM_ARCHIVED_LABEL&quot; description=&quot;MOD_MYGROUPS_PARAM_ARCHIVED_DESC&quot;&gt;
+					&lt;option value=&quot;1&quot;&gt;JYES&lt;/option&gt;
+					&lt;option value=&quot;0&quot;&gt;JNO&lt;/option&gt;
+				&lt;/field&gt;
+				&lt;field name=&quot;button_show_all&quot; type=&quot;list&quot; default=&quot;1&quot; label=&quot;MOD_MYGROUPS_PARAM_SHOWALL_LABEL&quot; description=&quot;MOD_MYGROUPS_PARAM_SHOWALL_DESC&quot;&gt;
+					&lt;option value=&quot;1&quot;&gt;JYES&lt;/option&gt;
+					&lt;option value=&quot;0&quot;&gt;JNO&lt;/option&gt;
+				&lt;/field&gt;
+				&lt;field name=&quot;button_show_add&quot; type=&quot;list&quot; default=&quot;1&quot; label=&quot;MOD_MYGROUPS_PARAM_SHOWADD_LABEL&quot; description=&quot;MOD_MYGROUPS_PARAM_SHOWADD_DESC&quot;&gt;
+					&lt;option value=&quot;1&quot;&gt;JYES&lt;/option&gt;
+					&lt;option value=&quot;0&quot;&gt;JNO&lt;/option&gt;
+				&lt;/field&gt;
+				&lt;field name=&quot;show_recent&quot; type=&quot;list&quot; default=&quot;1&quot; label=&quot;MOD_MYGROUPS_PARAM_SHOWRECENT_LABEL&quot; description=&quot;MOD_MYGROUPS_PARAM_SHOWRECENT_DESC&quot;&gt;
+					&lt;option value=&quot;1&quot;&gt;JYES&lt;/option&gt;
+					&lt;option value=&quot;0&quot;&gt;JNO&lt;/option&gt;
+				&lt;/field&gt;
+			&lt;/fieldset&gt;
+		&lt;/fields&gt;
+	&lt;/config&gt;
+</code></pre>
+<p><code>mod_upcoming_bookings</code> needs two fields of its own and the conventional
+suffix:</p>
+<pre><code class="language-xml">&lt;config&gt;
+	&lt;fields name=&quot;params&quot;&gt;
+		&lt;fieldset name=&quot;basic&quot;&gt;
+			&lt;field name=&quot;moduleclass_sfx&quot; type=&quot;text&quot; default=&quot;&quot;
+				label=&quot;MOD_UPCOMING_BOOKINGS_PARAM_CLASS_LABEL&quot;
+				description=&quot;MOD_UPCOMING_BOOKINGS_PARAM_CLASS_DESC&quot; /&gt;
+			&lt;field name=&quot;limit&quot; type=&quot;text&quot; default=&quot;5&quot;
+				label=&quot;MOD_UPCOMING_BOOKINGS_PARAM_LIMIT_LABEL&quot;
+				description=&quot;MOD_UPCOMING_BOOKINGS_PARAM_LIMIT_DESC&quot; /&gt;
+			&lt;field name=&quot;instrument_id&quot; type=&quot;text&quot; default=&quot;0&quot;
+				label=&quot;MOD_UPCOMING_BOOKINGS_PARAM_INSTRUMENT_LABEL&quot;
+				description=&quot;MOD_UPCOMING_BOOKINGS_PARAM_INSTRUMENT_DESC&quot; /&gt;
+		&lt;/fieldset&gt;
+	&lt;/fields&gt;
+&lt;/config&gt;
+</code></pre>
+<p><code>limit</code> and <code>instrument_id</code> are what let one module do two jobs. An instance
+in the sidebar with <code>instrument_id</code> at <code>0</code> lists everything the user has
+booked; a second instance on a lab page narrows the same code to one
+instrument. Parameters are the cheapest way to avoid writing a second module.</p>
+<p><code>label</code> and <code>description</code> are language keys. <code>default</code> is what
+<code>params-&gt;get()</code> returns for an instance saved before the field existed only if
+you pass it yourself as the second argument — the manifest default is applied
+by the form, not by the Registry. So <code>default=&quot;5&quot;</code> here and
+<code>$this-&gt;params-&gt;get('limit', 5)</code> in the class: write both, or an older
+instance reads null. See <a href="../helpers/index.html#parameters">Helpers</a>.</p>
+<p>Two field names are conventional across almost every module:</p>
+<ul>
+<li><code>moduleclass_sfx</code> — a suffix the chrome function appends to the wrapper's
+CSS class, so an administrator can style one instance differently.</li>
+<li><code>cache</code> and <code>cache_time</code> — read by <code>getCacheContent()</code>. Declare these only
+if your module's output is the same for every visitor. The cache key is the
+instance id alone, so on a per-user module such as <code>mod_upcoming_bookings</code>
+they hand one researcher's reservations to the next visitor. See
+<a href="../helpers/index.html#caching">Helpers</a>.</li>
+</ul>
+<p>The <code>member_dashboard=&quot;1&quot;</code> attribute seen on some fields marks a parameter as
+editable by a member when the module appears on their dashboard, rather than
+only by an administrator.</p>
+<h2 id="installing">Installing</h2>
+<p>There is no package installer. The <strong>Install</strong>, <strong>Update</strong>, <strong>Discover</strong> and
+<strong>Database</strong> tabs the older documentation names do not exist in this release;
+only orphan language strings remain. See the
+<a href="../../../managers/extensions/extension-manager/index.html">extension manager</a> for
+what the screen actually offers.</p>
+<p>A module therefore arrives through the git-backed <strong>Custom Extensions</strong> flow,
+or by copying the directory into <code>app/modules</code> by hand. Either way the module
+is not usable until its
+migration has run and registered it — see <a href="../migrations/index.html">Migrations</a> — and
+not visible until an administrator creates an instance and assigns it to a
+position.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Copying the files without running the migration leaves the module
+invisible: <code>Loader::all()</code> joins <code>#__modules</code> to <code>#__extensions</code> and requires
+an enabled row there.</p>
+</aside>
+<p>Say all three in your README, because none of them announces itself:</p>
+<ol>
+<li>run the migration;</li>
+<li>create an instance in the Module Manager;</li>
+<li>assign it to a position the site's template actually renders — see
+<a href="../loading/index.html#positions-belong-to-the-template">Loading</a>.</li>
+</ol>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 91d03d0a23</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../assets/index.html" rel="prev"><span>Previous</span>Assets</a><a class="pager__next" href="../loading/index.html" rel="next"><span>Next</span>Loading</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/developers/08-modules/08-packaging.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

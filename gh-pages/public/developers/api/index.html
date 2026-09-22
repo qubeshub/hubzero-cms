@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>REST API · Developers · Hubzero Documentation</title>
+  <meta name="description" content="Every hub serves a REST API under . It is a third face on the same components that serve the site and the administrator interface: 246 endpoints across 31…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/developers/api/">
+  <link rel="icon" href="../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../index.html">
+      <img class="brand__mark" src="../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../search-index.json" data-base="../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../docs/index.html">About</a>
+      <a href="../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../index.html">Developers</a>
+        <nav aria-label="Developers contents">
+<ul class="tree">
+<li class="tree__section"><details><summary><a class="tree__link" href="../getting-started/index.html">Getting started</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/releasenotes/index.html">Release notes</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/fileaccess/index.html">Accessing files</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/databaseaccess/index.html">Direct database access</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/upgrade/index.html">Upgrade guide</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/browsersupport/index.html">Browser support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/devenvironment/index.html">Development environment</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../tutorials/index.html">Video tutorials</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../foundation/index.html">Foundation</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../foundation/structure/index.html">Application structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../foundation/constants/index.html">Constants</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../foundation/autoloading/index.html">Autoloading</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../foundation/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../foundation/extensions/index.html">Extensions</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../foundation/facades/index.html">Facades</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../foundation/providers/index.html">Service providers</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../services/index.html">Services</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../services/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../services/filesystem/index.html">Filesystem</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../services/session/index.html">Session</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../services/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../services/server/index.html">Server</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../basics/index.html">The basics</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../basics/requests/index.html">Requests</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/responses/index.html">Responses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/config/index.html">Config</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/user/index.html">Users &amp; profiles</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/debugging/index.html">Debugging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/cron/index.html">Scheduled tasks</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/dates/index.html">Dates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../basics/redirect/index.html">Redirect</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../database/index.html">Database</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../extensions/extreqs/index.html">Requirements</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/parameters/index.html">Parameters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/deployext/index.html">Deploying extensions</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../modules/index.html">Modules</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../modules/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../components/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/models/index.html">Models</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/routing/index.html">Routing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/packaging/index.html">Packaging</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../plugins/index.html">Plugins</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../plugins/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../templates/index.html">Templates</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../templates/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/designing/index.html">Designing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/layouts/index.html">Page layouts</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/css/index.html">Cascading style sheets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/javascript/index.html">JavaScript</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/overrides/index.html">Output overrides</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/socicons/index.html">Socicons</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/fontcons/index.html">Fontcons</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/elements/index.html">Elements and typography</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../templates/accessibility/index.html">Accessibility</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../muse/index.html">Muse</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../supergroups/index.html">Super Groups</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/templating-system/index.html">Templating system</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/page-templates/index.html">Page templates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/custom-macros/index.html">Custom macros</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/php-pages/index.html">PHP pages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/databases/index.html">Databases</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups/components/index.html">Components</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../supergroups-gitlab/index.html">Super groups with GitLab</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../testing/index.html">Testing</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">REST API</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#when-to-write-one">When to write one</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-client">The client</a></li>
+<li class="toc__item toc__item--l2"><a href="#routing">Routing</a></li>
+<li class="toc__item toc__item--l2"><a href="#controllers">Controllers</a></li>
+<li class="toc__item toc__item--l3"><a href="#the-smallest-working-endpoint">The smallest working endpoint</a></li>
+<li class="toc__item toc__item--l3"><a href="#documenting-an-endpoint">Documenting an endpoint</a></li>
+<li class="toc__item toc__item--l2"><a href="#authentication">Authentication</a></li>
+<li class="toc__item toc__item--l3"><a href="#from-javascript-on-the-hub-itself">From JavaScript on the hub itself</a></li>
+<li class="toc__item toc__item--l2"><a href="#rate-limiting">Rate limiting</a></li>
+<li class="toc__item toc__item--l2"><a href="#adding-an-endpoint">Adding an endpoint</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../aws/index.html">AWS</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../contributing/index.html">Contributing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../conventions/index.html">Conventions</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Developers</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">REST API</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Developers</p>
+          <h1>REST API</h1>
+        </header>
+        
+        <div class="prose">
+<p>Every hub serves a REST API under <code>/api/</code>. It is a third face on the same
+components that serve the site and the administrator interface: 246
+endpoints across 31 components, each one a method on a controller in that
+component's <code>api/</code> directory.</p>
+<p>The <a href="../../reference/api/index.html">API reference</a> lists every endpoint, its
+method, its URI and its parameters, generated from the source. This page is
+about how the API works and how to add to it.</p>
+<h2 id="when-to-write-one">When to write one</h2>
+<p>A component gets an API controller when something outside the page needs the
+data: a script that loads a term's instrument bookings overnight, a lab's own
+front end, a mobile client, or the component's own JavaScript fetching a
+month of the calendar without reloading the page. If the only caller is a
+form on a page the component already renders, a site controller task is
+less work and gives you the session, the document and the template for free.</p>
+<p>The three controller kinds are the same class hierarchy with different
+surroundings, so the split is about what the caller is, not about what the
+code does. Where the logic is the same for both, put it in a model or a
+helper and have the site controller and the API controller both call it.
+Duplicating it is how the two faces start disagreeing.</p>
+<h2 id="the-client">The client</h2>
+<p><code>/api</code> is not a directory. <code>ClientDetector</code> sees <code>api</code> as the first URL
+segment and selects the API client, which loads its own service providers
+and facade aliases from <code>core/bootstrap/Api/</code> — a different response object,
+a different authentication provider, no template, no document. See
+<a href="../foundation/structure/index.html#boot">Structure</a>.</p>
+<h2 id="routing">Routing</h2>
+<p><code>core/bootstrap/Api/routes.php</code> parses the request in four steps:</p>
+<ol>
+<li><strong>Strip <code>api/</code></strong> from the front of the path.</li>
+<li><strong>Determine the version.</strong> From a <code>/v1.0/</code> segment, an <code>Accept</code> header, or
+a <code>v=</code> or <code>version=</code> query variable. It defaults to <code>1.0</code>, and the
+normalised value ends up in <code>version</code>, <code>version.major</code> and
+<code>version.minor</code>.</li>
+<li><strong>Map the HTTP method to a task.</strong> <code>POST</code> becomes <code>create</code>, <code>PUT</code> becomes
+<code>update</code>, <code>DELETE</code> becomes <code>delete</code>. <code>GET</code> is left alone, because the task
+might be <code>list</code> or <code>read</code> or something the component invented.</li>
+<li><strong>Match the component</strong> by the next segment, then hand the rest of the
+segments to that component's API router.</li>
+</ol>
+<p>So <code>GET /api/blog/list</code> reaches <code>Components\Blog\Api\Controllers\Entriesv1_0::listTask()</code>.</p>
+<h2 id="controllers">Controllers</h2>
+<p>An API controller lives in <code>{component}/api/controllers/</code>, is named
+<code>{name}v{major}_{minor}.php</code>, and extends
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Component/ApiController.php"><code>Hubzero\Component\ApiController</code></a>.
+Every public method ending in <code>Task</code> is a task the router can reach.</p>
+<pre><code class="language-php">namespace Components\Blog\Api\Controllers;
+
+use Hubzero\Component\ApiController;
+use Request;
+use User;
+
+class Entriesv1_0 extends ApiController
+{
+    public function listTask()
+    {
+        $limit = Request::getInt('limit', 25);
+
+        // ...
+
+        $this-&gt;send($response);
+    }
+}
+</code></pre>
+<p>The version is in the class name, which is how two versions of an endpoint
+coexist: add <code>Entriesv2_0</code> beside <code>Entriesv1_0</code> and a request that asks for
+<code>v2.0</code> gets the new one while everything else keeps working.</p>
+<h3 id="the-smallest-working-endpoint">The smallest working endpoint</h3>
+<p>An API controller that declares no tasks at all is not empty.
+<code>ApiController</code> ships <code>listTask()</code>, <code>readTask()</code>, <code>createTask()</code>,
+<code>updateTask()</code> and <code>deleteTask()</code>, each of which resolves a
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Database/Relational.php"><code>Relational</code></a> model
+from the controller's own name — singularised, in
+<code>Components\[Name]\Models\</code> — and does the obvious thing with it. So a
+<code>Bookingsv1_0</code> controller in an instrument-booking component gets CRUD over
+<code>Components\Bookings\Models\Booking</code> for free, and you override only the
+tasks whose behaviour has to differ. Set <code>protected $_model</code> if the class
+name is not the singular of the controller name; no core controller does.</p>
+<p>That inheritance is also a trap. When the model cannot be resolved the
+request aborts — 404 if the derived file path does not exist, 500 if it is
+unreadable or defines a different class — and nothing says the task you meant
+to write is missing rather than broken. And these five tasks are documented
+on the base class, with <code>{component}</code> and <code>{controller}</code> placeholders in
+<code>@apiUri</code>, so the explorer lists them for every controller. The generated
+reference reads only files under <code>core/components/*/api/controllers/</code>, so it
+does not: an endpoint you inherited appears on a hub's <code>/developer/api/docs</code>
+and not in the <a href="../../reference/api/index.html">API reference</a>.</p>
+<p><code>send()</code> hands an object to
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Api/Response.php"><code>Hubzero\Api\Response</code></a>,
+which serialises it according to the <code>format</code> query variable — <code>json</code> (the
+default), <code>xml</code>, <code>html</code>, <code>xhtml</code>, <code>text</code>, <code>php</code> or <code>php_serialized</code>. An
+unrecognised value falls back to <code>json</code>. <code>ResponseServiceProvider</code> also
+forces <code>debug</code> off and disables output compression, because either would
+corrupt the body.</p>
+<p>Two response modifiers run as middleware over the result: <code>UriBase</code> turns
+relative paths into absolute URLs, and <code>JsonpCallable</code> wraps the body in a
+callback when one is asked for.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Two more modifiers are written but switched off —
+<code>Hubzero\Api\Response\DateFormatter</code> and
+<code>Hubzero\Api\Response\ObjectExpander</code>, which would normalise dates and
+inline related user and group objects. Both are commented out in
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/bootstrap/Api/services.php"><code>core/bootstrap/Api/services.php</code></a>.
+Do not write an endpoint that assumes either has run.</p>
+</aside>
+<h3 id="documenting-an-endpoint">Documenting an endpoint</h3>
+<p>Endpoint documentation is docblock tags on the task method, and they are not
+decoration — two things read them. <code>Hubzero\Api\Doc\Generator</code> builds the
+interactive explorer a hub serves at <code>/developer/api/docs</code>, and
+<code>docs/_tools/docs/gen_api_reference.py</code> builds the
+<a href="../../reference/api/index.html">API reference</a> in these pages.</p>
+<pre><code class="language-php">	/**
+	 * Display a list of entries
+	 *
+	 * @apiMethod GET
+	 * @apiUri    /blog/list
+	 * @apiParameter {
+	 * 		&quot;name&quot;:          &quot;scope&quot;,
+	 * 		&quot;description&quot;:   &quot;Scope type (group, member, etc.)&quot;,
+	 * 		&quot;type&quot;:          &quot;string&quot;,
+	 * 		&quot;required&quot;:      false,
+	 * 		&quot;default&quot;:       &quot;site&quot;
+	 * }
+</code></pre>
+<p>More <code>@apiParameter</code> blocks follow, one per parameter, and then
+<code>public function listTask()</code>.</p>
+<p>The rules, and what breaks when you get them wrong:</p>
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>What it does</th>
+<th>If it is missing</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The first line of the docblock</td>
+<td>The endpoint's summary</td>
+<td>The explorer <strong>drops the endpoint</strong> and records <em>Missing docblock for method</em> in its error list. The reference still lists it, with a blank summary</td>
+</tr>
+<tr>
+<td><code>@apiMethod</code></td>
+<td>The HTTP verb</td>
+<td>The reference assumes <code>GET</code>. Nothing routes off this tag, so a <code>POST</code> endpoint documented without it reads as a <code>GET</code> and the caller's first request fails</td>
+</tr>
+<tr>
+<td><code>@apiUri</code></td>
+<td>The path the caller requests</td>
+<td>The reference invents <code>/{component}/{task}</code>, which is right only by luck</td>
+</tr>
+<tr>
+<td><code>@apiParameter</code></td>
+<td>One JSON object per parameter</td>
+<td>The parameter is simply undocumented; the caller finds it by reading your controller</td>
+</tr>
+</tbody>
+</table>
+<p>An endpoint with <strong>neither</strong> <code>@apiMethod</code> nor <code>@apiUri</code> is skipped outright
+by the reference generator, so a new task is invisible until you write them.</p>
+<p><code>@apiParameter</code> takes a JSON object, one per tag, with <code>name</code>, <code>description</code>,
+<code>type</code>, <code>required</code> and <code>default</code>; <code>allowedValues</code> is used where a parameter
+is an enumeration. Both readers parse it as JSON, so a trailing comma or a
+missing quote costs you the parameter — the explorer records <em>Unable to parse
+parameter info</em>, and the reference generator falls back to a loose regular
+expression that may pick up some fields and not others. Neither says anything
+on the page itself.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The two readers are separate implementations of the same
+convention. <code>Generator</code> uses <code>phpDocumentor</code>'s reflection over the loaded
+class; <code>gen_api_reference.py</code> matches the docblock with a regular
+expression that requires <code>public function &lt;name&gt;Task(</code>. A task declared
+<code>protected</code>, or a docblock separated from its signature by anything else,
+is in one and not the other.</p>
+</aside>
+<h2 id="authentication">Authentication</h2>
+<p>The API authenticates with OAuth 2.0 bearer tokens.
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/libraries/Hubzero/Api/Guard.php"><code>Hubzero\Api\Guard</code></a> reads the
+token, resolves it to a user, and rejects the request if the token is
+missing, expired, or points at a user who no longer exists. Anonymous
+requests are allowed where the endpoint permits them; the user is then the
+guest.</p>
+<p>Tokens come from <code>POST /api/developer/oauth/token</code>. A user creates and
+manages application credentials at <code>/developer</code> on the hub, which is
+<code>com_developer</code>.</p>
+<h3 id="from-javascript-on-the-hub-itself">From JavaScript on the hub itself</h3>
+<p>Asking a logged-in user to authenticate to the same site they are already
+logged in to would be silly, so there is a grant type that trades the
+session cookie for a token. <code>Hubzero.initApi()</code> in
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/assets/js/hubzero.js"><code>core/assets/js/hubzero.js</code></a> does it:</p>
+<pre><code class="language-php">Html::behavior('core');
+</code></pre>
+<pre><code class="language-javascript">jQuery(document).ready(function($) {
+    Hubzero.initApi(function() {
+        // every $.ajax call from here on carries the token
+    });
+});
+</code></pre>
+<p>It POSTs <code>grant_type=session</code> to <code>/api/developer/oauth/token</code>, sets the
+returned token as an <code>Authorization: Bearer</code> header on every subsequent
+jQuery request through <code>$.ajaxSetup()</code>, and schedules itself to run again
+when the token expires. <code>Html::behavior('core')</code> is what puts <code>hubzero.js</code>
+on the page; without it <code>Hubzero</code> is undefined.</p>
+<h2 id="rate-limiting">Rate limiting</h2>
+<p><a href="https://github.com/hubzero/hubzero-cms/tree/2.4-main/core/libraries/Hubzero/Api/RateLimit"><code>Hubzero\Api\RateLimit\RateLimitService</code></a>
+is registered with the other API providers and enforces two windows,
+configured in <code>app/config/rate_limit.php</code>:</p>
+<pre><code class="language-php">return array(
+    'short' =&gt; array('period' =&gt; '5',    'limit' =&gt; '500'),
+    'long'  =&gt; array('period' =&gt; '1440', 'limit' =&gt; '10000'),
+);
+</code></pre>
+<p><code>period</code> is in minutes. Counts are kept in the database.</p>
+<h2 id="adding-an-endpoint">Adding an endpoint</h2>
+<ol>
+<li>Create <code>{component}/api/controllers/{name}v1_0.php</code> with a class
+extending <code>ApiController</code>.</li>
+<li>Add a <code>{task}Task()</code> method, and give it <code>@apiMethod</code>, <code>@apiUri</code> and an
+<code>@apiParameter</code> for each parameter.</li>
+<li>Check authorisation explicitly. An API controller has no menu item and no
+component parameters merged into it; nothing is checked for you.</li>
+<li>Return data with <code>$this-&gt;send()</code>. Do not echo.</li>
+<li>Regenerate the reference: <code>python3 docs/_tools/docs/gen_api_reference.py</code>. The
+documentation workflow regenerates it too and fails if your committed copy
+differs.</li>
+</ol>
+<p>What the mistakes look like:</p>
+<ul>
+<li><strong>The class name does not match the file.</strong> The router builds
+<code>Components\[Name]\Api\Controllers\[Controller]v[Major]_[Minor]</code> from
+the request; get a letter wrong and the request 404s with nothing in the
+log to say why.</li>
+<li><strong>You echoed instead of sending.</strong> The output lands ahead of the serialised
+body and the caller's JSON parser fails on the first character.</li>
+<li><strong>You skipped the authorisation check.</strong> It works, which is the problem.
+Nothing upstream of an API controller checks anything for you.</li>
+</ul>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 348f0057c2</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../testing/index.html" rel="prev"><span>Previous</span>Testing</a><a class="pager__next" href="../aws/index.html" rel="next"><span>Next</span>AWS</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/developers/16-api.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

@@ -127,9 +127,8 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 				return $arr;
 			}
 
-			// Check if guest and force login if plugin access is registered or members
-			if (User::isGuest()
-			 && ($group_plugin_acl == 'registered' || $group_plugin_acl == 'members'))
+			// Group member directories are not available to guests (performance + enumeration risk)
+			if (User::isGuest())
 			{
 				$url = Route::url('index.php?option=com_groups&cn=' . $group->get('cn') . '&active=' . $active, false, true);
 
@@ -252,6 +251,26 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 				$group_inviteemails = new \Hubzero\User\Group\InviteEmail();
 				$view->current_inviteemails = $group_inviteemails->getInviteEmails($this->group->get('gidNumber'), true);
 
+				// Membership terms, fetched for the whole roster in one query
+				$view->expiration_enabled = \Hubzero\User\Group\Membership::enabled()
+					&& \Hubzero\User\Group\Membership::supported();
+				$view->expirations = $view->expiration_enabled
+					? \Hubzero\User\Group\Membership::termsFor($group->get('gidNumber'))
+					: array();
+
+				// The same predicate the action enforces, so the link cannot be
+				// offered where the action would refuse it. Kept separate from
+				// expiration_enabled, which only governs *showing* a term - a
+				// member should still see their own end date on a closed group.
+				$view->can_set_expiration = $this->canSetExpiration();
+
+				// Flag a term from the point the hub starts warning about it -
+				// the widest threshold - so the list agrees with the mail the
+				// member has already had. The narrowest threshold is often a
+				// single day, which is too late to be a useful signal.
+				$warnDays = \Hubzero\User\Group\Membership::warningDays();
+				$view->expiration_warn_days = $warnDays ? max($warnDays) : 30;
+
 				switch ($view->filter)
 				{
 					case 'invitees':
@@ -273,8 +292,26 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 					break;
 					case 'members':
 					default:
-						$view->groupusers = ($view->q) ? $group->search('members', $view->q) : $group->get('members');
-						$view->groupusers = ($view->role_filter) ? \Hubzero\User\Group\Helper::search_roles($group, $view->role_filter) : $view->groupusers;
+						// Require a search query or role filter before returning the member list.
+						// Managers/admins see the full list so they can administer membership.
+						if ($view->authorized == 'manager' || $view->authorized == 'admin')
+						{
+							$view->groupusers = ($view->q) ? $group->search('members', $view->q) : $group->get('members');
+							$view->groupusers = ($view->role_filter) ? \Hubzero\User\Group\Helper::search_roles($group, $view->role_filter) : $view->groupusers;
+						}
+						else if ($view->q)
+						{
+							$view->groupusers = $group->search('members', $view->q);
+						}
+						else if ($view->role_filter)
+						{
+							$view->groupusers = \Hubzero\User\Group\Helper::search_roles($group, $view->role_filter);
+						}
+						else
+						{
+							$view->groupusers = array();
+							$view->prompt_filter = true;
+						}
 						$view->managers   = $group->get('managers');
 					break;
 				}
@@ -760,6 +797,163 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 	}
 
 	/**
+	 * May the current user administer membership terms here?
+	 *
+	 * @return  boolean
+	 */
+	private function canSetExpiration()
+	{
+		if (!\Hubzero\User\Group\Membership::enabled()
+		 || !\Hubzero\User\Group\Membership::supported())
+		{
+			return false;
+		}
+
+		// Membership cannot be changed on a closed group, and an end date is a
+		// removal on a timer - allowing it here would be a way around the same
+		// guard that stops remove()
+		if ($this->group->get('join_policy') == 3)
+		{
+			return false;
+		}
+
+		if ($this->authorized != 'manager' && $this->authorized != 'admin')
+		{
+			return false;
+		}
+
+		if ($this->membership_control == 0)
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Display the form for putting an end date on a membership
+	 *
+	 * @return  void
+	 */
+	private function setexpiration()
+	{
+		if (!$this->canSetExpiration())
+		{
+			App::abort(403, Lang::txt('PLG_GROUPS_MEMBERS_EXPIRATION_NOT_AUTHORIZED'));
+		}
+
+		Document::setTitle(Lang::txt(strtoupper($this->name)) . ': ' . $this->group->get('description') . ': ' . Lang::txt('PLG_GROUPS_MEMBERS_EXPIRATION'));
+
+		$users = Request::getArray('users', array());
+		$users = array_values(array_filter(array_map('intval', (array) $users)));
+
+		$view = $this->view('default', 'expiration');
+		$view->option     = $this->_option;
+		$view->group      = $this->group;
+		$view->authorized = $this->authorized;
+		$view->users      = $users;
+		$view->filter     = Request::getWord('filter', 'members');
+		$view->maxDays    = (int) Component::params('com_groups')->get('membership_max_term_days', 0);
+		$view->current    = array();
+
+		foreach ($users as $uid)
+		{
+			$view->current[$uid] = \Hubzero\User\Group\Membership::expiresFor($this->group->get('gidNumber'), $uid);
+		}
+
+		foreach ($this->getErrors() as $error)
+		{
+			$view->setError($error);
+		}
+
+		$this->_output = $view->loadTemplate();
+	}
+
+	/**
+	 * Apply an end date to one or more memberships
+	 *
+	 * @return  void
+	 */
+	private function confirmsetexpiration()
+	{
+		if (!$this->canSetExpiration())
+		{
+			App::abort(403, Lang::txt('PLG_GROUPS_MEMBERS_EXPIRATION_NOT_AUTHORIZED'));
+		}
+
+		Request::checkToken();
+
+		$users = Request::getArray('users', array());
+		$users = array_values(array_filter(array_map('intval', (array) $users)));
+
+		$mode    = Request::getWord('mode', 'set');
+		$expires = trim(Request::getString('expires', ''));
+		$gid     = $this->group->get('gidNumber');
+		$done    = 0;
+
+		// Extending by a fixed period is the common case for a renewal, and
+		// unlike an absolute date it does the right thing for a batch whose
+		// members are on different end dates.
+		$extend = (int) Request::getInt('extend_days', 0);
+
+		// An empty date with neither the clear box nor an extension is an
+		// incomplete form, not an instruction to wipe the term. Removing one
+		// has to be deliberate.
+		if ($mode != 'clear' && $expires === '' && $extend <= 0)
+		{
+			$this->setError(Lang::txt('PLG_GROUPS_MEMBERS_EXPIRATION_NO_DATE'));
+
+			Request::setVar('users', $users);
+			$this->setexpiration();
+			return;
+		}
+
+		foreach ($users as $uid)
+		{
+			try
+			{
+				if ($mode == 'clear')
+				{
+					\Hubzero\User\Group\Membership::setExpiration($gid, $uid, null);
+				}
+				elseif ($extend > 0)
+				{
+					\Hubzero\User\Group\Membership::extend($gid, $uid, '+' . $extend . ' days');
+				}
+				else
+				{
+					\Hubzero\User\Group\Membership::setExpiration($gid, $uid, $expires);
+				}
+
+				$done++;
+			}
+			catch (\Exception $e)
+			{
+				$this->setError($e->getMessage());
+			}
+		}
+
+		// Anything rejected goes back to the form with the reason rather than
+		// silently doing nothing
+		if ($this->getErrors())
+		{
+			Request::setVar('users', $users);
+			$this->setexpiration();
+			return;
+		}
+
+		$filter = Request::getWord('filter', 'members');
+
+		App::redirect(
+			Route::url('index.php?option=' . $this->_option . '&cn=' . $this->group->get('cn') . '&active=members&filter=' . $filter),
+			($mode == 'clear'
+				? Lang::txt('PLG_GROUPS_MEMBERS_EXPIRATION_CLEARED', $done)
+				: Lang::txt('PLG_GROUPS_MEMBERS_EXPIRATION_SAVED', $done)),
+			'passed'
+		);
+	}
+
+	/**
 	 * Display a form for sending a message to users being removed
 	 *
 	 * @return  void
@@ -865,7 +1059,7 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 					$users_man[] = $uid;
 				}
 
-				Components\Groups\Models\Member\Role::destroyByUser($uid);
+				Components\Groups\Models\Member\Role::destroyByUserAndGroup($uid, $this->group->get('gidNumber'));
 
 				// Log activity
 				$recipients = array(
@@ -1255,10 +1449,26 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 	 */
 	public function editRole($role = null)
 	{
+		// As saveRole(): managing roles is a manager/admin action. This form had
+		// no check at all, so anyone reaching the members area could open it.
+		if ($this->authorized != 'manager' && $this->authorized != 'admin')
+		{
+			return false;
+		}
+
 		if (!$role)
 		{
 			// load role object
 			$role = Components\Groups\Models\Role::oneOrNew(Request::getInt('role', 0));
+
+			// Role::oneOrNew() resolves any row of #__xgroups_roles, so a manager
+			// of one group could read another group's role name and permissions
+			// by passing its id. Id 0 is the "add" case and yields a blank row.
+			if ($role->get('id')
+			 && $role->get('gidNumber') != $this->group->get('gidNumber'))
+			{
+				return false;
+			}
 		}
 
 		// pass vars to view
@@ -1285,10 +1495,32 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 	 */
 	public function saveRole()
 	{
+		// Managing roles is a manager/admin action
+		if ($this->authorized != 'manager' && $this->authorized != 'admin')
+		{
+			return false;
+		}
+
 		// get request vars
 		$fields = Request::getArray('role', array());
+		$fields['id']          = isset($fields['id']) ? (int) $fields['id'] : 0;
 		$fields['gidNumber']   = $this->group->get('gidNumber');
-		$fields['permissions'] = json_encode($fields['permissions']);
+		$fields['permissions'] = json_encode(isset($fields['permissions']) ? $fields['permissions'] : array());
+
+		// An id in the posted form makes save() an UPDATE of that row, and
+		// gidNumber is overwritten just above -- so without this a manager of one
+		// group could rename another group's role and move it into their own,
+		// removing it from the group that owns it.
+		if ($fields['id'])
+		{
+			$existing = Components\Groups\Models\Role::oneOrNew($fields['id']);
+
+			if (!$existing->get('id')
+			 || $existing->get('gidNumber') != $this->group->get('gidNumber'))
+			{
+				return false;
+			}
+		}
 
 		// load role object
 		$role = Components\Groups\Models\Role::blank()->set($fields);
@@ -1341,6 +1573,12 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 	 */
 	private function removerole()
 	{
+		// Managing roles is a manager/admin action
+		if ($this->authorized != 'manager' && $this->authorized != 'admin')
+		{
+			return false;
+		}
+
 		if ($this->membership_control == 0)
 		{
 			return false;
@@ -1354,6 +1592,14 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 		}
 
 		$role = Components\Groups\Models\Role::oneOrFail($role);
+
+		// As saveRole(): oneOrFail() resolves any row of #__xgroups_roles, so
+		// without this a manager of one group could delete another group's role
+		// by passing its id.
+		if ($role->get('gidNumber') != $this->group->get('gidNumber'))
+		{
+			return false;
+		}
 
 		if (!$role->destroy())
 		{
@@ -1452,6 +1698,12 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 	 */
 	private function submitrole()
 	{
+		// Managing roles is a manager/admin action
+		if ($this->authorized != 'manager' && $this->authorized != 'admin')
+		{
+			return false;
+		}
+
 		if ($this->membership_control == 0)
 		{
 			return false;
@@ -1466,6 +1718,21 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 			$this->setError('You must select a role.');
 			$this->assignrole();
 			return;
+		}
+
+		// As saveRole()/removerole(): #__xgroups_roles is global and the id comes
+		// straight off the request. Permissions::getGroupMemberRoles() joins on
+		// the ROLE's gidNumber, so granting a role belonging to another group
+		// hands the grantee that role's permissions *in the group that owns it* --
+		// a manager of any self-service group could take group.edit, group.pages
+		// or group.invite in any other group. assignrole() already lists only
+		// this group's roles, so this refuses nothing the form offers.
+		$existing = Components\Groups\Models\Role::oneOrNew($role);
+
+		if (!$existing->get('id')
+		 || $existing->get('gidNumber') != $this->group->get('gidNumber'))
+		{
+			return false;
 		}
 
 		$db = App::get('db');
@@ -1489,6 +1756,12 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 	 */
 	private function deleterole()
 	{
+		// Managing roles is a manager/admin action
+		if ($this->authorized != 'manager' && $this->authorized != 'admin')
+		{
+			return false;
+		}
+
 		if ($this->membership_control == 0)
 		{
 			return false;
@@ -1498,6 +1771,18 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 		$role = Request::getInt('role', 0);
 
 		if (!$uid || !$role)
+		{
+			return false;
+		}
+
+		// As submitrole(): the role id comes straight off the request, so without
+		// this a manager of one group could strip a role assignment in another
+		// and demote that group's delegates. The listing builds these links from
+		// a query already scoped to this group, so nothing offered is refused.
+		$existing = Components\Groups\Models\Role::oneOrNew($role);
+
+		if (!$existing->get('id')
+		 || $existing->get('gidNumber') != $this->group->get('gidNumber'))
 		{
 			return false;
 		}

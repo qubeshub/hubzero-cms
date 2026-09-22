@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Frequently asked questions · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Short answers to things hub managers ask, each checked against Hubzero 2.4, and ordered roughly by how often the question comes up rather than by component.…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/faq/">
+  <link rel="icon" href="../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../index.html">
+      <img class="brand__mark" src="../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../search-index.json" data-base="../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../docs/index.html">About</a>
+      <a href="../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Frequently asked questions</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#i-made-a-menu-and-it-does-not-appear-on-the-site-why">I made a menu and it does not appear on the site. Why?</a></li>
+<li class="toc__item toc__item--l2"><a href="#how-do-we-email-everybody-in-a-group">How do we email everybody in a group?</a></li>
+<li class="toc__item toc__item--l2"><a href="#how-do-i-point-one-url-at-another">How do I point one URL at another?</a></li>
+<li class="toc__item toc__item--l2"><a href="#how-do-i-set-an-option-for-one-article-rather-than-the-whole-site">How do I set an option for one article rather than the whole site?</a></li>
+<li class="toc__item toc__item--l2"><a href="#why-does-the-featured-switch-do-nothing">Why does the **Featured** switch do nothing?</a></li>
+<li class="toc__item toc__item--l2"><a href="#can-one-article-be-in-two-categories">Can one article be in two categories?</a></li>
+<li class="toc__item toc__item--l2"><a href="#a-member-says-their-account-is-temporarily-disabled-what-do-i-do">A member says their account is &quot;temporarily disabled&quot;. What do I do?</a></li>
+<li class="toc__item toc__item--l2"><a href="#a-member-is-stuck-on-a-spam-detected-page-how-do-i-release-them">A member is stuck on a &quot;spam detected&quot; page. How do I release them?</a></li>
+<li class="toc__item toc__item--l2"><a href="#how-do-i-allow-another-attachment-type-on-support-tickets">How do I allow another attachment type on support tickets?</a></li>
+<li class="toc__item toc__item--l2"><a href="#how-does-a-project-connect-to-google-drive">How does a project connect to Google Drive?</a></li>
+<li class="toc__item toc__item--l2"><a href="#how-do-i-change-the-status-of-a-wish">How do I change the status of a wish?</a></li>
+<li class="toc__item toc__item--l2"><a href="#how-do-i-see-the-outline-a-student-sees">How do I see the outline a student sees?</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-was-removed-from-this-page">What was removed from this page</a></li>
+</ol></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Frequently asked questions</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Frequently asked questions</h1>
+        </header>
+        
+        <div class="prose">
+<p>Short answers to things hub managers ask, each checked against Hubzero 2.4,
+and ordered roughly by how often the question comes up rather than by
+component. Every answer points at the chapter that covers the screen
+properly.</p>
+<h2 id="i-made-a-menu-and-it-does-not-appear-on-the-site-why">I made a menu and it does not appear on the site. Why?</h2>
+<p>Because a menu and the thing that displays it are two separate objects, and
+creating one does not create the other. A menu is a list of links with no
+position and no presence on any page; a <strong>Menu</strong> module is what puts it
+somewhere.</p>
+<p>Go to <strong>Menus → Menu Manager</strong> and look at your menu's row. If the <strong>Modules
+Linked to the Menu</strong> cell offers <strong>Add a module for this menu type</strong>, there is
+no module — follow that link and make one. If a module is named there, open
+it and check two things: its <strong>Status</strong> is Published, and its <strong>Position</strong> is
+one the current template actually declares. The <strong>Modules Linked to the Menu</strong>
+column lists modules whether or not they are published, so seeing one there
+proves nothing on its own.</p>
+<p>A plain install is the common case of the second problem: the shipped <strong>Main
+Menu</strong> module sits in <code>position-7</code>, which neither site template in this tree
+declares, so it renders nowhere. See <a href="../menus/index.html">Menus</a> and
+<a href="../extensions/modules/index.html">Modules</a>.</p>
+<h2 id="how-do-we-email-everybody-in-a-group">How do we email everybody in a group?</h2>
+<p>Through the group's <strong>Messages</strong> tab, which is the <strong>Groups - Messages</strong>
+plugin. Only a group manager or a site administrator can compose one.</p>
+<ol>
+<li>Open the group and select <strong>Messages</strong>, then <strong>Send New Message</strong>.</li>
+<li>Pick the recipients: <strong>All Group Members</strong>, <strong>All Group Managers</strong>, <strong>All
+Group Invitees</strong>, <strong>All Group Applicants</strong>, one of the group's member
+roles, or one named member.</li>
+<li>Fill in the subject and the message, and select <strong>Send</strong>.</li>
+</ol>
+<p>The group's <strong>Members</strong> tab has a <strong>Message</strong> link beside each member and
+each role that opens the same form with the recipient already chosen. Sent
+messages stay on the <strong>Messages</strong> tab.</p>
+<h2 id="how-do-i-point-one-url-at-another">How do I point one URL at another?</h2>
+<p>Use the <strong>Redirect Manager</strong> at <strong>Site → Maintenance → Routes</strong>: a <strong>Source
+URL</strong>, a <strong>Destination URL</strong>, and a response code. It also records every 404
+the site serves, so it doubles as a list of the addresses people are asking
+for and not finding — which is usually where you find out a link is broken in
+the first place.</p>
+<p>A menu item of type <strong>External URL</strong> does the same job for a path that
+belongs to a component rather than to an article — redirecting
+<code>/groups/mainclass</code> to <code>/groups/spring2016class</code>, say. Both are covered in
+<a href="../content/urls/index.html#redirects">URLs</a>.</p>
+<h2 id="how-do-i-set-an-option-for-one-article-rather-than-the-whole-site">How do I set an option for one article rather than the whole site?</h2>
+<p>Open the article at <strong>Content → Article Manager</strong> and use the <strong>Article
+Options</strong> panel down the right-hand side. It repeats every option from the
+component's <strong>Articles</strong> settings — <strong>Show Title</strong>, <strong>Show Author</strong>, <strong>Show
+Hits</strong>, and the rest — and every one of them defaults to <strong>Use Global</strong>.</p>
+<p><strong>Use Global</strong> means &quot;look one level up&quot;. On a single-article page the order
+is article, then menu item, then the component's global setting. Blog and
+featured layouts reverse the first two: the menu item wins, and the article's
+value is used only where the menu item's setting is <strong>Use Article</strong>.</p>
+<p>See <a href="../content/articlemanager/index.html#the-editor">Article Manager</a>.</p>
+<h2 id="why-does-the-featured-switch-do-nothing">Why does the <strong>Featured</strong> switch do nothing?</h2>
+<p>Because it writes to a column the site does not read. The site's <strong>Featured
+Articles</strong> page reads a separate table that nothing in the administrator
+interface writes to, and the administrator's own Featured Articles screen is
+unreachable. This is a defect and is recorded with the project.</p>
+<p>It matters more than it sounds, because the home page a plain install ships
+is a Featured Articles item. A hub left on it has an empty front page and no
+way to fill it from any screen. Point the home item at a <strong>Single Article</strong>
+instead — <a href="../menus/index.html#example-navigation-for-a-new-hub">Menus</a> walks through
+it.</p>
+<h2 id="can-one-article-be-in-two-categories">Can one article be in two categories?</h2>
+<p>No. An article belongs to exactly one category. If a page has to appear in
+two places, point two menu items at the same article rather than making a
+second copy of it. See
+<a href="../content/categories/index.html">Categories</a>.</p>
+<h2 id="a-member-says-their-account-is-temporarily-disabled-what-do-i-do">A member says their account is &quot;temporarily disabled&quot;. What do I do?</h2>
+<p>Nothing, usually. That message means the account has failed to log in too
+many times inside the window set at <strong>Users → Members → Options → Login
+Settings</strong> — ten attempts in an hour on the shipped settings. The block is
+not stored on the account: it is a count of recent rows in the authentication
+log, so it lifts itself as the window slides forward. Tell the member to wait
+and try again, and to use <strong>Forgot your password</strong> rather than guessing.</p>
+<p>If it is happening to many accounts at once, or repeatedly to one, read
+<a href="../security/index.html#cms-controlled-fail2ban-jail">Security considerations</a>, which
+explains what is being counted and what the three thresholds do.</p>
+<h2 id="a-member-is-stuck-on-a-spam-detected-page-how-do-i-release-them">A member is stuck on a &quot;spam detected&quot; page. How do I release them?</h2>
+<p>Their lifetime spam counter is over the limit. Go to <strong>Users → Members</strong>,
+open the member, and on the <strong>Account</strong> tab select <strong>Reset</strong> beside
+<strong>Lifetime Spam Incidents</strong>. That field only appears when <strong>System -
+Spamjail</strong> is enabled, which is also the only reason the page exists. The
+whole procedure, including the per-session counter that clears itself, is in
+<a href="../spam/index.html#releasing-a-member">Spam</a>.</p>
+<h2 id="how-do-i-allow-another-attachment-type-on-support-tickets">How do I allow another attachment type on support tickets?</h2>
+<ol>
+<li>Go to <strong>Components → Support</strong>.</li>
+<li>On <strong>Support: Tickets</strong>, select <strong>Options</strong>.</li>
+<li>Open the <strong>Files</strong> tab.</li>
+<li>Add the extension to <strong>Extensions</strong>.</li>
+<li><strong>Save &amp; Close</strong>.</li>
+</ol>
+<p>Think about what you are allowing. Every attachment is scanned by the
+command in the <code>virus_scanner</code> configuration key before it is accepted, but a
+scanner is not a substitute for keeping executables and archives off the
+list. See <a href="../security/index.html#does-the-cms-scan-uploads-for-viruses">Security considerations</a>.</p>
+<h2 id="how-does-a-project-connect-to-google-drive">How does a project connect to Google Drive?</h2>
+<p>A project manager creates the connection and authorizes it with their own
+Google account; everyone else in the project works through it.</p>
+<ol>
+<li>Open the project and select the <strong>Files</strong> tab.</li>
+<li>Choose <strong>Google Drive</strong> from the <strong>New Connection</strong> drop-down, give the
+connection a <strong>Name</strong>, and save.</li>
+<li>Authorize it. Sign in to Google and accept the permissions the hub asks
+for.</li>
+<li>Google returns you to the project, which now shows the connection beside
+the project's own file repository.</li>
+</ol>
+<p>The same tab carries <strong>Edit</strong>, <strong>Delete</strong>, <strong>Refresh Connection Credentials</strong>
+and <strong>Refresh Connection Path</strong>. If a connection stops working for the whole
+project, <strong>Refresh Connection Credentials</strong> is usually the fix: the
+authorization belongs to one person's account, and it fails when that person
+revokes it or leaves.</p>
+<p>The provider does not work until an administrator has enabled the plugin and
+supplied credentials — see
+<a href="../advancedsetup/index.html#external-file-storage-in-projects">Integrations</a>. Some
+hubs still run the older project-wide Google connection instead, which puts a
+<strong>Connect</strong> link on the same tab; that one is covered there too.</p>
+<h2 id="how-do-i-change-the-status-of-a-wish">How do I change the status of a wish?</h2>
+<p>Open the wish on the site and select <strong>Change status</strong> beneath it. The
+statuses are radio buttons, not a drop-down:</p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Pending</strong></td>
+<td>Awaiting a decision from the list owners.</td>
+</tr>
+<tr>
+<td><strong>Accepted</strong></td>
+<td>The list owners have agreed to implement it.</td>
+</tr>
+<tr>
+<td><strong>Rejected</strong></td>
+<td>The list owners have declined it.</td>
+</tr>
+<tr>
+<td><strong>Granted</strong></td>
+<td>It is done and available on the hub.</td>
+</tr>
+</tbody>
+</table>
+<p>Choose one and select <strong>change status</strong>. The member who made the wish is
+told. A wish on a resource wish list can only be marked <strong>Granted</strong> by the
+person it is assigned to.</p>
+<h2 id="how-do-i-see-the-outline-a-student-sees">How do I see the outline a student sees?</h2>
+<p>Enrol in your own course as a student, from a test account. An instructor or
+course manager sees the whole outline, published and unpublished, and sees it
+regardless of prerequisites. A student sees only what the prerequisites and
+the availability dates have released to them, so the instructor's view is not
+a preview of the student's.</p>
+<h2 id="what-was-removed-from-this-page">What was removed from this page</h2>
+<p>The imported version of this page had one further answer, a second
+step-by-step for redirecting <code>/groups/mainclass</code> to another group, duplicating
+the one above it. Both have been replaced by the single entry under
+<a href="#how-do-i-point-one-url-at-another">How do I point one URL at another?</a>.
+Nothing else was dropped; the remaining answers were corrected rather than
+removed — most visibly the group message answer, which described an email
+icon on the <strong>Members</strong> tab as the only way in, and the wishlist answer, which
+described a drop-down where the interface has radio buttons.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../maintenance/cron/index.html" rel="prev"><span>Previous</span>Scheduled Tasks</a><a class="pager__next" href="../configuring/index.html" rel="next"><span>Next</span>Configuring</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/04-faq.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

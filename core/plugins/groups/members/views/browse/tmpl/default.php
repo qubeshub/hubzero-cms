@@ -20,6 +20,20 @@ if ($this->filter == '')
 	$this->filter = 'members';
 }
 
+// Tell the viewer when their own membership is due to end. Shown to everyone
+// with a term, not just those close to it, so the date is never a surprise.
+$myTerm = null;
+
+if (!empty($this->expiration_enabled) && !User::isGuest())
+{
+	$myId = (int) User::get('id');
+
+	if (isset($this->expirations[$myId]))
+	{
+		$myTerm = $this->expirations[$myId];
+	}
+}
+
 $role_id   = '';
 $role_name = '';
 
@@ -63,6 +77,19 @@ $option = 'com_groups';
 		</ul>
 	<?php //} ?>
 <?php } ?>
+
+<?php if ($myTerm) : ?>
+	<?php
+	$mySoon = (strtotime($myTerm . ' UTC') - time()) < ($this->expiration_warn_days * 86400);
+	$myWhen = '<time datetime="' . $this->escape($myTerm) . '">'
+		. Date::of($myTerm)->toLocal(Lang::txt('DATE_FORMAT_HZ1')) . '</time>';
+	?>
+	<p class="membership-expiring-notice" role="status">
+		<?php echo Lang::txt($mySoon
+			? 'PLG_GROUPS_MEMBERS_EXPIRATION_YOURS_SOON'
+			: 'PLG_GROUPS_MEMBERS_EXPIRATION_YOURS', $myWhen); ?>
+	</p>
+<?php endif; ?>
 
 <section class="section">
 	<div class="subject">
@@ -280,17 +307,20 @@ $option = 'com_groups';
 							<td>
 								<?php if ($inviteemail) { ?>
 									<span class="name">
-										<a href="mailto:<?php echo $guser; ?>">
-											<?php echo $guser; ?>
+										<a href="mailto:<?php echo $this->escape($guser); ?>">
+											<?php echo $this->escape($guser); ?>
 										</a>
 									</span>
 									<span class="status"><?php echo Lang::txt('PLG_GROUPS_MEMBERS_INVITE_SENT_TO_EMAIL'); ?></span><br />
 									<?php if ($invited) { ?>
-										<span class="invited"><time datetime="<?php echo $invited; ?>"><?php echo Lang::txt('Invoted on %s', Date::of($invited)->toLocal(Lang::txt('DATE_FORMAT_HZ1'))); ?></time></span><br />
+										<span class="invited"><time datetime="<?php echo $invited; ?>"><?php echo Lang::txt('Invited on %s', Date::of($invited)->toLocal(Lang::txt('DATE_FORMAT_HZ1'))); ?></time></span><br />
 									<?php } ?>
 								<?php } else { ?>
 									<span class="name">
 											<?php
+												// NOTE: givenName/surname are user-controlled profile fields
+												// and were echoed raw below - a stored XSS that predates
+												// this branch. Escaped at the two echoes now.
 												//handles the comma
 												$displayName = '';
 												$surname = $u->get('surname');
@@ -299,9 +329,9 @@ $option = 'com_groups';
 												$displayName .= !empty($givenName) ? !empty($displayName) ? ', ' . $givenName : $givenName :  '';
 											?>
 										<?php if (in_array($u->get('access'), User::getAuthorisedviewLevels()) && ($u->get('activation') > 0)) { ?>
-											<a href="<?php echo Route::url($url); ?>"><?php echo $displayName;?></a>
+											<a href="<?php echo Route::url($url); ?>"><?php echo $this->escape($displayName); ?></a>
 										<?php } else { ?>
-											<?php echo $displayName; ?>
+											<?php echo $this->escape($displayName); ?>
 										<?php } ?>
 									</span>
 									<span class="status"><?php echo $status; ?></span><br />
@@ -358,6 +388,43 @@ $option = 'com_groups';
 											$html .= ' <a class="assign-role" href="'.Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=assignrole&uid='.$u->get('id')).'">' . Lang::txt('PLG_GROUPS_MEMBERS_ASSIGN_ROLE') . '</a>';
 										}
 									}
+									$html .= '</span>';
+								}
+
+								// Membership term, if this hub allows them
+								if (!empty($this->expiration_enabled)
+								 && !$inviteemail
+								 && ($this->filter == 'members' || $this->filter == 'managers')) {
+									$uid     = (int) $u->get('id');
+									$expires = isset($this->expirations[$uid]) ? $this->expirations[$uid] : null;
+									$canEdit = !empty($this->can_set_expiration);
+
+									$html .= '<span class="membership-term">';
+
+									if ($expires) {
+										$soon = (strtotime($expires . ' UTC') - time()) < ($this->expiration_warn_days * 86400);
+
+										$html .= '<span class="term-expires' . ($soon ? ' term-expires-soon' : '') . '">';
+										$html .= Lang::txt(
+											'PLG_GROUPS_MEMBERS_EXPIRATION_ENDS',
+											'<time datetime="' . $this->escape($expires) . '">'
+												. Date::of($expires)->toLocal(Lang::txt('DATE_FORMAT_HZ1'))
+												. '</time>'
+										);
+										$html .= '</span>';
+									}
+
+									if ($canEdit) {
+										$html .= ' <a class="set-expiration" href="'
+											. Route::url('index.php?option=' . $option . '&cn=' . $this->group->cn
+												. '&active=members&action=setexpiration&users[]=' . $uid
+												. '&filter=' . $this->filter) . '">'
+											. Lang::txt($expires
+												? 'PLG_GROUPS_MEMBERS_EXPIRATION_CHANGE'
+												: 'PLG_GROUPS_MEMBERS_EXPIRATION_SET')
+											. '</a>';
+									}
+
 									$html .= '</span>';
 								}
 
@@ -453,6 +520,23 @@ $option = 'com_groups';
 						</tr>
 						<?php
 							}
+						} else if (!empty($this->prompt_filter)) {
+						?>
+						<tr>
+							<td>
+								<div class="members-search-prompt">
+									<div class="members-search-prompt-icon" aria-hidden="true">
+										<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+											<circle cx="11" cy="11" r="7"></circle>
+											<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+										</svg>
+									</div>
+									<h3 class="members-search-prompt-title"><?php echo Lang::txt('PLG_GROUPS_MEMBERS_ENTER_SEARCH_TITLE'); ?></h3>
+									<p class="members-search-prompt-body"><?php echo Lang::txt('PLG_GROUPS_MEMBERS_ENTER_SEARCH'); ?></p>
+								</div>
+							</td>
+						</tr>
+						<?php
 						} else {
 						?>
 						<tr>
@@ -464,6 +548,7 @@ $option = 'com_groups';
 					</tbody>
 				</table>
 			<?php
+				if (empty($this->prompt_filter)):
 				// Initiate paging
 				$pageNav = $this->pagination(
 					count($this->groupusers),
@@ -476,6 +561,7 @@ $option = 'com_groups';
 				$pageNav->setAdditionalUrlParam('q', $this->q);
 
 				echo $pageNav->render();
+				endif;
 			?>
 				<div class="clearfix"></div>
 			</div><!-- / .container -->

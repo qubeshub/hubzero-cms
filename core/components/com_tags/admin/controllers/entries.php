@@ -18,6 +18,7 @@ use Event;
 use Route;
 use Lang;
 use App;
+use User;
 
 /**
  * Tags controller class for managing entries
@@ -401,7 +402,7 @@ class Entries extends AdminController
 
 				if ($this->getError())
 				{
-					Notyf::error($this->getError());
+					Notify::error($this->getError());
 					return $this->cancelTask();
 				}
 

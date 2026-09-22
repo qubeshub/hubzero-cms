@@ -592,9 +592,17 @@ class Git extends Models\Adapter
 		{
 			return false;
 		}
+		if (!Helpers\Git::isHash($hash))
+		{
+			$this->setError(Lang::txt('PLG_PROJECTS_FILES_RESTORE_FAILED'));
+			return false;
+		}
 
 		// Checkout pre-delete revision
-		$this->_git->gitCheckout($file->get('localPath'), $hash . '^ ');
+		if (!$this->_git->gitCheckout($file->get('localPath'), $hash . '^'))
+		{
+			return false;
+		}
 
 		// If restored
 		if (is_file($file->get('fullPath')))
@@ -633,8 +641,11 @@ class Git extends Models\Adapter
 		$rev1Parts = explode('@', $rev1);
 		$rev2Parts = explode('@', $rev2);
 
-		// Run some checks
-		if (count($rev1Parts) <= 2 || count($rev2Parts) <= 2)
+		// Run some checks. Each revision is "rev@hash@path", and the hash goes
+		// to git, so it has to be an object id and nothing else.
+		if (count($rev1Parts) <= 2 || count($rev2Parts) <= 2
+		 || !Helpers\Git::isHash($rev1Parts[1])
+		 || !Helpers\Git::isHash($rev2Parts[1]))
 		{
 			$this->setError(Lang::txt('PLG_PROJECTS_FILES_ERROR_DIFF_NO_CONTENT'));
 			return false;
@@ -658,9 +669,6 @@ class Git extends Models\Adapter
 		$rev1['text'] = $this->_git->gitLog($rev1['fpath'], $rev1['hash'], 'blob');
 		$rev2['text'] = $this->_git->gitLog($rev2['fpath'], $rev2['hash'], 'blob');
 
-		// Diff class
-		include_once PATH_CORE . DS . 'plugins' . DS . 'projects' . DS . 'files' . DS . 'helpers' . DS . 'Diff.php';
-
 		$context = ($rev1['text'] == $rev2['text'] || $full) ? count($rev1['text']) : 10;
 		$options = array('context' => $context);
 
@@ -669,18 +677,18 @@ class Git extends Models\Adapter
 
 		if ($mode == 'side-by-side')
 		{
-			include_once PATH_CORE . DS . 'plugins' . DS . 'projects' . DS . 'files' . DS . 'php-diff' . DS . 'Diff' . DS . 'Renderer' . DS . 'Html' . DS . 'hubSideBySide.php';
+			include_once PATH_CORE . DS . 'plugins' . DS . 'projects' . DS . 'files' . DS . 'helpers' . DS . 'Diff' . DS . 'Renderer' . DS . 'Html' . DS . 'hubSideBySide.php';
 
 			// Generate a side by side diff
-			$renderer = new \Diff_Renderer_Html_SideBySide;
+			$renderer = new \Plugins\Projects\Files\Helpers\HubSideBySide();
 			$diff = $objDiff->Render($renderer);
 		}
 		elseif ($mode == 'inline')
 		{
-			include_once PATH_CORE . DS . 'plugins' . DS . 'projects' . DS . 'files' . DS . 'php-diff' . DS . 'Diff' . DS . 'Renderer' . DS . 'Html' . DS . 'hubInline.php';
+			include_once PATH_CORE . DS . 'plugins' . DS . 'projects' . DS . 'files' . DS . 'helpers' . DS . 'Diff' . DS . 'Renderer' . DS . 'Html' . DS . 'hubInline.php';
 
 			// Generate inline diff
-			$renderer = new \Diff_Renderer_Html_Inline;
+			$renderer = new \Plugins\Projects\Files\Helpers\HubInline();
 			$diff = $objDiff->Render($renderer);
 		}
 		else

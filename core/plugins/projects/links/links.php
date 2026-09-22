@@ -471,7 +471,7 @@ class plgProjectsLinks extends \Hubzero\Plugin\Plugin
 				// Save available data
 				if ($data)
 				{
-					foreach ($citation->getAttributes() as $key => $value)
+					foreach ($citation->getTableColumns() as $key => $value)
 					{
 						$column = strtolower($key);
 						if (isset($data->$column))

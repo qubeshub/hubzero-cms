@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Site Notices · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="A site notice is the banner that warns visitors the hub is going down for maintenance, or that something is broken. It is not a component — it is the module,…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/maintenance/notices/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Site Notices</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#one-notice-at-a-time">One notice at a time</a></li>
+<li class="toc__item toc__item--l2"><a href="#finding-the-module">Finding the module</a></li>
+<li class="toc__item toc__item--l2"><a href="#details">Details</a></li>
+<li class="toc__item toc__item--l2"><a href="#parameters">Parameters</a></li>
+<li class="toc__item toc__item--l2"><a href="#substitutions-in-the-message">Substitutions in the message</a></li>
+<li class="toc__item toc__item--l2"><a href="#menu-assignment">Menu assignment</a></li>
+<li class="toc__item toc__item--l2"><a href="#taking-it-down">Taking it down</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Daily Maintenance</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Site Notices</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Site Notices</h1>
+        </header>
+        
+        <div class="prose">
+<p>A site notice is the banner that warns visitors the hub is going down for
+maintenance, or that something is broken. It is not a component — it is the
+<code>mod_notices</code> module, and you post a notice by editing that module.</p>
+<p>You need one perhaps four times a year: a scheduled outage, a storage
+migration, a tool that has stopped working while you find out why, a change
+of address. The value of a notice is that it stops the support queue filling
+up with fifteen tickets about the same outage, so post it before the work
+starts rather than after somebody notices.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> A notice is visible to everybody the moment you save it, on
+whichever pages the <strong>Menu Assignment</strong> tab allows. There is no preview and
+no draft. Write the text first, then set <strong>Status</strong> to <strong>Published</strong>.</p>
+</aside>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> A notice is not a message to members and not an announcement. It
+emails nobody, it is not stored anywhere a member can go back to, and a
+visitor who arrives after you take it down never knows it existed. For
+something people need to keep, write an article and link to it from the
+notice.</p>
+</aside>
+<h2 id="one-notice-at-a-time">One notice at a time</h2>
+<p>There is nothing stopping you publishing several notices in the <code>notices</code>
+position at once, and nothing sorting out what happens when you do — they
+stack, all of them, on every page. In practice keep one module and edit it,
+rather than creating a new one for each event. Give it a title you will
+recognise later, like <code>Site notice</code>, and change its message.</p>
+<h2 id="finding-the-module">Finding the module</h2>
+<ol>
+<li>Log in to <code>/administrator</code>.</li>
+<li>Go to <strong>Extensions → Module Manager</strong>.</li>
+</ol>
+<p><img src="../../media/notices-site-notices.png" alt="The Module Manager" /></p>
+<ol start="3">
+<li>Find the notices module. Filter by position, type, or state, or type
+<code>notices</code> into the search box. The module's type is <code>mod_notices</code> and it
+belongs in the <strong>notices</strong> position.</li>
+<li>Click the module's title to edit it.</li>
+</ol>
+<p><img src="../../media/notices-site-notices1.png" alt="The site notice module open for editing" /></p>
+<p>If no such module exists yet, select <strong>New</strong>, pick <strong>Site Notices</strong> from the
+module type list, and set its position to <code>notices</code>.</p>
+<h2 id="details">Details</h2>
+<p>Most of the <strong>Details</strong> fieldset can be left alone. Two fields matter:</p>
+<ul>
+<li><strong>Position</strong> — must be <code>notices</code>. Every stock template
+(<code>hubzero</code>, <code>kimera</code>, <code>lucent</code>) declares that position; nothing renders the
+module anywhere else.</li>
+<li><strong>Start Publishing</strong> and <strong>Finish Publishing</strong> — the window during which the
+notice appears. Leave either empty for no bound. These are the module's own
+publishing dates, in the <strong>Details</strong> fieldset, not module parameters.</li>
+</ul>
+<p>Also in <strong>Details</strong>: <strong>Status</strong> (published or unpublished), <strong>Access</strong>, and
+<strong>Ordering</strong>. A notice that is unpublished never shows, regardless of its
+dates.</p>
+<h2 id="parameters">Parameters</h2>
+<p>The notice's content and appearance live in the module's <strong>Basic</strong> options:</p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Label</th>
+<th>Default</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>message</code></td>
+<td><strong>Message</strong></td>
+<td>empty</td>
+<td>The notice text. HTML is allowed</td>
+</tr>
+<tr>
+<td><code>alertlevel</code></td>
+<td><strong>Alert level</strong></td>
+<td><code>low</code></td>
+<td><code>low</code>, <code>medium</code>, or <code>high</code>. Sets the banner's colour class</td>
+</tr>
+<tr>
+<td><code>moduleid</code></td>
+<td><strong>Module ID</strong></td>
+<td>empty</td>
+<td>A CSS id put on the module's container, for per-notice styling. It is also the name of the dismissal cookie — see below</td>
+</tr>
+<tr>
+<td><code>allowClose</code></td>
+<td><strong>Allow closing</strong></td>
+<td>No</td>
+<td>Gives the notice a <strong>close</strong> link</td>
+</tr>
+<tr>
+<td><code>autolink</code></td>
+<td><strong>Autolink message</strong></td>
+<td>Yes</td>
+<td>Turns bare URLs and email addresses in the message into links</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Alert level</strong> becomes a class name on the wrapper — <code>modnotices low</code>,
+<code>modnotices medium</code>, <code>modnotices high</code> — and the template decides what each
+one looks like. High is the loud one. Use it for an outage happening now and
+<code>low</code> for one announced a week ahead; a hub whose every notice is <code>high</code>
+trains people to ignore the banner.</p>
+<p><strong>Allow closing</strong> stores the dismissal in a cookie named after <strong>Module ID</strong>,
+falling back to <code>sitenotice</code>. Two consequences worth knowing. Changing
+<strong>Module ID</strong> on an existing notice gives it a new cookie name, so everyone
+who dismissed it sees it again. And two notices sharing a <strong>Module ID</strong>
+share a dismissal.</p>
+<p>The dismissal has a lifetime. With a <strong>Finish Publishing</strong> date set, it lasts
+until that date, so the notice cannot come back after it has expired anyway.
+With no end date, it lasts seven days and then the notice returns.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> A notice with an empty <strong>Message</strong> renders nothing at all, even
+when published and in its window. Emptying the message is therefore another
+way to take a notice down, though <strong>Status</strong> is the clearer one.</p>
+</aside>
+<h2 id="substitutions-in-the-message">Substitutions in the message</h2>
+<p>The message text is scanned for five tags, which are replaced with the
+module's own publishing dates. They save you retyping the window into the
+prose, and they stay right if you move the outage.</p>
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>Becomes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;notice:start&gt;</code></td>
+<td>The <strong>Start Publishing</strong> date and time, as <code>9:00 AM, Mar 3rd, 2026</code></td>
+</tr>
+<tr>
+<td><code>&lt;notice:end&gt;</code></td>
+<td>The <strong>Finish Publishing</strong> date and time, in the same form</td>
+</tr>
+<tr>
+<td><code>&lt;notice:countdowntostart&gt;</code></td>
+<td>Time remaining until the start — <code>in 2 days, 3 hours, 15 minutes</code>, or <code>starting immediately</code></td>
+</tr>
+<tr>
+<td><code>&lt;notice:countdowntoreturn&gt;</code></td>
+<td>The same, counted to the finish date</td>
+</tr>
+<tr>
+<td><code>&lt;notice:timezone&gt;</code></td>
+<td>Nothing. See the warning below</td>
+</tr>
+</tbody>
+</table>
+<p>So a maintenance notice can read: <em>The hub is unavailable for scheduled
+maintenance <code>&lt;notice:countdowntostart&gt;</code>, returning at <code>&lt;notice:end&gt;</code>.</em></p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> <code>&lt;notice:timezone&gt;</code> always resolves to an empty string. It
+reads a <code>timezone</code> parameter, and the module declares no such field, so
+there is nothing on the edit form that could ever set it. The times the
+other four tags print are the server's, with no zone named. If the audience
+is spread across time zones, write the zone into the message text yourself.</p>
+</aside>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The module's code carries fallbacks that differ from the form's
+declared defaults — an absent <code>alertlevel</code> is treated as <code>medium</code> and an
+absent <strong>Allow closing</strong> as <strong>Yes</strong>. Saving the form writes explicit values,
+so on any notice you have edited the table above is what applies. The
+fallbacks only show on a module row whose parameters were never saved.</p>
+</aside>
+<h2 id="menu-assignment">Menu assignment</h2>
+<p>The <strong>Menu Assignment</strong> tab decides which pages show the notice:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>On all pages</strong></td>
+<td>Everywhere. This is what a maintenance notice wants</td>
+</tr>
+<tr>
+<td><strong>No pages</strong></td>
+<td>Nowhere — the notice is effectively off</td>
+</tr>
+<tr>
+<td><strong>Only on the pages selected</strong></td>
+<td>Just the ticked menu items</td>
+</tr>
+<tr>
+<td><strong>On all pages except those selected</strong></td>
+<td>Everywhere but the ticked menu items</td>
+</tr>
+</tbody>
+</table>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> <strong>No pages</strong> hides the notice completely, even when the module
+is published and inside its publishing window. It is the most common reason
+a notice does not appear.</p>
+</aside>
+<p>Save with <strong>Save</strong> or <strong>Save &amp; Close</strong>.</p>
+<h2 id="taking-it-down">Taking it down</h2>
+<p>Nothing takes a notice down for you unless you set <strong>Finish Publishing</strong> when
+you posted it. If you did not, come back and set <strong>Status</strong> to
+<strong>Unpublished</strong>. A stale maintenance notice about work that finished last
+month does more harm than no notice at all — visitors stop reading the banner,
+and the next real one goes unread.</p>
+<p>For a planned outage, set both dates when you write the notice: <strong>Start
+Publishing</strong> a day or two ahead so people see it coming, and <strong>Finish
+Publishing</strong> at the end of the window. Then it appears and disappears without
+you.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Setting <strong>Finish Publishing</strong> also bounds the dismissal cookie, so
+a visitor who closed this notice sees the next one. Without an end date the
+dismissal lasts seven days regardless.</p>
+</aside>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../tickets/index.html" rel="prev"><span>Previous</span>Support Tickets</a><a class="pager__next" href="../cron/index.html" rel="next"><span>Next</span>Scheduled Tasks</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/03-maintenance/04-notices.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

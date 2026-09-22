@@ -21,6 +21,7 @@ use Components\Support\Models\Category;
 use Hubzero\Component\AdminController;
 use Hubzero\Browser\Detector;
 use Hubzero\Content\Server;
+use Hubzero\Utility\Number;
 use Hubzero\Utility\Validate;
 use Exception;
 use Filesystem;
@@ -31,6 +32,9 @@ use Event;
 use Lang;
 use User;
 use App;
+use Component;
+use Date;
+use Notify;
 
 include_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'ticket.php';
 
@@ -506,11 +510,11 @@ class Tickets extends AdminController
 							if ($attachment->isImage())
 							{
 								$file = basename($attachment->path());
-								$html = preg_replace('/<a class="img" data\-filename="' . str_replace('.', '\.', $file) . '" href="(.*?)"\>(.*?)<\/a>/i', '<img src="' . $message->getEmbed($attachment->path()) . '" alt="" />', $html);
+								$html = preg_replace('/<a class="img" data\-filename="' . str_replace('.', '\.', $file) . '" href="(.*?)"\>(.*?)<\/a>/i', '<img src="' . $msg->getEmbed($attachment->path()) . '" alt="" />', $html);
 							}
 							else
 							{
-								$message->addAttachment($attachment->path());
+								$msg->addAttachment($attachment->path());
 							}
 						}
 					}

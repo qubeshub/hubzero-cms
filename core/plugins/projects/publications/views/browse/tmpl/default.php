@@ -24,6 +24,7 @@ if ($inuse < 1)
 }
 $inuse = ($inuse > 100) ? 100 : $inuse;
 $approachingQuota = $this->project->config('approachingQuota', 85);
+$selfAssessmentGuide = $this->pub->config()->get('data_publishing_self_assessment_guide', '');
 $approachingQuota = intval($approachingQuota) > 0 ? $approachingQuota : 85;
 $warning = ($inuse > $approachingQuota) ? 1 : 0;
 
@@ -43,6 +44,11 @@ $i = 1;
 					<a class="icon-add btn" href="/pubs/#/prjs/<?php echo $this->project->get('id'); ?>"><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_START_PUBLICATION'); ?></a>
 				</li>
 			<?php } else { ?>
+				<?php if(!empty($selfAssessmentGuide)) { ?>
+				<li>
+					<a class="icon-file btn" target="_blank" href="<?php echo $selfAssessmentGuide; ?>"><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_SELF_ASSESSMENT_GUIDE'); ?></a>
+				</li>
+				<?php } ?>
 				<li>
 					<a class="icon-add btn" href="<?php echo Route::url($this->project->link('publications') . '&action=start'); ?>"><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_START_PUBLICATION'); ?></a>
                 	</li>
@@ -62,13 +68,13 @@ if (count($this->rows) > 0)
 			<table id="filelist" class="listing">
 				<thead>
 					<tr>
-						<th></th>
+						<th aria-label="<?php echo Lang::txt('Image'); ?>"><span class="sr-only">Image</span></th>
 						<th class="thtype<?php if ($this->filters['sortby'] == 'title') { echo ' activesort'; } ?>"><a href="<?php echo Route::url($this->project->link('publications') . $sortAppend . '&sortby=title'); ?>" class="re_sort" title="<?php echo Lang::txt('COM_PROJECTS_SORT_BY') . ' ' . Lang::txt('PLG_PROJECTS_PUBLICATIONS_TITLE'); ?>"><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_TITLE'); ?></a></th>
 						<th class="thtype<?php if ($this->filters['sortby'] == 'id') { echo ' activesort'; } ?>"><a href="<?php echo Route::url($this->project->link('publications') . $sortAppend . '&sortby=id'); ?>" class="re_sort" title="<?php echo Lang::txt('COM_PROJECTS_SORT_BY') . ' ' . Lang::txt('PLG_PROJECTS_PUBLICATIONS_ID'); ?>"><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_ID'); ?></a></th>
 						<th class="thtype<?php if ($this->filters['sortby'] == 'type') { echo ' activesort'; } ?>"><a href="<?php echo Route::url($this->project->link('publications') . $sortAppend . '&sortby=type'); ?>" class="re_sort" title="<?php echo Lang::txt('COM_PROJECTS_SORT_BY') . ' ' .  Lang::txt('PLG_PROJECTS_PUBLICATIONS_TYPE'); ?>"><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_CONTENT_TYPE'); ?></a></th>
 						<th<?php if ($this->filters['sortby'] == 'status') { echo ' class="activesort"'; } ?> colspan="2"><a href="<?php echo Route::url($this->project->link('publications') . $sortAppend . '&sortby=status'); ?>" class="re_sort" title="<?php echo Lang::txt('COM_PROJECTS_SORT_BY') . ' ' . Lang::txt('PLG_PROJECTS_PUBLICATIONS_STATUS'); ?>"><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_STATUS'); ?></a></th>
 						<th class="condensed centeralign"><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_RELEASES'); ?></th>
-						<th></th>
+						<th aria-label="<?php echo Lang::txt('Actions'); ?>"><span class="sr-only">Actions</span></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -103,11 +109,11 @@ if (count($this->rows) > 0)
 
 			$pagenavhtml = $pageNav->render();
 			?>
-			<fieldset>
+			<div>
 				<input type="hidden" name="sortby" value="<?php echo $this->escape($this->filters['sortby']); ?>" />
 				<input type="hidden" name="sortdir" value="<?php echo $this->escape($this->filters['sortdir']); ?>" />
 				<?php echo $pagenavhtml; ?>
-			</fieldset>
+			</div>
 		</form>
 	</div>
 	<?php

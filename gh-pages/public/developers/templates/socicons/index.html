@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Socicons · Developers · Hubzero Documentation</title>
+  <meta name="description" content="Socicons is a small webfont of logos for social and web services — Twitter, Facebook, LinkedIn, Google, Dropbox and a few dozen more. It ships with the CMS as…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/developers/templates/socicons/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Developers</a>
+        <nav aria-label="Developers contents">
+<ul class="tree">
+<li class="tree__section"><details><summary><a class="tree__link" href="../../getting-started/index.html">Getting started</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/releasenotes/index.html">Release notes</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/fileaccess/index.html">Accessing files</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/databaseaccess/index.html">Direct database access</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/upgrade/index.html">Upgrade guide</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/browsersupport/index.html">Browser support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/devenvironment/index.html">Development environment</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tutorials/index.html">Video tutorials</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../foundation/index.html">Foundation</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/structure/index.html">Application structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/constants/index.html">Constants</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/autoloading/index.html">Autoloading</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/extensions/index.html">Extensions</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/facades/index.html">Facades</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/providers/index.html">Service providers</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../services/index.html">Services</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../services/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/filesystem/index.html">Filesystem</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/session/index.html">Session</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/server/index.html">Server</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../basics/index.html">The basics</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../basics/requests/index.html">Requests</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/responses/index.html">Responses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/config/index.html">Config</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/user/index.html">Users &amp; profiles</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/debugging/index.html">Debugging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/cron/index.html">Scheduled tasks</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/dates/index.html">Dates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/redirect/index.html">Redirect</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../database/index.html">Database</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extreqs/index.html">Requirements</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/parameters/index.html">Parameters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/deployext/index.html">Deploying extensions</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../modules/index.html">Modules</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../modules/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/models/index.html">Models</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/routing/index.html">Routing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/packaging/index.html">Packaging</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../plugins/index.html">Plugins</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Templates</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../designing/index.html">Designing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../layouts/index.html">Page layouts</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../css/index.html">Cascading style sheets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../javascript/index.html">JavaScript</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../overrides/index.html">Output overrides</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Socicons</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#when-you-need-it">When you need it</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-ships">What ships</a></li>
+<li class="toc__item toc__item--l2"><a href="#using-it">Using it</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-is-in-the-font">What is in the font</a></li>
+<li class="toc__item toc__item--l2"><a href="#consider-not-using-it">Consider not using it</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../fontcons/index.html">Fontcons</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../elements/index.html">Elements and typography</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../accessibility/index.html">Accessibility</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../muse/index.html">Muse</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../supergroups/index.html">Super Groups</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/templating-system/index.html">Templating system</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/page-templates/index.html">Page templates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/custom-macros/index.html">Custom macros</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/php-pages/index.html">PHP pages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/databases/index.html">Databases</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/components/index.html">Components</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups-gitlab/index.html">Super groups with GitLab</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../testing/index.html">Testing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../api/index.html">REST API</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../aws/index.html">AWS</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../contributing/index.html">Contributing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../conventions/index.html">Conventions</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Developers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Templates</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Socicons</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Developers</p>
+          <h1>Socicons</h1>
+        </header>
+        
+        <div class="prose">
+<p>Socicons is a small webfont of logos for social and web services — Twitter,
+Facebook, LinkedIn, Google, Dropbox and a few dozen more. It ships with the
+CMS as font files only.</p>
+<h2 id="when-you-need-it">When you need it</h2>
+<p>Almost never, and the honest answer is <a href="#consider-not-using-it">at the bottom of this
+page</a>. Reach for Socicons in one case: you are styling
+a control whose icon must be a <strong>third-party brand mark</strong>, and you want it to
+match the share buttons the shipped plugins already draw. That is what the font
+is for and it is the only thing it is good at.</p>
+<p>For anything else — an edit pencil, a folder, an arrow — use the
+<a href="../fontcons/index.html#the-alternative-svg-icons">SVG icons</a>. They are overridable per
+template and need no codepoint table.</p>
+<p>The reason this page is longer than it should be is that Socicons ships with no
+stylesheet, so every consumer reimplements the same thirty lines. If you use
+it, you are writing those thirty lines too.</p>
+<h2 id="what-ships">What ships</h2>
+<p>Five files, and nothing else:</p>
+<pre><code>core/assets/css/fonts/socicons-webfont.eot
+core/assets/css/fonts/socicons-webfont.otf
+core/assets/css/fonts/socicons-webfont.svg
+core/assets/css/fonts/socicons-webfont.ttf
+core/assets/css/fonts/socicons-webfont.woff
+</code></pre>
+<aside class="admonition admonition--important">
+<p><strong>Important:</strong> There is no <code>socicons.css</code> and no <code>socicons.less</code>. Unlike
+<a href="../fontcons/index.html">Fontcons</a>, Socicons has no shared stylesheet, no named
+codepoint variables and no <code>.socicon-*</code> classes. Every stylesheet that uses
+it declares its own <code>@font-face</code> and picks the codepoints out by hand.</p>
+</aside>
+<p>Three do, all of them share buttons:</p>
+<ul>
+<li><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/plugins/resources/share/assets/css/share.css"><code>core/plugins/resources/share/assets/css/share.css</code></a></li>
+<li><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/plugins/publications/share/assets/css/share.css"><code>core/plugins/publications/share/assets/css/share.css</code></a></li>
+<li><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/plugins/projects/files/assets/css/files.css"><code>core/plugins/projects/files/assets/css/files.css</code></a></li>
+</ul>
+<p>Between them they use seven glyphs. The rest of the font is unused.</p>
+<h2 id="using-it">Using it</h2>
+<p>Declare the face, then set the family on the elements that need it. The paths
+are absolute from the web root:</p>
+<pre><code class="language-css">@font-face {
+	font-family: 'Socicons';
+	font-display: block;
+	src: url('/core/assets/css/fonts/socicons-webfont.eot');
+	src: url('/core/assets/css/fonts/socicons-webfont.eot?#iefix') format('embedded-opentype'),
+	     url('/core/assets/css/fonts/socicons-webfont.woff') format('woff'),
+	     url('/core/assets/css/fonts/socicons-webfont.ttf') format('truetype'),
+	     url('/core/assets/css/fonts/socicons-webfont.svg#SociconsRegular') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+</code></pre>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Older copies of this page pointed at <code>/media/system/css/fonts/</code>.
+That path has not existed since the <code>core</code>/<code>app</code> split. Use
+<code>/core/assets/css/fonts/</code>.</p>
+</aside>
+<p>Put the glyph in a pseudo-element rather than in the markup, so the icon is a
+styling decision and screen readers do not read it. This is what the share
+plugins do:</p>
+<pre><code class="language-css">[class^=&quot;share_&quot;]:before,
+[class*=&quot; share_&quot;]:before {
+	font-family: 'Socicons';
+	font-style: normal;
+	font-weight: normal;
+	speak: none;
+	display: inline-block;
+	text-align: center;
+	line-height: 1em;
+	width: 16px;
+	height: 16px;
+	font-size: 16px;
+}
+
+.share_twitter:before   { content: &quot;\f010&quot;; color: #0d6eac; }
+.share_facebook:before  { content: &quot;\f012&quot;; color: #344e86; }
+.share_google:before    { content: &quot;\f014&quot;; color: #000; }
+.share_linkedin:before  { content: &quot;\f016&quot;; color: #0b5394; }
+.share_pinterest:before { content: &quot;\f01a&quot;; color: #a01020; }
+</code></pre>
+<p>The markup keeps the label as real text, with the icon class on a wrapper:</p>
+<pre><code class="language-html">&lt;a href=&quot;…&quot; title=&quot;Share on Twitter&quot; class=&quot;popup&quot; rel=&quot;external&quot;&gt;
+	&lt;span class=&quot;share_twitter&quot;&gt;&lt;span&gt;Twitter&lt;/span&gt;&lt;/span&gt;
+&lt;/a&gt;
+</code></pre>
+<p>Keep the text. A pseudo-element is not read by a screen reader, and the link
+has to say something when the font fails to load.</p>
+<h2 id="what-is-in-the-font">What is in the font</h2>
+<p>The SVG font defines glyphs at these codepoints:</p>
+<p><code>f001</code>–<code>f006</code>, <code>f010</code>–<code>f01f</code>, <code>f021</code>–<code>f02e</code>, <code>f054</code>, <code>f201</code>–<code>f204</code>, plus a
+handful of ordinary characters (<code>©</code>, <code>®</code>, <code>Æ</code>, <code>∞</code>, <code>™</code>).</p>
+<p>The documented names, from the original release:</p>
+<table>
+<thead>
+<tr>
+<th>Icon</th>
+<th>Main</th>
+<th>Alt</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hub</td>
+<td><code>\f002</code></td>
+<td><code>\f001</code></td>
+</tr>
+<tr>
+<td>Purdue</td>
+<td><code>\f006</code></td>
+<td><code>\f005</code></td>
+</tr>
+<tr>
+<td>Twitter</td>
+<td><code>\f011</code></td>
+<td><code>\f010</code></td>
+</tr>
+<tr>
+<td>Facebook</td>
+<td><code>\f013</code></td>
+<td><code>\f012</code></td>
+</tr>
+<tr>
+<td>Google+</td>
+<td><code>\f015</code></td>
+<td><code>\f014</code></td>
+</tr>
+<tr>
+<td>LinkedIn</td>
+<td><code>\f017</code></td>
+<td><code>\f016</code></td>
+</tr>
+<tr>
+<td>Github</td>
+<td><code>\f019</code></td>
+<td><code>\f018</code></td>
+</tr>
+<tr>
+<td>Pinterest</td>
+<td><code>\f01b</code></td>
+<td><code>\f01a</code></td>
+</tr>
+<tr>
+<td>Vimeo</td>
+<td><code>\f01d</code></td>
+<td><code>\f01c</code></td>
+</tr>
+<tr>
+<td>YouTube</td>
+<td><code>\f01f</code></td>
+<td><code>\f01e</code></td>
+</tr>
+<tr>
+<td>Skype</td>
+<td><code>\f022</code></td>
+<td><code>\f021</code></td>
+</tr>
+<tr>
+<td>PayPal</td>
+<td><code>\f024</code></td>
+<td><code>\f023</code></td>
+</tr>
+<tr>
+<td>Dropbox</td>
+<td><code>\f026</code></td>
+<td><code>\f025</code></td>
+</tr>
+<tr>
+<td>Dribbble</td>
+<td><code>\f028</code></td>
+<td><code>\f027</code></td>
+</tr>
+<tr>
+<td>eBay</td>
+<td><code>\f02a</code></td>
+<td><code>\f029</code></td>
+</tr>
+<tr>
+<td>Google</td>
+<td><code>\f02c</code></td>
+<td><code>\f02b</code></td>
+</tr>
+</tbody>
+</table>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The imported page listed <code>\f01e</code> twice, as both <em>Vimeo alt</em> and
+<em>YouTube alt</em>, and never mentioned <code>\f01c</code>. The table above assigns <code>\f01c</code>
+to Vimeo alt to fit the odd/even pairing every other entry follows. The
+codepoints the shipped stylesheets actually use — <code>f010</code>, <code>f012</code>, <code>f014</code>,
+<code>f016</code>, <code>f01a</code>, <code>f026</code>, <code>f02c</code> — are confirmed; treat the rest as a guide and
+check the glyph before you ship it.</p>
+</aside>
+<p>The remaining codepoints (<code>f003</code>, <code>f004</code>, <code>f02d</code>, <code>f02e</code>, <code>f054</code>, <code>f201</code>–<code>f204</code>)
+are in the font but were never named anywhere in this repository.</p>
+<h2 id="consider-not-using-it">Consider not using it</h2>
+<p>For anything that is not a third-party logo, prefer the SVG icons: 325 of them
+in <a href="https://github.com/hubzero/hubzero-cms/tree/2.4-main/core/assets/icons"><code>core/assets/icons</code></a>, inlined by
+<code>Html::asset('icon', 'feed')</code>, overridable per template at
+<code>html/icons/{symbol}.svg</code>, and coloured with <code>currentColor</code>. No font to load
+and no codepoint to look up. See <a href="../fontcons/index.html">Fontcons</a> for how the two
+compare.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 91d03d0a23</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../packaging/index.html" rel="prev"><span>Previous</span>Packaging</a><a class="pager__next" href="../fontcons/index.html" rel="next"><span>Next</span>Fontcons</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/developers/11-templates/11-socicons.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

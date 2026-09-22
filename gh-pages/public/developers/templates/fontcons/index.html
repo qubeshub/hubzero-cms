@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fontcons · Developers · Hubzero Documentation</title>
+  <meta name="description" content="Fontcons is the CMS&#x27;s general-purpose icon font: pencils, folders, arrows, warning triangles and so on. Roughly 295 glyphs, originally derived from Font…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/developers/templates/fontcons/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Developers</a>
+        <nav aria-label="Developers contents">
+<ul class="tree">
+<li class="tree__section"><details><summary><a class="tree__link" href="../../getting-started/index.html">Getting started</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/releasenotes/index.html">Release notes</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/fileaccess/index.html">Accessing files</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/databaseaccess/index.html">Direct database access</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/upgrade/index.html">Upgrade guide</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/browsersupport/index.html">Browser support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/devenvironment/index.html">Development environment</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tutorials/index.html">Video tutorials</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../foundation/index.html">Foundation</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/structure/index.html">Application structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/constants/index.html">Constants</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/autoloading/index.html">Autoloading</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/extensions/index.html">Extensions</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/facades/index.html">Facades</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../foundation/providers/index.html">Service providers</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../services/index.html">Services</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../services/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/filesystem/index.html">Filesystem</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/session/index.html">Session</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/server/index.html">Server</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../basics/index.html">The basics</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../basics/requests/index.html">Requests</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/responses/index.html">Responses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/config/index.html">Config</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/user/index.html">Users &amp; profiles</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/debugging/index.html">Debugging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/cron/index.html">Scheduled tasks</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/dates/index.html">Dates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../basics/redirect/index.html">Redirect</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../database/index.html">Database</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extreqs/index.html">Requirements</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/parameters/index.html">Parameters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/deployext/index.html">Deploying extensions</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../modules/index.html">Modules</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../modules/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../modules/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/helpers/index.html">Helpers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/models/index.html">Models</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/routing/index.html">Routing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/packaging/index.html">Packaging</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../plugins/index.html">Plugins</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/controllers/index.html">Controllers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/views/index.html">Views</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/assets/index.html">Assets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/configuration/index.html">Configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../plugins/loading/index.html">Loading</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Templates</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../languages/index.html">Languages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../structure/index.html">Structure</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../designing/index.html">Designing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../layouts/index.html">Page layouts</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../css/index.html">Cascading style sheets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../javascript/index.html">JavaScript</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../overrides/index.html">Output overrides</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../packaging/index.html">Packaging</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../socicons/index.html">Socicons</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Fontcons</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#why-you-have-to-care">Why you have to care</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-ships">What ships</a></li>
+<li class="toc__item toc__item--l2"><a href="#adding-it-to-a-template">Adding it to a template</a></li>
+<li class="toc__item toc__item--l2"><a href="#using-it">Using it</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-icons">The icons</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-alternative-svg-icons">The alternative: SVG icons</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../elements/index.html">Elements and typography</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../accessibility/index.html">Accessibility</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../muse/index.html">Muse</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../supergroups/index.html">Super Groups</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/templating-system/index.html">Templating system</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/page-templates/index.html">Page templates</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/custom-macros/index.html">Custom macros</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/php-pages/index.html">PHP pages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/databases/index.html">Databases</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/migrations/index.html">Migrations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups/components/index.html">Components</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../supergroups-gitlab/index.html">Super groups with GitLab</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../testing/index.html">Testing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../api/index.html">REST API</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../aws/index.html">AWS</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../contributing/index.html">Contributing</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../conventions/index.html">Conventions</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Developers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Templates</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Fontcons</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Developers</p>
+          <h1>Fontcons</h1>
+        </header>
+        
+        <div class="prose">
+<p>Fontcons is the CMS's general-purpose icon font: pencils, folders, arrows,
+warning triangles and so on. Roughly 295 glyphs, originally derived from Font
+Awesome and heavily extended. Components, modules and the admin templates all
+use it, so a site template that does not carry it renders a lot of blank
+squares.</p>
+<h2 id="why-you-have-to-care">Why you have to care</h2>
+<p>You do not get to choose whether your template supports Fontcons. Sixty-odd
+components already print <code>&lt;a class=&quot;icon-edit&quot;&gt;</code> and <code>&lt;span class=&quot;icon-user&quot;&gt;</code>
+into pages your template wraps. If the font and the <code>.icon-*</code> classes are not
+in the cascade, every one of those controls loses its icon — and, because the
+glyph lives in a <code>:before</code> pseudo-element, some of them lose their only visible
+content.</p>
+<p>So: import the two LESS files, or link the plain stylesheet and write the
+classes. Then, for the markup <strong>you</strong> write, prefer
+<a href="#the-alternative-svg-icons"><code>Html::asset('icon', …)</code></a> — the newer system, which
+a template can override per symbol.</p>
+<h2 id="what-ships">What ships</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/assets/less/fontcons.less"><code>core/assets/less/fontcons.less</code></a></td>
+<td>The <code>@font-face</code> rule, plus 273 named <code>@icon…</code> variables — one per glyph</td>
+</tr>
+<tr>
+<td><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/assets/less/icons.less"><code>core/assets/less/icons.less</code></a></td>
+<td>292 <code>.icon-*</code> classes built from those variables</td>
+</tr>
+<tr>
+<td><a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/assets/css/fontcons.css"><code>core/assets/css/fontcons.css</code></a></td>
+<td>The <code>@font-face</code> rule alone, for stylesheets not written in LESS</td>
+</tr>
+<tr>
+<td><code>core/assets/css/fonts/fontcons-webfont.{eot,svg,ttf,woff}</code></td>
+<td>The font itself</td>
+</tr>
+</tbody>
+</table>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> <code>fontcons.css</code> is 17 lines and contains <em>only</em> the <code>@font-face</code>
+rule. Linking it gives you the family, not the classes. The <code>.icon-*</code> classes
+exist only in <code>icons.less</code>. Older documentation implied otherwise.</p>
+</aside>
+<h2 id="adding-it-to-a-template">Adding it to a template</h2>
+<p>If your template is written in LESS — as <code>kimera</code>, <code>kameleon</code> and <code>lucent</code> all
+are — import the two files near the top, in this order:</p>
+<pre><code class="language-less">@import &quot;../../../../core/assets/less/fontcons.less&quot;; // Defines the available icons
+@import &quot;../../../../core/assets/less/icons.less&quot;;    // Depends on fontcons.less
+</code></pre>
+<p><code>icons.less</code> refers to variables that <code>fontcons.less</code> defines, so importing it
+alone fails to compile. That is what the <code>!!</code> in <code>kimera</code>'s comment means.</p>
+<p><code>fontcons.less</code> builds its URLs from a <code>@pathSystemCss</code> variable, so define it
+in your <code>_variables.less</code> before the import. The shipped values are:</p>
+<table>
+<thead>
+<tr>
+<th>Template</th>
+<th><code>@pathSystemCss</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>core/assets/less/variables.less</code></td>
+<td><code>&quot;/core/assets/css&quot;</code> — an absolute path</td>
+</tr>
+<tr>
+<td><code>kimera/less/_variables.less</code></td>
+<td><code>&quot;../../../../core/assets/css&quot;</code> — relative, from <code>css/</code></td>
+</tr>
+</tbody>
+</table>
+<p>Use the relative form if your compiled CSS sits in the template's own <code>css/</code>
+directory, the absolute form otherwise.</p>
+<p>If you are not using LESS, link the plain stylesheet and write your own classes:</p>
+<pre><code class="language-html">&lt;link rel=&quot;stylesheet&quot; href=&quot;/core/assets/css/fontcons.css&quot; /&gt;
+</code></pre>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Do not <code>@import</code> it from inside another stylesheet. Imported
+stylesheets are fetched only after the importing one has been parsed, which
+delays the font and can show a flash of unstyled content.</p>
+</aside>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Older copies of this page pointed at <code>/media/system/css/</code>. That
+path has not existed since the <code>core</code>/<code>app</code> split.</p>
+</aside>
+<h2 id="using-it">Using it</h2>
+<p><code>icons.less</code> sets the family on anything whose class begins <code>icon-</code>, and each
+class supplies its own glyph:</p>
+<pre><code class="language-less">*[class^=&quot;icon-&quot;]:before,
+*[class*=&quot; icon-&quot;]:before {
+	font-family: &quot;Fontcons&quot;;
+	margin-right: 0.2em;
+	speak: none;
+}
+
+.icon-edit:before   { content: &quot;\@{iconPencil}&quot;; }
+.icon-delete:before { content: &quot;\@{iconTrash}&quot;; }
+</code></pre>
+<p>So all you write is the class:</p>
+<pre><code class="language-html">&lt;a class=&quot;icon-edit&quot; href=&quot;…&quot;&gt;Edit&lt;/a&gt;
+</code></pre>
+<p>Keep the visible text. The glyph is in a pseudo-element, which assistive
+technology does not read, so the class alone leaves the control unlabelled.</p>
+<p>To use a glyph outside the <code>icon-</code> naming, three mixins in
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/assets/less/mixins.less"><code>core/assets/less/mixins.less</code></a> do the
+work:</p>
+<pre><code class="language-less">.my-thing:before {
+	.fontcons(@iconWrench);
+}
+</code></pre>
+<p><code>.ie7-fontcons-before()</code> and <code>.ie7-fontcons-after()</code> are the other two. They
+emit a <code>zoom: expression(…)</code> hack for Internet Explorer 7, which cannot render
+<code>:before</code>. They are still compiled into the shipped CSS. There is no reason to
+use them in new work.</p>
+<h2 id="the-icons">The icons</h2>
+<p>Named variables in <code>fontcons.less</code> and matching classes in <code>icons.less</code>, in
+these groups:</p>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Voting</td>
+<td><code>.icon-heart</code>, <code>.icon-star</code>, <code>.icon-star-half</code>, <code>.icon-thumbs-up</code></td>
+</tr>
+<tr>
+<td>Notifications</td>
+<td><code>.icon-help</code>, <code>.icon-info</code>, <code>.icon-success</code>, <code>.icon-error</code>, <code>.icon-warning</code></td>
+</tr>
+<tr>
+<td>Security</td>
+<td><code>.icon-lock</code>, <code>.icon-unlock</code>, <code>.icon-flag</code>, <code>.icon-shield</code></td>
+</tr>
+<tr>
+<td>Config</td>
+<td><code>.icon-tools</code>, <code>.icon-settings</code>, <code>.icon-dashboard</code>, <code>.icon-key</code>, <code>.icon-wrench</code></td>
+</tr>
+<tr>
+<td>Mail</td>
+<td><code>.icon-envelope</code>, <code>.icon-inbox</code></td>
+</tr>
+<tr>
+<td>User, Zoom, Tags</td>
+<td><code>.icon-user</code>, <code>.icon-zoom-in</code>, <code>.icon-tag</code></td>
+</tr>
+<tr>
+<td>Travel, Download/Upload, Sound, Video, Media</td>
+<td><code>.icon-plane</code>, <code>.icon-download</code>, <code>.icon-volume-up</code>, <code>.icon-play</code></td>
+</tr>
+<tr>
+<td>Text edit</td>
+<td><code>.icon-bold</code>, <code>.icon-align-left</code>, <code>.icon-list</code></td>
+</tr>
+<tr>
+<td>Actions, Directional</td>
+<td><code>.icon-edit</code>, <code>.icon-delete</code>, <code>.icon-prev</code>, <code>.icon-next</code></td>
+</tr>
+<tr>
+<td>Folders, Files, Date/time</td>
+<td><code>.icon-folder</code>, <code>.icon-file</code>, <code>.icon-calendar</code>, <code>.icon-alarm-clock</code></td>
+</tr>
+<tr>
+<td>Commerce, Comments, Sign in/out</td>
+<td><code>.icon-shopping-cart</code>, <code>.icon-comment</code>, <code>.icon-signin</code></td>
+</tr>
+<tr>
+<td>Charts, States, Quotes, Awards</td>
+<td><code>.icon-line-graph</code>, <code>.icon-quote-open</code>, <code>.icon-trophy</code></td>
+</tr>
+<tr>
+<td>Computers, Gauge, Misc</td>
+<td><code>.icon-laptop</code>, <code>.icon-gauge-high</code></td>
+</tr>
+</tbody>
+</table>
+<p>The last group in <code>icons.less</code> is aliases: <code>.icon-danger</code> is <code>.icon-error</code>,
+<code>.icon-add</code> is <code>.icon-plus-sign</code>, <code>.icon-edit</code> is <code>.icon-pencil</code>,
+<code>.icon-delete</code> is <code>.icon-trash</code>, and so on. Use whichever name reads better.</p>
+<p>For the complete list, read the two files. They are the only authority — the
+old page's bare list of codepoints has no names attached and cannot be checked
+against anything.</p>
+<h2 id="the-alternative-svg-icons">The alternative: SVG icons</h2>
+<p>The CMS also ships 325 SVG icons in
+<a href="https://github.com/hubzero/hubzero-cms/tree/2.4-main/core/assets/icons"><code>core/assets/icons</code></a>, and this is the newer of the
+two systems:</p>
+<pre><code class="language-php">&lt;?php echo Html::asset('icon', 'edit'); ?&gt;
+</code></pre>
+<p>That inlines the file wrapped in <code>&lt;span class=&quot;icn icn-edit&quot; aria-hidden=&quot;true&quot; focusable=&quot;false&quot;&gt;</code>. The <code>.icn</code> rules in
+<a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/assets/less/utilities.less"><code>core/assets/less/utilities.less</code></a> size
+the SVG to <code>1em</code> and fill it with <code>currentColor</code>, so it inherits the
+surrounding text's size and colour exactly as a font glyph would.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Fontcons</th>
+<th>SVG icons</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Added by</td>
+<td>A stylesheet import</td>
+<td><code>Html::asset('icon', …)</code> in a layout</td>
+</tr>
+<tr>
+<td>Overridable per template</td>
+<td>Only by restyling the class</td>
+<td><code>html/icons/{symbol}.svg</code> replaces the file</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>One font download, then free</td>
+<td>Markup weight on every use</td>
+</tr>
+<tr>
+<td>Colour</td>
+<td>One per glyph</td>
+<td>One per glyph, from <code>currentColor</code></td>
+</tr>
+<tr>
+<td>Multi-colour</td>
+<td>No</td>
+<td>Possible</td>
+</tr>
+</tbody>
+</table>
+<p>Both are current. Fontcons is what the existing component and template
+stylesheets use, and you need it for those to look right. Reach for
+<code>Html::asset('icon', …)</code> in new markup, where a template can override the
+symbol without touching your stylesheet.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 91d03d0a23</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../socicons/index.html" rel="prev"><span>Previous</span>Socicons</a><a class="pager__next" href="../elements/index.html" rel="next"><span>Next</span>Elements and typography</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/developers/11-templates/12-fontcons.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

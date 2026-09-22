@@ -16,6 +16,8 @@ use Notify;
 use Event;
 use Route;
 use App;
+use Lang;
+use User;
 
 include_once dirname(__DIR__) . '/helpers/cli.php';
 
@@ -143,6 +145,14 @@ class Packages extends AdminController
 	{
 		// Check for request forgeries
 		Request::checkToken();
+
+		if (
+			!User::authorise('core.edit', $this->_option)
+			&& !User::authorise('core.create', $this->_option)
+		)
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 
 		$packageName    = Request::getString('packageName', null);
 		$packageVersion = Request::getString('packageVersion', null);

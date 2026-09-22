@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plugins · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Some plugins carry parameters: an API key, a display name, a limit, a switch. Parameters belong to that one plugin and affect nothing else. Most of the time…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/configuring/plugins/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Plugins</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#what-this-is-not">What this is not</a></li>
+<li class="toc__item toc__item--l2"><a href="#opening-a-plugin-s-parameters">Opening a plugin&#x27;s parameters</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-list-screen">The list screen</a></li>
+<li class="toc__item toc__item--l2"><a href="#the-edit-screen">The edit screen</a></li>
+<li class="toc__item toc__item--l2"><a href="#older-screenshots">Older screenshots</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../components/search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../components/wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Configuring</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Plugins</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Plugins</h1>
+        </header>
+        
+        <div class="prose">
+<p>Some plugins carry parameters: an API key, a display name, a limit, a
+switch. Parameters belong to that one plugin and affect nothing else.</p>
+<p>Most of the time you are here because something outside the hub needs
+telling apart from the hub: the client ID and secret an identity provider
+issued, the key a spam service gave you, the name a sign-in button should
+show. A hub whose plugins are all doing what they should never needs this
+screen.</p>
+<p>This chapter covers the parameters. Turning a plugin on and off, setting its
+access level, and changing the order plugins run in are covered in
+<a href="../../extensions/plugins/index.html">Plug-in Manager</a> — the same screen, the
+other half of the job.</p>
+<h2 id="what-this-is-not">What this is not</h2>
+<p>It is not where plugins are installed or removed; they arrive and leave with
+the code. And a plugin's parameters are not a substitute for its <strong>Status</strong>:
+a plugin with a perfectly filled-in API key does nothing at all while it is
+disabled.</p>
+<h2 id="opening-a-plugin-s-parameters">Opening a plugin's parameters</h2>
+<ol>
+<li>Sign in to the administrator interface.</li>
+<li>Choose <strong>Extensions &gt; Plug-in Manager</strong>.</li>
+<li>Narrow the list with the <strong>- Select Type -</strong> drop-down, which filters by
+plugin group, and the search box, which matches the plugin's title.</li>
+<li>Select the plugin's name.</li>
+<li>Find the collapsible panels on the right of the edit screen: <strong>Basic
+Options</strong>, and <strong>Advanced Options</strong> if the plugin declares any.</li>
+<li>Change what you need and select <strong>Save</strong> or <strong>Save &amp; Close</strong>. Changes
+take effect immediately.</li>
+</ol>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Not every plugin has parameters. When one has none, the right
+column says &quot;No options found.&quot;</p>
+</aside>
+<p>Parameters take effect on the next request, everywhere, for everyone. That is
+harmless for a display name or a limit and worth pausing over for anything
+that gates access — an authentication plugin's <strong>Auto approve new users</strong>,
+say, or a limit that decides how many failed sign-ins block an account. If
+you are changing a plugin that stands between a member and the hub, keep a
+second signed-in administrator session open while you do it.</p>
+<h2 id="the-list-screen">The list screen</h2>
+<p>Filters: a search box, <strong>- Select Status -</strong>, <strong>- Select Type -</strong>, and
+<strong>- Select Access -</strong>. Columns: <strong>Plug-in Name</strong>, <strong>Status</strong>, <strong>Ordering</strong>,
+<strong>Type</strong>, <strong>Element</strong>, <strong>Access</strong>, and <strong>ID</strong>. A plugin whose files are
+missing is flagged under its name with &quot;Plugin file(s) not found!&quot;.</p>
+<p>The toolbar offers <strong>Edit</strong>, <strong>Enable</strong>, <strong>Disable</strong>, <strong>Check In</strong>,
+<strong>Options</strong>, and <strong>Help</strong>, each subject to your permissions. There is no
+<strong>New</strong> and no <strong>Delete</strong>: plugins arrive and leave through the
+<a href="../../extensions/extension-manager/index.html">Extension Manager</a>, and the Plug-in Manager
+only turns them on and off and configures them.</p>
+<h2 id="the-edit-screen">The edit screen</h2>
+<p><strong>Details</strong> holds the three settings you can change: <strong>Status</strong>,
+<strong>Access</strong>, and <strong>Ordering</strong>. Beside it is a read-only table: <strong>Plug-in
+Name</strong>, <strong>ID</strong>, <strong>Plug-in Type</strong> — the group the plugin belongs to, such as
+<code>authentication</code> or <code>members</code> — <strong>Plug-in File</strong>, <strong>Description</strong>, and who
+last modified it. Those describe where the plugin lives on disk and come
+from its manifest.</p>
+<p>The toolbar has <strong>Save</strong>, <strong>Save &amp; Close</strong>, <strong>Close</strong>, and <strong>Help</strong>.</p>
+<p>Every plugin's parameters are listed by group in the generated
+<a href="../../../reference/configuration/index.html#plugin-groups">configuration reference</a>.</p>
+<h2 id="older-screenshots">Older screenshots</h2>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The screenshots below came from the imported version of this
+page. The screens are the same but the administrator template has been
+restyled since.</p>
+</aside>
+<p><img src="../../media/plugins-plugin-manager-01.png" alt="The Plug-in Manager list" /></p>
+<p><img src="../../media/plugins-plugin-manager-02.png" alt="Choosing a plugin from the list" /></p>
+<p><img src="../../media/plugins-plugin-manager-07.png" alt="The parameter panels on the right of the plugin edit screen" /></p>
+<p><img src="../../media/plugins-plugin-manager-08.png" alt="Saving the plugin" /></p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 35f103b1b3</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../modules/index.html" rel="prev"><span>Previous</span>Modules</a><a class="pager__next" href="../authentication/index.html" rel="next"><span>Next</span>Authentication</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/05-configuring/05-plugins.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

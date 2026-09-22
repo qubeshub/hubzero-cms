@@ -1,5 +1,17 @@
 # QUBESHub Instance of The HUBzero® Platform for Scientific Collaboration
 
+[![HubZero Documentation](https://img.shields.io/badge/docs-hubzero.github.io-0fa1ca)](https://hubzero.github.io/hubzero-cms/)
+
+Instructions for installing the Hubzero platform from packages are in the
+[Installation](https://hubzero.github.io/hubzero-cms/installation/) book.
+
+Documentation for hub managers, hub users, tool developers, and CMS developers
+is published at https://hubzero.github.io/hubzero-cms/ and written as Markdown
+under [`docs/`](docs/README.md) in this repository. See the [writing guide](docs/STYLE.md) to contribute a page.
+
+Hubzero is an open source project, with code contributions from numerous groups and organizations. If you'd like to contribute, please read the
+[Contributing](https://hubzero.github.io/hubzero-cms/contributing/) book.
+
 [![DOI](https://zenodo.org/badge/70513480.svg)](https://zenodo.org/badge/latestdoi/70513480)
 
 # Development Workflow

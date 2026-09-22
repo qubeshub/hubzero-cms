@@ -177,11 +177,11 @@ $this->js();
 
 					<label>
 						<?php echo Lang::txt('PLG_COURSES_REVIEWS_YOUR_COMMENTS'); ?>: <span class="required"><?php echo Lang::txt('PLG_COURSES_REVIEWS_REQUIRED'); ?></span>
-						<?php echo $this->editor('comment[content]', $this->escape(stripslashes($comment->get('content'))), 35, 20, 'commentcontent', array('class' => 'minimal no-footer')); ?>
+						<?php echo $this->editor('comment[content]', $this->escape(stripslashes((string) $comment->get('content'))), 35, 20, 'commentcontent', array('class' => 'minimal no-footer')); ?>
 					</label>
 
 
-					<label id="comment-anonymous-label">
+					<label class="comment-anonymous-label">
 						<?php if ($this->params->get('comments_anon', 1)) { ?>
 							<input class="option" type="checkbox" name="comment[anonymous]" id="comment-anonymous" value="1"<?php if ($comment->get('anonymous')) { echo ' checked="checked"'; } ?> />
 							<?php echo Lang::txt('PLG_COURSES_REVIEWS_POST_ANONYMOUSLY'); ?>

@@ -21,6 +21,7 @@ use Route;
 use Lang;
 use User;
 use App;
+use Session;
 
 /**
  * Login Controller
@@ -332,6 +333,16 @@ class Auth extends SiteController
 	 **/
 	protected function isBase64($str)
 	{
+		// An absent `return` gives getString() null, which this handed straight
+		// to preg_match() -- a PHP 8 deprecation -- and then answered true for,
+		// so the caller ran base64_decode(null) for a second one, both printed
+		// ahead of the Location header. The caller's fallback is the same either
+		// way, so refusing the empty string changes no live URL.
+		if ($str === null || $str === '')
+		{
+			return false;
+		}
+
 		if (preg_match('/[^A-Za-z0-9\+\/\=]/', $str))
 		{
 			return false;
@@ -494,18 +505,31 @@ class Auth extends SiteController
 
 			$return = User::getState('login.form.return');
 
+			// Resolve the return URL. Route::url() turns an internal
+			// "index.php?option=..." URL into SEF; if $return is already a
+			// SEF/absolute internal path (e.g. carried in from an email-confirm
+			// link) it comes back empty, so fall back to the already-validated
+			// raw value rather than redirecting to an empty URL.
+			$target = Route::url($return, false);
+			if (empty($target))
+			{
+				// $return is already a SEF/internal URL, or was cleared by a
+				// plugin; never redirect to an empty URL.
+				$target = $return ?: Route::url('index.php?option=com_members&task=myaccount', false);
+			}
+
 			// If no_html is set, return json response
 			if (Request::getInt('no_html', 0))
 			{
 				echo json_encode(array(
 					'success'  => true,
-					'redirect' => Route::url($return, false)
+					'redirect' => $target
 				));
 				exit;
 			}
 			else
 			{
-				App::redirect(Route::url(User::getState('login.form.return'), false));
+				App::redirect($target);
 			}
 		}
 		else
@@ -592,7 +616,12 @@ class Auth extends SiteController
 		}
 		else
 		{
-			$return = Reoute::url('index.php');
+			$return = Route::url('index.php');
+		}
+
+		if (!$return || !Uri::isInternal($return))
+		{
+			$return = Route::url('index.php');
 		}
 
 		App::redirect($return);

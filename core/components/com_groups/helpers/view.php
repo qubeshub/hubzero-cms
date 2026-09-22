@@ -16,6 +16,7 @@ use Route;
 use Lang;
 use User;
 use App;
+use Component;
 
 class View
 {
@@ -300,7 +301,7 @@ class View
 				else
 				{
 					$out .= '<li class="' . $cls . '">';
-					$out .= '<a class="page" title="' . $page->get('title') . '" href="' . $page->url() . '">' . $page->get('title') . '</a>';
+					$out .= '<a class="page" href="' . $page->url() . '">' . $page->get('title') . '</a>';
 				}
 
 				// do we have child menu items
@@ -408,7 +409,7 @@ class View
 				}
 
 				// return message letting user know they dont have access
-				$content = '<p class="info">' . Lang::txt('You do not have the permissions to access this group page.') . '</p>';
+				$content = '<p class="info">' . Lang::txt('You do not have the permissions to access this group page. Please log in to access or request membership.') . '</p>';
 			}
 		}
 

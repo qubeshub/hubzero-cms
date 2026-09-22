@@ -1,0 +1,62 @@
+name: PHP lint
+
+# Two checks that need no dependencies and catch faults nothing else does.
+#
+# The syntax pass is ordinary. The facade pass is not: the CMS registers its
+# facades as root-namespace aliases, so a namespaced file that writes
+# Route::url() without importing Route resolves the name inside its own
+# namespace. An autoloader fallback aliases the last path segment onto the
+# facade, so that usually still works — but not when the running client does
+# not register that alias, and not when a real class of the same short name
+# lives in the file's own namespace, where the call quietly reaches that class
+# instead. The file parses either way, so a syntax check says nothing, and the
+# failure only surfaces on the path that reaches it. 730 of these were fixed
+# at once; this keeps them from coming back.
+
+on:
+  push:
+    branches: [2.4-main]
+    paths:
+      - '**.php'
+      - '.github/workflows/php-lint.yml'
+  pull_request:
+    paths:
+      - '**.php'
+      - '.github/workflows/php-lint.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: php-lint-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      - name: Syntax
+        run: |
+          status=0
+          while IFS= read -r file; do
+            php -l "$file" > /dev/null 2>&1 || { php -l "$file"; status=1; }
+          done < <(find core app -name '*.php' -not -path '*/vendor/*' 2>/dev/null)
+          exit $status
+        shell: bash
+
+      - name: Global facades are imported where they are used
+        run: php docs/_tools/lint/missing-facade-imports.php
+
+      # Lang::txt() returns its argument when a key is undefined, so a missing
+      # string is not an error: the raw key is printed into the page. 444 are
+      # undefined today. The ceiling stops that number growing; lower it as
+      # they are defined.
+      - name: Language keys the code asks for are defined
+        run: php docs/_tools/lint/undefined-language-keys.php --quiet --max=444

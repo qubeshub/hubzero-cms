@@ -8,7 +8,7 @@
 // no direct access
 defined('_HZEXEC_') or die;
 ?>
-<span class="breadcrumbs<?php echo $moduleclass_sfx; ?> pathway<?php echo $moduleclass_sfx; ?>" aria-label="<?php echo Lang::txt('MOD_BREADCRUMBS'); ?>">
+<nav class="breadcrumbs<?php echo $moduleclass_sfx; ?> pathway<?php echo $moduleclass_sfx; ?>" aria-label="<?php echo Lang::txt('MOD_BREADCRUMBS'); ?>">
 	<?php
 	if ($params->get('showHere', 1))
 	{
@@ -39,7 +39,7 @@ defined('_HZEXEC_') or die;
 			// Render all but last item - along with separator
 			if (!empty($item->link))
 			{
-				echo '<a href="' . $item->link . '" class="pathway">' . html_entity_decode($item->name) . '</a>';
+				echo '<a href="' . $item->link . '" class="pathway" aria-label="' . htmlspecialchars(html_entity_decode($item->name), ENT_COMPAT, 'UTF-8') . ' (breadcrumb)">' . html_entity_decode($item->name) . '</a>';
 			}
 			else
 			{
@@ -59,4 +59,4 @@ defined('_HZEXEC_') or die;
 		}
 	endforeach;
 	?>
-</span>
+</nav>

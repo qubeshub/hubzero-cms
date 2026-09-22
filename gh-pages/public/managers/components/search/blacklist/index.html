@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Blacklist · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="The blacklist strikes an individual document from the search index and keeps it out. Without it, a document deleted from Solr comes straight back the next time…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/components/search/blacklist/">
+  <link rel="icon" href="../../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../../index.html">
+      <img class="brand__mark" src="../../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../../search-index.json" data-base="../../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../../docs/index.html">About</a>
+      <a href="../../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../../index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../publications/index.html">Publications</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../saml/index.html">SAML</a></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Blacklist</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#blacklisting-a-document">Blacklisting a document</a></li>
+<li class="toc__item toc__item--l2"><a href="#reviewing-and-undoing">Reviewing and undoing</a></li>
+<li class="toc__item toc__item--l2"><a href="#what-the-block-covers">What the block covers</a></li>
+</ol></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Components</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Search</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Blacklist</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Blacklist</h1>
+        </header>
+        
+        <div class="prose">
+<p>The blacklist strikes an individual document from the search index and keeps
+it out. Without it, a document deleted from Solr comes straight back the next
+time its record is saved or its component re-indexed.</p>
+<p>Most hubs never use it. It exists for the one record that has to stop
+appearing in search now, and that you cannot or should not remove from the
+hub: a resource whose author has asked for it to be quietly withdrawn while a
+correction is prepared, a member profile a spam wave has filled with
+keywords, a project page that got indexed while it was briefly public. In
+each case the record has to stay where it is, and only its visibility in
+search is the problem.</p>
+<aside class="admonition admonition--important">
+<p><strong>Important:</strong> The blacklist is not a way to hide something. The record
+itself is untouched. Blacklisting a resource does not unpublish it, does
+not hide its page, does not restrict its access level, and does not stop
+anyone reaching it by link, by a menu item, or from a listing page — it
+only removes it from search results. If the content should not be readable,
+unpublish it or change its access level; the blacklist is the wrong tool
+and will leave you thinking the problem is solved.</p>
+</aside>
+<h2 id="blacklisting-a-document">Blacklisting a document</h2>
+<ol>
+<li>Go to <strong>Components &gt; Search &gt; Searchable Components</strong>.</li>
+<li>Select the record count beside the type you want, for example
+<strong>Resources</strong>. That opens <em>Solr Search Indexed Documents</em> for that type.</li>
+<li>Find the document. The <strong>Filter</strong> box takes a Solr query, so
+<code>title:microscope</code> narrows the list; leaving it empty lists everything.</li>
+<li>Select <strong>Add to blacklist</strong> in that row.</li>
+</ol>
+<p>The document is deleted from Solr as the button is pressed, and the row's
+button changes to <strong>Marked for Removal</strong>. There is no queue and no waiting
+period: the next search will not find it.</p>
+<p>The change is reversible, but not symmetrically: removing the entry lifts the
+block without putting the document back, so undoing a blacklisting takes a
+re-index of that type as well. Blacklisting one record is instant and
+harmless; be more careful about working down a long list, since restoring
+what you change your mind about means saving each record again or re-indexing
+the whole type.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The screen reports <em>Successfully marked … for removal</em> whether or
+not Solr accepted the delete — the helper that sends it does not check the
+response. If a document is still turning up in search afterwards, check the
+Overview screen for the connection, then re-open the document listing.</p>
+</aside>
+<h2 id="reviewing-and-undoing">Reviewing and undoing</h2>
+<p><strong>Components &gt; Search &gt; Index Blacklist</strong> lists every entry, showing the
+document id, who added it, and when, each with a <strong>Remove entry</strong> button.
+The screen reads <em>There are no entries on the blacklist</em> when it is empty.</p>
+<p>Removing an entry only lifts the block; it does not put the document back.
+The document returns the next time its record is saved, or the next time its
+component is re-indexed from
+<a href="../admin/index.html#searchable-components">Searchable Components</a> or <strong>Run Full
+Index</strong>.</p>
+<h2 id="what-the-block-covers">What the block covers</h2>
+<p>Every route into the index checks the blacklist before writing:</p>
+<ul>
+<li>the live path, when <strong>Search - Solr</strong> handles a saved record;</li>
+<li>the batch path, when a component is indexed or rebuilt.</li>
+</ul>
+<p>The check is by document id, and the id is unique to one record of one type,
+so blacklisting a resource has no effect on any other document.</p>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 009ec973b7</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../plugins/index.html" rel="prev"><span>Previous</span>Plugins</a><a class="pager__next" href="../../services/index.html" rel="next"><span>Next</span>Services</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/09-components/31-search/07-blacklist.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

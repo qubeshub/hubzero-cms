@@ -32,6 +32,8 @@ use Date;
 use User;
 use ZipArchive;
 use App;
+use Component;
+use Config;
 
 /**
  * Jobs controller class for postings
@@ -366,7 +368,7 @@ class Jobs extends SiteController
 		     ->set('task', $this->_task)
 		     ->set('emp', $this->_emp)
 			 ->set('jobs', $jobs)
-		     ->set('admin', $this->admin)
+		     ->set('admin', $this->_admin)
 		     ->display();
 		}
 		else

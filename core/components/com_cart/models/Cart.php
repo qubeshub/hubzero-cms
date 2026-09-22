@@ -13,6 +13,7 @@ use Lang;
 use Components\Storefront\Models\Warehouse;
 use Components\Cart\Helpers\CartHelper;
 use Components\Cart\Helpers\Audit;
+use Component;
 
 require_once dirname(__DIR__) . DS. 'helpers' . DS . 'Helper.php';
 require_once dirname(__DIR__) . DS. 'helpers' . DS . 'Audit.php';
@@ -241,11 +242,11 @@ abstract class Cart
 
 		if (isset($filters['sort']) && (empty($filters['count']) || !$filters['count']))
 		{
-			$sql .= " ORDER BY " . $filters['sort'];
+			$sql .= " ORDER BY " . (preg_replace('/[^a-zA-Z0-9_,. ]/', '', (string) $filters['sort']) ?: '1');
 
 			if (isset($filters['sort_Dir']))
 			{
-				$sql .= ' ' . $filters['sort_Dir'];
+				$sql .= ' ' . ((strtoupper(trim($filters['sort_Dir'])) == 'ASC') ? 'ASC' : 'DESC');
 			}
 		}
 		else {
@@ -337,7 +338,7 @@ abstract class Cart
 	 */
 	protected function cartIsLinked($crtId)
 	{
-		$sql = "SELECT COUNT(`crtId`) FROM `#__cart_carts` WHERE `crtId` = {$crtId} AND `uidNumber` IS NOT NULL";
+		$sql = "SELECT COUNT(`crtId`) FROM `#__cart_carts` WHERE `crtId` = " . (int) $crtId . " AND `uidNumber` IS NOT NULL";
 		$this->_db->setQuery($sql);
 		$isLinked = $this->_db->loadResult();
 

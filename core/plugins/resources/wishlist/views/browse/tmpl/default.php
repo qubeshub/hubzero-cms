@@ -23,6 +23,17 @@ $this->css();
 		<caption>
 			<?php echo $this->title; ?>
 		</caption>
+		<thead>
+			<tr>
+				<th scope="col" class="sr-only"><?php echo Lang::txt('COM_WISHLIST_COL_STATUS'); ?></th>
+				<th scope="col" class="sr-only"><?php echo Lang::txt('COM_WISHLIST_COL_WISH'); ?></th>
+			<?php if ($this->config->get('banking')) { ?>
+				<th scope="col" class="sr-only"><?php echo Lang::txt('COM_WISHLIST_COL_BONUS'); ?></th>
+			<?php } ?>
+				<th scope="col" class="sr-only"><?php echo Lang::txt('COM_WISHLIST_COL_VOTES'); ?></th>
+				<th scope="col" class="sr-only"><?php echo Lang::txt('COM_WISHLIST_COL_RANKING'); ?></th>
+			</tr>
+		</thead>
 		<tbody>
 		<?php
 		if ($this->rows->count())
@@ -76,7 +87,7 @@ $this->css();
 				}
 		?>
 				<tr class="<?php echo $state; ?>">
-					<th class="<?php echo $status; ?>">
+					<th scope="row" class="<?php echo $status; ?>">
 						<span class="entry-id"><?php echo $item->id; ?></span>
 					</th>
 					<td>
@@ -177,51 +188,73 @@ $this->css();
 		<?php
 			} // end foreach
 		}
+		else
+		{
+		?>
+			<tr>
+				<td colspan="5"><?php echo Lang::txt('COM_WISHLIST_NO_WISHES_BE_FIRST'); ?></td>
+			</tr>
+		<?php
+		}
 		?>
 		</tbody>
 	</table>
 
-<div class="customfields">
-	<?php
-		// Parse for <nb:field> tags
-		$type = $this->resource->type;
+<?php
+	// Parse for <nb:field> tags
+	$type = $this->resource->type;
 
-		$data = array();
-		preg_match_all("#<nb:(.*?)>(.*?)</nb:(.*?)>#s", $this->resource->fulltxt, $matches, PREG_SET_ORDER);
-		if (count($matches) > 0)
+	$data = array();
+	preg_match_all("#<nb:(.*?)>(.*?)</nb:(.*?)>#s", $this->resource->fulltxt, $matches, PREG_SET_ORDER);
+	if (count($matches) > 0)
+	{
+		foreach ($matches as $match)
 		{
-			foreach ($matches as $match)
+			$data[$match[1]] = str_replace('="/site', '="' . substr(PATH_APP, strlen(PATH_ROOT)) . '/site', $match[2]);
+		}
+	}
+	include_once Component::path('com_resources') . DS . 'models' . DS . 'elements.php';
+	$elements = new \Components\Resources\Models\Elements($data, $this->resource->type->customFields);
+	$schema = $elements->getSchema();
+	$tab = Request::getCmd('active', 'wishlist');  // The active tab (section)
+
+	$hasCustomFields = false;
+	if (is_object($schema))
+	{
+		if (!isset($schema->fields) || !is_array($schema->fields))
+		{
+			$schema->fields = array();
+		}
+		foreach ($schema->fields as $field)
+		{
+			if (isset($data[$field->name]) && $elements->display($field->type, $data[$field->name]) && isset($field->display) && $field->display == $tab)
 			{
-				$data[$match[1]] = str_replace('="/site', '="' . substr(PATH_APP, strlen(PATH_ROOT)) . '/site', $match[2]);
+				$hasCustomFields = true;
+				break;
 			}
 		}
-		include_once Component::path('com_resources') . DS . 'models' . DS . 'elements.php';
-		$elements = new \Components\Resources\Models\Elements($data, $this->resource->type->customFields);
-		$schema = $elements->getSchema();
-		$tab = Request::getCmd('active', 'wishlist');  // The active tab (section)
+	}
 
-		if (is_object($schema))
+	if ($hasCustomFields) :
+?>
+<div class="customfields">
+	<?php
+		foreach ($schema->fields as $field)
 		{
-			if (!isset($schema->fields) || !is_array($schema->fields))
+			if (isset($data[$field->name]))
 			{
-				$schema->fields = array();
-			}
-			foreach ($schema->fields as $field)
-			{
-				if (isset($data[$field->name]))
+				if ($elements->display($field->type, $data[$field->name]) && isset($field->display) && $field->display == $tab)
 				{
-					if ($elements->display($field->type, $data[$field->name]) && isset($field->display) && $field->display == $tab )
-					{
-						?>
-						<h4><?php echo $field->label; ?></h4>
-						<div class="resource-content">
-						<?php echo $elements->display($field->type, $data[$field->name]); ?>
-						</div>
-						<?php
-					}
+					?>
+					<h4><?php echo $field->label; ?></h4>
+					<div class="resource-content">
+					<?php echo $elements->display($field->type, $data[$field->name]); ?>
+					</div>
+					<?php
 				}
 			}
 		}
 	?>
 </div><!-- / .customfields -->
+<?php endif; ?>
 </div><!-- / .container -->

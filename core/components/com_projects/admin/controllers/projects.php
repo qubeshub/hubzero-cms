@@ -21,6 +21,10 @@ use Route;
 use Lang;
 use User;
 use App;
+use Config;
+use Date;
+use Event;
+use Filesystem;
 
 include_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'orm' . DS . 'description' . DS . 'field.php';
 require_once dirname(dirname(dirname(__DIR__))) . DS . 'com_members' . DS . 'helpers' . DS . 'utility.php';
@@ -134,7 +138,7 @@ class Projects extends AdminController
 			'quota'      => Request::getString('quota', 'all', 'post')
 		);
 
-		if (!in_array($this->view->filters['filterby'], array('active', 'archived')))
+		if (!in_array($this->view->filters['filterby'], array('setting_up_in_progress', 'active', 'deleted', 'archived', 'rejected', 'pending_approval')))
 		{
 			$this->view->filters['filterby'] = '';
 		}
@@ -482,6 +486,17 @@ class Projects extends AdminController
 		{
 			Notify::error($model->getError());
 			return $this->cancelTask();
+		}
+
+		// Re-sync the project's login (pr-<alias>) group to the new state so SFTP
+		// (projfs) access is revoked on delete and restored on reinstate -- the same
+		// fix as the site-side changestate (ticket 2802).
+		if (in_array($action, array('delete', 'reinstate'), true))
+		{
+			$model->table('Owner')->sysGroup(
+				$model->get('alias'),
+				$this->config->get('group_prefix', 'pr-')
+			);
 		}
 
 		// Incoming tags
@@ -902,6 +917,11 @@ class Projects extends AdminController
 	 */
 	public function eraseTask()
 	{
+		if (!User::authorise('core.delete', $this->_option) && !User::authorise('core.manage', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		$id = Request::getInt('id', 0);
 		$permanent = 1;
 
@@ -1016,6 +1036,11 @@ class Projects extends AdminController
 	 */
 	public function gitaddTask()
 	{
+		if (!User::authorise('core.edit', $this->_option) && !User::authorise('core.manage', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		$id   = Request::getInt('id', 0);
 		$file = Request::getString('file', '');
 
@@ -1075,6 +1100,11 @@ class Projects extends AdminController
 	 */
 	public function gitgcTask()
 	{
+		if (!User::authorise('core.edit', $this->_option) && !User::authorise('core.manage', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		$id = Request::getInt('id', 0);
 
 		// Get repo model
@@ -1109,6 +1139,11 @@ class Projects extends AdminController
 	 */
 	public function fixsyncTask()
 	{
+		if (!User::authorise('core.edit', $this->_option) && !User::authorise('core.manage', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		$id = Request::getInt('id', 0);
 		$service = 'google';
 
@@ -1373,11 +1408,11 @@ class Projects extends AdminController
 		$term = trim(Request::getString('term', ''));
 		$term = \Components\Members\Helpers\Utility::escapeSpecialChars($term);
 		
-		$verNum = \Component::params('com_members')->get('rorApiVersion');
+		$verNum = \Component::params('com_members')->get('rorApiVersion', 'v2');
 		
 		if (!empty($verNum))
 		{
-			$queryURL = "https://api.ror.org/$verNum/organizations?filter=types:funder&query.advanced=names.value:" . urlencode($term);
+			$queryURL = "https://api.ror.org/$verNum/organizations?filter=types:funder&query=" . urlencode($term);
 			
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $queryURL);
@@ -1432,11 +1467,11 @@ class Projects extends AdminController
 		$agency = trim($grantAgency);
 		$agencyQry = \Components\Members\Helpers\Utility::escapeSpecialChars($agency);
 		
-		$verNum = \Component::params('com_members')->get('rorApiVersion');
+		$verNum = \Component::params('com_members')->get('rorApiVersion', 'v2');
 		
 		if (!empty($verNum))
 		{
-			$queryURL = "https://api.ror.org/$verNum/organizations?filter=types:funder&query.advanced=names.value:" . urlencode($agencyQry);
+			$queryURL = "https://api.ror.org/$verNum/organizations?filter=types:funder&query=" . urlencode($agencyQry);
 					
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $queryURL);

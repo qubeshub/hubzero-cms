@@ -122,7 +122,7 @@ class plgResourcesUsage extends \Hubzero\Plugin\Plugin
 			if ($action == 'top')
 			{
 				$dtm = Request::getString('datetime', '0000-00-00 00:00:00');
-				if (!preg_match("/([0-9]{4})-([0-9]{2})-([0-9]{2})[ ]([0-9]{2}):([0-9]{2}):([0-9]{2})/", $dtm))
+				if (!preg_match("/^([0-9]{4})-([0-9]{2})-([0-9]{2})[ ]([0-9]{2}):([0-9]{2}):([0-9]{2})$/", $dtm))
 				{
 					$dtm = '0000-00-00 00:00:00';
 				}
@@ -132,6 +132,11 @@ class plgResourcesUsage extends \Hubzero\Plugin\Plugin
 			if ($action == 'overview')
 			{
 				$this->getValues($model->id, Request::getInt('period', 13));
+				return;
+			}
+			if ($action == 'download')
+			{
+				$this->downloadData($model->id, Request::getInt('period', $period));
 				return;
 			}
 
@@ -334,7 +339,7 @@ class plgResourcesUsage extends \Hubzero\Plugin\Plugin
 				LEFT JOIN `#__resource_stats_tools_topvals` AS v ON v.id=t.id
 				WHERE t.resid = '$id'
 				AND t.period = '$prd'
-				AND t.datetime = '" . $datetime . "-00 00:00:00'
+				AND t.datetime = " . $database->quote($datetime . '-00 00:00:00') . "
 				AND t.id = $tid
 				AND v.top = '$top'
 				ORDER BY v.id, v.rank";
@@ -356,7 +361,7 @@ class plgResourcesUsage extends \Hubzero\Plugin\Plugin
 	{
 		$database = App::get('db');
 
-		$sql = "SELECT t.id FROM `#__resource_stats_tools` AS t WHERE t.resid = " . $database->quote($id) . " AND t.period = " . $database->quote($period) . " AND t.datetime = '" . $datetime . "-00 00:00:00' ORDER BY t.id LIMIT 1";
+		$sql = "SELECT t.id FROM `#__resource_stats_tools` AS t WHERE t.resid = " . $database->quote($id) . " AND t.period = " . $database->quote($period) . " AND t.datetime = " . $database->quote($datetime . '-00 00:00:00') . " ORDER BY t.id LIMIT 1";
 		$database->setQuery($sql);
 		return $database->loadResult();
 	}
@@ -401,7 +406,54 @@ class plgResourcesUsage extends \Hubzero\Plugin\Plugin
 
 		ob_clean();
 
+		header('Content-Type: application/json');
 		echo json_encode($data);
+		die();
+	}
+
+	/**
+	 * Stream the raw per-period usage statistics for a resource as a CSV file
+	 *
+	 * @param   integer  $id      Resource ID
+	 * @param   integer  $period  Stats period (1=monthly, 12=yearly, 14=cumulative, ...)
+	 * @return  void
+	 */
+	public function downloadData($id, $period=14)
+	{
+		$results = $this->getOverview($id, $period);
+
+		$columns = array(
+			'datetime', 'period', 'users', 'sessions', 'simulations', 'jobs',
+			'avg_wall', 'tot_wall', 'avg_cpu', 'tot_cpu',
+			'avg_view', 'tot_view', 'avg_wait', 'tot_wait',
+			'avg_cpus', 'tot_cpus', 'processed_on'
+		);
+
+		ob_clean();
+
+		header('Content-Type: text/csv; charset=utf-8');
+		header('Content-Disposition: attachment; filename="resource-' . intval($id) . '-usage-period-' . intval($period) . '.csv"');
+
+		$out = fopen('php://output', 'w');
+		fputcsv($out, $columns);
+
+		foreach ($results as $row)
+		{
+			$line = array();
+			foreach ($columns as $col)
+			{
+				$val = isset($row->$col) ? $row->$col : '';
+				// Normalize the 'YYYY-MM-00 00:00:00' period stamp to 'YYYY-MM'
+				if ($col == 'datetime')
+				{
+					$val = substr($val, 0, 7);
+				}
+				$line[] = $val;
+			}
+			fputcsv($out, $line);
+		}
+
+		fclose($out);
 		die();
 	}
 
@@ -562,6 +614,7 @@ class plgResourcesUsage extends \Hubzero\Plugin\Plugin
 
 		ob_clean();
 
+		header('Content-Type: application/json');
 		echo json_encode($json);
 		die();
 	}

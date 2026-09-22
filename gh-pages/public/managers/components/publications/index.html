@@ -1,0 +1,865 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Publications · Hub managers · Hubzero Documentation</title>
+  <meta name="description" content="Publications are versioned, citable releases of research output — datasets, papers, presentations, code. A member assembles one inside a project, a curator…">
+  <link rel="canonical" href="https://hubzero.github.io/hubzero-cms/managers/components/publications/">
+  <link rel="icon" href="../../../assets/hubzero-mark.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap">
+  <link rel="stylesheet" href="../../../assets/site.css?v=8a405e6d">
+</head>
+<body class="site-doc">
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="site-header">
+    <a class="brand" href="../../../index.html">
+      <img class="brand__mark" src="../../../assets/hubzero-mark.svg" alt="" aria-hidden="true">
+      <span class="brand__name">Hubzero</span>
+      <span class="brand__version">2.4</span>
+    </a>
+    <form class="search" role="search" data-index="../../../search-index.json" data-base="../../../">
+      <svg class="search__icon" viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M13 13l4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <label class="visually-hidden" for="search-input">Search the documentation</label>
+      <input class="search__input" id="search-input" type="search" name="q" placeholder="Search the documentation" autocomplete="off">
+      <ul class="search__results" hidden></ul>
+    </form>
+    <nav class="site-nav" aria-label="Site">
+      <a href="../../../docs/index.html">About</a>
+      <a href="../../../status/index.html">Status</a>
+      <a href="https://github.com/hubzero/hubzero-cms">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="doc">
+    <aside class="rail">
+      <details class="rail__fold">
+        <summary class="rail__summary">In this book</summary>
+        <a class="rail__book" href="../../index.html">Hub managers</a>
+        <nav aria-label="Hub managers contents">
+<ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../installing/index.html">Installing a hub</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../getting-started/index.html">Getting started</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../advancedsetup/index.html">Integrations</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../maintenance/index.html">Daily Maintenance</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/approvingcontent/index.html">Approving Content</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/tickets/index.html">Support Tickets</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/notices/index.html">Site Notices</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../maintenance/cron/index.html">Scheduled Tasks</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../faq/index.html">Frequently asked questions</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../configuring/index.html">Configuring</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/hub/index.html">Global configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/components/index.html">Components</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/modules/index.html">Modules</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/authentication/index.html">Authentication</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../configuring/extauth/index.html">External authenticators</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../users/index.html">Users</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../users/members/index.html">Members</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/registration/index.html">Registration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimport/index.html">Member import</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/memberimportarchive/index.html">Member import (archive)</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/groups/index.html">Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accessgroups/index.html">Access Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/accesslevels/index.html">Access Levels</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/supergroups/index.html">Super Groups</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../users/user-notes/index.html">User notes</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../menus/index.html">Menus</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../content/index.html">Content</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../content/articlemanager/index.html">Article Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/categories/index.html">Categories</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/states/index.html">States, deleting and check-out</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../content/urls/index.html">URLs</a></li>
+</ul></details></li>
+<li class="tree__section is-open"><details open><summary><a class="tree__link" href="../index.html">Components</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../activity/index.html">Activity</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../answers/index.html">Answers</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../billboards/index.html">Billboards</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../blogs/index.html">Blogs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cache/index.html">Cache</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cart/index.html">Cart</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../checkin/index.html">Check-in</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../citations/index.html">Citations</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../collections/index.html">Collections</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../courses/index.html">Courses</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cpanel/index.html">Control Panel</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../cron/index.html">Cron</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../dataviewer/index.html">DataViewer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../developer/index.html">Developer</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../events/index.html">Events</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../feedback/index.html">Feedback</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../forum/index.html">Forum</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../jobs/index.html">Jobs</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../kb/index.html">Knowledge base</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../languages/index.html">Language Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../mailto/index.html">Mailto</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../messages/index.html">Messages</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../newsletters/index.html">Newsletters</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../oaipmh/index.html">OAI-PMH</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../poll/index.html">Poll</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../projects/index.html">Projects</a></li>
+<li class="tree__leaf"><a class="tree__link is-active" href="index.html" aria-current="page">Publications</a><ol class="toc">
+<li class="toc__item toc__item--l2"><a href="#the-pipeline">The pipeline</a></li>
+<li class="toc__item toc__item--l2"><a href="#where-to-find-it">Where to find it</a></li>
+<li class="toc__item toc__item--l2"><a href="#publications-2">Publications</a></li>
+<li class="toc__item toc__item--l2"><a href="#editing-a-publication">Editing a publication</a></li>
+<li class="toc__item toc__item--l2"><a href="#licenses">Licenses</a></li>
+<li class="toc__item toc__item--l2"><a href="#categories">Categories</a></li>
+<li class="toc__item toc__item--l2"><a href="#master-types">Master Types</a></li>
+<li class="toc__item toc__item--l2"><a href="#batch-create">Batch Create</a></li>
+<li class="toc__item toc__item--l2"><a href="#curation">Curation</a></li>
+<li class="toc__item toc__item--l3"><a href="#nothing-is-curated-until-you-change-a-setting">Nothing is curated until you change a setting</a></li>
+<li class="toc__item toc__item--l3"><a href="#turning-curation-on">Turning curation on</a></li>
+<li class="toc__item toc__item--l3"><a href="#what-else-to-check">What else to check</a></li>
+<li class="toc__item toc__item--l2"><a href="#scheduled-jobs">Scheduled jobs</a></li>
+<li class="toc__item toc__item--l2"><a href="#options">Options</a></li>
+<li class="toc__item toc__item--l2"><a href="#api">API</a></li>
+<li class="toc__item toc__item--l2"><a href="#doi-registration">DOI registration</a></li>
+<li class="toc__item toc__item--l3"><a href="#choosing-a-service">Choosing a service</a></li>
+<li class="toc__item toc__item--l3"><a href="#what-to-configure">What to configure</a></li>
+<li class="toc__item toc__item--l3"><a href="#what-gets-registered">What gets registered</a></li>
+<li class="toc__item toc__item--l3"><a href="#how-datacite-registration-runs">How DataCite registration runs</a></li>
+<li class="toc__item toc__item--l3"><a href="#master-dois">Master DOIs</a></li>
+<li class="toc__item toc__item--l3"><a href="#when-dois-are-required">When DOIs are required</a></li>
+<li class="toc__item toc__item--l3"><a href="#further-reading">Further reading</a></li>
+</ol></li>
+<li class="tree__leaf"><a class="tree__link" href="../redirect/index.html">Redirect</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../resources/index.html">Resources</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../saml/index.html">SAML</a></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../search/index.html">Search</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../search/install/index.html">Installation and first-time configuration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/admin/index.html">Administration</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/breadth/index.html">Breadth</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/boosting/index.html">Boosting</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/index/index.html">Maintaining the index</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/plugins/index.html">Plugins</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../search/blacklist/index.html">Blacklist</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../services/index.html">Services</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../storefront/index.html">Storefront</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../support/index.html">Support</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tags/index.html">Tags</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../tools/index.html">Tools</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../usage/index.html">Usage</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../whatsnew/index.html">What&#x27;s New</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../wiki/index.html">Wiki</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../wishlist/index.html">Wish lists</a></li>
+</ul></details></li>
+<li class="tree__section"><details><summary><a class="tree__link" href="../../extensions/index.html">Extensions</a></summary><ul class="tree">
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/modules/index.html">Module Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/templates/index.html">Template Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/plugins/index.html">Plug-in Manager</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../extensions/extension-manager/index.html">Extension Manager</a></li>
+</ul></details></li>
+<li class="tree__leaf"><a class="tree__link" href="../../spam/index.html">Spam</a></li>
+<li class="tree__leaf"><a class="tree__link" href="../../security/index.html">Security considerations</a></li>
+</ul>
+        </nav>
+      </details>
+      <script>if (window.matchMedia("(min-width: 841px)").matches) { document.querySelector(".rail__fold").open = true; }</script>
+    </aside>
+
+    <main id="main-content" class="article-wrap" tabindex="-1">
+      <nav class="crumbs" aria-label="Breadcrumb"><a href="../../../index.html">Home</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../../index.html">Hub managers</a><span class="crumbs__sep" aria-hidden="true">/</span><a href="../index.html">Components</a><span class="crumbs__sep" aria-hidden="true">/</span><span aria-current="page">Publications</span></nav>
+      <article class="article">
+        <header class="article__header">
+          <p class="eyebrow">Hub managers</p>
+          <h1>Publications</h1>
+        </header>
+        
+        <div class="prose">
+<p>Publications are versioned, citable releases of research output — datasets,
+papers, presentations, code. A member assembles one inside a project, a
+curator reviews it if the hub is set up to require that, and on approval it
+gets a DOI and a permanent page at <code>/publications/&lt;id&gt;</code>. This chapter covers the administrator's side. The
+<a href="../../../users/publications/index.html">Hub users</a> book covers writing and
+curating one, and <a href="#doi-registration">DOI registration</a> covers the identifier
+service.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> On a stock hub nothing is curated. The shipped install turns
+auto-approve on, and a member's submission goes straight to published with
+no curator involved. If you believe review is happening, read
+<a href="#curation">Curation</a> before anything else on this page.</p>
+</aside>
+<h2 id="the-pipeline">The pipeline</h2>
+<p>This is the middle stage of three components that belong together.</p>
+<table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Component</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Work</td>
+<td><a href="../projects/index.html">Projects</a></td>
+<td>The private team workspace the material comes out of.</td>
+</tr>
+<tr>
+<td>Release</td>
+<td><strong>Publications</strong></td>
+<td>A frozen, versioned, citable slice of that work, with a DOI.</td>
+</tr>
+<tr>
+<td>Catalogue</td>
+<td><a href="../resources/index.html">Resources</a></td>
+<td>The public shelf a visitor browses at <code>/resources</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>What you decide at this stage is <strong>what a release has to contain, whether
+anyone checks it before the world sees it, and whether it gets a DOI</strong>. Those
+are the three questions, and they map onto three screens: <a href="#master-types">Master
+Types</a> for the contents, <a href="#curation">Curation</a> for the check,
+and <a href="#doi-registration">DOI registration</a> for the identifier.</p>
+<p>A publication is not a resource. Nothing in the tree creates a resource
+record from a publication, and the two live in separate tables with separate
+browse pages. It is also not a file share: it is a fixed set of files, a
+citation, and a metadata record, and once published its files do not change
+without a new version.</p>
+<p>Publications need Projects. A publication is assembled inside a project's
+<strong>Publications</strong> tab, so if the <code>projects</code> Publications plugin is disabled
+nobody can make one, whatever this component's settings say.</p>
+<h2 id="where-to-find-it">Where to find it</h2>
+<p>Open it under <strong>Components &gt; Publications</strong>. Six sub-menu links sit at the
+top left: <strong>Publications</strong>, <strong>Licenses</strong>, <strong>Categories</strong>, <strong>Master Types</strong>,
+<strong>Batch Create</strong>, and <strong>Plugins</strong> — the last opens the Plugins component
+filtered to the <code>publications</code> folder, and only appears if you may manage
+plugins.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> <strong>Component ON/OFF</strong> does nothing. The manifest declares it Off
+and the shipped install row sets it On, and the stored row is what runs, so
+a hub installed from this release has it On. Setting it Off changes one
+thing: the Publications list grows the banner <em>This component is currently
+disabled and is inaccessible to end users.</em> The banner is all that is left
+of the option — the front-end code that redirected <code>/publications</code> to the
+Resources component is commented out, so the site works either way. What
+actually decides whether members can publish is the <code>projects</code>
+Publications plugin.</p>
+</aside>
+<h2 id="publications-2">Publications</h2>
+<p>You come here to fix or withdraw something, not to make one — there is no
+<strong>New</strong> button and there cannot be, because a publication is assembled in a
+project. The common errands are approving a submission when the curators
+are away, unpublishing a dataset that turned out to be wrong, and correcting
+a DOI.</p>
+<p>The <strong>Publication Manager</strong> lists every publication version. Columns are
+<strong>ID</strong>, <strong>Title</strong>, <strong>@v.</strong> (the version label), <strong>Status</strong>, <strong>Project</strong>,
+<strong>Releases</strong> (a link to that publication's version list), <strong>Master Type/
+Category</strong>, and <strong>Last Modified</strong>. ID, Title, and Project sort. Filter by a
+search term, by <strong>Status</strong>, or by <strong>Category</strong>, then press <strong>Go</strong>. Rows
+awaiting review are highlighted; a row another administrator has open shows
+<strong>[Checked out]</strong> in place of its checkbox, and a key under the list explains
+the status colours.</p>
+<p>The toolbar carries <strong>Options</strong>, <strong>Edit</strong>, and <strong>Delete</strong>. There is no
+<strong>New</strong> button — publications can only be started from the front end.
+Deleting removes the checked publications and all of their versions,
+including the files on disk; the principal version of a multi-version
+publication cannot be deleted on its own.</p>
+<h2 id="editing-a-publication">Editing a publication</h2>
+<p>Clicking a title opens one version for editing and checks it out. The left
+column holds the content, the right column the record's metadata and
+publishing controls.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Title</td>
+<td>Required.</td>
+</tr>
+<tr>
+<td>Category</td>
+<td>Required. Chosen from the contributable categories.</td>
+</tr>
+<tr>
+<td>Alias</td>
+<td>Optional. Used in place of the numeric ID in the publication's URL.</td>
+</tr>
+<tr>
+<td>Synopsis</td>
+<td>Short plain-text summary. Stored in the version's <code>abstract</code> column.</td>
+</tr>
+<tr>
+<td>Abstract</td>
+<td>The long description, in the editor. Stored in the version's <code>description</code> column.</td>
+</tr>
+<tr>
+<td>Metadata</td>
+<td>The custom fields defined by this publication's master type. Shows <em>No metadata collected</em> when the type defines none.</td>
+</tr>
+<tr>
+<td>Release Notes</td>
+<td>What changed in this version.</td>
+</tr>
+<tr>
+<td>Authors</td>
+<td>Reordered by dragging. <strong>Add author</strong> picks a hub member or takes details for someone without an account.</td>
+</tr>
+<tr>
+<td>Tags</td>
+<td>Comma-separated.</td>
+</tr>
+<tr>
+<td>License type / License text</td>
+<td>One of the active licenses, and its wording.</td>
+</tr>
+<tr>
+<td>Disable download Link</td>
+<td>Hides the download button on the publication page.</td>
+</tr>
+</tbody>
+</table>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The labels do not line up with the columns behind them:
+<strong>Synopsis</strong> writes to <code>abstract</code> and <strong>Abstract</strong> writes to <code>description</code>.
+The publication page shows the <strong>Abstract</strong> field as its body text.</p>
+</aside>
+<p>The right column shows the ID, creation date and creator, owning project, and
+master type; for published and unpublished versions it also shows <strong>Ranking</strong>
+and <strong>Rating</strong>, each with a button that resets the score. <strong>Version</strong> holds
+the version ID, an editable <strong>Version</strong> label, the public <strong>URL</strong>, and who
+last modified the record. <strong>Publishing</strong> decides whether the version is
+visible:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Status</td>
+<td>draft, ready, pending approval, changes required, published, unpublished, or deleted.</td>
+</tr>
+<tr>
+<td>Unpublished Reason</td>
+<td>Enabled only when the status is unpublished: <em>The dataset is not available anymore</em>, <em>The dataset has error within it</em>, or <em>Others</em> with a free-text reason. Shown on the tombstone page.</td>
+</tr>
+<tr>
+<td>Featured</td>
+<td>Whether the publication is flagged as featured.</td>
+</tr>
+<tr>
+<td>Access</td>
+<td>Public, Registered, or Private.</td>
+</tr>
+<tr>
+<td>Group owner</td>
+<td>Assigns a hub group as owner.</td>
+</tr>
+<tr>
+<td>Publish Date / Unpublish Date</td>
+<td>Embargo window. A future publish date holds the version back.</td>
+</tr>
+<tr>
+<td>DOI</td>
+<td>The registered identifier, editable by hand.</td>
+</tr>
+<tr>
+<td>Archival Package</td>
+<td><strong>produce archival package</strong> builds the version's bundle, or serves the existing one with a <strong>[Repackage]</strong> link beside it.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Manage Publication</strong> holds the actions that also email the authors: <strong>Send
+message</strong>, and — depending on the status — <strong>Unpublish version</strong>,
+<strong>Republish version</strong>, or <strong>Approve and publish</strong> and <strong>Revert to draft</strong>.
+Approving stamps the accepted date, registers the DOI if the master type
+requires one, freezes the curation manifest onto the version, and runs the
+archival packaging.</p>
+<p>The <strong>Parameters</strong> slider shows or hides individual sections of the public
+page for this one publication: authors, audience, gallery, tags, license,
+notes, metadata, and submitter. Values default to the master type's setting.</p>
+<p><strong>Releases</strong> in the list opens the <strong>Versions</strong> screen: one row per version
+with its ID, label, title, status, DOI, and a <strong>manage version »</strong> link.</p>
+<h2 id="licenses">Licenses</h2>
+<p>Whether your hub needs to touch this depends on your institution. The
+shipped list covers the usual open licences; add one when your legal office
+requires particular wording, or when data comes with terms of use a
+depositor must agree to. <strong>Agreement required</strong> is the setting that turns a
+licence into a click-through the depositor cannot skip.</p>
+<p>Licenses are the choices authors get when they license their work. The list
+shows <strong>ID</strong>, <strong>Name</strong>, <strong>Title</strong>, <strong>Status</strong>, <strong>Default</strong>, and <strong>Order</strong>,
+with a search box over titles. The toolbar adds <strong>New</strong>, <strong>Edit</strong>, <strong>Make
+Default</strong>, <strong>Publish/Unpublish</strong>, and <strong>Delete</strong>; a license a publication
+already uses cannot be deleted.</p>
+<p><strong>License Information</strong> takes a <strong>Title</strong> and <strong>Name</strong> (both required; the
+name is generated from the title if blank), a <strong>URL</strong> to the full text, an
+<strong>About</strong> blurb (required), the license <strong>Content</strong>, and an <strong>Icon</strong> path.
+<strong>License Configuration</strong> holds four yes/no settings: <strong>Active</strong> (offered as
+a choice for new publications), <strong>Customizable</strong> (authors may edit the text),
+<strong>Agreement required</strong>, and <strong>Allow Derivatives</strong>.</p>
+<h2 id="categories">Categories</h2>
+<p>Categories do two jobs that are easy to confuse. They group publications for
+browsing on the site, and each one carries the Dublin Core type that goes
+into the DOI metadata record as <code>resourceType</code> — so choosing the wrong
+<strong>dc:type</strong> misdescribes the work to every system that reads the DOI, not
+just to visitors.</p>
+<p>Categories group publications for browsing, and each carries a Dublin Core
+type used in exported metadata. The list shows <strong>ID</strong>, <strong>Name</strong> with its
+alias, URL alias and dc:type underneath, <strong>Contributable</strong>, and <strong>Status</strong>,
+with <strong>New</strong>, <strong>Edit</strong>, <strong>Change Status</strong>, and <strong>Delete</strong> on the toolbar.</p>
+<p><strong>Category Information</strong> takes a <strong>Name</strong> (required), an <strong>Alias</strong>, a <strong>URL
+alias</strong> used in <code>/publications/&lt;url alias&gt;</code>, a <strong>dc:type</strong> chosen from the
+twelve Dublin Core types, and a short <strong>About</strong>. <strong>Item Configuration</strong> sets
+the <strong>Status</strong> (Active or Inactive) and whether the category is
+<strong>Contributable</strong>.</p>
+<p><strong>Master Type Configuration</strong> decides, per master type, whether this category
+is offered when someone publishes that type. <strong>Plugins</strong> turns each installed
+<code>publications</code> plugin on or off for this category — that is how a category
+gains or loses its extra tabs. <strong>Custom Fields</strong> defines extra metadata
+inputs, each with a name, input type, and required flag.</p>
+<h2 id="master-types">Master Types</h2>
+<p>This is where you decide what a release of a given kind has to contain
+before anyone can call it published: which panels the author fills in, what
+each panel accepts, how many files of what sort, and whether a DOI is
+required. A hub that publishes datasets and a hub that publishes teaching
+material want different answers, and a master type is how you give them.</p>
+<p>Editing a type is not a small change. Blocks and elements are read at
+submission time, so a block you make required starts blocking drafts that
+are already half-written, and <strong>[Delete]</strong> on a block removes everything
+authors have entered into it. Add a type and experiment on that rather than
+reworking one people are using.</p>
+<p>A master type is the blueprint for a kind of publication: which panels the
+author fills in, in what order, what each one accepts, and whether a DOI is
+required. The list shows <strong>ID</strong>, <strong>Name</strong>, <strong>Alias</strong>, <strong>Contributable</strong>, and
+<strong>Order</strong>, with <strong>New</strong>, <strong>Edit</strong>, and <strong>Delete</strong> on the toolbar and reorder
+arrows in the last column.</p>
+<p>Opening a type shows <strong>Master Type Information</strong> — <strong>Name</strong>, <strong>Alias</strong>,
+<strong>Description</strong>, <strong>Contributable</strong> — and <strong>Curation Configuration</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Curator Group</td>
+<td>A hub group whose members see publications of this type in the curation list.</td>
+</tr>
+<tr>
+<td>Default Publication Title</td>
+<td>Title given to a new draft.</td>
+</tr>
+<tr>
+<td>Default Category</td>
+<td>Category assigned to a new draft.</td>
+</tr>
+<tr>
+<td>Require DOI?</td>
+<td><em>Do not require or show DOI</em>, <em>Require DOI</em>, or <em>Offer choice to publish with DOI or post without DOI</em>.</td>
+</tr>
+<tr>
+<td>Bundle display and behavior</td>
+<td><em>Do NOT bundle</em>, <em>Always produce and serve a bundle, regardless of file count</em>, or <em>Bundle only in the case of multiple primary files</em>.</td>
+</tr>
+<tr>
+<td>List all publication contents on the main publication page?</td>
+<td>Yes or No, with a <strong>Label for the list of publication contents</strong>.</td>
+</tr>
+<tr>
+<td>Auto Approve?</td>
+<td>Publish submissions of this type without review. On is enough on its own, whatever <strong>Options → Curation → Auto-approve</strong> says — see <a href="#curation">Curation</a>.</td>
+</tr>
+<tr>
+<td>Request review? (when set to auto approve)</td>
+<td>Offer the author a box asking for a curator anyway.</td>
+</tr>
+</tbody>
+</table>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> A new master type must be saved before any of this appears — the
+panel shows <em>New type needs to be saved before curation can be configured</em>
+until it has an ID.</p>
+</aside>
+<p><strong>Blocks Configuration</strong> lists the panels the author walks through, in order.
+Each block switches <strong>Active</strong> or <strong>Inactive</strong> and carries a <strong>Short label</strong>,
+<strong>Title</strong>, <strong>Panel heading (draft)</strong>, <strong>Panel tagline (draft)</strong>, <strong>User
+tips</strong>, and <strong>Admin tips</strong>, plus its own parameters — <em>Input required</em>,
+<em>Editing allowed in published status?</em>, the license IDs to offer. <strong>Block
+Elements</strong> lists what the block collects; <strong>[Edit]</strong> sets each element's
+label, instructions, attachment <strong>Type</strong> (file, link, data, or Publication
+(link)), <strong>Attachment role</strong> (Primary, Supporting, or Gallery), <strong>Minimum
+count</strong> and <strong>Maximum count</strong>, allowed extensions, and how files are copied
+out of the project.</p>
+<p><strong>[Add a block]</strong> adds one, <strong>[Edit]</strong> beside a block's order opens the
+drag-to-rearrange screen, and <strong>[Delete]</strong> confirms before removing the block
+and everything authors entered into it. <strong>Advanced curation editing</strong> exposes
+the manifest as raw JSON.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> The element editor warns that <em>Elements editing is not fully
+featured in this hub release.</em> A malformed manifest falls back to the basic
+Files manifest.</p>
+</aside>
+<p><strong>Type supported?</strong> reports whether a <code>projects</code> plugin with the same alias
+is installed and enabled. A type marked off cannot actually be produced.</p>
+<h2 id="batch-create">Batch Create</h2>
+<p>Use this when a hub inherits a collection — a departmental data archive
+being moved onto the hub, say — and creating each publication by hand is not
+practical. For anything under a dozen records it is more work than doing it
+by hand, because the XML has to validate first.</p>
+<p><strong>Batch Create</strong> imports publications from an XML file. Choose the project
+and the master type, attach the file, and press <strong>Process data (you'll have a
+chance to review)</strong>. The file is validated against a schema you can download
+from the <strong>schema</strong> link; records are then shown for review — with missing
+licenses, unknown user IDs, and missing files flagged — before anything is
+written.</p>
+<h2 id="curation">Curation</h2>
+<h3 id="nothing-is-curated-until-you-change-a-setting">Nothing is curated until you change a setting</h3>
+<p>Start here. A hub installed from this release publishes every submission the
+moment its author presses the button. No curator sees it, no approval is
+recorded, and the DOI is minted and made findable. This is not a bug you
+will notice, because the publication appears and looks correct; it is only
+wrong if you believed someone was checking.</p>
+<p>Two switches cause it, and <strong>either one being on is enough</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Switch</th>
+<th>Where</th>
+<th>Manifest default</th>
+<th>What ships</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Auto-approve</strong></td>
+<td><strong>Options → Curation</strong></td>
+<td>No</td>
+<td><strong>Yes</strong></td>
+</tr>
+<tr>
+<td><strong>Auto Approve?</strong></td>
+<td><a href="#master-types">Master Types</a> → a type's Curation Configuration</td>
+<td>No</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>The component manifest declares <strong>Auto-approve</strong> off. The shipped install row
+sets it on, and the stored row is what runs, so the screen you have is set to
+Yes and the screen the documentation was written against was set to No. The
+submission code asks for either:</p>
+<pre><code class="language-php">if (!$review &amp;&amp; ($autoApprove || $this-&gt;_pubconfig-&gt;get('autoapprove') == 1))
+{
+	$state = 1;
+}
+</code></pre>
+<p>— <a href="https://github.com/hubzero/hubzero-cms/blob/2.4-main/core/plugins/projects/publications/publications.php"><code>publications.php:2216</code></a>,
+where <code>$autoApprove</code> is the master type's own setting and <code>$review</code> is the
+author's own request for a review. <code>$state = 1</code> is published.</p>
+<p>There is a third bypass below it: <strong>Auto-approved Users</strong> on the same
+Options tab is a comma-separated list of usernames whose submissions publish
+without review even when both switches are off. It ships empty.</p>
+<h3 id="turning-curation-on">Turning curation on</h3>
+<p>Do this on a new hub before anyone publishes, because it does not
+retrospectively review what is already out.</p>
+<ol>
+<li>Create the group whose members will curate, and note its alias. A group
+with no members curates nothing, and there is no fallback to
+administrators.</li>
+<li>Go to <strong>Components &gt; Publications</strong> and select <strong>Options</strong>.</li>
+<li>On the <strong>Curation</strong> tab, set <strong>Auto-approve</strong> to <strong>No</strong>.</li>
+<li>Put the group's alias in <strong>Name of Curators Group</strong>. It ships empty.</li>
+<li>Set <strong>Reply Email Address</strong> to an address someone reads. Left blank, the
+messages come from the site's global <em>From email</em> address.</li>
+<li>Go to the <strong>Basic</strong> tab and set <strong>Email Notifications</strong> to <strong>On</strong>. Leave
+it Off and every curation message is silently dropped — see the note
+below.</li>
+<li>Select <strong>Save &amp; Close</strong>.</li>
+<li>Go to <strong>Master Types</strong>, open each type in turn, and check that <strong>Auto
+Approve?</strong> is <strong>No</strong>. One type left on Yes exempts every publication of
+that type.</li>
+</ol>
+<p>From then on a submission lands at <em>pending approval</em> and waits at
+<code>/publications/curation</code> on the site. Curation is not an administrator
+screen: it is a front-end screen the curators group reaches — see
+<a href="../../../users/publications/index.html#curation">Curation</a>. An administrator can
+still approve from <a href="#editing-a-publication">Editing a publication</a> with
+<strong>Approve and publish</strong>.</p>
+<p>Turning auto-approve back on is equally quick and equally undramatic:
+submissions already waiting stay waiting; only new ones skip the queue.</p>
+<h3 id="what-else-to-check">What else to check</h3>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Curation email — the note to a newly assigned curator, the
+approval and change-request notices to authors, the new-submission notice
+to curators — is only sent when <strong>Email Notifications</strong> is On. It is Off by
+default, and nothing warns you that the messages are being dropped. A hub
+that turns curation on and leaves this Off has a queue nobody is told
+about.</p>
+</aside>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> A master type's own <strong>Curator Group</strong> narrows what its members
+see in the curation list, but it is stored as a group ID and compared
+against group names when the review screen checks permission, so on its own
+it does not let them open a submission. Put type curators in the
+component-wide curators group, or assign them to individual publications.</p>
+</aside>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> <strong>Grace Period for Changes</strong> on the same tab offers <em>None</em> or
+<em>One month</em>, and it does two things at once. It lets an author revert a
+published version to draft and change it within a month of approval, and
+it holds back the archival package: with no grace period the package is
+built at approval, and with one it waits for the <code>runMkAip</code> cron job. Turn
+it on and you must schedule that job, or nothing is ever archived.</p>
+</aside>
+<h2 id="scheduled-jobs">Scheduled jobs</h2>
+<p>Several background tasks belong to the component and have to be scheduled in
+<a href="../cron/index.html">Cron</a>: <code>runMkAip</code>, <code>issueMasterDoi</code>, <code>buildPublicationBundles</code>
+(needed when asynchronous bundling is on), <code>updateFtpLinks</code>,
+<code>sendAuthorStats</code>, and <code>rollUserStats</code>. None of them run unless you create
+the cron jobs; a hub that produces archival packages or master DOIs and has
+scheduled nothing simply never produces them.</p>
+<h2 id="options">Options</h2>
+<p><strong>Options</strong> opens the component-wide settings, on six tabs. Two of them
+change what the hub does; the rest change how it looks.</p>
+<p><strong>Basic</strong> holds the on/off switch, decides whether members may publish
+without a project, sets the default thumbnails and storage paths, and
+carries <strong>Email Notifications</strong> — which is Off by default and silently drops
+every curation message. <strong>Curation</strong> names the curators group, the reply
+address for curation email, the grace period, and the auto-approved users,
+and holds <strong>Auto-approve</strong>, which ships <strong>Yes</strong>: read
+<a href="#curation">Curation</a> before you leave that tab. <strong>DOI</strong> configures the identifier service — see
+<a href="#doi-registration">DOI registration</a>. <strong>Sections</strong> shows or hides parts of the
+public publication page, and <strong>AIP</strong> points at a trusted digital repository's
+archival storage. Every option is listed with its values in the
+<a href="../../../reference/configuration/components/publications/index.html">configuration reference</a>.</p>
+<p>The <strong>Permissions</strong> tab controls who may configure the component
+(<code>core.admin</code>), reach the administrator screens (<code>core.manage</code>), and create,
+edit, change the state of, or delete publications. Permissions are read at
+the component level only: the code asks for actions on <code>com_publications</code>
+itself, so per-category and per-publication rules have no effect here.</p>
+<h2 id="api">API</h2>
+<p><code>GET /api/publications/list</code>, in two versions, returns the publications the
+authenticated member is an author of — see the
+<a href="../../../reference/api/publications/index.html">API reference</a>.</p>
+<h2 id="doi-registration">DOI registration</h2>
+<p>Every published version can be given a DOI — a permanent identifier that
+resolves to its page and carries a metadata record other systems can read.
+Hubzero registers DOIs through one of two services, DataCite or EZID, chosen
+on the <strong>DOI</strong> tab of the Publications <a href="#options">Options</a>. This
+chapter describes what the component sends and what you have to configure to
+make it work.</p>
+<h3 id="choosing-a-service">Choosing a service</h3>
+<p>The <strong>DOI Service</strong> option has three values:</p>
+<table>
+<thead>
+<tr>
+<th>Value</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td>No DOIs are issued. Publishing a version that requires one fails with <em>No DOI Service Activated</em>.</td>
+</tr>
+<tr>
+<td>EZID</td>
+<td>Identifiers are minted through an EZID endpoint.</td>
+</tr>
+<tr>
+<td>DataCite</td>
+<td>Identifiers are minted directly against the DataCite Metadata Store (MDS) API.</td>
+</tr>
+</tbody>
+</table>
+<p>The form hides the fields that do not apply to the service you pick. The
+component ships set to <strong>EZID</strong>, so a hub that means to use DataCite has to
+change this explicitly.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> DOI registration only switches on when the service is selected
+<strong>and</strong> the credentials are complete: a DataCite setup needs <strong>DOI
+Namespace Start</strong>, <strong>DataCite DOI Service Url</strong>, and <strong>DataCite DOI Service
+User:Password</strong>; an EZID setup needs <strong>DOI Namespace Start</strong>, <strong>DOI
+Namespace End</strong>, <strong>EZID DOI Service Url</strong>, and <strong>EZID DOI Service
+User:Password</strong>. If any of those are blank the component behaves as if no
+service were configured, without saying so on the Options screen.</p>
+</aside>
+<h3 id="what-to-configure">What to configure</h3>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>About DOI link</td>
+<td>A page explaining what DOIs are. Linked from the publication page.</td>
+</tr>
+<tr>
+<td>DOI Namespace Start</td>
+<td>The prefix your registrar assigned, for example <code>10.5072</code>. Required.</td>
+</tr>
+<tr>
+<td>DOI Namespace End</td>
+<td>The hub-specific shoulder that follows the slash, for example <code>F2K</code>. Used by EZID.</td>
+</tr>
+<tr>
+<td>DataCite DOI Service Url</td>
+<td>The MDS base address — <code>https://mds.datacite.org</code> in production, <code>https://mds.test.datacite.org</code> for testing.</td>
+</tr>
+<tr>
+<td>DataCite DOI Service User:Password</td>
+<td>The MDS credentials, as one <code>user:password</code> string. Sent over HTTP basic authentication, so the address must be <code>https</code>.</td>
+</tr>
+<tr>
+<td>EZID DOI Service Url / User:Password</td>
+<td>The equivalent pair for EZID.</td>
+</tr>
+<tr>
+<td>DOI XML Schema</td>
+<td>The schema URL that generated metadata is validated against before it is sent to EZID. Defaults to the DataCite kernel-4 schema.</td>
+</tr>
+<tr>
+<td>DOI Publisher</td>
+<td>The <code>publisher</code> element in the metadata. Defaults to the site name.</td>
+</tr>
+<tr>
+<td>Publisher Identifier, Scheme, Scheme URI</td>
+<td>Optional re3data identifier for the publisher, written as attributes on <code>publisher</code>.</td>
+</tr>
+<tr>
+<td>DOI Resolve Url</td>
+<td>Prefix used when the hub renders a DOI as a link. Defaults to <code>https://doi.org/</code>.</td>
+</tr>
+<tr>
+<td>DOI Verification Url</td>
+<td>Prefix behind the <code>[→]</code> link beside a DOI in the project's publication status panel.</td>
+</tr>
+<tr>
+<td>Issue master DOI for publication?</td>
+<td>Mints one extra DOI per publication that points at <code>/publications/&lt;id&gt;/main</code> rather than at a single version.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="what-gets-registered">What gets registered</h3>
+<p>A DOI is minted when the author submits the draft, not when a curator
+approves it: the submission builds a DataCite kernel-4 <code>resource</code> document
+from the publication and asks the service for an identifier. Approval then
+re-sends the metadata and registers the target URL. (An administrator who
+approves from the <strong>Publications</strong> screen mints the DOI at that point
+instead, if the version does not already have one.) The component refuses to
+build a document unless the publication year, publisher, resource type,
+title, a creator, and the target URL are all present.</p>
+<p>The document carries:</p>
+<ul>
+<li><code>identifier</code> — the DOI, left for the service to mint on a first
+registration.</li>
+<li><code>creators</code> — every author, as <code>Last, First</code>, with <code>givenName</code>,
+<code>familyName</code>, an ORCID <code>nameIdentifier</code> where the member has one, and an
+<code>affiliation</code> carrying a ROR identifier where one is recorded.</li>
+<li><code>titles</code>, <code>publisher</code>, <code>publicationYear</code>.</li>
+<li><code>contributors</code> — the corresponding authors chosen on the review screen,
+as <code>ContactPerson</code>.</li>
+<li><code>dates</code> — <code>Available</code>, <code>Submitted</code>, and <code>Accepted</code>.</li>
+<li><code>language</code>, and <code>resourceType</code> taken from the publication category's
+<strong>dc:type</strong>.</li>
+<li><code>relatedIdentifiers</code> — <code>IsNewVersionOf</code> and <code>IsPreviousVersionOf</code> links to
+the neighbouring versions' DOIs, plus the citations the author entered,
+mapped to DOI, PURL, Handle, ARK, arXiv, URN, or URL as their form allows.</li>
+<li><code>version</code>, <code>rightsList</code> (the chosen license and its URL), and
+<code>fundingReferences</code> from the grant fields.</li>
+<li><code>formats</code> and <code>sizes</code> — the MIME types, file count, and total size of the
+attached content.</li>
+<li><code>subjects</code> — the publication's tags, with Library of Congress and Fields of
+Science and Technology schemes recognised by tag description prefixes.</li>
+<li><code>descriptions</code> — the abstract, plus the synopsis as an <code>Other</code> description.</li>
+</ul>
+<p>The target URL is always <code>&lt;your hub&gt;/publications/&lt;id&gt;/&lt;version number&gt;</code>.</p>
+<h3 id="how-datacite-registration-runs">How DataCite registration runs</h3>
+<p>DataCite registration is two calls, both <code>PUT</code> with HTTP basic
+authentication:</p>
+<ol>
+<li>On submission, the metadata goes to
+<code>&lt;service url&gt;/metadata/&lt;namespace start&gt;</code>. Because the URL ends at the
+prefix, DataCite mints the DOI itself and returns it; the DOI is in
+<em>draft</em> state at this point.</li>
+<li>On approval, the DOI and its target URL go to <code>&lt;service url&gt;/doi/&lt;doi&gt;</code>,
+which moves it to <em>findable</em>. The metadata is re-sent first, to
+<code>&lt;service url&gt;/metadata/&lt;doi&gt;</code>.</li>
+</ol>
+<p>Reverting a published version to draft sends <code>DELETE</code> to
+<code>&lt;service url&gt;/metadata/&lt;doi&gt;</code>, which puts the DOI back in <em>registered</em> state
+so it stops resolving publicly; approving it again restores it. Unpublishing
+a version instead re-sends its metadata and repoints the DOI at the
+publication's tombstone page, so the identifier keeps resolving and explains
+the retraction.</p>
+<p>EZID registration is a single call that posts the identifier's metadata and
+target together, after validating the generated XML against the <strong>DOI XML
+Schema</strong>. A validation failure is reported but does not stop the
+registration — the identifier is created without the DataCite metadata block.</p>
+<aside class="admonition admonition--note">
+<p><strong>Note:</strong> Nothing in the administrator interface tests your credentials. If
+a registration fails, the publish attempt stops with the service's error on
+the message bar; DataCite's
+<a href="https://support.datacite.org/docs/testing-guide">testing guide</a> and the
+<code>mds.test.datacite.org</code> endpoint are the way to check a new configuration.</p>
+</aside>
+<h3 id="master-dois">Master DOIs</h3>
+<p>A master DOI is a second identifier that belongs to the publication rather
+than to one of its versions, and points at <code>/publications/&lt;id&gt;/main</code>. That
+URL redirects to the publication's <strong>Versions</strong> panel, so a master DOI
+resolves to the list of releases rather than to any one of them. Master DOIs
+are issued by the <code>issueMasterDoi</code> cron job, which has to be scheduled in the
+Cron component; nothing issues them on publish.</p>
+<aside class="admonition admonition--warning">
+<p><strong>Warning:</strong> In this release the job does not work. It asks the DOI model
+to register without telling it what to register, so neither the DataCite
+nor the EZID path sends anything and no identifier comes back. Turning
+<strong>Issue master DOI for publication?</strong> on has no effect until that is
+fixed.</p>
+</aside>
+<h3 id="when-dois-are-required">When DOIs are required</h3>
+<p>Whether a publication needs a DOI at all is a property of its master type,
+not of the component: <strong>Require DOI?</strong> in a type's Curation Configuration
+offers <em>Do not require or show DOI</em>, <em>Require DOI</em>, or <em>Offer choice to
+publish with DOI or post without DOI</em>. With the third setting the author
+chooses on the review screen between <strong>Publish draft</strong>, which mints a DOI,
+and <strong>Post draft</strong>, which does not and leaves the publication editable and
+unlisted.</p>
+<h3 id="further-reading">Further reading</h3>
+<ul>
+<li><a href="https://support.datacite.org/docs/mds-api-guide">DataCite MDS API guide</a></li>
+<li><a href="http://schema.datacite.org/">DataCite metadata schema</a></li>
+<li><a href="https://support.datacite.org/docs/doi-states">DOI states</a></li>
+</ul>
+
+        </div>
+        <p class="stamp">Rewritten and checked against <code>2.4-main @ 009ec973b7</code> on 2026-09-10.</p>
+        <nav class="pager" aria-label="Chapter navigation"><a class="pager__prev" href="../projects/index.html" rel="prev"><span>Previous</span>Projects</a><a class="pager__next" href="../redirect/index.html" rel="next"><span>Next</span>Redirect</a></nav>
+        <footer class="article__footer">
+          <a class="edit-link" href="https://github.com/hubzero/hubzero-cms/edit/2.4-main/docs/managers/09-components/27-publications.md">Edit this page on GitHub</a>
+          <span>Hubzero 2.4 documentation</span>
+        </footer>
+      </article>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>© 2026 Purdue University. The documentation is <a href="../../../license/index.html">MIT-licensed</a>, like the code. Built from the <a href="https://github.com/hubzero/hubzero-cms">hubzero-cms</a> repository.</p>
+  </footer>
+
+  <script src="../../../assets/search.js?v=8a405e6d" defer></script>
+</body>
+</html>

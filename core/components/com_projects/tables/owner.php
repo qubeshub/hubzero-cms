@@ -196,6 +196,10 @@ class Owner extends Table
 			$query  =  "SELECT o." . $get . " FROM $this->_tbl as o ";
 			$query .= " JOIN #__projects AS p ON p.id=o.projectid";
 			$query .= " WHERE p.alias=" . $this->_db->quote($projectid);
+			// A deleted (trashed) project has no members for access-control purposes,
+			// so exclude it -- this lets sysGroup() empty the project's login group on
+			// delete and repopulate it on reinstate (ticket 2802).
+			$query .= " AND p.state != 2 ";
 			$query .=  $active == 1 ? " AND o.status=1 " : " AND o.status!=2 ";
 			if ($role != 'all')
 			{
@@ -433,7 +437,7 @@ class Owner extends Table
 		foreach ($results as $result)
 		{
 			$params = new \Hubzero\Config\Registry($result->params);
-			$name   = utf8_decode($params->get($service . '_name', ''));
+			$name   = $params->get($service . '_name', '');
 			$email  = $params->get($service . '_email', '');
 
 			if ($name && $email)
@@ -748,12 +752,27 @@ class Owner extends Table
 			$owners_to_add = array_diff($array_members, $array_owners);
 			$owners_to_add = array_unique($owners_to_add);
 
+			// Build list of group managers for role assignment
+			$array_group_managers = array();
+			foreach ($groups as $ug)
+			{
+				$grp = \Hubzero\User\Group::getInstance($ug->groupid);
+				if ($grp)
+				{
+					foreach ($grp->get('managers') as $mgr)
+					{
+						$array_group_managers[$mgr] = true;
+					}
+				}
+			}
+
 			// Add owners
 			if (!empty($owners_to_add))
 			{
 				foreach ($owners_to_add as $newcomer)
 				{
-					$added = $this->saveOwners($projectid, 0, $newcomer, $array_member_groups[$newcomer], 0, 1, $array_groups_native[$array_member_groups[$newcomer]]);
+					$role = isset($array_group_managers[$newcomer]) ? 1 : 0;
+					$added = $this->saveOwners($projectid, 0, $newcomer, $array_member_groups[$newcomer], $role, 1, $array_groups_native[$array_member_groups[$newcomer]]);
 				}
 			}
 
@@ -1163,16 +1182,25 @@ class Owner extends Table
 					}
 					elseif ($found == 1 && !in_array($owner, $managers))
 					{
-						// update sync role
-						$query  = "UPDATE $this->_tbl"
-							. " set role=" . $role
-							. " WHERE groupid=" . $gidNumber
-							. " AND projectid=" . $projectid
-							. " AND userid=" . $owner . ";";
+						// Only downgrade role during sync, never upgrade
+						// This prevents demoting project creators or manually promoted managers
+						$query = "SELECT role FROM $this->_tbl WHERE projectid=" . $this->_db->quote($projectid) . " AND userid=" . $this->_db->quote($owner) . " LIMIT 1";
 						$this->_db->setQuery($query);
-						if ($this->_db->query())
+						$currentRole = (int) $this->_db->loadResult();
+
+						if ($role > $currentRole)
 						{
-							$added[] = $owner;
+							// Upgrade role (e.g., group member promoted to group manager)
+							$query  = "UPDATE $this->_tbl"
+								. " set role=" . $role
+								. " WHERE groupid=" . $gidNumber
+								. " AND projectid=" . $projectid
+								. " AND userid=" . $owner . ";";
+							$this->_db->setQuery($query);
+							if ($this->_db->query())
+							{
+								$added[] = $owner;
+							}
 						}
 					}
 				}

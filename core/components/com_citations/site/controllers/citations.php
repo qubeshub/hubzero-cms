@@ -24,6 +24,11 @@ use Event;
 use Date;
 use Lang;
 use App;
+use Component;
+use Pathway;
+use Request;
+use Route;
+use User;
 
 /**
  * Citations controller class for citation entries
@@ -115,6 +120,7 @@ class Citations extends SiteController
 			// Search/filtering params
 			'id'              => Request::getInt('id', 0),
 			'tag'             => Request::getString('tag', '', 'request', 'none', 2),
+			'keyword'         => Request::getString('keyword', ''),
 			'limit'           => Request::getInt('limit', 50, 'request'),
 			'limitstart'      => Request::getInt('limitstart', 0, 'get'),
 			'search'          => Request::getString('search', ''),
@@ -411,15 +417,23 @@ class Citations extends SiteController
 	 *
 	 * @return  string
 	 */
+	/**
+	 * Get Open URL
+	 *
+	 * OCLC discontinued the worldcatlibraries.org registry lookup API
+	 * (deadline: November 2025). Commented out until a replacement is found.
+	 *
+	 * @return  array
+	 */
 	private function openUrl()
 	{
-		// var to store open url stuff
-		$openUrl = array(
+		return array(
 			'link' => '',
 			'text' => '',
 			'icon' => ''
 		);
 
+		/*
 		// get the users id to make lookup
 		$userIp = Request::ip();
 
@@ -474,6 +488,7 @@ class Citations extends SiteController
 		}
 
 		return $openUrl;
+		*/
 	}
 
 	/**
@@ -515,7 +530,7 @@ class Citations extends SiteController
 		// are we allowing user to add citation
 		$allowImport = $this->config->get('citation_import', 1);
 		if ($allowImport == 0
-		|| ($allowImport == 2 && User::get('usertype') == 'Super Administrator'))
+		|| ($allowImport == 2 && !User::authorise('core.manage', $this->_option)))
 		{
 			// Redirect
 			App::redirect(
@@ -574,7 +589,9 @@ class Citations extends SiteController
 		$this->view->assocs = $associations;
 
 		// Is user authorized to edit citations?
-		if (!$isAdmin && !$citation->canEdit())
+		// A brand new citation has no owner yet; submission is gated above by
+		// the citation_import setting.
+		if (!$isAdmin && !$citation->isNew() && !$citation->canEdit())
 		{
 			App::abort(404, Lang::txt('COM_CITATIONS_CITATION_NOT_AUTH'));
 		}
@@ -584,7 +601,7 @@ class Citations extends SiteController
 
 		//make sure title isnt too long
 		$maxTitleLength = 30;
-		$shortenedTitle = (strlen($this->view->row->title) > $maxTitleLength)
+		$shortenedTitle = (strlen($this->view->row->title ?? '') > $maxTitleLength)
 						? substr($this->view->row->title, 0, $maxTitleLength) . '&hellip;'
 						: $this->view->row->title;
 
@@ -662,6 +679,16 @@ class Citations extends SiteController
 
 		// Bind incoming data to object
 		$row = Citation::oneOrNew($id);
+
+		// Authorized to edit this citation? (editTask enforces the same.) A brand
+		// new citation has no owner yet.
+		if (!$row->isNew()
+			&& !User::authorise('core.manage', $this->_option)
+			&& !$row->canEdit())
+		{
+			App::abort(403, Lang::txt('COM_CITATIONS_CITATION_NOT_AUTH'));
+		}
+
 		$row->set($c);
 
 		$updateAuthorsId = false;

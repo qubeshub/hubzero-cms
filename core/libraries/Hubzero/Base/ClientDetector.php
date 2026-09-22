@@ -58,6 +58,13 @@ class ClientDetector
 	{
 		$default = ClientManager::client('site', true);
 
+		// Check if the site is installed (database config exists)
+		// If not, always return the Install client
+		if (!$this->isInstalled())
+		{
+			return ClientManager::client('install', true);
+		}
+
 		// To determine the current client, we'll simply iterate through the possible
 		// clients and look for the one that matches the path for the request we
 		// are currently processing here, then return back that client.
@@ -112,5 +119,46 @@ class ClientDetector
 	protected function detectConsoleClient($environments)
 	{
 		return (php_sapi_name() == 'cli');
+	}
+
+	/**
+	 * Determine if the site is installed
+	 *
+	 * Checks for the existence of database configuration and verifies
+	 * the database has users (meaning setup is complete).
+	 *
+	 * @return  bool
+	 */
+	protected function isInstalled()
+	{
+		// This runs before the config repository is built and before facades
+		// are registered, so it cannot ask Config for anything. Look on disk
+		// for the database configuration the installer writes once its
+		// database step completes.
+		//
+		// Deliberately no connection attempt either: detect() runs on every
+		// request, and treating an unreachable database as "not installed"
+		// would hand the installer to visitors of a live site during an outage.
+		if (!defined('PATH_APP'))
+		{
+			return false;
+		}
+
+		$candidates = glob(PATH_APP . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'database.*');
+
+		if (empty($candidates))
+		{
+			return false;
+		}
+
+		foreach ($candidates as $candidate)
+		{
+			if (is_file($candidate))
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

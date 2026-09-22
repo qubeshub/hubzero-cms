@@ -21,6 +21,8 @@ use User;
 use Lang;
 use Html;
 use App;
+use Notify;
+use Route;
 
 /**
  * Content articles controller
@@ -252,14 +254,25 @@ class Articles extends SiteController
 				'link' => ''
 			));
 			$category = \Components\Categories\Helpers\Categories::getInstance('Content')->get($item->catid);
-			while ($category && ($menu->query['option'] != 'com_content' || $menu->query['view'] == 'article' || $id != $category->id) && $category->id > 1)
+
+			// Build the menu route segments for comparison so we can skip
+			// category entries already covered by the menu trail
+			$menuSegments = $menu ? array_map('strtolower', explode('/', $menu->route)) : array();
+
+			while ($category && ($menu->query['option'] != 'com_content' || $menu->query['view'] == 'article' || $id != $category->id) && $category->id !== 'root' && $category->id > 1)
 			{
-				$path[] = array(
-					'title' => $category->title,
-					'link' => HelperRoute::getCategoryRoute($category->id)
-				);
+				// Skip this category if its alias already appears in the
+				// menu route (the menu pathway already covers it)
+				if (!in_array(strtolower($category->alias), $menuSegments))
+				{
+					$path[] = array(
+						'title' => $category->title,
+						'link' => HelperRoute::getCategoryRoute($category->id)
+					);
+				}
 				$category = $category->getParent();
 			}
+
 			$path = array_reverse($path);
 			foreach ($path as $itm)
 			{
@@ -920,7 +933,7 @@ class Articles extends SiteController
 		}
 
 		// Add feed links
-		if ($params->get('show_feed_link', 1))
+		if ($params->get('show_feed_link', 1) && Document::getType() == 'html')
 		{
 			$link = '&format=feed&limitstart=';
 
@@ -1345,7 +1358,7 @@ class Articles extends SiteController
 			));
 			$parent = $category->getParent();
 
-			while (($menu->query['option'] != 'com_content' || $menu->query['view'] == 'article' || $id != $parent->id) && $parent->id > 1)
+			while (($menu->query['option'] != 'com_content' || $menu->query['view'] == 'article' || $id != $parent->id) && $parent->id !== 'root' && $parent->id > 1)
 			{
 				$path[] = array(
 					'title' => $parent->title,
@@ -1469,7 +1482,7 @@ class Articles extends SiteController
 		}
 
 		// Add feed links
-		if ($params->get('show_feed_link', 1))
+		if ($params->get('show_feed_link', 1) && Document::getType() == 'html')
 		{
 			$link = '&format=feed&limitstart=';
 
