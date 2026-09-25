@@ -7,6 +7,8 @@
 
 namespace Qubeshub\Base;
 
+use Request;
+
 /**
  * Abstract model class
  */
