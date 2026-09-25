@@ -9,6 +9,7 @@ namespace Qubeshub\Module;
 
 use Hubzero\Container\Container;
 use Hubzero\Utility\Date;
+use Hubzero\Utility\Sanitize;
 use Hubzero\Config\Registry;
 
 /**
@@ -596,7 +597,7 @@ class Loader
 						// Use int filter for id/catid to clean out spamy slugs
 						if (isset($uri[$key]))
 						{
-							$safeuri->$key = \Request::_cleanVar($uri[$key], 0, $value);
+							$safeuri->$key = Sanitize::filter($uri[$key], $value);
 						}
 					}
 				}
