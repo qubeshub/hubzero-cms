@@ -409,7 +409,7 @@ class Archive extends Obj
 				$ids[] = $result->item_id;
 			}
 
-			// Get all the assets for this list of items
+			// Get all the assets for this list of items (avoids an N+1 per post)
 			$ba = new Tables\Asset($this->_db);
 			$assets = $ba->getRecords(array('item_id' => $ids));
 

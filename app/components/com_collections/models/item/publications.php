@@ -1,16 +1,14 @@
 <?php
 /**
  * @package    hubzero-cms
- * @copyright  Copyright 2005-2019 HUBzero Foundation, LLC.
+ * @copyright  Copyright (c) 2005-2020 The Regents of the University of California.
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
 namespace Components\Collections\Models\Item;
 
 use Components\Collections\Models\Item as GenericItem;
-use Components\Collections\Models\Asset;
 use Components\Publications\Models\Publication;
-use Components\Publications\Helpers;
 use Request;
 use Route;
 use Lang;
@@ -81,17 +79,17 @@ class Publications extends GenericItem
 		}
 
 		$id = ($id ?: Request::getInt('id', 0));
-		$v = Request::getInt('v', 0);
+		$v  = Request::getInt('v', 0);
 
 		include_once \Component::path('com_publications') . DS . 'models' . DS . 'publication.php';
-		$resource = null;
 
-		if ($id && $v) {
-			$resource = new \Components\Publications\Models\Publication($id, $v, null);
-			$uid = $resource->version->id;
-		} else {
+		if (!$id || !$v)
+		{
 			return false;
 		}
+
+		$resource = new Publication($id, $v, null);
+		$uid = $resource->version->id;
 
 		$this->_tbl->loadType($uid, $this->_type);
 
