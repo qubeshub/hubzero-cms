@@ -17,6 +17,7 @@ use Route;
 use User;
 use Lang;
 use App;
+use Event;
 
 /**
  * Controller class for forum sections
@@ -30,7 +31,7 @@ class Sections extends SiteController
 	 */
 	public function execute()
 	{
-		$this->model = new Manager('site', 0);
+		$this->forum = new Manager('site', 0);
 
 		parent::execute();
 	}

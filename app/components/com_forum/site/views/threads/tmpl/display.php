@@ -39,22 +39,53 @@ $now = Date::of('now')->toSql();
 			<?php
 			$threading = $this->config->get('threading', 'list');
 
-			$posts = $this->thread->thread()
-				->whereIn('state', $this->filters['state'])
-				->whereIn('access', $this->filters['access'])
-				->order(($threading == 'tree' ? 'lft' : 'id'), 'asc')
-				->paginated()
-				->rows();
-
-			$pageNav = $posts->pagination;
-
-			if ($posts->count() > 0)
+			if ($threading == 'tree')
 			{
-				if ($threading == 'tree')
-				{
-					$posts = $this->thread->toTree($posts);
-				}
+				// Tree mode: the entire thread must be loaded so the nested-set
+				// tree can be built from its root. Paginating the flat post list
+				// would orphan every reply whose ancestors land on another page,
+				// producing blank pages and "lost" posts (support ticket #2159).
+				// Instead, build the full tree and paginate the top-level
+				// replies, each of which carries its complete sub-thread.
+				$all = $this->thread->thread()
+					->whereIn('state', $this->filters['state'])
+					->whereIn('access', $this->filters['access'])
+					->order('lft', 'asc')
+					->rows();
 
+				$tree     = $this->thread->toTree($all);
+				$root     = isset($tree[0]) ? $tree[0] : null;
+				$branches = $root ? $root->get('replies') : array();
+				$total    = count($branches);
+
+				if ($root)
+				{
+					$root->set('replies', array_slice($branches, $this->filters['start'], $this->filters['limit']));
+					$posts = array($root);
+				}
+				else
+				{
+					$posts = array();
+				}
+				$count = count($posts);
+
+				$pageNav = new \Hubzero\Pagination\Paginator($total, $this->filters['start'], $this->filters['limit']);
+			}
+			else
+			{
+				$posts = $this->thread->thread()
+					->whereIn('state', $this->filters['state'])
+					->whereIn('access', $this->filters['access'])
+					->order('id', 'asc')
+					->paginated()
+					->rows();
+
+				$pageNav = $posts->pagination;
+				$count   = $posts->count();
+			}
+
+			if ($count > 0)
+			{
 				$this->view('_list')
 					 ->set('option', $this->option)
 					 ->set('controller', $this->controller)
@@ -133,6 +164,18 @@ $now = Date::of('now')->toSql();
 													'itemTemplate' => '<li data-id="{id}"><img class="photo" src="{picture}" /><strong class="username">{username}</strong><span class="fullname">{name}</span></li>',
 													'outputTemplate' => '<a href="/members/{id}" data-user-id="{id}" target="_blank">@{username}</a>&nbsp;&nbsp;',
 												)
+											),
+											// A post is stored in a TEXT column, so cap it well inside that
+											// ceiling. Without strict SQL mode an oversize value is truncated
+											// rather than refused, which cuts the markup mid-tag.
+									// Deliberately not called 'wordcount': the CKEditor 4 plugin reads
+									// that key and would start showing a counter and enforcing a limit
+									// it counts differently, changing behaviour for editors not in scope.
+											'limits' => array(
+												'maxDataBytes'  => 60000,
+												'maxCharCount'  => 20000,
+												'hardLimit'     => true,
+												'showCharCount' => true
 											)
 										)); ?>
 							</label>
@@ -163,7 +206,7 @@ $now = Date::of('now')->toSql();
 							</fieldset>
 
 							<?php if ($this->config->get('allow_anonymous')) { ?>
-								<label for="field-anonymous" id="comment-anonymous-label">
+								<label for="field-anonymous" class="comment-anonymous-label">
 									<input class="option" type="checkbox" name="fields[anonymous]" id="field-anonymous" value="1" />
 									<?php echo Lang::txt('COM_FORUM_FIELD_ANONYMOUS'); ?>
 								</label>
@@ -231,7 +274,7 @@ $now = Date::of('now')->toSql();
 								?>
 								<li>
 									<a class="member" href="<?php echo Route::url('index.php?option=com_members&id=' . $participant->get('created_by')); ?>">
-										<?php echo $this->escape(stripslashes($participant->get('name'))); ?>
+										<?php echo $this->escape(stripslashes($participant->get('name'))) ?: Lang::txt('COM_FORUM_ANONYMOUS'); ?>
 									</a>
 								</li>
 								<?php

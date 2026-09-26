@@ -80,8 +80,7 @@ else
 						<label for="field-access">
 							<?php echo Lang::txt('COM_FORUM_FIELD_READ_ACCESS'); ?>
 							<select class="form-control" name="fields[access]" id="field-access">
-								<option value="1"<?php if ($this->post->get('access') == 1) { echo ' selected="selected"'; } ?>><?php echo Lang::txt('COM_FORUM_FIELD_READ_ACCESS_OPTION_PUBLIC'); ?></option>
-								<option value="2"<?php if ($this->post->get('access') == 2) { echo ' selected="selected"'; } ?>><?php echo Lang::txt('COM_FORUM_FIELD_READ_ACCESS_OPTION_REGISTERED'); ?></option>
+								<?php echo Html::select('options', Html::access('assetgroups'), 'value', 'text', $this->post->get('access')); ?>
 							</select>
 						</label>
 					</div>
@@ -141,6 +140,18 @@ else
 											'itemTemplate' => '<li data-id="{id}"><img class="photo" src="{picture}" /><strong class="username">{username}</strong><span class="fullname">{name}</span></li>',
 											'outputTemplate' => '<a href="/members/{id}" data-user-id="{id}" target="_blank">@{username}</a>&nbsp;&nbsp;',
 										)
+									),
+									// A post is stored in a TEXT column, so cap it well inside that
+									// ceiling. Without strict SQL mode an oversize value is truncated
+									// rather than refused, which cuts the markup mid-tag.
+									// Deliberately not called 'wordcount': the CKEditor 4 plugin reads
+									// that key and would start showing a counter and enforcing a limit
+									// it counts differently, changing behaviour for editors not in scope.
+									'limits' => array(
+										'maxDataBytes'  => 60000,
+										'maxCharCount'  => 20000,
+										'hardLimit'     => true,
+										'showCharCount' => true
 									)
 								)); ?>
 						</label>
@@ -188,7 +199,7 @@ else
 
 					<?php if ($this->config->get('allow_anonymous')) { ?>
 						<div class="form-group">
-							<label for="field-anonymous" id="comment-anonymous-label">
+							<label for="field-anonymous" class="comment-anonymous-label">
 								<input class="option form-check-input" type="checkbox" name="fields[anonymous]" id="field-anonymous" value="1"<?php if ($this->post->get('anonymous')) { echo ' checked="checked"'; } ?> />
 								<?php echo Lang::txt('COM_FORUM_FIELD_ANONYMOUS'); ?>
 							</label>
