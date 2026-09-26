@@ -14,7 +14,7 @@ $this->css()
 <header id="content-header">
 	<h2><?php echo $this->title; ?></h2>
 
-	<?php if ($this->auth) { ?>
+	<?php if ($this->authorized) { ?>
 	<div id="content-header-extra">
 		<ul id="useroptions">
 			<li class="last"><a class="icon-add add btn" href="<?php echo Route::url('index.php?option='.$this->option.'&task=add'); ?>"><?php echo Lang::txt('EVENTS_ADD_EVENT'); ?></a></li>
@@ -25,10 +25,10 @@ $this->css()
 
 <nav>
 	<ul class="sub-menu">
-		<li<?php if ($this->task == 'year') { echo ' class="active"'; } ?>><a href="<?php echo Route::url('index.php?option='.$this->option.'&year='.$this->year); ?>"><span><?php echo Lang::txt('EVENTS_CAL_LANG_REP_YEAR'); ?></span></a></li>
-		<li<?php if ($this->task == 'month') { echo ' class="active"'; } ?>><a href="<?php echo Route::url('index.php?option='.$this->option.'&year='.$this->year.'&month='.$this->month); ?>"><span><?php echo Lang::txt('EVENTS_CAL_LANG_REP_MONTH'); ?></span></a></li>
-		<li<?php if ($this->task == 'week') { echo ' class="active"'; } ?>><a href="<?php echo Route::url('index.php?option='.$this->option.'&year='.$this->year.'&month='.$this->month.'&day='.$this->day.'&task=week'); ?>"><span><?php echo Lang::txt('EVENTS_CAL_LANG_REP_WEEK'); ?></span></a></li>
-		<li<?php if ($this->task == 'day') { echo ' class="active"'; } ?>><a href="<?php echo Route::url('index.php?option='.$this->option.'&year='.$this->year.'&month='.$this->month.'&day='.$this->day); ?>"><span><?php echo Lang::txt('EVENTS_CAL_LANG_REP_DAY'); ?></span></a></li>
+		<li<?php if ($this->task == 'year') { echo ' class="active"'; } ?>><a rel="nofollow" href="<?php echo Route::url('index.php?option='.$this->option.'&year='.$this->year); ?>"><span><?php echo Lang::txt('EVENTS_CAL_LANG_REP_YEAR'); ?></span></a></li>
+		<li<?php if ($this->task == 'month') { echo ' class="active"'; } ?>><a rel="nofollow" href="<?php echo Route::url('index.php?option='.$this->option.'&year='.$this->year.'&month='.$this->month); ?>"><span><?php echo Lang::txt('EVENTS_CAL_LANG_REP_MONTH'); ?></span></a></li>
+		<li<?php if ($this->task == 'week') { echo ' class="active"'; } ?>><a rel="nofollow" href="<?php echo Route::url('index.php?option='.$this->option.'&year='.$this->year.'&month='.$this->month.'&day='.$this->day.'&task=week'); ?>"><span><?php echo Lang::txt('EVENTS_CAL_LANG_REP_WEEK'); ?></span></a></li>
+		<li<?php if ($this->task == 'day') { echo ' class="active"'; } ?>><a rel="nofollow" href="<?php echo Route::url('index.php?option='.$this->option.'&year='.$this->year.'&month='.$this->month.'&day='.$this->day); ?>"><span><?php echo Lang::txt('EVENTS_CAL_LANG_REP_DAY'); ?></span></a></li>
 	</ul>
 </nav>
 
@@ -38,12 +38,12 @@ $this->css()
 		<?php
 		if ($this->row) {
 			$html  = '<h3>'. $this->escape(stripslashes($this->row->title));
-			if ($this->auth && $this->row->created_by == User::get('id'))
+			if ($this->auth)
 			{
 				$html .= '&nbsp;&nbsp;';
 				$html .= '<a class="edit" href="'. Route::url('index.php?option='.$this->option.'&task=edit&id='.$this->row->id) .'" title="'.Lang::txt('JACTION_EDIT').'">'.strtolower(Lang::txt('JACTION_EDIT')).'</a>'."\n";
 				$html .= '&nbsp;&nbsp;'."\n";
-				$html .= '<a class="delete" href="'. Route::url('index.php?option='.$this->option.'&task=delete&id='.$this->row->id) .'" title="'.Lang::txt('JACTION_DELETE').'">'.strtolower(Lang::txt('JACTION_DELETE')).'</a>'."\n";
+				$html .= '<a class="delete" href="'. Route::url('index.php?option='.$this->option.'&task=delete&id='.$this->row->id.'&'.Session::getFormToken().'=1') .'" title="'.Lang::txt('JACTION_DELETE').'">'.strtolower(Lang::txt('JACTION_DELETE')).'</a>'."\n";
 			}
 			$html .= '</h3>'."\n";
 
@@ -64,14 +64,12 @@ $this->css()
 					$html .= '><a class="tab" href="'. Route::url('index.php?option='.$this->option.'&task=details&id='.$this->row->id.'&page='.$p->alias) .'"><span>'.trim(stripslashes($p->title)).'</span></a></li>'."\n";
 				}
 			}
-			$html .= "\t".'<li';
-
 			if ($this->row->registerby && $this->row->registerby != '0000-00-00 00:00:00' && strtotime($this->row->registerby) >= time()) {
+				$html .= "\t".'<li';
 				if ($this->page->alias == 'register') {
 					$html .= ' class="active"';
 				}
 				$html .= '><a class="tab" href="'. Route::url('index.php?option='.$this->option.'&task=details&id='.$this->row->id.'&page=register') .'"><span>'.Lang::txt('EVENTS_REGISTER').'</span></a></li>'."\n";
-
 			}
 			$html .= '</ul>'."\n";
 			$html .= '<div class="clear"></div>'."\n";
@@ -119,37 +117,25 @@ $this->css()
 					$this->row->stop_time .= (intval($te[0]) == 12) ? ' <small>'.Lang::txt('EVENTS_NOON').'</small>' : ' <small>AM</small>';
 				}
 
-				// get publish up/down & timezone
+				// Times are stored in UTC. Display in the event's own time zone,
+				// always labeled with the zone abbreviation (T).
 				$publish_up   = $this->row->publish_up;
 				$publish_down = $this->row->publish_down;
+				$event_tz     = (isset($this->row->time_zone) && $this->row->time_zone != '') ? $this->row->time_zone : \Config::get('offset');
 
-				if (date("Y-m-d", strtotime($publish_up)) == date("Y-m-d", strtotime($publish_down)))
+				$startDay = Date::of($publish_up)->toTimeZone($event_tz, 'Y-m-d');
+				$endDay   = Date::of($publish_down)->toTimeZone($event_tz, 'Y-m-d');
+
+				if ($startDay == $endDay)
 				{
-					$html .= Date::of($publish_up)->format('l d F, Y') . ', ';
-					$html .= Date::of($publish_up)->format('g:i a ') . ' - ' . Date::of($publish_down)->format('g:i a ');
-					$html .= Date::of($publish_down, $this->row->time_zone)->format('T', true);
+					$html .= Date::of($publish_up)->toTimeZone($event_tz, 'l d F, Y') . ', ';
+					$html .= Date::of($publish_up)->toTimeZone($event_tz, 'g:i a') . ' - ';
+					$html .= Date::of($publish_down)->toTimeZone($event_tz, 'g:i a T');
 				}
 				else
 				{
-					if (!isset($this->row->time_zone) || $this->row->time_zone == '')
-					{
-						// Get the timezone preferred by the USER, if not use HUB's
-						$event_timezone = \Config::get('offset');
-
-						// Case if spanning across two days that are on different DST or ST
-						$event_timezone_start = Date::of($publish_up, $event_timezone)->format('T', true);
-						$event_timezone_end = Date::of($publish_down, $event_timezone)->format('T', true);
-
-					}
-					else
-					{
-						$event_timezone = Date::of($publish_down, $this->row->time_zone)->format('T', true);
-						$event_timezone_start = Date::of($publish_up, $this->row->time_zone)->format('T', true);
-						$event_timezone_end = Date::of($publish_down, $this->row->time_zone)->format('T', true);
-					}
-
-					$html .= Date::of($publish_up, $this->row->time_zone)->toLocal('l d F, Y g:i a ') . $event_timezone_start . ' - ';
-					$html .= Date::of($publish_down, $this->row->time_zone)->toLocal('l d F, Y g:i a ') . $event_timezone_end;
+					$html .= Date::of($publish_up)->toTimeZone($event_tz, 'l d F, Y g:i a T') . ' - ';
+					$html .= Date::of($publish_down)->toTimeZone($event_tz, 'l d F, Y g:i a T');
 				}
 
 				$html .= '   </td>'."\n";
@@ -179,7 +165,7 @@ $this->css()
 							if (end($field) == '1') {
 								$html .= '  <tr>'."\n";
 								$html .= '   <th scope="row">'.$field[1].':</th>'."\n";
-								$html .= '   <td>'.Lang::txt('YES').'</td>'."\n";
+								$html .= '   <td>'.Lang::txt('EVENTS_YES').'</td>'."\n";
 								$html .= '  </tr>'."\n";
 							} else {
 								$html .= '  <tr>'."\n";

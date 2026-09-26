@@ -35,6 +35,8 @@ class Event extends Model
 	 */
 	protected $_tbl_name = '\\Components\\Events\\Tables\\Event';
 
+	protected $address_info = '';
+
 	/**
 	 * Constructor
 	 *
@@ -212,19 +214,21 @@ class Event extends Model
 		// get event timezone setting
 		// use this in "DTSTART;TZID="
 		$tzInfo = \plgGroupsCalendarHelper::getTimezoneNameAndAbbreviation($this->get('time_zone'));
-		$tzName = timezone_name_from_abbr($tzInfo['abbreviation']);
+		$tzName = timezone_name_from_abbr($tzInfo['abbreviation'] ?? '');
 
 		// get publish up/down dates in UTC
-		$publishUp   = new DateTime($this->get('publish_up'), new DateTimezone('UTC'));
-		$publishDown = new DateTime($this->get('publish_down'), new DateTimezone('UTC'));
+		$publishUp   = new DateTime($this->get('publish_up',''), new DateTimezone('UTC'));
+		$publishDown = new DateTime($this->get('publish_down',''), new DateTimezone('UTC'));
 
 		// Set eastern timezone as publish up/down date timezones
 		// since all event date/times are stores relative to eastern
 		// ----------------------------------------------------------------------------------
 		// The timezone param "DTSTART;TZID=" defined above will allow a users calendar app to
 		// adjust date/time display according to that timezone and their systems timezone setting
-		$publishUp->setTimezone(new DateTimezone(timezone_name_from_abbr('EST')));
-		$publishDown->setTimezone(new DateTimezone(timezone_name_from_abbr('EST')));
+		// Emit times in UTC (see DTSTART/DTEND below): unambiguous, and every
+		// calendar client converts to the viewer's own zone.
+		$publishUp->setTimezone(new DateTimezone('UTC'));
+		$publishDown->setTimezone(new DateTimezone('UTC'));
 
 		//event vars
 		$id       = $this->get('id');
@@ -274,14 +278,14 @@ class Event extends Model
 		$output .= "BEGIN:VEVENT\r\n";
 		$output .= "UID:{$id}\r\n";
 		$output .= "DTSTAMP:{$now}\r\n";
-		$output .= "DTSTART;TZID={$tzName}:" . $publishUp->format('Ymd\THis') . "\r\n";
+		$output .= "DTSTART:" . $publishUp->format('Ymd\THis\Z') . "\r\n";
 		if ($this->get('publish_down') != '' && $this->get('publish_down') != '0000-00-00 00:00:00')
 		{
-			$output .= "DTEND;TZID={$tzName}:" . $publishDown->format('Ymd\THis') . "\r\n";
+			$output .= "DTEND:" . $publishDown->format('Ymd\THis\Z') . "\r\n";
 		}
 		else
 		{
-			$output .= "DTEND;TZID={$tzName}:" . $publishUp->format('Ymd\THis') . "\r\n";
+			$output .= "DTEND:" . $publishUp->format('Ymd\THis\Z') . "\r\n";
 		}
 
 		// repeating rule

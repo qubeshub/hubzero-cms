@@ -132,7 +132,7 @@ for ($i=0, $n=count($this->rows); $i < $n; $i++)
 						if (!$row->publish_down || $row->publish_down == '0000-00-00 00:00:00') {
 							$times .= Lang::txt('COM_EVENTS_CAL_LANG_TO') . ' : ' . Lang::txt('COM_EVENTS_CAL_LANG_NEVER').'<br />';
 						} else {
-							$times .= Lang::txt('COM_EVENTS_CAL_LANG_FROM') . ' : ' . date('Y-m-d H:i:s', strtotime($row->publish_down)) . '<br />';
+							$times .= Lang::txt('COM_EVENTS_CAL_LANG_TO') . ' : ' . date('Y-m-d H:i:s', strtotime($row->publish_down)) . '<br />';
 						}
 					}
 
@@ -140,7 +140,7 @@ for ($i=0, $n=count($this->rows); $i < $n; $i++)
 
 					if ($times) {
 					?>
-						<a class="state <?php echo $row->state ? 'publish' : 'unpublish' ?> hasTip" href="javascript:void(0);" onclick="return listItemTask('cb<?php echo $i; ?>','<?php echo $row->state ? 'unpublish' : 'publish' ?>')" title="<?php echo Lang::txt('COM_EVENTS_EVENT_PUBLISH_INFO');?>::<?php echo $times; ?>">
+						<a class="state <?php echo $row->state ? (($row->state==2) ? 'trash' :'publish') : 'unpublish' ?> hasTip" href="javascript:void(0);" onclick="return listItemTask('cb<?php echo $i; ?>','<?php echo $row->state ? 'unpublish' : 'publish' ?>')" title="<?php echo Lang::txt('COM_EVENTS_EVENT_PUBLISH_INFO');?>::<?php echo $times; ?>">
 							<span><?php echo $alt; ?></span>
 						</a>
 					<?php } ?>

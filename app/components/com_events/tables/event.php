@@ -443,7 +443,8 @@ class Event extends Table
 		}
 
 		// If no publish down set, set to "infinite" future
-		if (!isset($filters['publish_down'])) {
+		if (!isset($filters['publish_down']))
+		{
 			$filters['publish_down'] = '9999-12-31 00:00:00';
 		}
 

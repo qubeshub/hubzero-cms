@@ -14,6 +14,7 @@ use Hubzero\Base\Model;
 use DateTimezone;
 use DateTime;
 use Date;
+use Request;
 
 // include calendar model
 require_once dirname(__DIR__) . DS . 'calendar.php';
@@ -168,7 +169,7 @@ class Archive extends Model
 			// get event timezone setting
 			// use this in "DTSTART;TZID="
 			$tzInfo = \plgGroupsCalendarHelper::getTimezoneNameAndAbbreviation($event->get('time_zone'));
-			$tzName = timezone_name_from_abbr($tzInfo['abbreviation']);
+			$tzName = timezone_name_from_abbr($tzInfo['abbreviation'] ?? '');
 
 			// get publish up/down dates in UTC
 			$publishUp = Date::of($event->get('publish_up'));

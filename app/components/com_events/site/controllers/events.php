@@ -31,6 +31,8 @@ use User;
 use Date;
 use App;
 use Hubzero\Event as Evt;
+use Config;
+use Session;
 
 /**
  * Controller class for events
@@ -276,6 +278,50 @@ class Events extends SiteController
 			App::abort(404, Lang::txt('COM_EVENTS_DAY_NOT_VALID'));
 			return;
 		}
+
+		// geodynamics 2026-08-02: 404 for years outside the range in
+		// which events can exist.
+		//
+		// The calendar previously answered 200 with a fully rendered
+		// 33 KB page for any syntactically valid year, so ~90,000 dates
+		// were live, indexable URLs. Crawlers enumerated them: requests
+		// spanning 1977 to 2099, and 26% of all dated event traffic
+		// (1,102 of 4,191 sampled) fell outside the possible range.
+		// rel=nofollow on the calendar controls stops well-behaved
+		// crawlers walking in, but does nothing for the ones that
+		// ignore it -- and those are the majority here. A 404 is both
+		// the accurate answer and the cheap one.
+		//
+		// Redirecting to /events instead was considered and rejected:
+		// it still costs a request, crawlers still follow it, and
+		// search engines treat a mass redirect of unrelated URLs to one
+		// page as a soft 404 anyway.
+		//
+		// Only the year is compared, not the full date. That is enough
+		// to close the unbounded space while never 404ing a real month
+		// inside a boundary year. The upper bound moves as events are
+		// scheduled, which is correct: a 404 means "no events then",
+		// and crawlers re-check.
+		//
+		// Guarded on the year having been supplied explicitly, so the
+		// undated /events view (which defaults to today) is untouched.
+		if (Request::getInt('year', 0) > 0)
+		{
+			$db = App::get('db');
+			$db->setQuery(
+				"SELECT YEAR(MIN(publish_up)) AS mn, YEAR(MAX(publish_down)) AS mx
+				   FROM `#__events`
+				  WHERE `scope` = 'event' AND `state` = 1 AND `approved` = 1"
+			);
+			$bounds = $db->loadObject();
+			if ($bounds && $bounds->mn && $bounds->mx
+			 && ((int) $this->year < (int) $bounds->mn
+			  || (int) $this->year > (int) $bounds->mx))
+			{
+				App::abort(404, Lang::txt('COM_EVENTS_YEAR_NOT_VALID'));
+				return;
+			}
+		}
 	}
 
 	/**
@@ -325,16 +371,7 @@ class Events extends SiteController
 		$ee = new Event($this->database);
 		$rows = $ee->getEvents('year', $filters);
 
-		// Everyone has access unless restricted to admins in the configuration
-		$authorized = true;
-		if (User::isGuest())
-		{
-			$authorized = false;
-		}
-		if ($this->config->getCfg('adminlevel'))
-		{
-			$authorized = $this->_authorize();
-		}
+		$authorized = $this->_authorize('core.create');
 
 		// Get a list of categories
 		$categories = $this->_getCategories();
@@ -403,16 +440,7 @@ class Events extends SiteController
 		$ee = new Event($this->database);
 		$rows = $ee->getEvents('month', $filters);
 
-		// Everyone has access unless restricted to admins in the configuration
-		$authorized = true;
-		if (User::isGuest())
-		{
-			$authorized = false;
-		}
-		if ($this->config->getCfg('adminlevel'))
-		{
-			$authorized = $this->_authorize();
-		}
+		$authorized = $this->_authorize('core.create');
 
 		// Get a list of categories
 		$categories = $this->_getCategories();
@@ -514,16 +542,7 @@ class Events extends SiteController
 			$rows[$d]['week']   = $week;
 		}
 
-		// Everyone has access unless restricted to admins in the configuration
-		$authorized = true;
-		if (User::isGuest())
-		{
-			$authorized = false;
-		}
-		if ($this->config->getCfg('adminlevel'))
-		{
-			$authorized = $this->_authorize();
-		}
+		$authorized = $this->_authorize('core.create');
 
 		// Build the page title
 		$this->_buildTitle();
@@ -604,16 +623,7 @@ class Events extends SiteController
 		// 	}
 		// }
 
-		// Everyone has access unless restricted to admins in the configuration
-		$authorized = true;
-		if (User::isGuest())
-		{
-			$authorized = false;
-		}
-		if ($this->config->getCfg('adminlevel'))
-		{
-			$authorized = $this->_authorize();
-		}
+		$authorized = $this->_authorize('core.create');
 
 		// Get a list of categories
 		$categories = $this->_getCategories();
@@ -751,24 +761,17 @@ class Events extends SiteController
 			$row->content = trim($row->content == null ? '' : $row->content);
 		}
 
-		$bits = explode('-', $row->publish_up);
-		$eyear = $bits[0];
-		$emonth = $bits[1];
-		$edbits = explode(' ', $bits[2]);
-		$eday = $edbits[0];
+		$bits   = explode('-', (string) $row->publish_up);
+		$eyear  = $bits[0] ?? '';
+		$emonth = $bits[1] ?? '';
+		$edbits = explode(' ', $bits[2] ?? '');
+		$eday   = $edbits[0] ?? '';
 
-		// Everyone has access unless restricted to admins in the configuration
-		$authorized = true;
+		// May the current user create a new event? (controls the "Add Event" button)
+		$authorized = $this->_authorize('core.create');
 
-		$auth = true;
-		if (User::isGuest())
-		{
-			$auth = false;
-		}
-		if ($this->config->getCfg('adminlevel'))
-		{
-			$auth = $this->_authorize();
-		}
+		// May the current user edit/delete THIS event? (controls the edit/delete links)
+		$auth = $this->_authorize('core.edit', $row->created_by);
 
 		// Get a list of categories
 		$categories = $this->_getCategories();
@@ -919,11 +922,7 @@ class Events extends SiteController
 			return;
 		}
 
-		$auth = true;
-		if ($this->config->getCfg('adminlevel'))
-		{
-			$auth = $this->_authorize();
-		}
+		$auth = $this->_authorize('core.create');
 
 		$bits = explode('-', $event->publish_up);
 		$eyear = $bits[0];
@@ -970,7 +969,7 @@ class Events extends SiteController
 		$pages = $page->loadPages($event->id);
 
 		// Check if registration is still open
-		$registerby = strtotime($event->registerby);
+		$registerby = $event->registerby ? strtotime($event->registerby) : 0;
 		$now = time();
 
 		$register = array();
@@ -992,7 +991,7 @@ class Events extends SiteController
 			{
 				$passwrd = Request::getString('passwrd', '', 'post');
 
-				if ($event->restricted == $passwrd)
+				if (hash_equals((string) $event->restricted, (string) $passwrd))
 				{
 					// Instantiate a view
 					$this->view->setLayout('default');
@@ -1083,11 +1082,7 @@ class Events extends SiteController
 			return;
 		}
 
-		$auth = true;
-		if ($this->config->getCfg('adminlevel'))
-		{
-			$auth = $this->_authorize();
-		}
+		$auth = $this->_authorize('core.create');
 
 		$bits = explode('-', $event->publish_up);
 		$eyear  = $bits[0];
@@ -1428,9 +1423,8 @@ class Events extends SiteController
 		{
 			// Yes - edit mode
 
-			// Are they authorized to make edits?
-			if (!$this->_authorize($row->created_by)
-				&& !(User::get('id') == $row->created_by))
+			// Are they authorized to make edits to this event?
+			if (!$this->_authorize('core.edit', $row->created_by))
 			{
 				// Not authorized - redirect
 				App::redirect(Route::url('index.php?option=' . $this->_option));
@@ -1461,7 +1455,13 @@ class Events extends SiteController
 		}
 		else
 		{
-			// No ID - we're creating a new event
+			// No ID - we're creating a new event; must be allowed to create
+			if (!$this->_authorize('core.create'))
+			{
+				App::redirect(Route::url('index.php?option=' . $this->_option));
+				return;
+			}
+
 			if ($row->publish_up && $row->publish_up != '0000-00-00 00:00:00')
 			{
 				$event_up = new EventsDate($row->publish_up);
@@ -1502,7 +1502,7 @@ class Events extends SiteController
 				$start_time = "08:00";
 				$end_time = "17:00";
 				$registerby_time = "08:00";
-				$time_zone = -5;
+				$time_zone = \Config::get('offset');
 			}
 
 			// If user hits refresh, try to maintain event form state
@@ -1685,7 +1685,7 @@ class Events extends SiteController
 		$this->view->times = $times;
 		$this->view->lists = $lists;
 		$this->view->gid = $this->gid;
-		$this->view->admin = $this->_authorize();
+		$this->view->admin = $this->_authorize('core.edit.state');
 		if ($this->getError())
 		{
 			$this->view->setError($this->getError());
@@ -1700,6 +1700,9 @@ class Events extends SiteController
 	 */
 	public function deleteTask()
 	{
+		// Check for request forgeries
+		Request::checkToken('get');
+
 		// Check if they are logged in
 		if (User::isGuest())
 		{
@@ -1721,9 +1724,8 @@ class Events extends SiteController
 		$event = new Event($this->database);
 		$event->load($id);
 
-		// Are they authorized to delete this event? Do they own it? Own it!
-		if (!$this->_authorize($event->created_by)
-			&& !(User::get('id') == $event->created_by))
+		// Are they authorized to delete this event? (managers, core.delete, or the owner via core.edit.own)
+		if (!$this->_authorize('core.delete', $event->created_by))
 		{
 			App::redirect(Route::url('index.php?option=' . $this->_option));
 			return;
@@ -1791,7 +1793,7 @@ class Events extends SiteController
 
 		// good ol' form validation
 		Request::checkToken();
-		Request::checkHoneypot() or die('Invalid Field Data Detected. Please try again.');
+		Request::checkHoneypot(null,0) or die('Invalid Field Data Detected. Please try again.');
 
 		$offset = $this->offset;
 
@@ -1802,7 +1804,7 @@ class Events extends SiteController
 		$end_time   = Request::getString('end_time', '17:00', 'post');
 		$end_time   = ($end_time) ? $end_time : '17:00';
 		$end_pm     = Request::getInt('end_pm', 0, 'post');
-		$time_zone  = Request::getString('time_zone', -5, 'post');
+		$time_zone  = Request::getString('time_zone', \Config::get('offset'), 'post');
 		$tags       = Request::getString('tags', '', 'post');
 
 		// Bind the posted data to an event object
@@ -1834,6 +1836,30 @@ class Events extends SiteController
 			if (User::get('id'))
 			{
 				$row->created_by = User::get('id');
+			}
+		}
+
+		// Authorization check against the STORED record (never trust posted ownership)
+		if ($state == 'add')
+		{
+			if (!$this->_authorize('core.create'))
+			{
+				App::redirect(Route::url('index.php?option=' . $this->_option));
+				return;
+			}
+		}
+		else
+		{
+			$orig = new Event($this->database);
+			$orig->load($row->id);
+
+			// Preserve the true owner so it can't be reassigned via the form
+			$row->created_by = $orig->created_by;
+
+			if (!$this->_authorize('core.edit', $orig->created_by))
+			{
+				App::redirect(Route::url('index.php?option=' . $this->_option));
+				return;
 			}
 		}
 
@@ -1989,8 +2015,17 @@ class Events extends SiteController
 				$tz = 'Pacific/Kiritimati';
 				break;
 			default:
-				$tz = timezone_name_from_abbr('', $row->time_zone * 3600, -1);
+				// Newer events store an IANA zone name (ex: 'US/Eastern') rather than
+				// a numeric offset, so only convert when we really have a number.
+				$tz = is_numeric($row->time_zone)
+					? timezone_name_from_abbr('', $row->time_zone * 3600, -1)
+					: $row->time_zone;
 		}
+
+		// Publish immediately only for users who can manage publication state
+		// (site managers, or a role granted core.edit.state); everyone else is
+		// held for moderation as an unpublished event.
+		$row->state = $this->_authorize('core.edit.state') ? 1 : 0;
 
 		// create publish up date time string
 		$rpup = $row->publish_up;
@@ -2007,16 +2042,6 @@ class Events extends SiteController
 		{
 			$publishtime = $row->publish_down . ' ' . $end_time . ':00';
 			$row->publish_down = \Date::of($publishtime)->toSql();
-		}
-
-		// Always unpublish if no Publisher otherwise publish automatically
-		if ($this->config->getCfg('adminlevel'))
-		{
-			$row->state = 0;
-		}
-		else
-		{
-			$row->state = 1;
 		}
 
 		// Verify that the event doesn't start after it ends or ends before it starts.
@@ -2223,7 +2248,7 @@ class Events extends SiteController
 	 * @param   string   $id
 	 * @return  boolean
 	 */
-	protected function _authorize($id='')
+	protected function _authorize($action = 'core.manage', $id = 0)
 	{
 		// Check if they are logged in
 		if (User::isGuest())
@@ -2231,22 +2256,21 @@ class Events extends SiteController
 			return false;
 		}
 
-		// Check if they're a site admin
+		// Site admins and component managers can do everything
 		if (User::authorise('core.admin', $this->_option)
 		 || User::authorise('core.manage', $this->_option))
 		{
 			return true;
 		}
 
-		// Check against events configuration
-		if (!$this->config->getCfg('adminlevel'))
+		// Owners acting on their own event, when granted the "edit own" permission
+		if ($id && $id == User::get('id')
+		 && User::authorise('core.edit.own', $this->_option))
 		{
-			if ($id && $id == User::get('id'))
-			{
-				return true;
-			}
+			return true;
 		}
 
-		return false;
+		// Otherwise defer to the specific action permission (core.create, core.edit, core.delete, ...)
+		return User::authorise($action, $this->_option);
 	}
 }

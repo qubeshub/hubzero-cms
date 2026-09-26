@@ -16,6 +16,13 @@ use Components\Events\Models\Tags;
 use Components\Events\Helpers\Html;
 use Hubzero\Component\AdminController;
 use Exception;
+use App;
+use Config;
+use Date;
+use Lang;
+use Request;
+use Route;
+use User;
 
 /**
  * Events controller for entries
@@ -236,7 +243,7 @@ class Events extends AdminController
 		else
 		{
 			$this->view->row->state = 0;
-			$this->view->row->time_zone = -5;
+			$this->view->row->time_zone = \Config::get('offset');
 			$this->view->row->content = '';
 			$this->view->row->title = '';
 			$this->view->row->adresse_info = '';
@@ -568,6 +575,9 @@ class Events extends AdminController
 	 */
 	public function publishTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Incoming
 		$ids = Request::getArray('id', array());
 		if (!is_array($ids))
@@ -607,6 +617,9 @@ class Events extends AdminController
 	 */
 	public function unpublishTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Incoming
 		$ids = Request::getArray('id', array());
 		if (!is_array($ids))
@@ -646,6 +659,9 @@ class Events extends AdminController
 	 */
 	public function settypeTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Incoming
 		$ids = Request::getArray('id', array());
 		if (!is_array($ids))
@@ -700,6 +716,9 @@ class Events extends AdminController
 	 */
 	public function removeTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Incoming
 		$ids = Request::getArray('id', array());
 		if (!is_array($ids))
