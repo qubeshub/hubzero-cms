@@ -344,11 +344,11 @@
 		padding: 0 1em;
 	}
 
+/* Collapsible table of contents (group wikis) */
 	.group_wiki .toc-item {
 		position: relative;
-  		/* padding-left: 0.25em; /* space for the caret */
-  		display: flex;
-  		align-items: center;
+		display: flex;
+		align-items: center;
 	}
 
 	.group_wiki .toc-item .toggle-button {
@@ -381,13 +381,13 @@
 
 	.group_wiki .toc-item .toggle-button::before {
 		font-family: 'Fontcons';
-		content: '\f0da'; /* Always show closed caret shape */
+		content: '\f0da'; /* caret; rotates when expanded */
 		display: inline-block;
 		transition: transform 0.2s ease;
 	}
 
 	.group_wiki .toc-item .toggle-button[aria-expanded="true"]::before {
-		transform: rotate(90deg); /* Rotates caret to point down */
+		transform: rotate(90deg);
 	}
 
 	.group_wiki .toc-item .tocnumber {
