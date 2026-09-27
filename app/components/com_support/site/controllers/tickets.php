@@ -34,6 +34,8 @@ use Lang;
 use User;
 use Date;
 use App;
+use Component;
+use Notify;
 
 include_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'ticket.php';
 
@@ -1054,6 +1056,7 @@ class Tickets extends SiteController
 		$prevSubmission = Ticket::all()
 			->whereEquals('status', 0)
 			->whereEquals('open', 1)
+			->whereEquals('type', 0)
 			->order('id', 'desc')
 			->limit(1)
 			->start(0)
@@ -1813,12 +1816,10 @@ class Tickets extends SiteController
 				// submitter regardless of the above setting
 				if (!$rowc->isPrivate())
 				{
-					# Users can submit a ticket while not logged in and without a username, that has to be handled differently
-					if (is_string($row->login) && strlen($row->login) == 0)
-					{
-						$rowc->addTo($row->email);
-					}
-					else 
+					# Users can submit a ticket while not logged in and without a (valid) username.
+					# In that case the submitter relation won't resolve to a real account, so fall
+					# back to the e-mail address stored on the ticket itself.
+					if ($row->submitter->get('id'))
 					{
 						$rowc->addTo(array(
 							'role'  => Lang::txt('COM_SUPPORT_COMMENT_SEND_EMAIL_SUBMITTER'),
@@ -1826,6 +1827,10 @@ class Tickets extends SiteController
 							'email' => $row->submitter->get('email'),
 							'id'    => $row->submitter->get('id')
 						));
+					}
+					elseif ($row->email)
+					{
+						$rowc->addTo($row->email);
 					}
 				}
 			}
@@ -2812,6 +2817,33 @@ class Tickets extends SiteController
 			}
 
 			ksort($users);
+		}
+
+		// If the current owner is set but not in the group member list, include them
+		// so the dropdown reflects the actual assignment
+		if ($active)
+		{
+			$found = false;
+			foreach ($users as $usr)
+			{
+				if (is_object($usr) && isset($usr->value) && $usr->value == $active)
+				{
+					$found = true;
+					break;
+				}
+			}
+			if (!$found)
+			{
+				$ou = User::getInstance($active);
+				if (is_object($ou) && $ou->get('id'))
+				{
+					$m = new \stdClass();
+					$m->value = $ou->get('id');
+					$m->text  = $ou->get('name');
+					$m->groupname = $group;
+					$users[] = $m;
+				}
+			}
 		}
 
 		if ($nouser)

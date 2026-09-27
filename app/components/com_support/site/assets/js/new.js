@@ -13,6 +13,8 @@ jQuery(document).ready(function(jq){
 		attach = $("#ajax-uploader");
 
 	if (attach.length) {
+		// [a11y] Ensure role="group" so aria-label is valid (4.1.2)
+		attach.attr('role', 'group');
 		$('#ajax-uploader-list')
 			.on('click', 'a.delete', function (e){
 				e.preventDefault();
@@ -28,10 +30,11 @@ jQuery(document).ready(function(jq){
 			action: attach.attr("data-action"),
 			multiple: true,
 			debug: true,
+			ariaLabel: attach.attr('data-instructions') || "Upload file",
 			template: '<div class="qq-uploader">' +
 						'<div class="qq-upload-button"><span>' + attach.attr('data-instructions') + '</span></div>' + 
 						'<div class="qq-upload-drop-area"><span>' + attach.attr('data-instructions') + '</span></div>' +
-						'<ul class="qq-upload-list"></ul>' + 
+						'<ul class="qq-upload-list" aria-label="Uploaded files" hidden aria-hidden="true"></ul>' +
 					'</div>',
 			onSubmit: function(id, file) {
 				running++;

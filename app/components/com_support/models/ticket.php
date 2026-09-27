@@ -10,6 +10,9 @@ namespace Components\Support\Models;
 use Hubzero\Database\Relational;
 use Components\Support\Helpers\ACL;
 use App;
+use Date;
+use Lang;
+use User;
 
 require_once __DIR__ . DS . 'comment.php';
 require_once __DIR__ . DS . 'status.php';
@@ -670,7 +673,10 @@ class Ticket extends Relational
 				if (in_array(User::get('username'), $cc) || in_array(User::get('email'), $cc))
 				{
 					$this->_acl->setAccess('read', 'tickets', 1);
-					$this->_acl->setAccess('create', 'comments', -1);
+					if (!$this->_acl->check('create', 'comments'))
+					{
+						$this->_acl->setAccess('create', 'comments', -1);
+					}
 					$this->_acl->setAccess('read', 'comments', 1);
 				}
 			}
@@ -821,6 +827,10 @@ class Ticket extends Relational
 		{
 			$filters['sort'] = 'group_id';
 		}
+
+		// Prevent ORDER BY injection: restrict column to identifier charset and direction to ASC/DESC.
+		$filters['sort']    = (preg_replace('/[^a-zA-Z0-9_,. ]/', '', (string) $filters['sort']) ?: 'id');
+		$filters['sortdir'] = (strtoupper(trim($filters['sortdir'])) == 'ASC') ? 'ASC' : 'DESC';
 
 		if ($filters['sort'] == 'severity')
 		{
