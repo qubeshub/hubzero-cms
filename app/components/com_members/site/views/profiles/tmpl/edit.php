@@ -9,6 +9,7 @@
 defined('_HZEXEC_') or die();
 
 $this->css();
+$this->js('members.js');
 
 $profiles = $this->profile->profiles()->ordered()->rows();
 
@@ -131,6 +132,10 @@ foreach ($profiles as $profile)
 					<div class="grid">
 						<div class="col span8">
 							<?php
+							if ($field->get('name') == 'organization' && $field->get('type') == 'text' && \Component::params('com_members')->get('rorApi'))
+							{
+								echo "<span class='hidden rorApiAvailable'></span>";
+							}
 							echo $formfield->label;
 							echo $formfield->input;
 							?>
@@ -171,7 +176,7 @@ foreach ($profiles as $profile)
 
 		<fieldset id="memberpicture">
 			<legend><?php echo Lang::txt('MEMBER_PICTURE'); ?></legend>
-			<iframe width="100%" height="350" border="0" name="filer" id="filer" src="<?php echo Route::url('index.php?option='.$this->option.'&controller=media&tmpl=component&file='.stripslashes($this->profile->get('picture')).'&amp;id='.$this->profile->get('id')); ?>"></iframe>
+			<iframe width="100%" height="350" border="0" name="filer" id="filer" src="<?php echo Route::url('index.php?option='.$this->option.'&controller=media&tmpl=component&file='.stripslashes($this->profile->get('picture') ?? '').'&amp;id='.$this->profile->get('id')); ?>"></iframe>
 		</fieldset><div class="clear"></div>
 
 		<?php echo Html::input('token'); ?>

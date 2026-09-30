@@ -147,7 +147,7 @@ foreach ($this->fields as $field)
 						</div>
 					</fieldset><!-- / sort -->
 
-					<p><input class="btn" type="submit" value="<?php echo Lang::txt('COM_MEMBERS_APPLY'); ?>" /></p>
+					<p class="members-filter-apply"><input class="btn" type="submit" value="<?php echo Lang::txt('COM_MEMBERS_APPLY'); ?>" /></p>
 				</fieldset>
 			</div>
 		</aside><!-- / .aside -->
@@ -240,7 +240,20 @@ foreach ($this->fields as $field)
 			<div class="container members-container" id="listOfMembers">
 				<div class="results tiled members">
 					<?php
-					if ($this->rows->count() > 0)
+					if (empty($this->hasFilter))
+					{ ?>
+						<div class="members-search-prompt">
+							<div class="members-search-prompt-icon" aria-hidden="true">
+								<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+									<circle cx="11" cy="11" r="7"></circle>
+									<line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+								</svg>
+							</div>
+							<h3 class="members-search-prompt-title"><?php echo Lang::txt('COM_MEMBERS_BROWSE_ENTER_SEARCH_TITLE'); ?></h3>
+							<p class="members-search-prompt-body"><?php echo Lang::txt('COM_MEMBERS_BROWSE_ENTER_SEARCH'); ?></p>
+						</div>
+					<?php }
+					else if ($this->rows->count() > 0)
 					{
 						$cols = 2;
 
@@ -376,15 +389,30 @@ foreach ($this->fields as $field)
 							$results = Event::trigger('members.onMemberProfile', array($row));
 							$extras = implode("\n", $results);
 							?>
-							<div class="result<?php echo ($cls) ? ' ' . $cls : ''; ?>">
+							<?php
+								// [a11y] unique label with org + member ID to disambiguate same-name members (SC 2.4.4)
+								$_org = '';
+								foreach ($this->fields as $_f) {
+									if (in_array($_f->get('name'), array('org', 'organization'))) {
+										$_org = trim(stripslashes($row->get($_f->get('name'))));
+										break;
+									}
+								}
+								$_uniqueLabel = $this->escape($name);
+								if ($_org) {
+									$_uniqueLabel .= ', ' . $this->escape(Hubzero\Utility\Str::truncate($_org, 40));
+								}
+								$_uniqueLabel .= ' (#' . $id . ')';
+							?>
+							<div class="result<?php echo ($cls) ? ' ' . $cls : ''; ?>" role="group" aria-label="<?php echo $_uniqueLabel; ?>">
 								<div class="result-body">
 									<div class="result-img">
-										<a href="<?php echo Route::url('index.php?option=' . $this->option . '&id=' . $id); ?>">
-											<img src="<?php echo $row->picture(); ?>" alt="<?php echo Lang::txt('COM_MEMBERS_BROWSE_AVATAR', $this->escape($name)); ?>" />
+										<a href="<?php echo Route::url('index.php?option=' . $this->option . '&id=' . $id); ?>" aria-label="<?php echo $_uniqueLabel; ?>">
+											<img src="<?php echo $row->picture(); ?>" alt="" />
 										</a>
 									</div>
 									<div class="result-title">
-										<a href="<?php echo Route::url('index.php?option=' . $this->option . '&id=' . $id); ?>">
+										<a href="<?php echo Route::url('index.php?option=' . $this->option . '&id=' . $id); ?>" aria-label="<?php echo $_uniqueLabel; ?>">
 											<?php echo $name; ?>
 										</a>
 										<?php foreach ($this->fields as $c) { ?>
@@ -448,6 +476,7 @@ foreach ($this->fields as $field)
 					<?php } ?>
 				</div>
 				<?php
+				if (!empty($this->hasFilter)):
 				$pageNav = $this->rows->pagination;
 				if ($this->filters['search'])
 				{
@@ -483,6 +512,7 @@ foreach ($this->fields as $field)
 					}
 				}
 				echo $pageNav;
+				endif;
 				?>
 				<div class="clearfix"></div>
 			</div><!-- / .container -->

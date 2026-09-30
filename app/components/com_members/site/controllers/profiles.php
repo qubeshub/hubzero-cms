@@ -272,6 +272,16 @@ class Profiles extends SiteController
 	 */
 	public function browseTask()
 	{
+		// Require a logged-in user — member directory is not available to guests
+		if (User::isGuest())
+		{
+			App::redirect(
+				Route::url('index.php?option=com_users&view=login&return=' . base64_encode(Route::url('index.php?option=' . $this->_option . '&task=browse', false, true)), false),
+				Lang::txt('COM_MEMBERS_NOT_LOGGEDIN'),
+				'warning'
+			);
+		}
+
 		// Get all the fields we can use on this page
 		$fields = Field::all()
 			->whereIn('action_browse', User::getAuthorisedViewLevels())
@@ -421,6 +431,10 @@ class Profiles extends SiteController
 
 		// Distil down the results to only unique filters
 		$filters['q'] = array_map('unserialize', array_unique(array_map('serialize', $filters['q'])));
+
+		// Require at least one filter before running the query — the members table is too
+		// large to return as an unfiltered browse (performance + enumeration risk).
+		$hasFilter = (bool)$filters['search'] || (bool)$filters['tags'] || !empty($filters['q']);
 
 		// Build query
 		$entries = Member::all();
@@ -578,10 +592,21 @@ class Profiles extends SiteController
 
 		$entries->whereIn($a . '.access', $access);
 
-		$rows = $entries
-			->order($filters['sqlsort'], $filters['sort_Dir'])
-			->paginated('limitstart', 'limit')
-			->rows();
+		if ($hasFilter)
+		{
+			$rows = $entries
+				->order($filters['sqlsort'], $filters['sort_Dir'])
+				->paginated('limitstart', 'limit')
+				->rows();
+		}
+		else
+		{
+			// No filter supplied — return an empty result set. View renders a prompt.
+			$rows = $entries
+				->whereEquals($a . '.id', 0)
+				->paginated('limitstart', 'limit')
+				->rows();
+		}
 
 		// Set the page title
 		$title  = Lang::txt('COM_MEMBERS');
@@ -616,6 +641,7 @@ class Profiles extends SiteController
 			->set('config', $this->config)
 			->set('fields', $fields)
 			->set('filters', $filters)
+			->set('hasFilter', $hasFilter)
 			->set('title', $title)
 			->set('rows', $rows)
 			->set('past_day_members', $stats->past_day_members)
@@ -797,7 +823,15 @@ class Profiles extends SiteController
 			// Check if they're logged in
 			if (User::isGuest())
 			{
-				$rtrn = Request::getString('REQUEST_URI', Route::url($profile->link()), 'server');
+			// geodynamics 2026-08-02: use the canonical target, not
+			// REQUEST_URI. REQUEST_URI carries the client-supplied query
+			// string, so reflecting it minted a distinct /login?return=<b64>
+			// for every distinct query a crawler invented -- an
+			// unbounded-cardinality crawl trap of the same shape as the
+			// 2026-08-01 flood. The canonical URL was already sitting here
+			// as the fallback argument; this just stops preferring the
+			// attacker-controlled value over it.
+				$rtrn = Route::url($profile->link());
 
 				App::redirect(
 					Route::url('index.php?option=com_users&view=login&return=' . base64_encode($rtrn))
@@ -918,7 +952,15 @@ class Profiles extends SiteController
 		// Check if they're logged in
 		if (User::isGuest())
 		{
-			$rtrn = Request::getString('REQUEST_URI', Route::url('index.php?option=' . $this->_controller . '&task=changepassword', false, true), 'server');
+			// geodynamics 2026-08-02: use the canonical target, not
+			// REQUEST_URI. REQUEST_URI carries the client-supplied query
+			// string, so reflecting it minted a distinct /login?return=<b64>
+			// for every distinct query a crawler invented -- an
+			// unbounded-cardinality crawl trap of the same shape as the
+			// 2026-08-01 flood. The canonical URL was already sitting here
+			// as the fallback argument; this just stops preferring the
+			// attacker-controlled value over it.
+			$rtrn = Route::url('index.php?option=' . $this->_controller . '&task=changepassword', false, true);
 
 			App::redirect(
 				Route::url('index.php?option=com_users&view=login&return=' . base64_encode($rtrn), false)
@@ -1145,7 +1187,15 @@ class Profiles extends SiteController
 		// Check if they're logged in
 		if (User::isGuest())
 		{
-			$rtrn = Request::getString('REQUEST_URI', Route::url('index.php?option=' . $this->_controller . '&task=raiselimit', false, true), 'server');
+			// geodynamics 2026-08-02: use the canonical target, not
+			// REQUEST_URI. REQUEST_URI carries the client-supplied query
+			// string, so reflecting it minted a distinct /login?return=<b64>
+			// for every distinct query a crawler invented -- an
+			// unbounded-cardinality crawl trap of the same shape as the
+			// 2026-08-01 flood. The canonical URL was already sitting here
+			// as the fallback argument; this just stops preferring the
+			// attacker-controlled value over it.
+			$rtrn = Route::url('index.php?option=' . $this->_controller . '&task=raiselimit', false, true);
 
 			App::redirect(
 				Route::url('index.php?option=com_users&view=login&return=' . base64_encode($rtrn), false)
@@ -1392,7 +1442,15 @@ class Profiles extends SiteController
 		// Check if they're logged in
 		if (User::isGuest())
 		{
-			$rtrn = Request::getString('REQUEST_URI', Route::url('index.php?option=' . $this->_controller . '&task=activity', false, true), 'server');
+			// geodynamics 2026-08-02: use the canonical target, not
+			// REQUEST_URI. REQUEST_URI carries the client-supplied query
+			// string, so reflecting it minted a distinct /login?return=<b64>
+			// for every distinct query a crawler invented -- an
+			// unbounded-cardinality crawl trap of the same shape as the
+			// 2026-08-01 flood. The canonical URL was already sitting here
+			// as the fallback argument; this just stops preferring the
+			// attacker-controlled value over it.
+			$rtrn = Route::url('index.php?option=' . $this->_controller . '&task=activity', false, true);
 			App::redirect(
 				Route::url('index.php?option=com_users&view=login&return=' . base64_encode($rtrn), false)
 			);
@@ -1499,6 +1557,13 @@ class Profiles extends SiteController
 		if (!$id)
 		{
 			App::abort(404, Lang::txt('COM_MEMBERS_NO_ID'));
+		}
+
+		// A user may only save their own profile unless they can manage the
+		// component. editTask already enforces this; the save handler must too.
+		if (!User::authorise('core.manage', $this->_option) && $id != User::get('id'))
+		{
+			App::abort(403, Lang::txt('COM_MEMBERS_NOT_AUTH'));
 		}
 
 		// Load the profile
@@ -1849,7 +1914,15 @@ class Profiles extends SiteController
 		// Check if they're logged in
 		if (User::isGuest())
 		{
-			$rtrn = Request::getString('REQUEST_URI', Route::url('index.php?option=' . $this->_controller . '&task=activity', false, true), 'server');
+			// geodynamics 2026-08-02: use the canonical target, not
+			// REQUEST_URI. REQUEST_URI carries the client-supplied query
+			// string, so reflecting it minted a distinct /login?return=<b64>
+			// for every distinct query a crawler invented -- an
+			// unbounded-cardinality crawl trap of the same shape as the
+			// 2026-08-01 flood. The canonical URL was already sitting here
+			// as the fallback argument; this just stops preferring the
+			// attacker-controlled value over it.
+			$rtrn = Route::url('index.php?option=' . $this->_controller . '&task=activity', false, true);
 			App::redirect(
 				Route::url('index.php?option=com_users&view=login&return=' . base64_encode($rtrn), false)
 			);
@@ -2004,11 +2077,21 @@ class Profiles extends SiteController
 		$term = trim(Request::getString('term', ''));
 		$term = \Components\Members\Helpers\Utility::escapeSpecialChars($term);
 		
-		$verNum = \Component::params('com_members')->get('rorApiVersion');
-		
+		$verNum = \Component::params('com_members')->get('rorApiVersion', 'v2');
+
 		if (!empty($verNum))
 		{
-			$queryURL = "https://api.ror.org/$verNum/organizations?query.advanced=names.value:" . urlencode($term);
+			$words = preg_split('/\s+/', $term);
+			$words = array_values(array_filter($words, function($w) { return $w !== ''; }));
+			$parts = array();
+			foreach ($words as $i => $word)
+			{
+				// Add wildcard to last word for partial matching as user types
+				$suffix = ($i === count($words) - 1) ? '*' : '';
+				$parts[] = 'names.value:' . $word . $suffix;
+			}
+			$advanced = implode(' AND ', $parts);
+			$queryURL = "https://api.ror.org/$verNum/organizations?query.advanced=" . urlencode($advanced);
 			
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $queryURL);
