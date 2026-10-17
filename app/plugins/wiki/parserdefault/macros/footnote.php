@@ -52,7 +52,6 @@ Examples:
 		{
 			$wm = new stdClass();
 			$wm->footnotes = array();
-			$wm->footnotes_notes = array();
 			$wm->footnotes_stubs = array();
 			$wm->footnotes_count = 0;
 		}
@@ -60,22 +59,27 @@ Examples:
 		if ($this->args)
 		{
 			$p = new WikiParser('Footnotes', $this->option, $this->scope, $this->pagename, $this->pageid, $this->filepath, $this->domain);
-//echo $note . '<br /><br />';
 			
-			$args = explode('|', $this->args);
+			// Args are either "note" or "label | note". The label (stub) lets a
+			// later [[Footnote(label)]] reference the same footnote. When no label
+			// is given the note text itself acts as the stub.
+			// Split on the FIRST pipe only so footnote text may contain '|'.
+			$args = explode('|', $this->args, 2);
 			$stub = trim(array_shift($args));
 			$note = (isset($args[0]) ? trim($args[0]) : $stub);
 
 			$wm->footnotes_count++;
 
-			if (in_array($stub, $wm->footnotes_stubs))
+			// Only labelled (non-empty stub) footnotes are de-duplicated;
+			// otherwise distinct footnotes with empty stubs would collide.
+			if ($stub !== '' && in_array($stub, $wm->footnotes_stubs))
 			{
 				$i = array_search($stub, $wm->footnotes_stubs) + 1;
 				$k = $wm->footnotes_count;
 
 				$wm->footnotes[$i-1]->refs[] = 'fndef-' . $k;
 
-				return '<sup id="fndef-' . $k . '" class="tex2jax_ignore"><a href="#fnref-' . $i . '">&#91;' . $i . '&#93;</a></sup>';
+				return '<sup id="fndef-' . $k . '" class="tex2jax_ignore"><a href="#fnref-' . $i . '" aria-label="Footnote ' . $i . '">&#91;' . $i . '&#93;</a></sup>';
 			}
 
 			$note = $p->parse($note);
@@ -90,10 +94,9 @@ Examples:
 			);
 
 			$wm->footnotes_stubs[] = $stub;
-			$wm->footnotes_notes[] = $note;
 			$wm->footnotes[] = $footnote;
 
-			return '<sup id="fndef-' . $i . '" class="tex2jax_ignore"><a href="#fnref-' . $i . '">&#91;' . $i . '&#93;</a></sup>';
+			return '<sup id="fndef-' . $i . '" class="tex2jax_ignore"><a href="#fnref-' . $i . '" aria-label="Footnote ' . $i . '">&#91;' . $i . '&#93;</a></sup>';
 		}
 		else
 		{

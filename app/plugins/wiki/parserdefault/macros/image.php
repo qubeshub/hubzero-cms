@@ -93,7 +93,7 @@ Examples:
  * Image(photo.jpg, align=right)  # aligned by attribute
  * Image(photo.jpg, 120px, class=mypic) # with image width size and a CSS class
 ";
-$txt['html'] = '<p>Embed an image in wiki-formatted text. The first argument is the file specification, either as <code>file</code> for the current page or <code>Page:file</code> for <code>file</code> located on the wiki page with name <code>Page</code>. The remaining arguments are optional and allow configuring the attributes and style of the rendered <code>&lt;img&gt;</code> element:</p>
+$txt['html'] = '<p>Embed an image in wiki-formatted text. The first argument is the file specification, either as <code>file</code> for the current page or <code>Page:file</code> for a file located on the wiki page named <code>Page</code>. The remaining arguments are optional and allow configuring the attributes and style of the rendered <code>&lt;img&gt;</code> element:</p>
 <ul>
 <li>digits and unit are interpreted as the size (ex. 120, 25%) for the image</li>
 <li><code>right</code>, <code>left</code>, <code>top</code> or <code>bottom</code> are interpreted as the alignment for the image</li>
@@ -107,12 +107,12 @@ $txt['html'] = '<p>Embed an image in wiki-formatted text. The first argument is 
 <p>Examples:</p>
 <ul>
 <li><code>[[Image(photo.jpg)]]</code> # simplest</li>
-<li><code>[[Image(OtherPage:foo.bmp)]]</code> # use file from OtherPage</li>
 <li><code>[[Image(photo.jpg, desc="My caption here")]]</code> # caption text</li>
 <li><code>[[Image(photo.jpg, 120px)]]</code> # with image width size</li>
 <li><code>[[Image(photo.jpg, right)]]</code> # aligned by keyword</li>
 <li><code>[[Image(photo.jpg, nolink)]]</code>       # without link to source</li>
-<li><code>[[Image(photo.jpg, nofigure)]]</code> # non-clickable image</li>
+<li><code>[[Image(OtherPage:foo.bmp)]]</code> # use the file from OtherPage</li>
+<li><code>[[Image(photo.jpg, nofigure)]]</code> # non-clickable image without a border</li>
 <li><code>[[Image(photo.jpg, align=right)]]</code>  # aligned by attribute</li>
 <li><code>[[Image(photo.jpg, 120px, class=mypic)]]</code> # with image width size and a CSS class</li>
 </ul>';
@@ -191,19 +191,40 @@ $txt['html'] = '<p>Embed an image in wiki-formatted text. The first argument is 
 
 			$ret = true;
 		}
-		// Check for file existence
-		else 
+		// Check for file existence, optionally located on another wiki page
+		// given as "Page:file"
+		else
 		{
 			$bits = explode(':', $file);
-			if (isset($bits[1])) {
-				$page = \Components\Wiki\Models\Page::oneByTitle($bits[0]);
-				if (!$page) {
+			if (isset($bits[1]))
+			{
+				// Constrain the lookup to the CURRENT wiki's scope. A bare title
+				// like "Main Page" exists on hundreds of pages across groups, so
+				// an unscoped match would be non-deterministic and could reach
+				// another group's files. Prefer the stored page's own scope.
+				$current = \Components\Wiki\Models\Page::oneOrNew($this->pageid);
+				if ($current->get('id'))
+				{
+					$scope    = $current->get('scope');
+					$scope_id = $current->get('scope_id');
+				}
+				else
+				{
+					$scope    = $this->scope;
+					$scope_id = $this->domain_id;
+				}
+
+				$page = \Components\Wiki\Models\Page::oneByTitle($bits[0], $scope, $scope_id);
+				if (!$page || !$page->get('id'))
+				{
 					return '(Image failed - Wiki page not found)';
 				}
 				$this->pageid = $page->get('id');
 				$file = $bits[1];
 			}
-			if (file_exists($this->_path($file)) || file_exists($this->_path($file, true))) {
+
+			if (file_exists($this->_path($file)) || file_exists($this->_path($file, true)))
+			{
 				$attr['desc'] = (isset($attr['desc'])) ? $attr['desc'] : '';
 
 				$ret = true;
@@ -379,6 +400,8 @@ $txt['html'] = '<p>Embed an image in wiki-formatted text. The first argument is 
 			return;
 		}
 
+		// Specific call to render the image without the figure wrapper/border
+		// (also implies no link)
 		if ($key == 'nofigure')
 		{
 			$this->attr['href'] = 'none';
@@ -538,13 +561,13 @@ $txt['html'] = '<p>Embed an image in wiki-formatted text. The first argument is 
 		foreach ($attr as $k => $v)
 		{
 			$k = strtolower($k);
-			if ($k != 'href' && $k != 'rel' && $k != 'desc' && $v)
+			if ($k != 'href' && $k != 'rel' && $k != 'desc' && $k != 'nofigure' && $v)
 			{
 				$attribs[] = $k . '="' . trim($v, '"') . '"';
 			}
 		}
 
-		$html  = '<span' . (isset($attr['nofigure']) && $attr['nofigure'] ? ' ' : ' class="figure"') . ($styles ? ' style="' . $styles . '"' : '') . '>';
+		$html  = '<span' . ((isset($attr['nofigure']) && $attr['nofigure']) ? '' : ' class="figure"') . ($styles ? ' style="' . $styles . '"' : '') . '>';
 
 		$img = '<img src="' . $this->_link($file) . '" ' . implode(' ', $attribs) . ' />';
 
