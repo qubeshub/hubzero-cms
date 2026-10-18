@@ -68,7 +68,7 @@ if ($this->category->get('section_id') == 0)
 				<div class="col span6">
 					<div class="form-group">
 						<div class="form-check">
-							<label for="field-closed" id="comment-anonymous-label" class="form-check-label">
+							<label for="field-closed" class="comment-anonymous-label" class="form-check-label">
 								<?php echo Lang::txt('PLG_GROUPS_FORUM_FIELD_LOCKED'); ?><br />
 								<input class="option form-check-input" type="checkbox" name="fields[closed]" id="field-closed" value="3"<?php if ($this->category->get('closed')) { echo ' checked="checked"'; } ?> />
 								<?php echo Lang::txt('PLG_GROUPS_FORUM_FIELD_CLOSED'); ?>
@@ -81,9 +81,7 @@ if ($this->category->get('section_id') == 0)
 						<label for="field-access">
 							<?php echo Lang::txt('PLG_GROUPS_FORUM_ACCESS_DESCRIPTION'); ?>:
 							<select name="fields[access]" id="field-access" class="form-control">
-								<option value="1"<?php if ($this->category->get('access') == 1) { echo ' selected="selected"'; } ?>><?php echo Lang::txt('PLG_GROUPS_FORUM_FIELD_READ_ACCESS_OPTION_PUBLIC'); ?></option>
-								<option value="2"<?php if ($this->category->get('access') == 2) { echo ' selected="selected"'; } ?>><?php echo Lang::txt('PLG_GROUPS_FORUM_FIELD_READ_ACCESS_OPTION_REGISTERED'); ?></option>
-								<option value="5"<?php if ($this->category->get('access') == 5) { echo ' selected="selected"'; } ?>><?php echo Lang::txt('PLG_GROUPS_FORUM_FIELD_READ_ACCESS_OPTION_PRIVATE'); ?></option>
+								<?php echo Html::select('options', Html::access('assetgroups'), 'value', 'text', $this->category->get('access')); ?>
 							</select>
 						</label>
 					</div>

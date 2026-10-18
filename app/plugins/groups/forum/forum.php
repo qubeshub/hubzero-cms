@@ -506,7 +506,8 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 			'state'      => Section::STATE_PUBLISHED,
 			'access'     => array(1),
 			'sort'       => 'ordering',
-			'sort_Dir'   => 'ASC'
+			'sort_Dir'   => 'ASC',
+			'access'	 => User::getAuthorisedViewLevels()
 		);
 
 		if (!User::isGuest())
@@ -535,19 +536,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 		 && $this->params->get('access-create-section')
 		 && Request::getWord('action') == 'populate')
 		{
-			switch ($this->group_plugin_acl)
-			{
-				case 'members':
-					$access = 5;
-					break;
-				case 'registered':
-					$access = 2;
-					break;
-				case 'anyone':
-				default:
-					$access = 1;
-					break;
-			}
+			$access = $this->defaultContentAccess();
 			if (!$this->forum->setup($access))
 			{
 				$this->setError($this->forum->getError());
@@ -593,6 +582,47 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 	}
 
 	/**
+	 * Determine the default forum access level for new content (sections,
+	 * categories, threads).
+	 *
+	 * Takes the more restrictive of the group's forum access setting
+	 * (group_plugin_acl) and the group's overall privacy, so private group
+	 * content is never published more openly than either control allows. A
+	 * group counts as private when it isn't an open, visible group.
+	 *
+	 * @return  integer  Forum access level (1=anyone, 2=registered, 5=members)
+	 */
+	protected function defaultContentAccess()
+	{
+		// Group is private unless it is both open to join and discoverable
+		$groupPrivate = ($this->group->get('join_policy') != 0
+			|| $this->group->get('discoverability') == 1);
+
+		// Rank ACL levels from least to most restrictive
+		$rank = array('anyone' => 1, 'registered' => 2, 'members' => 3, 'nobody' => 4);
+
+		$forumAcl = $this->group_plugin_acl;
+		$groupAcl = $groupPrivate ? 'members' : 'anyone';
+
+		$forumRank = isset($rank[$forumAcl]) ? $rank[$forumAcl] : 1;
+
+		// Use whichever of the two is more restrictive
+		$acl = ($rank[$groupAcl] > $forumRank) ? $groupAcl : $forumAcl;
+
+		switch ($acl)
+		{
+			case 'nobody':
+			case 'members':
+				return 5;
+			case 'registered':
+				return 2;
+			case 'anyone':
+			default:
+				return 1;
+		}
+	}
+
+	/**
 	 * Saves a section and redirects to main page afterward
 	 *
 	 * @return  void
@@ -609,6 +639,15 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 
 		// Instantiate a new table row and bind the incoming data
 		$section = \Components\Forum\Models\Section::oneOrNew($fields['id'])->set($fields);
+
+		// Default a new section's access to match the group's forum access
+		// setting, matching how new categories and threads inherit. Without
+		// this a manually-created section falls back to the global default
+		// (typically public), even in a private group forum.
+		if ($section->isNew() && !isset($fields['access']))
+		{
+			$section->set('access', $this->defaultContentAccess());
+		}
 
 		if (in_array($section->get('alias'), array('new', 'settings', 'savesettings')))
 		{
@@ -766,7 +805,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 			'scope_id'   => $this->forum->get('scope_id'),
 			'state'      => 1,
 			'parent'     => 0,
-			'access'     => array(1)
+			'access'     => User::getAuthorisedViewLevels()
 		);
 		if (!User::isGuest())
 		{
@@ -879,7 +918,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 			'scope'      => $this->forum->get('scope'),
 			'scope_id'   => $this->forum->get('scope_id'),
 			'state'      => 1,
-			'access'     => array(1)
+			'access'     => User::getAuthorisedViewLevels()
 		);
 		if (!$filters['search'])
 		{
@@ -993,6 +1032,9 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 		{
 			$category->set('created_by', User::get('id'));
 			$category->set('section_id', $section->get('id'));
+
+			// Default access to match the group's forum access setting
+			$category->set('access', $this->defaultContentAccess());
 		}
 		elseif ($category->get('created_by') != User::get('id') && !$this->params->get('access-create-category'))
 		{
@@ -1198,7 +1240,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 			'scope'    => $this->forum->get('scope'),
 			'scope_id' => $this->forum->get('scope_id'),
 			'state'    => Post::STATE_PUBLISHED,
-			'access'   => array(1)
+			'access'   => User::getAuthorisedViewLevels()
 		);
 		if (!User::isGuest())
 		{
@@ -1266,7 +1308,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 		$db = \App::get('db');
 		$queryLikes = "SELECT LIKES.threadId as 'threadId', LIKES.postId as 'postId', 
 		  LIKES.userId as 'userId', USERS.name as 'userName', USERS.email as 'userEmail' 
-		  FROM jos_forum_posts_like as LIKES, jos_users AS USERS
+		  FROM #__forum_posts_like as LIKES, #__users AS USERS
 		  WHERE LIKES.userId = USERS.id AND LIKES.threadId = " . $thread->get('id');
 		$db->setQuery($queryLikes);
 		$initialLikesList = $db->loadObjectList();
@@ -1372,6 +1414,9 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 		{
 			$post->set('scope', $this->forum->get('scope'));
 			$post->set('created_by', User::get('id'));
+
+			// Default access to match the parent category's access
+			$post->set('access', $category->get('access', 1));
 		}
 		elseif ($post->get('created_by') != User::get('id') && !$this->params->get('access-edit-thread'))
 		{
@@ -1450,7 +1495,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 
 		// Extracting emails from the new post submitted
 		$domComment = new \DOMDocument();
-		$domComment->loadHTML($fields['comment']);
+		$domComment->loadHTML($fields['comment'] == null ? '' : $fields['comment']);
 		$mentionEmailList = array();
 		foreach ($domComment->getElementsByTagName('a') as $item) {
 			$userId = $item->getAttribute('data-user-id');
@@ -1545,14 +1590,27 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 		$params = Component::params('com_groups');
 		if ($params->get('email_forum_comments') && (isset($moving) && $moving == false))
 		{
+			// A notification failure must never break the post submission: the
+			// post is already saved, so any error here (mail send, template
+			// render, bad recipient) is logged and swallowed instead of
+			// aborting the request and skipping the redirect to the new post.
+			try
+			{
 			$thread->set('section', $section->get('alias'));
 			$thread->set('category', $category->get('alias'));
 
 			$post->set('section', $section->get('alias'));
 			$post->set('category', $category->get('alias'));
 
-			// Figure out who should be notified about this comment (all group members for now)
-			$userIDsToEmail = $this->_getEmailRecipientIds($category);
+			// Figure out who should be notified about this comment. Only members
+			// authorised to view the content (section/category/thread/post
+			// access levels) are emailed (ticket 307).
+			$userIDsToEmail = $this->_getEmailRecipientIds($category, array(
+				$section->get('access'),
+				$category->get('access'),
+				$thread->get('access'),
+				$post->get('access')
+			));
 
 			$allowEmailResponses = true;
 
@@ -1636,6 +1694,11 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 				{
 					$this->setError(Lang::txt('GROUPS_ERROR_EMAIL_MEMBERS_FAILED'));
 				}
+			}
+			}
+			catch (\Throwable $e)
+			{
+				Log::error('Group forum post notification failed for post ' . $post->get('id', 0) . ': ' . $e->getMessage());
 			}
 		}
 
@@ -1726,6 +1789,11 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 	 */
 	public function emailToAllMentionedUsersInGroup($emails, $comment, $url, $postAuthor, $groupAlias, $groupTitle) 
 	{
+		if (empty($emails))
+		{
+			return;
+		}
+
 		$from = array();
 		$from['name']  = Config::get('sitename') . ' ' . Lang::txt(strtoupper($this->_name));
 		$from['email'] = Config::get('mailfrom');
@@ -1764,19 +1832,46 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 	/**
 	 * Get email recipient IDs
 	 *
-	 * @param   object  $category
+	 * @param   object  $category       Category the post belongs to
+	 * @param   array   $accessLevels   View levels the content is gated behind
+	 *                                  (section/category/thread/post access).
+	 *                                  A recipient is only notified if they are
+	 *                                  authorised to view every one of them.
 	 * @return  array
 	 */
-	protected function _getEmailRecipientIds($category)
+	protected function _getEmailRecipientIds($category, $accessLevels = array())
 	{
 		$userIDsToEmail = array();
 		$memberoptions = $this->_loadMemberOptions();
 		$categorySubscriptionsEnabled = Component::params('com_groups')->get('enable_forum_email_categories', 0);
 		$users = $this->_loadExistingUsers($this->members);
 
+		// Normalize the content's access levels to a unique list of ints
+		$accessLevels = array_unique(array_filter(array_map('intval', (array) $accessLevels)));
+
 		foreach ($users as $user)
 		{
 			$userId = $user->get('id');
+
+			// Don't notify members who can't actually view the content. This
+			// mirrors the sections() listing logic: a group member can see a
+			// view level if it is one of the membership-implied levels
+			// (2=Registered, 4=Protected, 5=Private) or is among the user's
+			// own authorised view levels. Without this, restricted discussions
+			// (e.g. a "Group Managers" category) were emailed to every member
+			// regardless of access level (ticket 307).
+			if (!empty($accessLevels))
+			{
+				$viewable = array_merge(
+					array(1, 2, 4, 5),
+					\Hubzero\Access\Access::getAuthorisedViewLevels($userId)
+				);
+
+				if (array_diff($accessLevels, $viewable))
+				{
+					continue;
+				}
+			}
 
 			$sendEmail = $this->_shouldUserReceiveEmail($userId, $memberoptions, $categorySubscriptionsEnabled, $category);
 
@@ -1844,6 +1939,11 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 	protected function _shouldUserReceiveEmail($userId, $memberoptions, $categorySubscriptionsEnabled, $category)
 	{
 		$categoryId = $category->get('id');
+
+		// Default to not emailing; only the branches below opt a user in. Without
+		// this, neither branch running (category subs off and the memberoptions
+		// model unavailable) would return an undefined variable.
+		$sendEmail = 0;
 
 		if ($categorySubscriptionsEnabled)
 		{

@@ -28,9 +28,9 @@ if (isset($this->likes))
 } 
 
 ?>
+<?php if ($this->comments && count($this->comments) > 0): ?>
 <ol class="comments" id="t<?php echo $this->parent; ?>">
 <?php
-if ($this->comments)
 {
 	$cls = 'odd';
 	if (isset($this->cls))
@@ -67,4 +67,5 @@ if ($this->comments)
 }
 ?>
 </ol>
+<?php endif; ?>
 
