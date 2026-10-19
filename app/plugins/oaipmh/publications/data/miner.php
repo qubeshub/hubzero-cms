@@ -284,7 +284,94 @@ class Miner extends Obj implements Provider
 		$record->spec = $record->base . ':' . $this->type;
 
 		$record->title .= ' [version ' . $record->version_label . ']';
-		$record->description = trim(strip_tags($record->abstract));
+		$abstract = trim(strip_tags($record->abstract));
+		$record->description = $abstract;
+		
+		// Size and MIME type
+		$record->format = [];
+		
+		if (file_exists(\Component::path('com_publications') . DS . 'helpers' . DS . 'html.php'))
+		{
+			include_once \Component::path('com_publications') . DS . 'helpers' . DS . 'html.php';
+			
+			$this->database->setQuery("SELECT master_type FROM `#__publications` WHERE id = " . $this->database->quote($record->publication_id));
+			$masterType = $this->database->loadResult();
+			
+			$this->database->setQuery("SELECT * FROM `#__publication_attachments` WHERE publication_version_id = " . $this->database->quote($record->version_id));
+			$results = $this->database->loadObjectList();
+			
+			$path = \Components\Publications\Helpers\Html::buildPubPath($record->publication_id, $record->version_id, '', '', 1);
+			$path .= DIRECTORY_SEPARATOR . str_replace(['.', '/'], '_', $record->identifier) . ".zip";
+			
+			if ($masterType == 1 && file_exists($path))
+			{
+				$size = filesize($path);
+				if ($size)
+				{
+					$record->extent = \Hubzero\Utility\Number::formatBytes($size);
+				}
+			}
+			
+			if ($results)
+			{
+				$attachments = array(
+					'1'        => array(),
+					'2'        => array(),
+					'3'        => array(),
+				);
+
+				foreach ($results as $result)
+				{
+					if ($result->role == 1)
+					{
+						$attachments['1'][] = $result;
+					}
+					elseif ($result->role == 2 || $result->role == 0)
+					{
+						$attachments['2'][] = $result;
+					}
+					else
+					{
+						$attachments['3'][] = $result;
+					}
+				}
+			}
+			
+			if ($masterType == 1)
+			{
+				$mimeTypes = \Components\Publications\Helpers\Html::getMimeTypes($masterType, $record->publication_id, $record->version_id, $record->secret, $attachments, true);
+			}
+			else if ($masterType == 7)
+			{				
+				$files = \Components\Publications\Helpers\Html::getdatabaseFiles($record->publication_id, $record->version_id);
+				
+				$mimeTypes = \Components\Publications\Helpers\Html::getMimeTypes($masterType, $record->publication_id, $record->version_id, $record->secret, $attachments, true);
+				
+				if ($files != false && !empty($files))
+				{
+					foreach ($files as $file)
+					{
+						//$mimeType = mime_content_type($file);
+						$mimer = new  \Hubzero\Content\Mimetypes();
+						$mimeType = $mimer->getMimeType($file,true);
+						if ($mimeType && !in_array($mimeType, $mimeTypes))
+						{
+							$mimeTypes[] = $mimeType;
+						}
+					}
+				}
+			}
+			else
+			{
+				$mimeTypes = [];
+			}
+			
+			if (!empty($mimeTypes))
+			{
+				$record->format = array_merge($record->format, $mimeTypes);
+			}
+		}
+		
 		$record->identifier  = $this->identifier($id, $record->identifier, $revision);
 
 		$this->database->setQuery(
@@ -312,7 +399,7 @@ class Miner extends Obj implements Provider
 			"SELECT pa.name
 			FROM `#__publication_authors` AS pa
 			WHERE (pa.role IS NULL OR pa.role != 'submitter') AND pa.status=1 AND pa.publication_version_id=" . $this->database->quote($record->version_id) . "
-			ORDER BY pa.name"
+			ORDER BY pa.ordering"
 		);
 		$record->creator = $this->database->loadColumn();
 
