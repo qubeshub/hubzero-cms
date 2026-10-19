@@ -406,6 +406,7 @@ class plgMembersBlog extends \Hubzero\Plugin\Plugin
 		}
 
 		// Output the feed
+		header('Content-Type: application/rss+xml; charset=UTF-8');
 		echo $doc->render();
 		exit();
 	}
@@ -800,6 +801,14 @@ class plgMembersBlog extends \Hubzero\Plugin\Plugin
 
 		// Initiate a blog comment object
 		$comment = \Components\Blog\Models\Comment::oneOrFail($id);
+
+		// Only the comment's author and the owner of the blog may remove it
+		if (User::get('id') != $comment->get('created_by')
+		 && !$this->params->get('access-delete-comment'))
+		{
+			$this->setError(Lang::txt('PLG_MEMBERS_BLOG_NOT_AUTHORIZED'));
+			return $this->_entry();
+		}
 
 		// Delete all comments on an entry
 		$comment->set('state', \Components\Blog\Models\Comment::STATE_DELETED);
