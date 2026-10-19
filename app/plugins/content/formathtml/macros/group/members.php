@@ -10,6 +10,8 @@ namespace Plugins\Content\Formathtml\Macros\Group;
 require_once dirname(__DIR__) . DS . 'group.php';
 
 use Plugins\Content\Formathtml\Macros\GroupMacro;
+use Route;
+use User;
 
 /**
  * Group events Macro
@@ -147,7 +149,7 @@ class Members extends GroupMacro
 				$content .= '<a href="' . Route::url($profile->link()) . '" class="member" title="Go to ' . stripslashes($profile->get('name')) . '\'s Profile.">';
 				$content .= '<img src="' . $profile->picture() . '" alt="' . stripslashes($profile->get('name')) . '" class="member-border" width="50px" height="50px" />';
 				$content .= '<span class="name">' . stripslashes($profile->get('name')) . '</span>';
-				$content .= '<span class="org">' . stripslashes($profile->get('organization', '')) . '</span>';
+				$content .= '<span class="org">' . stripslashes($profile->get('organization','')) . '</span>';
 				$content .= '</a>';
 			}
 		}
