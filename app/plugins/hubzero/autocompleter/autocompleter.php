@@ -96,6 +96,7 @@ class plgHubzeroAutocompleter extends \Hubzero\Plugin\Plugin
 		$html .= ($class) ? ' class="' . trim($class) . '"' : '';
 		$html .= ($size)  ? ' size="' . $size . '"'         : '';
 		$html .= ' placeholder="' . Lang::txt('PLG_HUBZERO_AUTOCOMPLETER_' . strtoupper($opt) . ($stype ? '_' . strtoupper($stype) : '') . '_PLACEHOLDER') . '"';
+		$html .= ' aria-label="' . $placeholder . '"';
 		$html .= ' value="' . htmlentities($value, ENT_COMPAT, 'UTF-8') . '" autocomplete="off" data-css="" data-script="' . $datascript . '" />' . "\n";
 		$html .= $scripts;
 

@@ -21,7 +21,7 @@ var DEFAULT_SETTINGS = {
 	hintText: "Type in a search term",
 	noResultsText: "No results",
 	searchingText: "Searching...",
-	deleteText: "&times;",
+	deleteText: "",
 	animateDropdown: true,
 
 	// Tokenization settings
@@ -187,11 +187,9 @@ $.TokenList = function (input, url_or_data, settings) {
 
 	// Create a new text input an attach keyup events
 	var input_box = $("<input type=\"text\"  autocomplete=\"off\">")
-		.css({
-			outline: "none"
-		})
 		.attr("id", settings.idPrefix + input.id)
 		.attr("placeholder", input.placeholder)
+		.attr("aria-label", $(input).attr("aria-label") || input.placeholder)
 		.focus(function () {
 			if (settings.tokenLimit === null || settings.tokenLimit !== token_count) {
 				if (!isReadOnly) {
@@ -372,6 +370,11 @@ $.TokenList = function (input, url_or_data, settings) {
 		})
 		.insertBefore(hidden_input);
 
+	// Update any associated label to point to the new visible input
+	if (input.id) {
+		$("label[for='" + input.id + "']").attr("for", settings.idPrefix + input.id);
+	}
+
 	// The token holding the input box
 	var input_token = $("<li />")
 		.addClass(settings.classes.inputToken)
@@ -502,6 +505,8 @@ $.TokenList = function (input, url_or_data, settings) {
 		{
 			$("<span>" + settings.deleteText + "</span>")
 				.addClass(settings.classes.tokenDelete)
+				.attr("role", "button")
+				.attr("aria-label", "Remove " + item[settings.propertyToSearch])
 				.appendTo(this_token)
 				.click(function () {
 					delete_token($(this).parent());
