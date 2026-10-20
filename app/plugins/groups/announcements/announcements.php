@@ -796,7 +796,7 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 		}
 
 		// Only admins and group managers
-		if (!User::getauthorise('core.admin') || !in_array(User::get('id'), $group->get('managers')))
+		if (!User::authorise('core.admin') || !in_array(User::get('id'), $group->get('managers')))
 		{
 			throw new Exception(Lang::txt('You are not authorized to perform this action.'), 403);
 		}
@@ -887,7 +887,7 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 		}
 
 		// Only admins and group managers
-		if (!User::getauthorise('core.admin') || !in_array(User::get('id'), $group->get('managers')))
+		if (!User::authorise('core.admin') || !in_array(User::get('id'), $group->get('managers')))
 		{
 			throw new Exception(Lang::txt('You are not authorized to perform this action.'), 403);
 		}
@@ -955,7 +955,7 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 		}
 
 		// Only admins and group managers
-		if (!User::getauthorise('core.admin') || !in_array(User::get('id'), $group->get('managers')))
+		if (!User::authorise('core.admin') || !in_array(User::get('id'), $group->get('managers')))
 		{
 			throw new Exception(Lang::txt('You are not authorized to perform this action.'), 403);
 		}
