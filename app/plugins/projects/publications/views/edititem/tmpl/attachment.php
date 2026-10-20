@@ -82,6 +82,10 @@ $placeholder = $this->row->title && $this->row->title != $defaultTitle ? $this->
 							<span class="leftshift faded"><?php echo ucfirst(Lang::txt('PLG_PROJECTS_PUBLICATIONS_FILE_PATH')); ?>:</span>
 							<span class="content-filepath"><?php echo $this->row->path; ?></span>
 						</p>
+						<p class="c-wrapper">
+							<span class="leftshift faded"><?php echo ucfirst(Lang::txt('PLG_PROJECTS_PUBLICATIONS_FILE_DESCRIPTION')); ?>:</span>
+							<textarea name="description" class="long" rows="10" cols="60" maxlength="5000" value="<?php echo $this->row->attribs; ?>" placeholder="Enter up to 5000 characters..."><?php echo $this->row->attribs;; ?></textarea>
+						</p>
 					<?php } else { ?>
 						<p class="c-wrapper">
 							<span class="leftshift faded"><?php echo ucfirst(Lang::txt('PLG_PROJECTS_PUBLICATIONS_FILE_PATH')); ?>*:</span>
