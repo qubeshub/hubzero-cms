@@ -21,6 +21,14 @@ use Components\Developer\Models\Application;
 use Hubzero\Access\Group as Accessgroup;
 use stdClass;
 use Hubzero\Utility\Inflector as Inflector;
+use App;
+use Component;
+use Date;
+use Event;
+use Lang;
+use Notify;
+use Request;
+use Route;
 
 require_once Component::path('com_search') . DS . 'helpers' . DS . 'solr.php';
 require_once Component::path('com_search') . DS . 'models' . DS . 'solr' . DS . 'blacklist.php';
@@ -405,7 +413,7 @@ class Searchable extends AdminController
 		$this->view->pagination = $pagination;
 
 		// Pass the filters and documents to the display
-		$this->view->filter = ($filter == '') || $filter = '*:*' ? '' : $filter;
+		$this->view->filter = ($filter == '' || $filter == '*:*') ? '' : $filter;
 		$this->view->facet = !isset($facet) ? '' : $facet;
 		$this->view->documents = isset($results) ? $results : array();
 		$this->view->blacklist = $blacklist;

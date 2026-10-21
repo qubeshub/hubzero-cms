@@ -15,6 +15,7 @@ require_once "$componentPath/tests/traits/canMock.php";
 use Components\Search\Helpers\SolariumBoostQueries as Queries;
 use Components\Search\Tests\Traits\canMock;
 use Hubzero\Test\Basic;
+use Component;
 
 class SolariumBoostQueriesTest extends Basic
 {
@@ -45,9 +46,10 @@ class SolariumBoostQueriesTest extends Basic
 			'class' => 'SolariumBoostQuery',
 			'methods' => ['toArray']
 		]);
-		$queryFactoryMock = $this->getMockBuilder('SolariumBoostQuery')
-			->setMethods(['one'])
-			->getMock();
+		$queryFactoryMock = $this->mock([
+			'class' => 'SolariumBoostQuery',
+			'methods' => ['one']
+		]);
 
 		$queries = new Queries([
 			'boosts' => [$boostMock1, $boostMock2],
