@@ -33,7 +33,7 @@ $demotions            = $logger->logs('list', array('gidNumber' => $this->group-
 				<form name="page_selector" action="<?php echo Route::url('index.php?option=com_groups&cn=' . $this->group->get('cn') . '&active=usage'); ?>" method="get">
 					<span class="pagepicker">
 						<label>Count</label>
-						<select name="pid" id="page_view_selector">
+						<select name="pid" id="page_view_selector" aria-label="Page view filter">
 							<option value=""<?php if ($this->pid == '') { echo "selected"; } ?>>All Page</option>
 							<?php foreach ($this->pages as $page) : ?>
 								<?php $sel = ($this->pid == $page['id']) ? "selected" : ""; ?>
@@ -43,7 +43,7 @@ $demotions            = $logger->logs('list', array('gidNumber' => $this->group-
 					<span>
 					<span class="windowpicker">
 						<label>views by</label>
-					  <select name="window" id="window_selector">
+					  <select name="window" id="window_selector" aria-label="Window filter">
 						  <option value="day" <?php echo $this->window == "day" ? "selected" : ""; ?>>Day</option>
 						  <option value="week" <?php echo $this->window == "week" ? "selected" : ""; ?>>Week</option>
 						  <option value="month" <?php echo $this->window == "month" ? "selected" : ""; ?>>Month</option>
@@ -51,8 +51,8 @@ $demotions            = $logger->logs('list', array('gidNumber' => $this->group-
 				  </span>
 					<span class="datepickers">
 						<label>from</label>
-						<input type="text" name="start" id="date_start" class="datepicker" value="<?php echo date("m/d/Y", strtotime($this->start)); ?>" />&nbsp;to&nbsp;
-						<input type="text" name="end" id="date_end" class="datepicker" value="<?php echo date("m/d/Y", strtotime($this->end)); ?>" />
+						<input type="text" name="start" id="date_start" class="datepicker" aria-label="Start date" value="<?php echo date("m/d/Y", strtotime($this->start)); ?>" />&nbsp;to&nbsp;
+						<input type="text" name="end" id="date_end" class="datepicker" aria-label="End date" value="<?php echo date("m/d/Y", strtotime($this->end)); ?>" />
 					</span>
 					<input type="submit" id="submit" value="Go" />
 				</form>

@@ -96,7 +96,7 @@ class plgGroupsUsage extends \Hubzero\Plugin\Plugin
 		{
 			if (!in_array($this_area['name'], $areas))
 			{
-				$return = '';
+				return $arr;
 			}
 		}
 
@@ -157,8 +157,8 @@ class plgGroupsUsage extends \Hubzero\Plugin\Plugin
 			$this->css('jquery.datepicker.css', 'system')
 			->css('jquery.timepicker.css', 'system');
 
-			//add google js-api
-			Document::addScript('https://www.google.com/jsapi');
+			//add google charts loader (modern API, replaces deprecated jsapi)
+			Document::addScript('https://www.gstatic.com/charts/loader.js');
 
 			//add jquery from google cdn
 			//Document::addScript('https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js');
@@ -503,17 +503,18 @@ class plgGroupsUsage extends \Hubzero\Plugin\Plugin
 		 * SVG: $('#page_views_chart svg')[0].outerHTML
 		 */
 		$script = "
-			google.load(\"visualization\", \"1\", {
-				packages:[\"corechart\"]
+			google.charts.load('current', {
+				packages:['corechart']
 			});
 
-			google.setOnLoadCallback(draw);
+			google.charts.setOnLoadCallback(draw);
 
 			function draw(data) {
 				var data = new google.visualization.DataTable();
-				var chart = new google.visualization.LineChart(document.getElementById('page_views_chart'));
-      	drawChart(data, chart);
-      	drawToolbar(data, chart);
+				var chartEl = document.getElementById('page_views_chart');
+				var chart = new google.visualization.LineChart(chartEl);
+      			drawChart(data, chart);
+      			drawToolbar(data, chart);
     	}
 
 			function drawToolbar(data, chart) {
@@ -561,6 +562,16 @@ class plgGroupsUsage extends \Hubzero\Plugin\Plugin
 					}
 				}
 
+				var chartEl = document.getElementById('page_views_chart');
+				// [a11y] Google Charts adds aria-label on bare div without role;
+				// observe the chart container and add role=img when they appear
+				new MutationObserver(function(mutations, obs) {
+					var divs = chartEl.querySelectorAll('div[aria-label]:not([role])');
+					for (var i = 0; i < divs.length; i++) {
+						divs[i].setAttribute('role', 'img');
+					}
+					if (divs.length) obs.disconnect();
+				}).observe(chartEl, {childList: true, subtree: true, attributes: true});
 				chart.draw(data, options);
 			}
 
