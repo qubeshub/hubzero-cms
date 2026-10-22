@@ -14,6 +14,8 @@ use User;
 use Lang;
 use stdClass;
 use Components\Publications\Models\PubCloud;
+use Request;
+use Route;
 
 require_once __DIR__ . DS . 'attachment.php';
 require_once __DIR__ . DS . 'author.php';

@@ -51,7 +51,7 @@ $schema = $metaElements->getSchema();
 	}
 ?>
 
-	<h4><?php echo Lang::txt('COM_PUBLICATIONS_DESCRIPTION'); ?></h4>
+	<h3><?php echo Lang::txt('COM_PUBLICATIONS_DESCRIPTION'); ?></h3>
 	<div class="pub-content">
 		<?php echo $description; ?>
 	</div>
@@ -112,7 +112,7 @@ $schema = $metaElements->getSchema();
 				$append
 			);
 			?>
-			<h4 class="list-header">
+			<h3 class="list-header">
 				<?php echo $listLabel ? $listLabel : Lang::txt('COM_PUBLICATIONS_CONTENT_LIST'); ?>
 				<?php if ($showArchive && $authorized) : ?>
 					<span class="browsebundle">
@@ -126,7 +126,7 @@ $schema = $metaElements->getSchema();
 						</a>
 					</span>
 				<?php endif; ?>
-			</h4>
+			</h3>
 			<div class="pub-content">
 				<?php echo $list; ?>
 			</div>
@@ -153,7 +153,7 @@ $schema = $metaElements->getSchema();
 				elseif ($value = $metaElements->display($field->type, $data[$field->name]))
 				{
 					?>
-					<h4><?php echo $field->label; ?></h4>
+					<h3><?php echo $field->label; ?></h3>
 					<div class="pub-content">
 						<?php echo $value; ?>
 					</div>
@@ -205,13 +205,13 @@ $schema = $metaElements->getSchema();
 
 	$citeinstruct  = \Components\Publications\Helpers\Html::citation($cite, $this->publication, $citations);
 	?>
-	<h4 id="citethis"><?php echo Lang::txt('COM_PUBLICATIONS_CITE_THIS'); ?></h4>
+	<h3 id="citethis"><?php echo Lang::txt('COM_PUBLICATIONS_CITE_THIS'); ?></h3>
 	<div class="pub-content">
 		<?php echo $citeinstruct; ?>
 	</div>
 <?php } ?>
 <?php if ($this->publication->params->get('show_submitter') && $this->publication->submitter()) { ?>
-	<h4><?php echo Lang::txt('COM_PUBLICATIONS_SUBMITTER'); ?></h4>
+	<h3><?php echo Lang::txt('COM_PUBLICATIONS_SUBMITTER'); ?></h3>
 	<div class="pub-content">
 		<?php
 			$submitter  = $this->publication->_submitter->name;
@@ -225,7 +225,7 @@ $schema = $metaElements->getSchema();
 	$this->publication->getTagCloud(User::authorise('core.admin')?1:0);
 	?>
 	<?php if ($this->publication->_tagCloud) { ?>
-		<h4><?php echo Lang::txt('COM_PUBLICATIONS_TAGS'); ?></h4>
+		<h3><?php echo Lang::txt('COM_PUBLICATIONS_TAGS'); ?></h3>
 		<div class="pub-content">
 			<?php
 				echo $this->publication->_tagCloud;
@@ -248,7 +248,7 @@ if (($this->publication->params->get('show_notes')) && $this->publication->get('
 {
 	$notes = $this->publication->notes('parsed');
 	?>
-	<h4><?php echo Lang::txt('COM_PUBLICATIONS_NOTES'); ?></h4>
+	<h3><?php echo Lang::txt('COM_PUBLICATIONS_NOTES'); ?></h3>
 	<div class="pub-content">
 		<?php
 			echo $notes;

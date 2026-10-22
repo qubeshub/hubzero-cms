@@ -13,11 +13,14 @@ use Hubzero\Filesystem\Entity;
 use Components\Projects\Models\Orm\Connection;
 use stdClass;
 use ZipArchive;
+use Component;
 use Filesystem;
 use Route;
 use Lang;
 use User;
 use Date;
+use Event;
+use Request;
 
 /**
  * Handles a file attachment
@@ -197,6 +200,17 @@ class File extends Base
 				$readme .= "\n" . $element->label . ': ' . "\n";
 				$readme .= '>>> ' . str_replace($bPath . DS, '', $filePath) . "\n";
 			}
+			else
+			{
+				// The sub-bundle could not be produced (e.g. it exceeds the
+				// bundle_max_bytes guard, or no source files were found). The
+				// primary data would be silently omitted from the package, so
+				// flag it: bundleItems()/package() turn this into an honest
+				// failure rather than finalising a data-less bundle. Pre-build
+				// the bundle out-of-band (app/bin/rebuild-publication-bundle)
+				// to deliver these large datasets.
+				$this->setError(Lang::txt('COM_PUBLICATIONS_ERROR_BUNDLE_NOT_BUILT'));
+			}
 		}
 		elseif ($attachments)
 		{
@@ -245,6 +259,11 @@ class File extends Base
 					if (file_exists($filePath) && $zip->addFile($filePath, $where))
 					{
 						$readme .= '>>> ' . str_replace($bundleDir . DS, '', $where) . ($attach->access ? ' (instructors only)' : '') . "\n";
+
+						if (!empty($attach->attribs))
+						{
+							$readme .= '>>> ' . $attach->attribs . "\n";
+						}
 					}
 				}
 			}
@@ -371,7 +390,7 @@ class File extends Base
 		if ($handler)
 		{
 			// Handler will draw list
-			$html = $handler->drawList($attachments, $configs, $pub, $authorized);
+			$html = $handler->drawList($attachments, $configs, $pub, $authorized, $elementId);
 			if ($html)
 			{
 				return $html;
@@ -460,6 +479,61 @@ class File extends Base
 		}
 
 		return $html;
+	}
+
+	/**
+	 * Async bundle display state for the download button: false (async not
+	 * active for this version — show the normal button), 'ready', 'preparing'
+	 * (queued/building or not yet queued), or 'failed'.
+	 *
+	 * Cheap and defensive to match the serve-side gate: a flag check plus a
+	 * single try-guarded status query (no model load), and a missing table
+	 * reads as "not active" — so the button is unchanged while async is off.
+	 *
+	 * @param   object  $pub
+	 * @return  string|false
+	 */
+	private function bundleDisplayState($pub)
+	{
+		$flag = (int) \Component::params('com_publications')->get('bundle_async', 0);
+		$vid  = (int) $pub->get('version_id');
+
+		if (!$flag && !$vid)
+		{
+			return false;
+		}
+
+		$status = null;
+
+		try
+		{
+			$db = \App::get('db');
+			$db->setQuery("SELECT `status` FROM `#__publication_bundle_queue` WHERE `publication_version_id` = " . $vid . " LIMIT 1");
+			$status = $db->loadResult();
+		}
+		catch (\Throwable $e)
+		{
+			return false;
+		}
+
+		// Async active only if the flag is on or a queue row exists (canary).
+		if (!$flag && $status === null)
+		{
+			return false;
+		}
+
+		if ($status === 'ready')
+		{
+			return 'ready';
+		}
+
+		if ($status === 'failed')
+		{
+			return 'failed';
+		}
+
+		// queued / building, or flag-on but not yet queued
+		return 'preparing';
 	}
 
 	/**
@@ -602,6 +676,35 @@ class File extends Base
 					$show->title = Lang::txt('Show bundle contents');
 
 					$options[] = $show;
+
+					// Async bundle: reflect build state on the button so a
+					// not-ready bundle shows progress rather than a link that
+					// loops to the "preparing" notice. No-op when async is off.
+					$bstate = $this->bundleDisplayState($pub);
+					if ($bstate === 'preparing')
+					{
+						$label    = Lang::txt('COM_PUBLICATIONS_BUNDLE_BTN_PREPARING');
+						$disabled = 1;
+						$pop      = '<p class="warning">' . Lang::txt('COM_PUBLICATIONS_BUNDLE_PREPARING') . '</p>';
+
+						// Poll build status; when ready, send the browser to the
+						// download so the "preparing" button becomes live without
+						// a manual refresh.
+						$statusUrl = Route::url('index.php?option=com_publications&id=' . $pub->id . '&task=bundlestatus&v=' . $pub->version_number);
+						\Document::addScriptDeclaration(
+							"(function(){var u=" . json_encode($statusUrl) . ";function p(){"
+							. "fetch(u,{headers:{'X-Requested-With':'XMLHttpRequest'},credentials:'same-origin'})"
+							. ".then(function(r){return r.json();}).then(function(d){"
+							. "if(d&&d.ready&&d.url){window.location=d.url;}else{setTimeout(p,8000);}"
+							. "}).catch(function(){setTimeout(p,15000);});}setTimeout(p,8000);})();"
+						);
+					}
+					else if ($bstate === 'failed')
+					{
+						$label    = Lang::txt('COM_PUBLICATIONS_BUNDLE_BTN_UNAVAILABLE');
+						$disabled = 1;
+						$pop      = '<p class="warning">' . Lang::txt('COM_PUBLICATIONS_BUNDLE_UNAVAILABLE') . '</p>';
+					}
 				}
 				else
 				{
@@ -674,6 +777,14 @@ class File extends Base
 			Filesystem::makeDirectory($newPath, 0755, true, true);
 		}
 
+		// Track the first successfully transferred imageviewer attachment
+		// so we can set it as the new version's default thumbnail. The
+		// addAttachment() path does this, but transferData() between
+		// versions previously bypassed it, leaving v2+ pubs with no
+		// version-level thumb.gif/master.png.
+		$firstImageAttach = null;
+		$newVersionConfigs = null;
+
 		// Loop through attachments
 		foreach ($attachments as $att)
 		{
@@ -724,7 +835,40 @@ class File extends Base
 				if ($configs->handler && $configs->handler->getName() == 'imageviewer')
 				{
 					$configs->handler->makeThumbnail($pAttach, $pub, $newConfigs);
+
+					if ($firstImageAttach === null)
+					{
+						$firstImageAttach = $pAttach;
+
+						// makeDefault writes thumb.gif/master.png at
+						// $configs->pubBase, so resolve that for the new version.
+						$newVersionConfigs = clone $newConfigs;
+						$newVersionConfigs->pubBase = \Components\Publications\Helpers\Html::buildPubPath(
+							$pub->id,
+							$newVersion->id,
+							'',
+							'',
+							1
+						);
+					}
 				}
+			}
+		}
+
+		// Set the new version's default thumbnail from the first transferred
+		// gallery image, mirroring addAttachment()'s behavior.
+		if ($firstImageAttach !== null && $configs->handler
+			&& $configs->handler->getName() == 'imageviewer')
+		{
+			$currentDefault = new \Components\Publications\Tables\Attachment($this->_parent->_db);
+			if (!$currentDefault->getDefault($newVersion->id))
+			{
+				// makeDefault uses $pub->version_id internally for some lookups
+				// (saveParam on Attachment), so set it to the new version.
+				$savedVersionId = isset($pub->version_id) ? $pub->version_id : null;
+				$pub->version_id = $newVersion->id;
+				$configs->handler->makeDefault($firstImageAttach, $pub, $newVersionConfigs);
+				$pub->version_id = $savedVersionId;
 			}
 		}
 
@@ -860,6 +1004,27 @@ class File extends Base
 	}
 
 	/**
+	 * Maximum total source size (in bytes) for on-demand bundle creation.
+	 * Above this, bundle() bails out instead of trying to zip during a
+	 * web request — the resulting archive would take longer to build than
+	 * the request timeout, leaving orphan ZipArchive .part files on disk
+	 * (PHP's ZipArchive temp file pattern is "<archive>.<hex>.part").
+	 * Default 4 GB. Override with the 'bundle_max_bytes' component config.
+	 */
+	const BUNDLE_DEFAULT_MAX_BYTES = 4294967296;
+
+	/**
+	 * How long an in-progress bundle build may run before its temp .part
+	 * files are considered stale and eligible for cleanup. Seconds.
+	 */
+	const BUNDLE_PART_STALE_SECONDS = 1800;
+
+	/**
+	 * Lock duration: a fresh lock file blocks new bundle attempts. Seconds.
+	 */
+	const BUNDLE_LOCK_FRESH_SECONDS = 600;
+
+	/**
 	 * Bundle files together
 	 *
 	 * @param   array    $attachments
@@ -901,7 +1066,16 @@ class File extends Base
 			return $bundle;
 		}
 
+		// Clean up stale ZipArchive temp files (orphaned .part files left
+		// behind when a previous bundle build was killed by a request
+		// timeout). Without this, repeated page loads of a publication
+		// whose bundle won't fit inside the timeout fill the disk with
+		// abandoned partials.
+		$this->cleanupStaleBundleParts($path);
+
+		// Resolve source files and total size before doing any zip work.
 		$files = array();
+		$totalBytes = 0;
 		foreach ($attachments as $attach)
 		{
 			$fpath = $this->getFilePath($attach->path, $attach->id, $configs, $attach->params);
@@ -914,6 +1088,7 @@ class File extends Base
 			if (is_file($fpath))
 			{
 				$files[$fpath] = $fname;
+				$totalBytes += @filesize($fpath);
 			}
 		}
 
@@ -923,19 +1098,152 @@ class File extends Base
 			return false;
 		}
 
-		$zip = new ZipArchive;
-		if ($zip->open($bundle, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true)
+		// Size guard: skip on-demand bundling for datasets too large to
+		// finish before request timeout. Callers handle a false return
+		// by showing "unavailable" / falling back to per-file downloads.
+		$maxBytes = (int) Component::params('com_publications')->get(
+			'bundle_max_bytes',
+			self::BUNDLE_DEFAULT_MAX_BYTES
+		);
+		if ($maxBytes > 0 && $totalBytes > $maxBytes)
 		{
-			$i = 0;
-			foreach ($files as $fpath => $fname)
+			$this->setError(Lang::txt(
+				'PLG_PROJECTS_PUBLICATIONS_PUBLICATION_BUNDLE_TOO_LARGE'
+			));
+			return false;
+		}
+
+		// Lock to prevent concurrent bundle builds (which each spawn their
+		// own ZipArchive temp .part). Non-blocking: if another worker is
+		// already building this bundle, bail rather than queue up.
+		$lockPath = $bundle . '.lock';
+		$lockHandle = @fopen($lockPath, 'c');
+		if ($lockHandle === false)
+		{
+			$this->setError(Lang::txt('PLG_PROJECTS_PUBLICATIONS_PUBLICATION_NO_FILES_FOUND'));
+			return false;
+		}
+		if (!@flock($lockHandle, LOCK_EX | LOCK_NB))
+		{
+			// Another process holds the lock and it's still fresh — bail
+			// out without trying. If the lock is stale (process died
+			// without releasing it), fall through and take it.
+			fclose($lockHandle);
+			if (file_exists($lockPath)
+				&& (time() - @filemtime($lockPath)) < self::BUNDLE_LOCK_FRESH_SECONDS)
 			{
-				$zip->addFile($fpath, $fname);
-				$i++;
+				return false;
 			}
-			$zip->close();
+			// Stale lock — try once more, blocking briefly.
+			$lockHandle = @fopen($lockPath, 'c');
+			if ($lockHandle === false || !@flock($lockHandle, LOCK_EX | LOCK_NB))
+			{
+				if ($lockHandle !== false) { fclose($lockHandle); }
+				return false;
+			}
+		}
+		// Refresh the lock mtime so concurrent attempts see it as fresh.
+		@touch($lockPath);
+
+		try
+		{
+			// Re-check existence under the lock — another worker may have
+			// completed the bundle while we were waiting.
+			if (is_file($bundle) && $overwrite == false)
+			{
+				return $bundle;
+			}
+
+			$zip = new ZipArchive;
+			if ($zip->open($bundle, ZipArchive::CREATE | ZipArchive::OVERWRITE) === true)
+			{
+				foreach ($files as $fpath => $fname)
+				{
+					$zip->addFile($fpath, $fname);
+
+					// Skip deflate for file types that are already
+					// compressed (zip/gz/jpg/png/mp4/etc.). On a pile of
+					// pre-compressed files, default deflate is pure CPU
+					// burn — the resulting archive is essentially the
+					// same size, just much slower to produce, which
+					// matters during a web request.
+					if (self::isAlreadyCompressedExt($fname))
+					{
+						$zip->setCompressionName($fname, ZipArchive::CM_STORE);
+					}
+				}
+				$zip->close();
+			}
+		}
+		finally
+		{
+			@flock($lockHandle, LOCK_UN);
+			fclose($lockHandle);
+			@unlink($lockPath);
 		}
 
 		return $bundle;
+	}
+
+	/**
+	 * Remove ZipArchive .part files older than BUNDLE_PART_STALE_SECONDS.
+	 * These are temp files left when a bundle build is killed mid-write.
+	 *
+	 * @param   string   $bundlesDir
+	 * @return  integer  Number of files removed
+	 */
+	protected function cleanupStaleBundleParts($bundlesDir)
+	{
+		if (!is_dir($bundlesDir))
+		{
+			return 0;
+		}
+
+		$threshold = time() - self::BUNDLE_PART_STALE_SECONDS;
+		$removed = 0;
+
+		foreach ((array) glob($bundlesDir . DS . '*.part') as $partFile)
+		{
+			$mtime = @filemtime($partFile);
+			if ($mtime !== false && $mtime < $threshold)
+			{
+				if (@unlink($partFile))
+				{
+					$removed++;
+				}
+			}
+		}
+
+		return $removed;
+	}
+
+	/**
+	 * Whether a filename's extension belongs to a format that's already
+	 * compressed and so won't benefit from zip deflation. Used by
+	 * bundle() to skip deflate on these entries (CM_STORE) so building
+	 * a 3 GB pile of zips doesn't burn a request worker on CPU for
+	 * minutes producing an archive that's the same size anyway.
+	 *
+	 * @param   string  $name
+	 * @return  boolean
+	 */
+	protected static function isAlreadyCompressedExt($name)
+	{
+		static $exts = [
+			// archives
+			'zip', 'gz', 'bz2', 'xz', 'tgz', '7z', 'rar', 'lz4', 'zst',
+			// images
+			'jpg', 'jpeg', 'png', 'gif', 'webp', 'heic', 'heif',
+			// video / audio
+			'mp4', 'm4v', 'mov', 'mkv', 'avi', 'wmv', 'webm', 'flv',
+			'mp3', 'm4a', 'aac', 'ogg', 'opus', 'flac',
+			// documents that internally compress
+			'docx', 'xlsx', 'pptx', 'odt', 'ods', 'odp', 'epub',
+			// misc
+			'pdf',
+		];
+		$ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+		return in_array($ext, $exts, true);
 	}
 
 	/**
@@ -1140,6 +1448,7 @@ class File extends Base
 		$access = (Request::getInt('access', 0) ? 5 : 0);
 		$name  = Request::getString('filename', '');
 		$thumb = Request::getInt('makedefault', 0);
+		$description = Request::getString('description', '');
 
 		// Get configs
 		$configs = $this->getConfigs($element, $elementId, $pub, $blockParams);
@@ -1155,6 +1464,7 @@ class File extends Base
 		// Update label
 		$row->title       = $title;
 		$row->access      = $access;
+		$row->attribs     = $description;
 		$row->modified_by = User::get('id');
 		$row->modified    = Date::toSql();
 
@@ -1625,6 +1935,7 @@ class File extends Base
 		$data->set('props', $view->master->block . '-' . $view->master->blockId . '-' . $view->elementId);
 		$data->set('downloadUrl', Route::url($view->pub->link('serve') . '&el=' . $view->elementId . '&a=' . $att->id . '&download=1'));
 		$data->set('total', count($view->attachments));
+		$data->set('attribs', $att->attribs);
 
 		// Is attachment (image) also publication thumbnail
 		$params = new \Hubzero\Config\Registry($att->params);

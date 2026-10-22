@@ -11,6 +11,8 @@ use Components\Publications\Models\Block as Base;
 use Components\Publications\Models\PubCloud;
 use Components\Tags\Models\FocusArea;
 use stdClass;
+use Lang;
+use Request;
 
 require_once dirname(dirname(__DIR__)) . DS . 'helpers' . DS . 'tags.php';
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'cloud.php';
