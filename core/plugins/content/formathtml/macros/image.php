@@ -196,7 +196,7 @@ $txt['html'] = '<p>Embed an image in wiki-formatted text. The first argument is 
 		{
 			if (!in_array(strtolower(\Filesystem::extension($file)), $this->imgs))
 			{
-				return '(Image(' . $content . ') failed - File provided is not an allowed image type)';
+				return '(Image(' . htmlspecialchars((string) $content, ENT_QUOTES, 'UTF-8') . ') failed - File provided is not an allowed image type)';
 			}
 
 			// Return HTML
@@ -204,8 +204,10 @@ $txt['html'] = '<p>Embed an image in wiki-formatted text. The first argument is 
 		}
 		else
 		{
-			// Return error message
-			return '(Image(' . $content . ') failed - File not found)'; // . $this->_path($file);
+			// Return error message. strip_tags() on the argument drops the angle
+			// brackets but not the quotes, and this string is spliced into page
+			// HTML, so escape it properly.
+			return '(Image(' . htmlspecialchars((string) $content, ENT_QUOTES, 'UTF-8') . ') failed - File not found)'; // . $this->_path($file);
 		}
 	}
 
@@ -256,6 +258,20 @@ $txt['html'] = '<p>Embed an image in wiki-formatted text. The first argument is 
 
 			if ($val)
 			{
+				// Only http(s)/mailto/ftp URLs or site-relative paths may replace the
+				// link target; any other scheme (javascript:, data:, ...) falls
+				// back to the image's own link.
+				// Browsers drop whitespace and control characters from a URL
+				// before reading its scheme ("java\tscript:" is javascript:),
+				// so test the scheme on the same stripped form
+				$probe = preg_replace('/[\x00-\x20\x7f]+/', '', (string) $val);
+				if (preg_match('/^([a-z][a-z0-9+.\-]*):/i', $probe, $m)
+				 && !in_array(strtolower($m[1]), array('http', 'https', 'mailto', 'ftp')))
+				{
+					$this->attr['href'] = '';
+					return;
+				}
+
 				$this->attr['href'] = $val;
 
 				$urlPtrn  = "[^=\"\']*(https?:|mailto:|ftp:|gopher:|news:|file:)" . "([^ |\\/\"\']*\\/)*([^ |\\t\\n\\/\"\']*[A-Za-z0-9\\/?=&~_])";
@@ -499,7 +515,7 @@ $txt['html'] = '<p>Embed an image in wiki-formatted text. The first argument is 
 			$k = strtolower($k);
 			if ($k != 'href' && $k != 'rel' && $k != 'desc' && $v)
 			{
-				$attribs[] = $k . '="' . trim($v, '"') . '"';
+				$attribs[] = $k . '="' . htmlspecialchars((string) trim($v, '"'), ENT_COMPAT, 'UTF-8', false) . '"';
 			}
 		}
 
@@ -516,11 +532,12 @@ $txt['html'] = '<p>Embed an image in wiki-formatted text. The first argument is 
 			$attr['href'] = ($attr['href']) ? $attr['href'] : $this->_link($file);
 			$attr['rel']  = (isset($attr['rel'])) ? $attr['rel'] : 'lightbox';
 
-			$html .= '<a rel="' . $attr['rel'] . '" href="' . $attr['href'] . '">' . $img . '</a>';
+			$html .= '<a rel="' . htmlspecialchars((string) $attr['rel'], ENT_QUOTES, 'UTF-8') . '" href="' . htmlspecialchars((string) $attr['href'], ENT_QUOTES, 'UTF-8') . '">' . $img . '</a>';
 		}
 		if (isset($attr['desc']) && $attr['desc'])
 		{
-			$html .= '<span class="figcaption">' . $attr['desc'] . '</span>';
+			// The attachment description is free text entered by the uploader
+			$html .= '<span class="figcaption">' . htmlspecialchars((string) $attr['desc'], ENT_QUOTES, 'UTF-8', false) . '</span>';
 		}
 		$html .= '</span>';
 

@@ -498,6 +498,8 @@ class Articles extends SiteController
 
 		$pagination = new \Hubzero\Pagination\Paginator($total, $filters['start'], $filters['limit']);
 
+		$globalParams = \Component::params('com_content');
+
 		foreach ($items as $item)
 		{
 			$articleParams = new \Hubzero\Config\Registry($item->attribs);
@@ -579,10 +581,10 @@ class Articles extends SiteController
 					$item->params->set('access-edit', true);
 				}
 				// Now check if edit.own is available.
-				elseif (!empty($userId) && User::authorise('core.edit.own', $asset))
+				elseif (User::get('id') && User::authorise('core.edit.own', $asset))
 				{
 					// Check for a valid user and that they are the owner.
-					if ($userId == $item->created_by)
+					if (User::get('id') == $item->created_by)
 					{
 						$item->params->set('access-edit', true);
 					}
@@ -1594,6 +1596,8 @@ class Articles extends SiteController
 			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
 		}
 
+		$form = $item->getForm('site');
+
 		if (!empty($item) && isset($item->id))
 		{
 			$item->images = json_decode($item->images);
@@ -1605,8 +1609,6 @@ class Articles extends SiteController
 
 			$form->bind($tmp);
 		}
-
-		$form = $item->getForm('site');
 
 		if ($params->get('enable_category') == 1)
 		{
@@ -1683,9 +1685,16 @@ class Articles extends SiteController
 		$data = Request::getArray('fields', array(), 'post');
 		$context = "com_content.article.$id";
 
-		$model = Article::oneOrNew($id)->set($data);
+		// $asset and $catId are assigned in editTask, not here, so the checks
+		// below were authorising against a null asset -- the root, not this
+		// article -- and the category branch could never be taken. Both also
+		// raised an undefined-variable warning on every save.
+		$asset = $id ? $context : 'com_content';
+		$catId = isset($data['catid']) ? (int) $data['catid'] : Request::getInt('catid');
 
-		// Check general edit permission first.
+		$model = Article::oneOrNew($id);
+
+		// Check general edit permission first (against the stored owner).
 		$authorised = false;
 
 		if (User::authorise('core.edit', $context))
@@ -1702,25 +1711,7 @@ class Articles extends SiteController
 			}
 		}
 
-		// Check edit state permission.
-		if ($id)
-		{
-			// Existing item
-			$authorised = User::authorise('core.edit.state', $asset);
-		}
-		else
-		{
-			// New item.
-			if ($catId)
-			{
-				$authorised = User::authorise('core.edit.state', 'com_content.category.' . $catId);
-			}
-			else
-			{
-				$authorised = User::authorise('core.edit.state', 'com_content');
-			}
-		}
-
+		// New items require create permission
 		if (empty($model->id))
 		{
 			$authorised = User::authorise('core.create', 'com_content') || count(User::getAuthorisedCategories('com_content', 'core.create'));
@@ -1730,6 +1721,23 @@ class Articles extends SiteController
 		{
 			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
 		}
+
+		// Changing the published state requires the edit.state permission
+		$canEditState = $id
+			? User::authorise('core.edit.state', $asset)
+			: ($catId
+				? User::authorise('core.edit.state', 'com_content.category.' . $catId)
+				: User::authorise('core.edit.state', 'com_content'));
+		if (!$canEditState)
+		{
+			unset($data['state'], $data['featured']);
+		}
+
+		// The row is the one authorised above; set() would otherwise take a
+		// posted fields[id] and save onto that one instead.
+		unset($data['id']);
+
+		$model->set($data);
 
 		if ($model->isCheckedOut() && $model->get('checked_out') != User::get('id'))
 		{

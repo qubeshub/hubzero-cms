@@ -81,7 +81,7 @@ $this->css();
 					. trim($r['source_dir'], '/') . '&asset=' . $r['source_file'];
 				$file_url = Route::url($file_url);
 
-				$file_name = '<a href="' . $file_url . '">' . $r['source_file'] . '</a>';
+				$file_name = '<a href="' . $file_url . '">' . $this->escape($r['source_file']) . '</a>';
 
 				$recreate = '<a href="' . Route::url('index.php?option=com_projects&alias=' . $this->model->get('alias') . '&active=databases&action=create&db_id=' . $r['id']) . '" class="re-create-db">' . Lang::txt('Update Database') . '</a>';
 
@@ -122,7 +122,7 @@ $this->css();
 					<?php echo $recreate; ?>
 				</td>
 				<td>
-					<a href="<?php echo Route::url('index.php?option=com_projects&alias=' . $this->model->get('alias') . '&active=databases&action=delete&db_id=' . $r['id']); ?>" class="delete-db"><?php echo Lang::txt('PLG_PROJECTS_DATABASES_DELETE'); ?></a>
+					<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=com_projects&alias=' . $this->model->get('alias') . '&active=databases&action=delete&db_id=' . $r['id']); ?>" class="delete-db"><?php echo Lang::txt('PLG_PROJECTS_DATABASES_DELETE'); ?></button>
 				</td>
 				<?php } ?>
 			</tr>
@@ -180,5 +180,6 @@ $this->css();
 		<label><?php echo Lang::txt('PLG_PROJECTS_DATABASES_DESC'); ?>:
 			<textarea name="db_description" style="width: 550px; height: 130px;"></textarea>
 		</label>
+		<?php echo Html::input('token'); ?>
 	</form>
 </div>

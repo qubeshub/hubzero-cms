@@ -108,13 +108,13 @@ $this->css()
 													<span><?php echo Lang::txt('COM_COLLECTIONS_COLLECT'); ?></span>
 												</a>
 											<?php if ($row->isFollowing()) { ?>
-												<a class="btn unfollow" data-id="<?php echo $row->get('id'); ?>" data-text-follow="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?>" data-text-unfollow="<?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW'); ?>" href="<?php echo Route::url($row->link() . '/unfollow'); ?>" aria-label="<?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW') . ': ' . $this->escape($row->get('title')); ?>">
+												<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($row->link() . '/unfollow'); ?>" class="btn unfollow" data-id="<?php echo $row->get('id'); ?>" data-text-follow="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?>" data-text-unfollow="<?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW'); ?>" aria-label="<?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW') . ': ' . $this->escape($row->get('title')); ?>">
 													<span><?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW'); ?></span>
-												</a>
+												</button>
 											<?php } else { ?>
-												<a class="btn follow" data-id="<?php echo $row->get('id'); ?>" data-text-follow="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?>" data-text-unfollow="<?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW'); ?>" href="<?php echo Route::url($row->link() . '/follow'); ?>" aria-label="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW') . ': ' . $this->escape($row->get('title')); ?>">
+												<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($row->link() . '/follow'); ?>" class="btn follow" data-id="<?php echo $row->get('id'); ?>" data-text-follow="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?>" data-text-unfollow="<?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW'); ?>" aria-label="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW') . ': ' . $this->escape($row->get('title')); ?>">
 													<span><?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?></span>
-												</a>
+												</button>
 											<?php } ?>
 										<?php } ?>
 									<?php } else { ?>

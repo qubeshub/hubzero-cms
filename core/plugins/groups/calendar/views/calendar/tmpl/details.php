@@ -28,16 +28,14 @@ $ignoreDst = $params->get('ignore_dst', 0) == 1 ? true : false;
 
 <div class="event-title-bar">
 	<span class="event-title">
-		<?php echo $this->event->get('title'); ?>
+		<?php echo $this->escape($this->event->get('title')); ?>
 		<?php if (isset($this->calendar)) : ?>
-			<span>&ndash;&nbsp;<?php echo $this->calendar->get('title'); ?></span>
+			<span>&ndash;&nbsp;<?php echo $this->escape($this->calendar->get('title')); ?></span>
 		<?php endif; ?>
 	</span>
 	<?php if ($this->group->published == 1 && ($this->user->get('id') == $this->event->get('created_by') || $this->authorized == 'manager')) : ?>
 		<?php if (!isset($this->calendar) || !$this->calendar->get('readonly')) : ?>
-			<a class="delete" href="<?php echo Route::url('index.php?option='.$this->option.'&cn='.$this->group->get('cn').'&active=calendar&action=delete&event_id='.$this->event->get('id')); ?>">
-				Delete
-			</a>
+			<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option='.$this->option.'&cn='.$this->group->get('cn').'&active=calendar&action=delete&event_id='.$this->event->get('id')); ?>" class="delete">Delete</button>
 			<a class="edit" href="<?php echo Route::url('index.php?option='.$this->option.'&cn='.$this->group->get('cn').'&active=calendar&action=edit&event_id='.$this->event->get('id')); ?>">
 				Edit
 			</a>
@@ -146,14 +144,14 @@ $ignoreDst = $params->get('ignore_dst', 0) == 1 ? true : false;
 		<?php if ($this->event->get('adresse_info') != '') : ?>
 			<tr>
 				<th scope="row" class="location"><span class="sr-only visually-hidden">Location:</span></th>
-				<td colspan="3"><?php echo $this->event->get('adresse_info'); ?></td>
+				<td colspan="3"><?php echo $this->escape($this->event->get('adresse_info')); ?></td>
 			</tr>
 		<?php endif; ?>
 
 		<?php if ($this->event->get('contact_info') != '') : ?>
 			<tr>
 				<th scope="row" class="author"><span class="sr-only visually-hidden">Contact:</span></th>
-				<td colspan="3"><?php echo plgGroupsCalendarHelper::autoLinkText($this->event->get('contact_info')); ?></td>
+				<td colspan="3"><?php echo plgGroupsCalendarHelper::autoLinkText($this->escape($this->event->get('contact_info'))); ?></td>
 			</tr>
 		<?php endif; ?>
 
@@ -161,8 +159,8 @@ $ignoreDst = $params->get('ignore_dst', 0) == 1 ? true : false;
 			<tr>
 				<th scope="row" class="url"><span class="sr-only visually-hidden">Website:</span></th>
 				<td colspan="3">
-					<a href="<?php echo $this->event->get('extra_info'); ?>" rel="external">
-						<?php echo $this->event->get('extra_info'); ?>
+					<a href="<?php echo (preg_match('#^https?://#i', $this->event->get('extra_info')) ? $this->escape($this->event->get('extra_info')) : ''); ?>" rel="external">
+						<?php echo $this->escape($this->event->get('extra_info')); ?>
 					</a>
 				</td>
 			</tr>
@@ -171,7 +169,7 @@ $ignoreDst = $params->get('ignore_dst', 0) == 1 ? true : false;
 		<?php if ($this->event->get('content') != '') : ?>
 			<tr>
 				<th scope="row" class="details"><span class="sr-only visually-hidden">Details:</span></th>
-				<td colspan="3"><?php echo plgGroupsCalendarHelper::autoLinkText(nl2br($this->event->get('content'))); ?></td>
+				<td colspan="3"><?php echo plgGroupsCalendarHelper::autoLinkText(nl2br($this->escape($this->event->get('content')))); ?></td>
 			</tr>
 		<?php endif; ?>
 

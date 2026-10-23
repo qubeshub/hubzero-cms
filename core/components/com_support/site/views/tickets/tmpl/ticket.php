@@ -20,7 +20,7 @@ $unknown  = 1;
 //$name     = Lang::txt('COM_SUPPORT_UNKNOWN');
 $usertype = Lang::txt('COM_SUPPORT_UNKNOWN');
 
-$protocol = $_SERVER['HTTPS'] == '' ? 'http://' : 'https://';
+$protocol = Request::isSecure() ? 'https://' : 'http://';
 
 if ($this->row->get('login'))
 {
@@ -42,7 +42,7 @@ if ($this->row->get('login'))
 		$displayName = ($this->row->get('login')) ? $this->escape(stripslashes($this->row->get('name'))) . ' (' . $this->escape(stripslashes($this->row->get('login'))) . ')' : $this->escape(stripslashes($this->row->get('name')));
 		if ($this->row->get('email'))
 		{
-			$name = '<a rel="email" href="mailto:' . $this->row->get('email') . '">' . $displayName . '</a>';
+			$name = '<a rel="email" href="mailto:' . $this->escape($this->row->get('email')) . '">' . $displayName . '</a>';
 		}
 		else
 		{
@@ -54,7 +54,7 @@ else
 {
 	if ($this->row->get('email'))
 	{
-		$name = '<a rel="email" href="mailto:' . $this->row->get('email') . '">' . $this->escape(stripslashes($this->row->get('name'))) . '</a>';
+		$name = '<a rel="email" href="mailto:' . $this->escape($this->row->get('email')) . '">' . $this->escape(stripslashes($this->row->get('name'))) . '</a>';
 	}
 	else
 	{
@@ -170,7 +170,7 @@ $cc = array();
 									{
 										?>
 										<a class="attachment <?php echo Filesystem::extension($attachment->get('filename')); ?>" href="<?php echo Route::url($attachment->link()); ?>" title="<?php echo $this->escape($attachment->get('description')); ?>">
-											<p class="attachment-description"><?php echo $attachment->get('description'); ?></p>
+											<p class="attachment-description"><?php echo $this->escape($attachment->get('description')); ?></p>
 											<p class="attachment-meta">
 												<span class="attachment-size"><?php echo Hubzero\Utility\Number::formatBytes($attachment->size()); ?></span>
 												<span class="attachment-action"><?php echo Lang::txt('JLIB_HTML_CLICK_TO_DOWNLOAD'); ?></span>
@@ -190,7 +190,7 @@ $cc = array();
 							<tbody>
 								<tr>
 									<th scope="row"><?php echo Lang::txt('COM_SUPPORT_TICKET_DETAILS_EMAIL'); ?>:</th>
-									<td><?php if ($this->row->get('email')) { ?><a href="mailto:<?php echo $this->row->get('email'); ?>"><?php echo $this->escape($this->row->get('email')); ?></a><?php } else { echo Lang::txt('COM_SUPPORT_UNKNOWN'); } ?></td>
+									<td><?php if ($this->row->get('email')) { ?><a href="mailto:<?php echo $this->escape($this->row->get('email')); ?>"><?php echo $this->escape($this->row->get('email')); ?></a><?php } else { echo Lang::txt('COM_SUPPORT_UNKNOWN'); } ?></td>
 								</tr>
 								<tr>
 									<th scope="row"><?php echo Lang::txt('COM_SUPPORT_TICKET_DETAILS_USERTYPE'); ?>:</th>
@@ -315,7 +315,7 @@ $cc = array();
 									<span class="comment-date-on"><?php echo Lang::txt('COM_SUPPORT_ON'); ?></span>
 									<span class="date"><time datetime="<?php echo $this->escape($comment->created()); ?>"><?php echo $comment->created('date'); ?></time></span>
 								</a>
-							<a class="copy-link show-hover-target" href="<?php echo $protocol . $_SERVER['HTTP_HOST'] . Route::url($comment->link()); ?>">
+							<a class="copy-link show-hover-target" href="<?php echo $protocol . Request::getHttpHost() . Route::url($comment->link()); ?>">
 								<span class="lbl show-hover-child">Copy link</span>
 								<?php echo Html::asset('icon', 'link'); ?>
 							</a>
@@ -649,7 +649,7 @@ $cc = array();
 						$this->js('jquery.fileuploader.js', 'system');
 						$jbase = rtrim(Request::base(true), '/');
 						?>
-						<div id="ajax-uploader" data-action="<?php echo $jbase; ?>/index.php?option=com_support&amp;no_html=1&amp;controller=media&amp;task=upload&amp;ticket=<?php echo $this->row->get('id'); ?>&amp;comment=<?php echo $tmp; ?>" data-list="<?php echo $jbase; ?>/index.php?option=com_support&amp;no_html=1&amp;controller=media&amp;task=list&amp;ticket=<?php echo $this->row->get('id'); ?>&amp;comment=<?php echo $tmp; ?>">
+						<div id="ajax-uploader" data-action="<?php echo $jbase; ?>/index.php?option=com_support&amp;no_html=1&amp;controller=media&amp;task=upload&amp;ticket=<?php echo $this->row->get('id'); ?>&amp;comment=<?php echo $tmp; ?>&amp;<?php echo Session::getFormToken(); ?>=1" data-list="<?php echo $jbase; ?>/index.php?option=com_support&amp;no_html=1&amp;controller=media&amp;task=list&amp;ticket=<?php echo $this->row->get('id'); ?>&amp;comment=<?php echo $tmp; ?>">
 							<noscript>
 								<div class="form-group">
 									<label for="upload">

@@ -40,11 +40,11 @@ jQuery(document).ready(function(jq){
 
 	// review ratings
 	$('.vote-button').each(function(i, item) {
-		if ($(item).attr('href')) {
+		if ($(item).attr('formaction')) {
 			$(item).on('click', function (e) {
 				e.preventDefault();
 
-				$.get($(this).attr('href').nohtml(), {}, function(data) {
+				$.post($(this).attr('formaction').nohtml(), $(this.form).serialize(), function(data) {
 					$('.tooltip').hide();
 					$(item).closest('.voting').html(data);
 				});

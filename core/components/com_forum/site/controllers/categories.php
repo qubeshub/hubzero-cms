@@ -116,23 +116,23 @@ class Categories extends SiteController
 		switch ($filters['sortby'])
 		{
 			case 'title':
-				$filters['sort'] = 'sticky` DESC, `title';
+				$filters['sort'] = 'title';
 				$filters['sort_Dir'] = strtoupper(Request::getString('sortdir', 'ASC'));
 			break;
 
 			case 'replies':
-				$filters['sort'] = 'sticky` DESC, `rgt';
+				$filters['sort'] = 'rgt';
 				$filters['sort_Dir'] = strtoupper(Request::getString('sortdir', 'DESC'));
 			break;
 
 			case 'created':
-				$filters['sort'] = 'sticky` DESC, `created';
+				$filters['sort'] = 'created';
 				$filters['sort_Dir'] = strtoupper(Request::getString('sortdir', 'DESC'));
 			break;
 
 			case 'activity':
 			default:
-				$filters['sort'] = 'sticky` DESC, `activity';
+				$filters['sort'] = 'activity';
 				$filters['sort_Dir'] = strtoupper(Request::getString('sortdir', 'DESC'));
 			break;
 		}
@@ -184,6 +184,7 @@ class Categories extends SiteController
 			->select("*, (CASE WHEN last_activity IS NOT NULL THEN last_activity ELSE created END)", 'activity')
 			->whereEquals('state', $filters['state'])
 			->whereIn('access', $filters['access'])
+			->order('sticky', 'desc') // pinned threads first, then the chosen sort
 			->order($filters['sort'], $filters['sort_Dir'])
 			->paginated()
 			->rows();
@@ -408,7 +409,7 @@ class Categories extends SiteController
 				'action'      => ($fields['id'] ? 'updated' : 'created'),
 				'scope'       => 'forum.category',
 				'scope_id'    => $category->get('id'),
-				'description' => Lang::txt('COM_FORUM_ACTIVITY_CATEGORY_' . ($fields['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($url) . '">' . $category->get('title') . '</a>'),
+				'description' => Lang::txt('COM_FORUM_ACTIVITY_CATEGORY_' . ($fields['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($url) . '">' . htmlspecialchars((string) ($category->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $category->get('title'),
 					'url'   => Route::url($url)
@@ -445,6 +446,9 @@ class Categories extends SiteController
 				'warning'
 			);
 		}
+
+		// Check for request forgeries
+		Request::checkToken();
 
 		// Load the category
 		$category = Category::all()
@@ -494,7 +498,7 @@ class Categories extends SiteController
 				'action'      => 'deleted',
 				'scope'       => 'forum.category',
 				'scope_id'    => $category->get('id'),
-				'description' => Lang::txt('COM_FORUM_ACTIVITY_CATEGORY_DELETED', '<a href="' . Route::url($url) . '">' . $category->get('title') . '</a>'),
+				'description' => Lang::txt('COM_FORUM_ACTIVITY_CATEGORY_DELETED', '<a href="' . Route::url($url) . '">' . htmlspecialchars((string) ($category->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $category->get('title'),
 					'url'   => Route::url($url)

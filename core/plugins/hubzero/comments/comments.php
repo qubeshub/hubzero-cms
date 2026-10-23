@@ -230,21 +230,52 @@ class plgHubzeroComments extends \Hubzero\Plugin\Plugin
 			return $this->_login();
 		}
 
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
+
 		$no_html = Request::getInt('no_html', 0);
 
-		// Record the vote
-		if ($item_id = Request::getInt('voteup', 0))
+		// Record the vote. $how and $item_id were left undefined when neither
+		// field was posted, which on this hub is a warning and so a 500.
+		$item_id = 0;
+		$how     = 0;
+
+		if ($id = Request::getInt('voteup', 0))
 		{
-			$how = 1;
+			$item_id = $id;
+			$how     = 1;
 		}
-		else if ($item_id = Request::getInt('votedown', 0))
+		else if ($id = Request::getInt('votedown', 0))
 		{
-			$how = -1;
+			$item_id = $id;
+			$how     = -1;
+		}
+
+		if (!$item_id)
+		{
+			App::abort(404, Lang::txt('PLG_HUBZERO_COMMENTS_NOTAUTH'));
 		}
 
 		$item = \Plugins\Hubzero\Comments\Models\Comment::oneOrFail($item_id);
 
-		if (!$item->vote($how))
+		// The comment has to belong to the item this plugin instance is serving.
+		// oneOrFail() resolves any row of #__item_comments, so without this any
+		// logged-in member could vote on any comment on the hub by id -- the same
+		// gap _save() and _delete() were given a test for.
+		if ((string) $item->get('item_type') !== (string) $this->obj_type
+		 || (int) $item->get('item_id') !== (int) $this->obj_id)
+		{
+			App::abort(404, Lang::txt('PLG_HUBZERO_COMMENTS_NOTAUTH'));
+		}
+
+		// The voter has to be passed, or the model's own-comment test (which
+		// compares created_by with it) never fires and authors vote themselves up
+		if (!$item->vote($how, User::get('id')))
 		{
 			$this->setError($item->getError());
 		}
@@ -330,16 +361,85 @@ class plgHubzeroComments extends \Hubzero\Plugin\Plugin
 		// Incoming
 		$comment = Request::getArray('comment', array(), 'post');
 
-		// Instantiate a new comment object
-		$row = \Plugins\Hubzero\Comments\Models\Comment::oneOrNew($comment['id'])->set($comment);
+		// Instantiate a comment object
+		$cid = isset($comment['id']) ? (int) $comment['id'] : 0;
+		$row = \Plugins\Hubzero\Comments\Models\Comment::oneOrNew($cid);
 
-		if ($row->get('id') && !$this->params->get('access-edit-comment'))
+		$__isNew = $row->isNew();
+
+		if (!$__isNew)
 		{
-			App::redirect(
-				Route::url('index.php?option=com_users&view=login&return=' . base64_encode($this->url)),
-				Lang::txt('PLG_HUBZERO_COMMENTS_NOTAUTH'),
-				'warning'
-			);
+			// The comment has to belong to the item this plugin instance is
+			// serving, exactly as _delete() requires. oneOrNew() resolves any row
+			// of #__item_comments, and access-edit-comment is set for EVERY
+			// logged-in user straight from the comments_editable parameter with
+			// no per-row test in _authorize() -- so without this, one enabled
+			// comments plugin let any member edit any comment on the hub.
+			if ((string) $row->get('item_type') !== (string) $this->obj_type
+			 || (int) $row->get('item_id') !== (int) $this->obj_id)
+			{
+				App::redirect($this->url);
+			}
+
+			if (!$this->params->get('access-edit-comment')
+			 || ($row->get('created_by') != User::get('id') && !$this->params->get('access-admin-comment') && !$this->params->get('access-manage-comment')))
+			{
+				App::redirect(
+					Route::url('index.php?option=com_users&view=login&return=' . base64_encode($this->url)),
+					Lang::txt('PLG_HUBZERO_COMMENTS_NOTAUTH'),
+					'warning'
+				);
+			}
+
+		}
+
+		// Only what the form offers the submitter is bound: the text, the
+		// anonymous flag and, for a new comment, its parent. Everything else in
+		// comment[] -- item_type, item_id, created_by, created, state, access,
+		// positive, negative, rating, notify -- is a real column, so binding the
+		// whole array let a poster fabricate vote counts, hide a reply behind a
+		// higher access level, or clear the STATE_FLAGGED that "report abuse"
+		// sets on their own comment.
+		$fields = array('content', 'anonymous');
+		if ($__isNew)
+		{
+			$fields[] = 'parent';
+		}
+		$row->set(array_intersect_key($comment, array_flip($fields)));
+
+		if ($__isNew)
+		{
+			// Only where the form is offered: access-create-comment is what
+			// comments_close withdraws, and the view shows the form only on it.
+			if (!$this->params->get('access-create-comment'))
+			{
+				App::redirect($this->url, Lang::txt('PLG_HUBZERO_COMMENTS_NOTAUTH'), 'warning');
+			}
+
+			// A reply's parent has to be a comment on this same item.
+			if ($row->get('parent'))
+			{
+				$__parent = \Plugins\Hubzero\Comments\Models\Comment::oneOrNew((int) $row->get('parent'));
+				if ($__parent->isNew()
+				 || (string) $__parent->get('item_type') !== (string) $this->obj_type
+				 || (int) $__parent->get('item_id') !== (int) $this->obj_id)
+				{
+					App::redirect($this->url);
+				}
+			}
+
+			// item_type/item_id are hidden inputs too, so a new comment could
+			// otherwise be attached to any item of any type -- including one with
+			// comments disabled or not visible to the caller. Pin both to the
+			// item this plugin instance is actually serving. This must NOT run on
+			// the edit path: there it would overwrite the stored item that the
+			// unset() above exists to preserve, relocating someone's comment onto
+			// whatever thread the request happened to be made from.
+			$row->set('item_type', $this->obj_type);
+			$row->set('item_id', $this->obj_id);
+			$row->set('created_by', User::get('id'));
+			$row->set('state', \Plugins\Hubzero\Comments\Models\Comment::STATE_PUBLISHED);
+			$row->set('access', 1);
 		}
 
 		// Store new content
@@ -404,6 +504,9 @@ class plgHubzeroComments extends \Hubzero\Plugin\Plugin
 			return $this->_login();
 		}
 
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Incoming
 		$id = Request::getInt('comment', 0);
 		if (!$id)
@@ -416,8 +519,25 @@ class plgHubzeroComments extends \Hubzero\Plugin\Plugin
 		// Initiate a blog comment object
 		$comment = \Plugins\Hubzero\Comments\Models\Comment::oneOrFail($id);
 
-		if (User::get('id') != $comment->get('created_by')
-		 && !$this->params->get('access-delete-comment'))
+		// The comment has to belong to the item this plugin instance is serving.
+		// oneOrFail() resolves any row of #__item_comments, and
+		// access-delete-comment is set for EVERY logged-in user straight from
+		// the comments_deletable parameter, with no
+		// per-row test in _authorize() -- so without this, one enabled
+		// comments plugin let any member delete any comment on the hub.
+		if ((string) $comment->get('item_type') !== (string) $this->obj_type
+		 || (int) $comment->get('item_id') !== (int) $this->obj_id)
+		{
+			App::redirect($this->url);
+		}
+
+		// The rule item.php renders the Delete link on: the author, where the
+		// item's comments are deletable, or a manager. access-delete-comment
+		// alone is every logged-in user (see above), so testing it OR authorship
+		// let any member delete anyone's comment on a deletable item.
+		if (!$this->params->get('access-manage-comment')
+		 && !$this->params->get('access-admin-comment')
+		 && !($this->params->get('access-delete-comment') && User::get('id') == $comment->get('created_by')))
 		{
 			App::redirect($this->url);
 		}
@@ -479,8 +599,8 @@ class plgHubzeroComments extends \Hubzero\Plugin\Plugin
 		// Start outputing results if any found
 		foreach ($comments as $row)
 		{
-			// URL link to article
-			$link = Route::url('index.php?option=' . $this->_option . '&section=' . $section->alias . '&category=' . $category->alias . '&alias=' . $entry->alias . '#c' . $row->id);
+			// URL link to the commented item
+			$link = Route::url($this->url . '#c' . $row->id);
 
 			$author = Lang::txt('JANONYMOUS');
 			if (!$row->get('anonymous'))
@@ -518,8 +638,8 @@ class plgHubzeroComments extends \Hubzero\Plugin\Plugin
 			// Check for any replies
 			foreach ($row->replies()->rows() as $reply)
 			{
-				// URL link to article
-				$link = Route::url('index.php?option=' . $this->_option . '&section=' . $section->alias . '&category=' . $category->alias . '&alias=' . $entry->alias . '#c' . $reply->id);
+				// URL link to the commented item
+				$link = Route::url($this->url . '#c' . $reply->id);
 
 				$author = Lang::txt('JANONYMOUS');
 				if (!$reply->anonymous)
@@ -558,7 +678,7 @@ class plgHubzeroComments extends \Hubzero\Plugin\Plugin
 				foreach ($reply->replies()->rows() as $response)
 				{
 					// URL link to article
-					$link = Route::url('index.php?option=' . $this->_option . '&section=' . $section->alias . '&category=' . $category->alias . '&alias=' . $entry->alias . '#c' . $response->id);
+					$link = Route::url($this->url . '#c' . $response->id);
 
 					$author = Lang::txt('JANONYMOUS');
 					if (!$response->anonymous)

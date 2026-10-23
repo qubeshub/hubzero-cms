@@ -55,19 +55,17 @@ jQuery(document).ready(function(jq){
 	});
 
 	$('#content')
-		.on('click', '.vote-button', function (e) {
-			if ($(this).attr('href')) {
-				e.preventDefault();
+		.on('click', 'button.vote-button', function (e) {
+			e.preventDefault();
 
-				var item = $(this);
+			var item = $(this);
 
-				$.get(item.attr('href').nohtml(), {}, function(data) {
-					if (data) {
-						item.closest('.voting').html(data);
-						$('.tooltip').hide();
-					}
-				});
-			}
+			$.post(item.attr('formaction').nohtml(), $(this.form).serialize(), function(data) {
+				if (data) {
+					item.closest('.voting').html(data);
+					$('.tooltip').hide();
+				}
+			});
 		})
 		.on('click', 'a.reply', function (e) {
 			e.preventDefault();

@@ -304,7 +304,33 @@ class plgCoursesPages extends \Hubzero\Plugin\Plugin
 
 		$page = Request::getArray('fields', array(), 'post');
 
-		$model = new \Components\Courses\Models\Page($page['id']);
+		$pageId    = isset($page['id']) ? (int) $page['id'] : 0;
+		$offering  = $this->view->offering;
+		$sectionId = (int) $offering->section()->get('id');
+
+		$model = new \Components\Courses\Models\Page($pageId);
+
+		// fields[id] resolves any course page on the hub, and the bind below
+		// then rewrites it. An existing page has to belong to this offering,
+		// and to this section when it is a section page; a new page is pinned
+		// to them rather than taking course/offering/section ids from the form.
+		if ($pageId)
+		{
+			if (!$model->get('id')
+			 || (int) $model->get('offering_id') !== (int) $offering->get('id')
+			 || ($model->get('section_id') && (int) $model->get('section_id') !== $sectionId))
+			{
+				App::abort(404, Lang::txt('PLG_COURSES_PAGES_ERROR_PAGE_NOT_FOUND'));
+			}
+
+			unset($page['course_id'], $page['offering_id'], $page['section_id']);
+		}
+		else
+		{
+			$page['course_id']   = (int) $offering->get('course_id');
+			$page['offering_id'] = (int) $offering->get('id');
+			$page['section_id']  = (isset($page['section_id']) && $page['section_id']) ? $sectionId : 0;
+		}
 
 		if (!$model->bind($page))
 		{
@@ -313,7 +339,7 @@ class plgCoursesPages extends \Hubzero\Plugin\Plugin
 		}
 
 		// Ensure section managers can only edit section pages
-		if (!$model->get('section_id') && !$this->view->offering->access('manage'))
+		if (!$model->get('section_id') && !$offering->access('manage'))
 		{
 			return $this->_list();
 		}
@@ -348,6 +374,9 @@ class plgCoursesPages extends \Hubzero\Plugin\Plugin
 		{
 			return $this->_list();
 		}
+
+		// Check for request forgeries
+		Request::checkToken();
 
 		$model = $this->view->offering->page(Request::getString('unit', ''));
 
@@ -390,6 +419,9 @@ class plgCoursesPages extends \Hubzero\Plugin\Plugin
 			echo json_encode(array('error' => Lang::txt('PLG_COURSES_PAGES_ERROR_LOGIN_NOTICE')));
 			exit();
 		}
+
+		// The uploader carries the form token on its action URL
+		Request::checkToken(['get', 'post']);
 
 		// Get media config
 		$mediaConfig = Component::params('com_media');
@@ -468,7 +500,7 @@ class plgCoursesPages extends \Hubzero\Plugin\Plugin
 		$filename = Filesystem::clean($filename);
 		$filename = str_replace(' ', '_', $filename);
 
-		$ext = $pathinfo['extension'];
+		$ext = isset($pathinfo['extension']) ? $pathinfo['extension'] : '';
 		while (file_exists($path . DS . $filename . '.' . $ext))
 		{
 			$filename .= rand(10, 99);
@@ -513,7 +545,9 @@ class plgCoursesPages extends \Hubzero\Plugin\Plugin
 			ob_clean();
 			header('Content-type: text/plain');
 			echo json_encode(array('error' => Lang::txt('File rejected because the anti-virus scan failed.')));
-			return;
+			// exit like every other branch: returning let the plugin go on to
+			// render its page layout (no $page set) and the uploader got a 500
+			exit();
 		}
 
 		ob_clean();
@@ -666,7 +700,16 @@ class plgCoursesPages extends \Hubzero\Plugin\Plugin
 			}
 			else
 			{
-				if ($section = Request::getInt('section_id', 0))
+				$section = Request::getInt('section_id', 0);
+
+				// A plain viewer only reaches the files of their own section
+				if ($section && !$this->view->offering->access('manage')
+				 && $section != $this->view->offering->section()->get('id'))
+				{
+					$section = 0;
+				}
+
+				if ($section)
 				{
 					$path .= $this->view->course->get('id') . DS . 'sections' . DS . $section . DS . 'pagefiles';
 				}
@@ -686,6 +729,9 @@ class plgCoursesPages extends \Hubzero\Plugin\Plugin
 	 */
 	public function _fileDelete()
 	{
+		// Check for request forgeries
+		Request::checkToken('get');
+
 		// Check if they're logged in
 		if (User::isGuest())
 		{
@@ -793,6 +839,12 @@ class plgCoursesPages extends \Hubzero\Plugin\Plugin
 	 */
 	public function _fileList()
 	{
+		// The file manager is part of the page editor, a section manager tool
+		if (!$this->view->offering->access('manage', 'section'))
+		{
+			return App::abort(403, Lang::txt('ALERTNOTAUTH'));
+		}
+
 		$page = new \Components\Courses\Models\Page(Request::getInt('page', 0));
 		if (!$page->exists())
 		{

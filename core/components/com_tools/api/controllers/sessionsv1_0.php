@@ -179,17 +179,21 @@ class Sessionsv1_0 extends ApiController
 		}
 
 
-                $hzt = \Components\Tools\Models\Tool::getInstance($tool);
-                $hztv_dev = $hzt->getRevision('development');
-                $hztv_current = $hzt->getRevision('current');
+		$hzt = \Components\Tools\Models\Tool::getInstance($tool);
+		if (!$hzt)
+		{
+			throw new Exception(Lang::txt('No Tool Found Matching the Alias: "%s"', $tool), 404);
+		}
+		$hztv_dev = $hzt->getRevision('development');
+		$hztv_current = $hzt->getRevision('current');
 		if ($version == 'current')
 		{
-			$version = $hztv_current->revision;
+			$version = $hztv_current ? $hztv_current->revision : null;
 		}
 		else if ($version == 'dev')
-                {
-                        $version = $hztv_dev->revision;
-                }
+		{
+			$version = $hztv_dev ? $hztv_dev->revision : null;
+		}
 
 		//poll database for tool matching alias
 		if ($version !== 0)
@@ -282,7 +286,7 @@ class Sessionsv1_0 extends ApiController
 
 		$object->tool->hostreq = $hostreq;
 
-		$hzt = new \Components\Tools\Tables\Tool($this->database);
+		$hzt = new \Components\Tools\Tables\Tool($database);
 		$developers = $hzt->getToolDevelopers($tool_info->id);
 		$object->tool->developers = $developers;
 
@@ -482,7 +486,14 @@ class Sessionsv1_0 extends ApiController
 	 */
 	public function rapptureXMLTask()
 	{
-		$tool = preg_replace('/[^-_a-z0-9]/', '', explode('/', $_SERVER['SCRIPT_URL'])[3]);
+		// SCRIPT_URL is an Apache mod_rewrite variable (undefined elsewhere, a
+		// 500); the router now passes the tool segment as "tool"
+		$tool = Request::getCmd('tool', '');
+		if ($tool === '' && isset($_SERVER['SCRIPT_URL']))
+		{
+			$tool = explode('/', $_SERVER['SCRIPT_URL'])[3] ?? '';
+		}
+		$tool = preg_replace('/[^-_a-z0-9]/', '', $tool);
 		$path = DS . 'apps' . DS . $tool . DS . 'current' . DS . 'rappture' . DS;
 
 		if (!file_exists($path))
@@ -620,8 +631,8 @@ class Sessionsv1_0 extends ApiController
 		//check to make sure we have an app to invoke
 		if (!$app->name)
 		{
-			$this->errorMessage(400, 'You Must Supply a Valid Tool Alias to Invoke.');
-			return;
+			// (errorMessage() is not a method any API controller has: this was a fatal)
+			throw new Exception(Lang::txt('You Must Supply a Valid Tool Alias to Invoke.'), 400);
 		}
 
 		//include needed tool libraries
@@ -707,7 +718,7 @@ class Sessionsv1_0 extends ApiController
 		if (!$preferences || !$preferences->id)
 		{
 			include_once dirname(dirname(__DIR__)) . DS . 'tables' . DS . 'sessionclass.php';
-			$scls = new \Components\Tools\Tables\SessionClass($this->database);
+			$scls = new \Components\Tools\Tables\SessionClass($database);
 			$default = $scls->find('one', array('alias' => 'default'));
 			$preferences->user_id  = $result->get('uidNumber');
 			$preferences->class_id = $default->id;
@@ -756,7 +767,7 @@ class Sessionsv1_0 extends ApiController
 		if ($appcount > 1)
 		{
 			// We do, so let's append a timestamp
-			$app->caption .= ' (' . Date::format("g:i a") . ')';
+			$app->caption .= ' (' . Date::of('now')->format("g:i a") . ')';
 		}
 
 		// Save the changed caption
@@ -1236,7 +1247,9 @@ class Sessionsv1_0 extends ApiController
 		$app->ip   = $ip;
 
 		//load the session
-		$ms = new \Components\Tools\Models\Middleware\Session($mwdb, $result->get('username'));
+		// the middleware Session *model* has no loadSession() (a 500 on every
+		// call); the table does, scoped to the caller's own view permissions
+		$ms = new \Components\Tools\Tables\Session($mwdb);
 		$row = $ms->loadSession($app->sess);
 
 		//if we didnt find a session
@@ -1616,7 +1629,6 @@ class Sessionsv1_0 extends ApiController
 		$mwdb = \Components\Tools\Helpers\Utils::getMWDBO();
 
 		// get any request vars
-		$username   = Request::getString('username');
 		$sessionid  = Request::getString('sessionid', '');
 		$private_ip = Request::getString('private_ip');
 		$public_ip  = Request::getString('public_ip', Request::ip());
@@ -1627,9 +1639,19 @@ class Sessionsv1_0 extends ApiController
 			throw new Exception(Lang::txt('No session ID Specified.'), 401);
 		}
 
-		// load session
+		// load session -- loadSession() returns it only to a user who may view
+		// it, and the share is added for the caller, never a posted username:
+		// both used to come from the request, so any member could have a file
+		// share attached to someone else's session through the sudo helper
 		$ms = new \Components\Tools\Tables\Session($mwdb);
 		$sess = $ms->loadSession($sessionid);
+
+		if (!$sess)
+		{
+			throw new Exception(Lang::txt('Session not found.'), 404);
+		}
+
+		$username = User::get('username');
 
 		$command = "/usr/bin/sudo /usr/bin/hzappstream --remote 128.46.19.124 fileshare add " .
 			escapeshellarg($username) . " " .
@@ -1677,7 +1699,8 @@ class Sessionsv1_0 extends ApiController
 				'smb_username' => 'smb-' . $sessionid
 			);
 
-			$object['smb_password'] = $joutput->smb_password;
+			// no JSON back (helper missing or failed): report no password rather than a 500
+			$object['smb_password'] = (is_object($joutput) && isset($joutput->smb_password)) ? $joutput->smb_password : null;
 		}
 		else
 		{

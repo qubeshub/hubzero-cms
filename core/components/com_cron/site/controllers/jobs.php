@@ -76,10 +76,13 @@ class Jobs extends SiteController
 
 		$now = Date::toSql();
 
-		// Get the list of jobs that should be run
+		// Get the list of jobs that should be run. An enabled job with no
+		// next_run yet (seed migrations insert NULL) is due now; its first run
+		// schedules the next one from the recurrence.
 		$results = Job::all()
 			->whereEquals('state', 1)
-			->where('next_run', '<=', Date::toSql())
+			->where('next_run', 'IS', null, 'and', 1)->orWhere('next_run', '<=', $now, 1)
+			->resetDepth()
 			->where('publish_up', 'IS', null, 'and', 1)->orWhere('publish_up', '<=', $now, 1)
 			->resetDepth()
 			->where('publish_down', 'IS', null, 'and', 1)->orWhere('publish_down', '>', $now, 1)
@@ -95,35 +98,7 @@ class Jobs extends SiteController
 		// (the job is effectively wedged until then / a worker recycle). Track the
 		// in-flight job and release it on shutdown so a fatal can't wedge it;
 		// cleared in the finally on normal completion (then this is a no-op).
-		$inFlight = new \stdClass;
-		$inFlight->job = null;
-
-		register_shutdown_function(function () use ($inFlight)
-		{
-			if (!$inFlight->job)
-			{
-				return;
-			}
-
-			$next = null;
-			try
-			{
-				$next = $inFlight->job->nextRun();
-			}
-			catch (\Throwable $e)
-			{
-				// leave next_run as-is if the recurrence can't be parsed
-			}
-
-			try
-			{
-				$inFlight->job->release(gmdate('Y-m-d H:i:s'), $next);
-			}
-			catch (\Throwable $e)
-			{
-				// best-effort: nothing more can be done at shutdown
-			}
-		});
+		$inFlight = Job::releaseOnShutdown();
 
 		foreach ($results as $job)
 		{

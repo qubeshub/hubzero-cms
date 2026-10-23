@@ -420,7 +420,7 @@ HUB.Plugins.CoursesForum = {
 				});
 			})
 			// Add confirm dialog to delete links
-			.on('click', 'a.delete', function (e) {
+			.on('click', 'button.delete', function (e) {
 				e.preventDefault();
 
 				var res = confirm('Are you sure you wish to delete this item?');
@@ -428,9 +428,9 @@ HUB.Plugins.CoursesForum = {
 					var srch = container.find('input.search').val();
 
 					if (_DEBUG) {
-						window.console && console.log('called:' + $(this).attr('href').nohtml() + (srch ? '&search=' + srch : ''));
+						window.console && console.log('called:' + $(this).attr('formaction').nohtml() + (srch ? '&search=' + srch : ''));
 					}
-					$.getJSON($(this).attr('href').nohtml() + (srch ? '&search=' + srch : ''), {}, function(data){
+					$.post($(this).attr('formaction').nohtml() + (srch ? '&search=' + srch : ''), $(this.form).serialize(), function(data){
 						if (data.thread.total) {
 							header.text(data.thread.total + ' comments');
 
@@ -468,19 +468,19 @@ HUB.Plugins.CoursesForum = {
 							// Fade in the comment form
 							cfrm.fadeIn();
 						}
-					});
+					}, 'json');
 				}
 			})
-			.on('click', 'a.sticky-toggle', function (e) {
+			.on('click', 'button.sticky-toggle', function (e) {
 				e.preventDefault();
 
 				var el = $(this),
 					par = el.parent().parent();
 
 				if (_DEBUG) {
-					window.console && console.log('called:' + el.attr('href').nohtml());
+					window.console && console.log('called:' + el.attr('formaction').nohtml());
 				}
-				$.getJSON(el.attr('href').nohtml(), {}, function(data){
+				$.post(el.attr('formaction').nohtml(), $(el[0].form).serialize(), function(data){
 					par.toggleClass('stuck');
 					$('#thread' + par.attr('data-thread')).toggleClass('stuck');
 					if ($('#mine' + par.attr('data-thread')).length) {
@@ -489,14 +489,14 @@ HUB.Plugins.CoursesForum = {
 
 					if (par.hasClass('stuck')) {
 						el
-							.attr('href', el.attr('data-unstick-href'))
+							.attr('formaction', el.attr('data-unstick-href'))
 							.text(el.attr('data-unstick-txt'));
 					} else {
 						el
-							.attr('href', el.attr('data-stick-href'))
+							.attr('formaction', el.attr('data-stick-href'))
 							.text(el.attr('data-stick-txt'));
 					}
-				});
+				}, 'json');
 			});
 
 		thread

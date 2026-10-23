@@ -178,12 +178,12 @@ class Unit extends Table
 		$query  = "SELECT DISTINCT cu.*, sd.publish_up, sd.publish_down, sd.section_id";
 		$query .= $this->_buildQuery($filters);
 
-		if (!empty($filters['start']) && !empty($filters['limit']))
-		{
-			$query .= " LIMIT " . $filters['start'] . "," . $filters['limit'];
-		}
-
 		$query .= " ORDER BY cu.ordering";
+
+		if (isset($filters['limit']) && (int) $filters['limit'] > 0)
+		{
+			$query .= " LIMIT " . (int) (isset($filters['start']) ? $filters['start'] : 0) . "," . (int) $filters['limit'];
+		}
 
 		$this->_db->setQuery($query);
 		return $this->_db->loadObjectList();

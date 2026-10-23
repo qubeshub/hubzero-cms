@@ -159,11 +159,17 @@ class plgProjectsFeed extends \Hubzero\Plugin\Plugin
 				case 'save':
 					$arr['html'] = $this->_save();
 					break;
+				// comments are activity entries: _save()/_delete() handle them
+				// (_saveComment()/_deleteComment() were never defined). The
+				// comment form and delete link name the comment 'cid'; the
+				// handlers read the entry as 'activity'.
 				case 'savecomment':
-					$arr['html'] = $this->_saveComment();
+					Request::setVar('activity', Request::getInt('cid', 0));
+					$arr['html'] = $this->_save();
 					break;
 				case 'deletecomment':
-					$arr['html'] = $this->_deleteComment();
+					Request::setVar('activity', Request::getInt('cid', 0));
+					$arr['html'] = $this->_delete();
 					break;
 				case 'update':
 					$arr['html'] = $this->updateFeed();
@@ -476,6 +482,15 @@ class plgProjectsFeed extends \Hubzero\Plugin\Plugin
 	 */
 	protected function _delete()
 	{
+		// Require POST to prevent accidental deletion by crawlers
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('PLG_PROJECTS_BLOG_ERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Check permission
 		if (!$this->model->access('content'))
 		{
@@ -492,7 +507,10 @@ class plgProjectsFeed extends \Hubzero\Plugin\Plugin
 			throw new Exception(Lang::txt('ALERTNOTAUTH'), 403);
 		}
 
-		if ($this->model->access('content') || $entry->get('created_by') == User::get('id'))
+		// the author or a project manager (the same rule the feed offers the
+		// action under and _save() enforces; access('content') is already
+		// required above, so testing it again let any member remove anything)
+		if ($this->model->access('manager') || $entry->get('created_by') == User::get('id'))
 		{
 			foreach ($entry->recipients as $recipient)
 			{

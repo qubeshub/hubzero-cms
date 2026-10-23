@@ -142,7 +142,9 @@ class Applications extends AdminController
 		$team   = Request::getString('team', '', 'post');
 
 		// Bind the incoming data to our mdoel
-		$row = Application::oneOrNew($fields['id'])->set($fields);
+		$row = Application::oneOrNew(isset($fields['id']) ? $fields['id'] : 0)->set($fields);
+
+		$isNew = $row->isNew();
 
 		// Validate and save the data
 		if (!$row->save())
@@ -169,11 +171,11 @@ class Applications extends AdminController
 				else
 				{
 					// load profile by username
-					$profile = \Hubzero\User\User::oneOrNew($t);
+					$profile = \Hubzero\User\User::oneByUsername($t);
 				}
 
 				// swap usernames for uidnumbers
-				if ($profile)
+				if ($profile && $profile->get('id'))
 				{
 					$team[$k] = $profile->get('id');
 				}
@@ -185,8 +187,10 @@ class Applications extends AdminController
 		}
 
 		// add creator if new
-		// will only ever get added once
-		$team[] = User::get('id');
+		if ($isNew)
+		{
+			$team[] = User::get('id');
+		}
 
 		// get current team
 		$currentTeam = $row->team()->rows();

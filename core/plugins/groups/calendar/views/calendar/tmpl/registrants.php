@@ -26,12 +26,10 @@ $month = date("m", strtotime($this->event->publish_up));
 
 <div class="event-title-bar">
 	<span class="event-title">
-		<?php echo $this->event->title; ?>
+		<?php echo $this->escape($this->event->title); ?>
 	</span>
 	<?php if ($this->user->get('id') == $this->event->created_by || $this->authorized == 'manager') : ?>
-		<a class="delete" href="<?php echo Route::url('index.php?option='.$this->option.'&cn='.$this->group->get('cn').'&active=calendar&action=delete&event_id='.$this->event->id); ?>">
-			Delete
-		</a>
+		<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option='.$this->option.'&cn='.$this->group->get('cn').'&active=calendar&action=delete&event_id='.$this->event->id); ?>" class="delete">Delete</button>
 		<a class="edit" href="<?php echo Route::url('index.php?option='.$this->option.'&cn='.$this->group->get('cn').'&active=calendar&action=edit&event_id='.$this->event->id); ?>">
 			Edit
 		</a>
@@ -81,8 +79,8 @@ $month = date("m", strtotime($this->event->publish_up));
 		<?php if (count($this->registrants) > 0) : ?>
 			<?php foreach ($this->registrants as $registrant) : ?>
 				<tr>
-					<td><?php echo $registrant->last_name . ', ' . $registrant->first_name; ?></td>
-					<td><?php echo $registrant->email; ?></td>
+					<td><?php echo $this->escape($registrant->last_name) . ', ' . $this->escape($registrant->first_name); ?></td>
+					<td><?php echo $this->escape($registrant->email); ?></td>
 					<td><?php echo Date::of($registrant->registered)->toLocal('l, F d, Y @ g:i a'); ?></td>
 				</tr>
 			<?php endforeach; ?>

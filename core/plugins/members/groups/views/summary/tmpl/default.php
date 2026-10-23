@@ -95,20 +95,20 @@ $this->css()
 				{
 					$status = 'member';
 
-					$options = '<a class="cancel tooltips" href="' . Route::url('index.php?option=' . $this->option . '&cn=' . $group->cn . '&task=cancel') .'" title="' . Lang::txt('PLG_MEMBERS_GROUPS_ACTION_CANCEL_TITLE') . '">'.Lang::txt('PLG_MEMBERS_GROUPS_ACTION_CANCEL').'</a>';
+					$options = '<button type="submit" form="hz-post-action" formaction="' . Route::url('index.php?option=' . $this->option . '&cn=' . $group->cn . '&task=cancel') .'" class="cancel tooltips" title="' . Lang::txt('PLG_MEMBERS_GROUPS_ACTION_CANCEL_TITLE') . '">'.Lang::txt('PLG_MEMBERS_GROUPS_ACTION_CANCEL').'</button>';
 				}
 				else if ($group->registered && !$group->regconfirmed)
 				{
 					$status = 'pending';
 
-					$options = '<a class="cancel tooltips" href="' . Route::url('index.php?option=' . $this->option . '&cn=' . $group->cn . '&task=cancel') .'" title="' . Lang::txt('PLG_MEMBERS_GROUPS_ACTION_CANCEL_TITLE') . '">'.Lang::txt('PLG_MEMBERS_GROUPS_ACTION_CANCEL').'</a>';
+					$options = '<button type="submit" form="hz-post-action" formaction="' . Route::url('index.php?option=' . $this->option . '&cn=' . $group->cn . '&task=cancel') .'" class="cancel tooltips" title="' . Lang::txt('PLG_MEMBERS_GROUPS_ACTION_CANCEL_TITLE') . '">'.Lang::txt('PLG_MEMBERS_GROUPS_ACTION_CANCEL').'</button>';
 				}
 				else if (!$group->registered && $group->regconfirmed)
 				{
 					$status = 'invitee';
 
 					//$options  = '<a class="accept tooltips" href="' . Route::url('index.php?option=' . $this->option . '&cn=' . $group->cn . '&task=accept') .'" title="' . Lang::txt('PLG_MEMBERS_GROUPS_ACTION_ACCEPT_TITLE') . '">'.Lang::txt('PLG_MEMBERS_GROUPS_ACTION_ACCEPT').'</a>';
-					$options .= ' <a class="cancel tooltips" href="' . Route::url('index.php?option=' . $this->option . '&cn=' . $group->cn . '&task=cancel') .'" title="' . Lang::txt('PLG_MEMBERS_GROUPS_ACTION_DECLINE_TITLE') . '">'.Lang::txt('PLG_MEMBERS_GROUPS_ACTION_DECLINE').'</a>';
+					$options .= ' <button type="submit" form="hz-post-action" formaction="' . Route::url('index.php?option=' . $this->option . '&cn=' . $group->cn . '&task=cancel') .'" class="cancel tooltips" title="' . Lang::txt('PLG_MEMBERS_GROUPS_ACTION_DECLINE_TITLE') . '">'.Lang::txt('PLG_MEMBERS_GROUPS_ACTION_DECLINE').'</button>';
 				}
 
 				// do we have a new unpublished group
@@ -192,7 +192,7 @@ $this->css()
 								<?php if ($group->registered && !$group->regconfirmed) : ?>
 									<?php echo Lang::txt('Membership request requires approval.'); ?>
 								<?php elseif (!$group->registered && $group->regconfirmed) : ?>
-									<a class="btn btn-success accept tooltips" href="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $group->cn . '&task=accept'); ?>" title="<?php echo Lang::txt('PLG_MEMBERS_GROUPS_ACTION_ACCEPT_TITLE'); ?>"><?php echo Lang::txt('PLG_MEMBERS_GROUPS_ACTION_ACCEPT'); ?></a>
+									<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=' . $this->option . '&cn=' . $group->cn . '&task=accept'); ?>" class="btn btn-success accept tooltips" title="<?php echo Lang::txt('PLG_MEMBERS_GROUPS_ACTION_ACCEPT_TITLE'); ?>"><?php echo Lang::txt('PLG_MEMBERS_GROUPS_ACTION_ACCEPT'); ?></button>
 								<?php else : ?>
 									<div class="grid">
 										<div class="col span6">

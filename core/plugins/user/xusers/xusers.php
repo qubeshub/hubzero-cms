@@ -84,7 +84,12 @@ class plgUserXusers extends \Hubzero\Plugin\Plugin
 				throw new Exception(Lang::txt('E_HUBZERO_USER_PLUGIN_MISCONFIGURED'), 500);
 			}
 
-			throw new Exception(Lang::txt('E_HUBZERO_USER_PLUGIN_FAILED'), 500);
+			// The plugin order is fine, so an earlier user plugin refused the
+			// login (no linked account, blocked, no backend access) and has
+			// already queued its message. Fail the login rather than 500.
+			Log::auth('[' . (isset($user['username']) ? $user['username'] : '') . '] ' . $_SERVER['REMOTE_ADDR'] . ' login refused by an earlier user plugin');
+
+			return false;
 		}
 
 		// log login to auth log
@@ -313,41 +318,7 @@ class plgUserXusers extends \Hubzero\Plugin\Plugin
 
 			if (empty($hubHomeDir))
 			{
-				// try to deduce a viable home directory based on sitename or live_site
-				$sitename = strtolower(Config::get('sitename'));
-				$sitename = preg_replace('/^http[s]{0,1}:\/\//', '', $sitename, 1);
-				$sitename = trim($sitename, '/ ');
-				$sitename_e = explode('.', $sitename, 2);
-				if (isset($sitename_e[1]))
-				{
-					$sitename = $sitename_e[0];
-				}
-				if (!preg_match("/^[a-zA-Z]+[\-_0-9a-zA-Z\.]+$/i", $sitename))
-				{
-					$sitename = '';
-				}
-				if (empty($sitename))
-				{
-					$sitename = strtolower(Request::base());
-					$sitename = preg_replace('/^http[s]{0,1}:\/\//', '', $sitename, 1);
-					$sitename = trim($sitename, '/ ');
-					$sitename_e = explode('.', $sitename, 2);
-					if (isset($sitename_e[1]))
-					{
-						$sitename = $sitename_e[0];
-					}
-					if (!preg_match("/^[a-zA-Z]+[\-_0-9a-zA-Z\.]+$/i", $sitename))
-					{
-						$sitename = '';
-					}
-				}
-
-				$hubHomeDir = DS . 'home';
-
-				if (!empty($sitename))
-				{
-					$hubHomeDir .= DS . $sitename;
-				}
+				$hubHomeDir = \Hubzero\User\User::hubHomeDirectory();
 
 				if (!empty($hubHomeDir))
 				{

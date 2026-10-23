@@ -697,7 +697,7 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 		$status = new \Components\Publications\Models\Status();
 
 		// If publication not found, raise error
-		if (!$pub->exists() || !$publication->belongsToProject($this->model->get('id')))
+		if (!$pub->exists() || !$pub->belongsToProject($this->model->get('id')))
 		{
 			return json_encode($status);
 		}
@@ -737,6 +737,12 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 		$json    = Request::getInt('json', 0);
 		$move    = Request::getString('move', ''); // draft flow?
 		$back    = Request::getString('backUrl', Request::getString('HTTP_REFERER', null, 'server'));
+
+		// Only return to a page on this hub
+		if (!$back || !\Hubzero\Utility\Uri::isInternal($back))
+		{
+			$back = Route::url($this->model->link('publications'));
+		}
 		$new     = false;
 		$props   = Request::getString('p', '');
 		$parts   = explode('-', $props);
@@ -746,6 +752,12 @@ class plgProjectsPublications extends \Hubzero\Plugin\Plugin
 		{
 			throw new Exception(Lang::txt('ALERTNOTAUTH'), 403);
 			return;
+		}
+
+		// Check for request forgeries (the remove buttons post the token)
+		if ($this->_task == 'deleteitem')
+		{
+			Request::checkToken();
 		}
 
 		// Parse props for curation

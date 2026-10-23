@@ -12,6 +12,15 @@
 
 */
 
+        .com_blog .subject h3 {
+                font-size: 115%;
+                text-transform: uppercase;
+                letter-spacing: 0.15em;
+                border-bottom: 1px solid #ccc;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+                padding: 0 0 0.618em 0;
+        }
+
 /* Entries listing */
 	.blog-entries article {
 		position: relative;
@@ -74,11 +83,13 @@
 		padding: 0;
 		display: inline;
 	}
-	div.entry dl.entry-meta dd.entry-options a {
+	div.entry dl.entry-meta dd.entry-options a,
+	div.entry dl.entry-meta dd.entry-options button {
 		margin-left: 1.5em;
 	}
 	div.entry dl.entry-meta dd.entry-options a.edit,
-	div.entry dl.entry-meta dd.entry-options a.delete {
+	div.entry dl.entry-meta dd.entry-options a.delete,
+	div.entry dl.entry-meta dd.entry-options button.delete {
 		display: block;
 		width: 16px;
 		height: 16px;
@@ -91,11 +102,13 @@
 		position: absolute;
 	}
 	div.entry dl.entry-meta dd.entry-options a:before,
-	div.entry dl.entry-meta dd.entry-options a:before {
+	div.entry dl.entry-meta dd.entry-options a:before,
+	div.entry dl.entry-meta dd.entry-options button.delete:before {
 		margin-right: 1em;
 		font-weight: normal;
 	}
-	div.entry dl.entry-meta dd.entry-options a.delete {
+	div.entry dl.entry-meta dd.entry-options a.delete,
+	div.entry dl.entry-meta dd.entry-options button.delete {
 		right: 2em;
 	}
 	div.entry .entry-content {

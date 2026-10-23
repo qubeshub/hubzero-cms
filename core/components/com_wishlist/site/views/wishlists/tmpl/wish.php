@@ -33,11 +33,11 @@ $this->css()
 	}
 
 	// && ($this->wish->get('admin')==2 or $this->wish->get('admin')==1)
-	$assigned = ($this->wish->get('assigned')) ? Lang::txt('COM_WISHLIST_WISH_ASSIGNED_TO', '<a href="'.Route::url('index.php?option='.$this->option.'&task=wish&category='.$this->wishlist->get('category').'&rid='.$this->wishlist->get('referenceid') . '&wishid='.$this->wish->get('id')).'?filterby='.$this->filters['filterby'].'&sortby='.$this->filters['sortby'].'&tags='.$this->filters['tag'].'&action=editplan#plan">'.$this->wish->assignee->get('name').'</a>') : '';
+	$assigned = ($this->wish->get('assigned')) ? Lang::txt('COM_WISHLIST_WISH_ASSIGNED_TO', '<a href="'.Route::url('index.php?option='.$this->option.'&task=wish&category='.$this->wishlist->get('category').'&rid='.$this->wishlist->get('referenceid') . '&wishid='.$this->wish->get('id')).'?filterby='.urlencode($this->filters['filterby']).'&sortby='.urlencode($this->filters['sortby']).'&tags='.urlencode($this->filters['tag']).'&action=editplan#plan">'.$this->escape(stripslashes($this->wish->assignee->get('name'))).'</a>') : '';
 
 	if (!$assigned && ($this->wish->get('admin')==2 or $this->wish->get('admin')==1) && $this->wish->get('status')==0)
 	{
-		$assigned = '<a href="' . Route::url('index.php?option='.$this->option.'&task=wish&category='.$this->wishlist->get('category').'&rid='.$this->wishlist->get('referenceid') . '&wishid='.$this->wish->get('id')).'?filterby='.$this->filters['filterby'].'&sortby='.$this->filters['sortby'].'&tags='.$this->filters['tag'].'&action=editplan#plan">'.Lang::txt('unassigned').'</a>';
+		$assigned = '<a href="' . Route::url('index.php?option='.$this->option.'&task=wish&category='.$this->wishlist->get('category').'&rid='.$this->wishlist->get('referenceid') . '&wishid='.$this->wish->get('id')).'?filterby='.urlencode($this->filters['filterby']).'&sortby='.urlencode($this->filters['sortby']).'&tags='.urlencode($this->filters['tag']).'&action=editplan#plan">'.Lang::txt('unassigned').'</a>';
 	}
 
 	$this->wish->set('status', ($this->wish->get('accepted')==1 && $this->wish->get('status')==0 ? 6 : $this->wish->get('status')));
@@ -47,7 +47,7 @@ $this->css()
 	$this->wish->set('negative', $this->wish->votes()->whereEquals('helpful', 'no')->total());
 ?>
 	<header id="content-header">
-		<h2><?php echo $this->title . ': ' . Lang::txt('COM_WISHLIST_WISH') . ' #' . $this->wish->get('id'); ?></h2>
+		<h2><?php echo $this->escape($this->title) . ': ' . Lang::txt('COM_WISHLIST_WISH') . ' #' . (int) $this->wish->get('id'); ?></h2>
 
 		<?php /*<div id="content-header-extra">
 			<ul id="useroptions">
@@ -117,7 +117,7 @@ $this->css()
 				</p><!-- / .wish-member-photo -->
 
 				<div class="entry-content">
-					<p class="entry-voting voting" id="wish_<?php echo $this->wish->get('id'); ?>">
+					<div class="entry-voting voting" id="wish_<?php echo $this->wish->get('id'); ?>">
 						<?php
 						$this->view('_vote')
 						     ->set('option', $this->option)
@@ -129,7 +129,7 @@ $this->css()
 						     ->set('filters', $this->filters)
 						     ->display();
 						?>
-					</p><!-- / .wish-voting -->
+					</div><!-- / .wish-voting -->
 
 					<p class="entry-title">
 						<strong><?php echo $name; ?></strong>
@@ -154,7 +154,7 @@ $this->css()
 					<?php if ($tags = $this->wish->tags('string')) { ?>
 						<div class="entry-tags">
 							<p>Tags:</p>
-							<?php echo $tags; ?>
+							<?php echo $this->escape($tags); ?>
 						</div><!-- / .wish-tags -->
 					<?php } ?>
 				</div><!-- / .wish-content -->
@@ -385,19 +385,16 @@ $this->css()
 			<?php if ($this->wish->get('action') == 'delete') { ?>
 				<div class="warning" id="action">
 					<h4><?php echo Lang::txt('COM_WISHLIST_ARE_YOU_SURE_DELETE_WISH'); ?></h4>
-					<p>
+					<div class="wish-delete-options">
 						<span class="say_yes">
-							<form action="<?php echo Route::url($this->wish->link('delete')); ?>" method="post" class="inline-form">
-								<?php echo Html::input('token'); ?>
-								<button type="submit" class="btn btn-danger"><?php echo Lang::txt('COM_WISHLIST_YES'); ?></button>
-							</form>
+							<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($this->wish->link('delete')); ?>" class="btn btn-danger"><?php echo Lang::txt('COM_WISHLIST_YES'); ?></button>
 						</span>
 						<span class="say_no">
 							<a class="btn btn-secondary" href="<?php echo Route::url($this->wish->link()); ?>">
 								<?php echo Lang::txt('COM_WISHLIST_NO'); ?>
 							</a>
 						</span>
-					</p>
+					</div>
 				</div><!-- / .error -->
 			<?php } ?>
 
@@ -498,6 +495,7 @@ $this->css()
 									</strong>
 								</p>
 
+								<?php echo Html::input('token'); ?>
 								<input type="hidden" name="task" value="addbonus" />
 								<input type="hidden" name="wishlist" id="wishlist" value="<?php echo $this->escape($this->wishlist->get('id')); ?>" />
 								<input type="hidden" name="wish" id="wish" value="<?php echo $this->escape($this->wish->get('id')); ?>" />
@@ -541,6 +539,7 @@ $this->css()
 							<fieldset>
 								<input type="hidden" name="option" value="<?php echo $this->option; ?>" />
 								<input type="hidden"  name="task" value="movewish" />
+								<?php echo Html::input('token'); ?>
 								<input type="hidden" id="wishlist" name="wishlist" value="<?php echo $this->wishlist->get('id'); ?>" />
 								<input type="hidden" id="wish" name="wish" value="<?php echo $this->wish->get('id'); ?>" />
 
@@ -633,7 +632,7 @@ $this->css()
 				</p>
 				<?php if ($this->wishlist->access('manage')) { ?>
 					<p class="note">
-						<?php echo $this->wish->status('note'); ?>
+						<?php echo $this->escape($this->wish->status('note')); ?>
 					</p>
 				<?php } ?>
 			</div><!-- / .wish-status -->
@@ -878,7 +877,7 @@ $this->css()
 					<?php } ?>
 						<div class="planbody">
 							<p class="plannote">
-								<?php echo Lang::txt('COM_WISHLIST_PLAN_LAST_EDIT').' '.$this->wish->plan->created('date').' at '.$this->wish->plan->created('time').' '.Lang::txt('COM_WISHLIST_BY').' '.$this->wish->plan->creator->get('name');?>
+								<?php echo Lang::txt('COM_WISHLIST_PLAN_LAST_EDIT').' '.$this->wish->plan->created('date').' at '.$this->wish->plan->created('time').' '.Lang::txt('COM_WISHLIST_BY').' '.$this->escape($this->wish->plan->creator->get('name'));?>
 							</p>
 							<?php echo $this->wish->plan->content; ?>
 						</div>

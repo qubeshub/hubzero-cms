@@ -128,6 +128,11 @@ class Preferences extends Table
 		}
 		if (isset($filters['search']) && isset($filters['search_field']))
 		{
+			// Only the two columns the search form offers
+			if (!in_array($filters['search_field'], array('username', 'name')))
+			{
+				$filters['search_field'] = 'name';
+			}
 			$where[] = $this->_db->quoteName($filters['search_field']) . ' LIKE ' . $this->_db->quote('%'.$filters['search'].'%');
 		}
 		if (isset($filters['class_alias']) && is_string($filters['class_alias']) && strlen($filters['class_alias']) > 0)
@@ -220,7 +225,7 @@ class Preferences extends Table
 				}
 
 				$query  = "SELECT " . implode(', ', $select) . " " . $this->buildQuery($filters);
-				$query .= " ORDER BY " . $filters['sort'] . " " . $filters['sort_Dir'];
+				$query .= " ORDER BY " . (preg_replace('/[^a-zA-Z0-9_,. ]/', '', (string) $filters['sort']) ?: '1') . " " . (strtoupper((string) $filters['sort_Dir']) === 'ASC' ? 'ASC' : 'DESC');
 
 				if (isset($filters['limit']) && $filters['limit'] > 0)
 				{

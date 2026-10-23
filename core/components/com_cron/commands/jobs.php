@@ -54,7 +54,9 @@ class Jobs extends Base implements CommandInterface
 			// Get the list of jobs that should be run
 			$jobs = Job::all()
 				->whereEquals('state', Job::STATE_PUBLISHED)
-				->where('next_run', '<=', $now)
+				->where('next_run', 'IS', null, 'and', 1)
+					->orWhere('next_run', '<=', $now, 1)
+					->resetDepth()
 				->where('publish_up', 'IS', null, 'and', 1)
 					->orWhere('publish_up', '<=', $now, 1)
 					->resetDepth()
@@ -193,7 +195,15 @@ class Jobs extends Base implements CommandInterface
 		$tmp = $tmp !== '' ? rtrim($tmp, '/') : sys_get_temp_dir();
 		$lock = @fopen($tmp . '/.cron-tick.lock', 'c');
 
-		if ($lock === false || !flock($lock, LOCK_EX | LOCK_NB))
+		// An unopenable lock file (missing or unwritable tmp_path) is not a
+		// running tick; say so, or the operator chases a phantom tick forever.
+		if ($lock === false)
+		{
+			$this->output->error('cannot open the tick lock file ' . $tmp . '/.cron-tick.lock; check that tmp_path exists and is writable');
+			return;
+		}
+
+		if (!flock($lock, LOCK_EX | LOCK_NB))
 		{
 			$log('skipped — a previous tick is still running');
 			return;
@@ -263,7 +273,9 @@ class Jobs extends Base implements CommandInterface
 		{
 			$jobs = Job::all()
 				->whereEquals('state', Job::STATE_PUBLISHED)
-				->where('next_run', '<=', $now)
+				->where('next_run', 'IS', null, 'and', 1)
+					->orWhere('next_run', '<=', $now, 1)
+					->resetDepth()
 				->where('publish_up', 'IS', null, 'and', 1)
 					->orWhere('publish_up', '<=', $now, 1)
 					->resetDepth()

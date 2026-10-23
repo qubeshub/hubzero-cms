@@ -133,7 +133,7 @@ class Page extends Table
 		}
 		if (isset($filters['search']) && $filters['search'])
 		{
-			$where[] = "LOWER(r.`title`) LIKE " . $this->_db->quote('%' . strtolower($filters['title']) . '%');
+			$where[] = "LOWER(r.`title`) LIKE " . $this->_db->quote('%' . strtolower($filters['search']) . '%');
 		}
 		if (isset($filters['active']))
 		{
@@ -190,7 +190,7 @@ class Page extends Table
 		{
 			$filters['sort_Dir'] = 'ASC';
 		}
-		$sql .= " ORDER BY " . $filters['sort'] . " " . $filters['sort_Dir'];
+		$sql .= " ORDER BY " . (preg_replace('/[^a-zA-Z0-9_,. ]/', '', (string) $filters['sort']) ?: '1') . " " . (strtoupper((string) $filters['sort_Dir']) === 'ASC' ? 'ASC' : 'DESC');
 
 		if (isset($filters['limit']) && $filters['limit'] != 0)
 		{

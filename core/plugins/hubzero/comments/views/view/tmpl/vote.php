@@ -64,7 +64,7 @@ else
 $no_html = Request::getInt('no_html', 0);
 
 if (!$no_html) { ?>
-<p class="comment-voting voting">
+<div class="comment-voting voting">
 <?php } ?>
 	<span class="vote-like<?php echo $lcls; ?>">
 		<?php if ($this->item->get('vote') || User::get('id') == $this->item->get('created_by')) { // || !$this->params->get('access-vote-comment')) { ?>
@@ -72,9 +72,9 @@ if (!$no_html) { ?>
 				<?php echo $this->item->get('positive', 0); ?><span> <?php echo Lang::txt('PLG_HUBZERO_COMMENTS_VOTE_LIKE'); ?></span>
 			</span>
 		<?php } else { ?>
-			<a class="vote-button <?php echo ($this->item->get('positive', 0) > 0 ? 'like' : 'neutral') . $cls; ?>" href="<?php echo Route::url($this->url . 'action=commentvote&voteup=' . $this->item->get('id')); ?>" title="<?php echo $like_title; ?>">
+			<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($this->url . 'action=commentvote&voteup=' . $this->item->get('id')); ?>" class="vote-button <?php echo ($this->item->get('positive', 0) > 0 ? 'like' : 'neutral') . $cls; ?>" title="<?php echo $like_title; ?>">
 				<?php echo $this->item->get('positive', 0); ?><span> <?php echo Lang::txt('PLG_HUBZERO_COMMENTS_VOTE_LIKE'); ?></span>
-			</a>
+			</button>
 		<?php } ?>
 	</span>
 	<span class="vote-dislike<?php echo $dcls; ?>">
@@ -83,11 +83,11 @@ if (!$no_html) { ?>
 				<?php echo $this->item->get('negative', 0); ?><span> <?php echo Lang::txt('PLG_HUBZERO_COMMENTS_VOTE_DISLIKE'); ?></span>
 			</span>
 		<?php } else { ?>
-			<a class="vote-button <?php echo ($this->item->get('negative', 0) > 0 ? 'dislike' : 'neutral') . $cls; ?>" href="<?php echo Route::url($this->url . 'action=commentvote&votedown=' . $this->item->get('id')); ?>" title="<?php echo $dislike_title; ?>">
+			<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($this->url . 'action=commentvote&votedown=' . $this->item->get('id')); ?>" class="vote-button <?php echo ($this->item->get('negative', 0) > 0 ? 'dislike' : 'neutral') . $cls; ?>" title="<?php echo $dislike_title; ?>">
 				<?php echo $this->item->get('negative', 0); ?><span> <?php echo Lang::txt('PLG_HUBZERO_COMMENTS_VOTE_DISLIKE'); ?></span>
-			</a>
+			</button>
 		<?php } ?>
 	</span>
 <?php if (!$no_html) { ?>
-</p>
+</div>
 <?php }

@@ -189,6 +189,14 @@ class Member extends Table
 
 		$this->role_id = intval($this->role_id);
 
+		// `permissions` is NOT NULL with no default; a new member row left it
+		// null, so insertObject() omitted it and strict SQL refused the insert
+		// (every enrollment and every manager add 500'd)
+		if ($this->permissions === null)
+		{
+			$this->permissions = '';
+		}
+
 		if (!$this->id)
 		{
 			$this->enrolled = Date::toSql();
@@ -366,7 +374,7 @@ class Member extends Table
 
 		if (isset($filters['sort']))
 		{
-			$query .= " ORDER BY " . $filters['sort'];
+			$query .= " ORDER BY " . (preg_replace('/[^a-zA-Z0-9_,. ]/', '', (string) $filters['sort']) ?: '1');
 		}
 		if (isset($filters['sort_Dir']))
 		{
@@ -380,7 +388,7 @@ class Member extends Table
 
 		if ((isset($filters['start']) && is_numeric($filters['start']) && $filters['start'] >= 0) && !empty($filters['limit']))
 		{
-			$query .= " LIMIT " . $filters['start'] . "," . $filters['limit'];
+			$query .= " LIMIT " . (int) $filters['start'] . "," . (int) $filters['limit'];
 		}
 
 		$this->_db->setQuery($query);

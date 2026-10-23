@@ -221,24 +221,12 @@ class Log extends Relational
 	{
 		if (!isset($this->entryDetails))
 		{
-			$details = $this->get('scope');
+			$details = $this->get('details');
 
-			if (empty($details))
-			{
-				$this->entryDetails = new Registry();
-			}
-			else if (is_array($details))
-			{
-				$this->entryDetails = new Registry($details);
-			}
-			else if ($details[0] == '[' || $details[1] == '{' || $details[0] == '{')
-			{
-				$this->entryDetails = json_decode($details);
-			}
-			else
-			{
-				$this->entryDetails = new Registry($this->get('details'));
-			}
+			// Registry parses a JSON string itself, and every consumer
+			// expects a Registry (->get(), ->toObject()), so the value is
+			// never handed back as the bare stdClass json_decode() returns.
+			$this->entryDetails = new Registry(empty($details) ? null : $details);
 		}
 
 		return $this->entryDetails;
@@ -267,6 +255,22 @@ class Log extends Relational
 		}
 
 		$sent = array();
+
+		// An entry logged again (an edited post) keeps the recipients it
+		// already has; adding them again would list it twice in each feed
+		if ($this->get('id'))
+		{
+			$existing = Recipient::all()
+				->select('scope')
+				->select('scope_id')
+				->whereEquals('log_id', $this->get('id'))
+				->rows();
+
+			foreach ($existing as $recipient)
+			{
+				$sent[] = $recipient->get('scope') . '.' . $recipient->get('scope_id');
+			}
+		}
 
 		// Do we have any recipients?
 		foreach ($recipients as $receiver)

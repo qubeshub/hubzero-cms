@@ -69,7 +69,10 @@ class Category extends Nested
 	 */
 	public $initiate = array(
 		'created_time',
-		'created_user_id'
+		'created_user_id',
+		// without this a category saved with no alias is stored with an empty
+		// alias and path (automaticAlias() existed but was never registered)
+		'alias'
 	);
 
 	/**
@@ -106,7 +109,10 @@ class Category extends Nested
 	 */
 	public function automaticAssetId()
 	{
-		if (!empty($this->assetRules))
+		// Posted rules are applied only for core.admin now, so a row created by
+		// anyone else arrives with none; it still needs its asset (the column
+		// is NOT NULL), or the save fails
+		if (!empty($this->assetRules) || !$this->get('asset_id'))
 		{
 			return parent::automaticAssetId();
 		}

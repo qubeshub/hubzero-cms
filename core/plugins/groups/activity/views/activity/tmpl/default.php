@@ -118,6 +118,9 @@ if (!$no_html) {
 				{
 					$this->view('default_item')
 						->set('group', $this->group)
+						->set('canModerate', $this->canModerate)
+						->set('canStar', $this->canStar)
+						->set('plugin', $this->plugin)
 						->set('row', $row)
 						->set('online', $online)
 						->display();

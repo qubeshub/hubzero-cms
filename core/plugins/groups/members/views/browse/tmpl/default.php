@@ -68,9 +68,15 @@ $option = 'com_groups';
 					</a>
 					<?php endif; ?>
 				<?php endif; ?>
-				<?php if ($this->membership_control == 1 && $this->authorized == 'manager') : ?>
+				<?php $canManageRoles = (($this->authorized == 'manager' || $this->authorized == 'admin') && $this->membership_control == 1); ?>
+				<?php if ($canManageRoles) : ?>
 					<a class="icon-add add btn" href="<?php echo Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=addrole'); ?>">
 						<?php echo Lang::txt('PLG_GROUPS_MEMBERS_ADD_ROLE'); ?>
+					</a>
+				<?php endif; ?>
+				<?php if ($canManageRoles) : ?>
+					<a class="icon-edit edit btn" href="<?php echo Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=denyresponses'); ?>">
+						<?php echo Lang::txt('PLG_GROUPS_MEMBERS_DENY_RESPONSES'); ?>
 					</a>
 				<?php endif; ?>
 			</li>
@@ -353,18 +359,19 @@ $option = 'com_groups';
 										"SELECT r.id, r.name, r.permissions
 										FROM `#__xgroups_roles` as r
 										LEFT JOIN `#__xgroups_member_roles` as m ON m.roleid=r.id
-										WHERE m.uidNumber=" . $db->quote($u->get('id')) . " AND r.gidNumber=" . $db->quote($this->group->gidNumber)
+										WHERE m.uidNumber=" . $db->quote($u->get('id')) . " AND r.gidNumber=" . $db->quote($this->group->gidNumber) . "
+										ORDER BY r.ordering ASC, r.name ASC"
 									);
 									$roles = $db->loadAssocList();
 
 									if ($roles) {
 										$html .= '<strong>' . Lang::txt('PLG_GROUPS_MEMBERS_MEMBER_ROLES') . ':</strong> ';
 										foreach ($roles as $role) {
-											$all_roles .= ', <span><a href="'.Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&filter='.$this->filter.'&role_filter='.$role['id']).'">'.$role['name'].'</a>';
+											$all_roles .= ', <span><a href="'.Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&filter='.$this->filter.'&role_filter='.$role['id']).'">'.$this->escape($role['name']).'</a>';
 
 											if ($this->authorized == 'manager') {
 												if ($this->membership_control == 1) {
-													$all_roles .= '<span class="delete-role"><a href="'.Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=deleterole&uid='.$u->get('id').'&role='.$role['id']).'">x</a></span></span>';
+													$all_roles .= '<span class="delete-role"><button type="submit" form="hz-post-action" formaction="'.Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=deleterole&uid='.$u->get('id').'&role='.$role['id']).'" title="'.Lang::txt('PLG_GROUPS_MEMBERS_ROLE_REMOVE').'" aria-label="'.Lang::txt('PLG_GROUPS_MEMBERS_ROLE_REMOVE').': '.$this->escape($role['name']).'">x</button></span></span>';
 												}
 											} else {
 												$all_roles .= '</span>';
@@ -436,7 +443,7 @@ $option = 'com_groups';
 									if ($row)
 									{
 										$html .= '<span class="reason" data-title="' . Lang::txt('PLG_GROUPS_MEMBERS_REASON_FOR_REQUEST') . '">';
-										$html .= '<span class="reason-reason">'.stripslashes($row->reason).'</span>';
+										$html .= '<span class="reason-reason">'.$this->escape(stripslashes($row->reason)).'</span>';
 										$html .= '<span class="reason-date">'.Date::of($row->date)->toLocal('F d, Y @ g:ia').'</span>';
 										$html .= '</span>';
 									}
@@ -459,14 +466,16 @@ $option = 'com_groups';
 										case 'pending':
 											if ($this->membership_control == 1) {
 												$html .= "\t\t\t\t".'<td class="decline-member"><a class="decline tooltips" href="'.Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=deny&users[]='.$guser.'&filter='.$this->filter).'" title="'.Lang::txt('PLG_GROUPS_MEMBERS_DECLINE_MEMBER', $this->escape($u->get('name'))).'">'.Lang::txt('PLG_GROUPS_MEMBERS_DENY').'</a></td>'."\n";
-												$html .= "\t\t\t\t".'<td class="approve-member"><a class="approve tooltips" href="'.Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=approve&users[]='.$guser.'&filter='.$this->filter).'" title="'.Lang::txt('PLG_GROUPS_MEMBERS_APPROVE_MEMBER', $this->escape($u->get('name'))).'">'.Lang::txt('PLG_GROUPS_MEMBERS_APPROVE').'</a></td>'."\n";
+												$html .= "\t\t\t\t".'<td class="approve-member"><button type="submit" form="hz-post-action" formaction="'.Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=approve&users[]='.$guser.'&filter='.$this->filter).'" class="approve tooltips" title="'.Lang::txt('PLG_GROUPS_MEMBERS_APPROVE_MEMBER', $this->escape($u->get('name'))).'">'.Lang::txt('PLG_GROUPS_MEMBERS_APPROVE').'</button></td>'."\n";
 											}
 										break;
 										case 'managers':
 										case 'members':
 										default:
 											if ($this->membership_control == 1) {
-												if (!in_array($guser, $this->managers) || (in_array($guser, $this->managers) && count($this->managers) > 1)) {
+												// A closed group's membership cannot be changed: remove() refuses
+												// it, so do not offer a control that only reloads this list
+												if ($this->group->get('join_policy') != 3 && (!in_array($guser, $this->managers) || (in_array($guser, $this->managers) && count($this->managers) > 1))) {
 													$html .= "\t\t\t\t".'<td class="remove-member"><a class="remove tooltips" href="'.Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=remove&users[]='.$guser.'&filter='.$this->filter).'" title="'.Lang::txt('PLG_GROUPS_MEMBERS_REMOVE_MEMBER', $this->escape($u->get('name'))).'">'.Lang::txt('PLG_GROUPS_MEMBERS_REMOVE').'</a></td>'."\n";
 												} else {
 													$html .= "\t\t\t\t".'<td class="remove-member"> </td>'."\n";
@@ -476,12 +485,12 @@ $option = 'com_groups';
 													//force admins to use backend to demote manager if only 1
 													//if ($this->authorized == 'admin' || count($this->managers) > 1) {
 													if (count($this->managers) > 1) {
-														$html .= "\t\t\t\t".'<td class="demote-member"><a class="demote tooltips" href="'.Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=demote&users[]='.$guser.'&filter='.$this->filter.'&limit='.$this->limit.'&limitstart='.$this->start).'" title="'.Lang::txt('PLG_GROUPS_MEMBERS_DEMOTE_MEMBER', $this->escape($u->get('name'))).'">'.Lang::txt('PLG_GROUPS_MEMBERS_DEMOTE').'</a></td>'."\n";
+														$html .= "\t\t\t\t".'<td class="demote-member"><button type="submit" form="hz-post-action" formaction="'.Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=demote&users[]='.$guser.'&filter='.$this->filter.'&limit='.$this->limit.'&limitstart='.$this->start).'" class="demote tooltips" title="'.Lang::txt('PLG_GROUPS_MEMBERS_DEMOTE_MEMBER', $this->escape($u->get('name'))).'">'.Lang::txt('PLG_GROUPS_MEMBERS_DEMOTE').'</button></td>'."\n";
 													} else {
 														$html .= "\t\t\t\t".'<td class="demote-member"> </td>'."\n";
 													}
 												} else {
-													$html .= "\t\t\t\t".'<td class="promote-member"><a class="promote tooltips" href="'.Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=promote&users[]='.$guser.'&filter='.$this->filter.'&limit='.$this->limit.'&limitstart='.$this->start).'" title="'.Lang::txt('PLG_GROUPS_MEMBERS_PROMOTE_MEMBER', $this->escape($u->get('name'))).'">'.Lang::txt('PLG_GROUPS_MEMBERS_PROMOTE').'</a></td>'."\n";
+													$html .= "\t\t\t\t".'<td class="promote-member"><button type="submit" form="hz-post-action" formaction="'.Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=promote&users[]='.$guser.'&filter='.$this->filter.'&limit='.$this->limit.'&limitstart='.$this->start).'" class="promote tooltips" title="'.Lang::txt('PLG_GROUPS_MEMBERS_PROMOTE_MEMBER', $this->escape($u->get('name'))).'">'.Lang::txt('PLG_GROUPS_MEMBERS_PROMOTE').'</button></td>'."\n";
 												}
 											}
 										break;
@@ -577,14 +586,39 @@ $option = 'com_groups';
 		<div class="container">
 			<h4><?php echo Lang::txt('PLG_GROUPS_MEMBERS_MEMBER_ROLES'); ?></h4>
 			<?php if (count($this->member_roles) > 0) { ?>
-				<ul class="roles">
+				<?php
+				// Only managers may put the roles in order
+				$canOrderRoles = (($this->authorized == 'manager' || $this->authorized == 'admin') && $this->membership_control == 1 && count($this->member_roles) > 1);
+				if ($canOrderRoles)
+				{
+					Html::behavior('framework', true);
+				}
+				?>
+				<?php if ($canOrderRoles) : ?>
+					<form class="roles-order" action="<?php echo Route::url('index.php?option=' . $option . '&cn=' . $this->group->cn . '&active=members&action=reorderroles&no_html=1'); ?>" method="post" data-error="<?php echo $this->escape(Lang::txt('PLG_GROUPS_MEMBERS_ROLE_ORDER_ERROR')); ?>">
+						<?php echo Html::input('token'); ?>
+					</form>
+					<p class="roles-order-hint"><?php echo Lang::txt('PLG_GROUPS_MEMBERS_ROLE_ORDER_HINT'); ?></p>
+					<form class="roles-sort" action="<?php echo Route::url('index.php?option=' . $option . '&cn=' . $this->group->cn . '&active=members'); ?>" method="post">
+						<input type="hidden" name="cn" value="<?php echo $this->escape($this->group->cn); ?>" />
+						<input type="hidden" name="active" value="members" />
+						<input type="hidden" name="option" value="<?php echo $option; ?>" />
+						<input type="hidden" name="action" value="sortroles" />
+						<?php echo Html::input('token'); ?>
+						<button type="submit" class="btn sort-roles" data-confirm="<?php echo $this->escape(Lang::txt('PLG_GROUPS_MEMBERS_ROLE_SORT_CONFIRM')); ?>">
+							<?php echo Lang::txt('PLG_GROUPS_MEMBERS_ROLE_SORT'); ?>
+						</button>
+					</form>
+				<?php endif; ?>
+				<ul class="roles<?php echo $canOrderRoles ? ' sortable' : ''; ?>">
 					<?php foreach ($this->member_roles as $role) { ?>
 						<?php $cls = ($role['id'] == $this->role_filter) ? 'active' : ''; ?>
-						<li>
+						<li id="roles_<?php echo (int) $role['id']; ?>">
+							<?php if ($canOrderRoles) : ?>
+								<span class="role-mover" title="<?php echo $this->escape(Lang::txt('PLG_GROUPS_MEMBERS_ROLE_ORDER_DRAG')); ?>" aria-hidden="true"></span>
+							<?php endif; ?>
 							<?php if ($this->authorized == 'manager' && $this->membership_control == 1) : ?>
-								<a class="remove-role" href="<?php echo Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=removerole&role='.$role['id']); ?>" title="<?php echo Lang::txt('PLG_GROUPS_MEMBERS_ROLE_REMOVE'); ?>">
-									<?php echo Lang::txt('PLG_GROUPS_MEMBERS_ROLE_REMOVE'); ?>
-								</a>
+								<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=removerole&role='.$role['id']); ?>" class="remove-role" title="<?php echo Lang::txt('PLG_GROUPS_MEMBERS_ROLE_REMOVE'); ?>"><?php echo Lang::txt('PLG_GROUPS_MEMBERS_ROLE_REMOVE'); ?></button>
 								<a class="edit-role" href="<?php echo Route::url('index.php?option='.$option.'&cn='.$this->group->cn.'&active=members&action=editrole&role='.$role['id']); ?>" title="<?php echo Lang::txt('PLG_GROUPS_MEMBERS_ROLE_EDIT'); ?>">
 									<?php echo Lang::txt('PLG_GROUPS_MEMBERS_ROLE_EDIT'); ?>
 								</a>

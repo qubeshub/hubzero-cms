@@ -77,7 +77,8 @@ class plgMembersActivity extends \Hubzero\Plugin\Plugin
 
 			$action = Request::getCmd('action', 'feed');
 
-			if (!$this->params->get('email_digests'))
+			// Without e-mail digests there are no digest settings to show or save
+			if (!$this->params->get('email_digests') && in_array($action, array('settings', 'savesettings')))
 			{
 				$action = 'feed';
 			}
@@ -244,6 +245,24 @@ class plgMembersActivity extends \Hubzero\Plugin\Plugin
 	}
 
 	/**
+	 * Load a feed entry, which must be on this member's own feed
+	 *
+	 * @param   integer  $id
+	 * @return  object
+	 */
+	protected function ownEntry($id)
+	{
+		$entry = Hubzero\Activity\Recipient::oneOrFail($id);
+
+		if ($entry->get('scope') != 'user' || $entry->get('scope_id') != $this->member->get('id'))
+		{
+			App::abort(403, Lang::txt('PLG_MEMBERS_ACTIVITY_NOTAUTH'));
+		}
+
+		return $entry;
+	}
+
+	/**
 	 * Unpublish an entry
 	 *
 	 * @return  string
@@ -261,12 +280,12 @@ class plgMembersActivity extends \Hubzero\Plugin\Plugin
 		}
 
 		// Check for request forgeries
-		Request::checkToken(['get', 'post']);
+		Request::checkToken();
 
 		$id      = Request::getInt('activity', 0);
 		$no_html = Request::getInt('no_html', 0);
 
-		$entry = Hubzero\Activity\Recipient::oneOrFail($id);
+		$entry = $this->ownEntry($id);
 
 		if (!$entry->markAsUnpublished())
 		{
@@ -400,11 +419,14 @@ class plgMembersActivity extends \Hubzero\Plugin\Plugin
 			App::abort(403, Lang::txt('PLG_MEMBERS_ACTIVITY_NOTAUTH'));
 		}
 
+		// Check for request forgeries
+		Request::checkToken();
+
 		$id      = Request::getInt('activity', 0);
 		$no_html = Request::getInt('no_html', 0);
 		$action  = Request::getString('action', 'star');
 
-		$entry = Hubzero\Activity\Recipient::oneOrFail($id);
+		$entry = $this->ownEntry($id);
 		$entry->set('starred', ($action == 'star' ? 1 : 0));
 
 		if (!$entry->save())
@@ -421,6 +443,7 @@ class plgMembersActivity extends \Hubzero\Plugin\Plugin
 			$response = new stdClass;
 			$response->success = true;
 			$response->message = $success;
+			$response->starred = ($action == 'star');
 			if ($err = $this->getError())
 			{
 				$response->success = false;

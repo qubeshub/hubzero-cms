@@ -181,12 +181,9 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 				case 'savecomment':
 					$arr['html'] = $this->_savecomment();
 					break;
-				case 'newcomment':
-					$arr['html'] = $this->_newcomment();
-					break;
-				case 'editcomment':
-					$arr['html'] = $this->_editcomment();
-					break;
+				// 'newcomment' and 'editcomment' used to dispatch to methods that
+				// have never existed in this plugin -- reaching either was a fatal.
+				// Commenting is savecomment/deletecomment.
 				case 'deletecomment':
 					$arr['html'] = $this->_deletecomment();
 					break;
@@ -490,7 +487,9 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 		$view->filters = array(
 			'limit'         => Request::getInt('limit', Config::get('list_limit')),
 			'start'         => Request::getInt('limitstart', 0),
-			'user_id'       => $this->member->get('id'),
+			// user_id only joins #__collections_votes to mark what the VIEWER
+			// liked (Like/Unlike); the owner's id showed the owner's likes to everyone
+			'user_id'       => User::get('id'),
 			'search'        => Request::getString('search', ''),
 			'state'         => 1,
 			'collection_id' => Request::getString('board', ''),
@@ -572,6 +571,14 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 			return $this->_login();
 		}
 
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
+
 		if (User::get('id') == $this->member->get('id'))
 		{
 			App::abort(500, Lang::txt('Your cannot follow your own content.'));
@@ -639,6 +646,14 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 		{
 			return $this->_login();
 		}
+
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
 
 		// Is it a private board?
 		if (User::get('id') == $this->member->get('id'))
@@ -711,7 +726,8 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 		$view->filters = array();
 		$view->filters['limit']       = Request::getInt('limit', Config::get('list_limit'));
 		$view->filters['start']       = Request::getInt('limitstart', 0);
-		$view->filters['user_id']     = $this->member->get('id');
+		// the viewer, for the Like/Unlike state (see _collection())
+		$view->filters['user_id']     = User::get('id');
 		$view->filters['search']      = Request::getString('search', '');
 		$view->filters['state']       = 1;
 		$view->filters['collection_id'] = Request::getString('board', '');
@@ -802,7 +818,8 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 
 		$view->collection = \Components\Collections\Models\Collection::getInstance();
 
-		$view->filters['user_id'] = $this->member->get('id');
+		// the viewer, for the Like/Unlike state (see _collection())
+		$view->filters['user_id'] = User::get('id');
 
 		$view->rows = $view->collection->posts($view->filters);
 
@@ -832,10 +849,25 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 			return $this->_collections();
 		}
 
+		// A post is reached by bare numeric id and Post::getInstance() returns any
+		// row on the hub, so the board it sits on has to be readable. It must NOT
+		// be required to be this member's: _feed() lists posts from the boards
+		// this member FOLLOWS, which are by construction somebody else's (_follow()
+		// refuses your own), and feed.php renders a closeup link for each one. The
+		// archive is scoped to this member, so resolve through it first and fall
+		// back to an unscoped lookup, then ask the readability predicate -- which
+		// is what com_collections' own controller does.
 		$collection = $this->model->collection($post->get('collection_id'));
 
-		if ($collection->get('access') == 4 // private collection
-		 && User::get('id') != $this->member->get('id')) // is user the collection owner?
+		if (!$collection->exists())
+		{
+			$collection = new \Components\Collections\Models\Collection($post->get('collection_id'));
+		}
+
+		// An unresolved board reads access 0, i.e. "public", which is how a
+		// private post used to render through whichever profile the caller
+		// happened to be on.
+		if (!$collection->isReadableBy())
 		{
 			$this->params->set('access-view-item', false);
 		}
@@ -843,7 +875,7 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 		// Check authorization
 		if (!$this->params->get('access-view-item'))
 		{
-			App::abort(403, Lang::txt('PLG_MEMBERS' . strtoupper($this->_name) . 'NOT_AUTH'));
+			App::abort(403, Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTH'));
 			return;
 		}
 
@@ -919,20 +951,15 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 		}
 
 		$no_html = Request::getInt('no_html', 0);
-		if ($no_html)
-		{
-			$type = strtolower(Request::getWord('type', 'file'));
-			if (!in_array($type, array('file', 'image', 'text', 'link')))
-			{
-				$type = 'file';
-			}
 
-			$view = $this->view('edit_' . $type, 'post');
-		}
-		else
-		{
-			$view =  $this->view('edit', 'post');
-		}
+		// One template for both paths. The AJAX branch used to dispatch to
+		// 'edit_' . $type, and no edit_<type>.php has ever existed in
+		// views/post/tmpl/ -- only edit.php. View::loadTemplate() then falls back
+		// to the fixed name 'default', which is the post closeup, rendered
+		// without $this->post: a fatal on every ?no_html=1 edit. edit.php already
+		// threads $this->no_html through its form action and a hidden input, so
+		// it is the right template for the AJAX case too.
+		$view = $this->view('edit', 'post');
 		$view->name       = $this->_name;
 		$view->option     = $this->option;
 		$view->member     = $this->member;
@@ -958,11 +985,36 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 			$view->collection = $this->model->collection($view->entry->get('collection_id'));
 		}
 
+		// post= resolves any row on the hub, and the form prints the item's
+		// title, description, assets and tags. Only what _save() will accept is
+		// shown: the caller's own post (a repost included) or their own item.
+		if ($view->entry->exists()
+		 && $view->entry->get('created_by') != User::get('id')
+		 && $view->entry->item()->get('created_by') != User::get('id'))
+		{
+			App::abort(403, Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
+		}
+
 		if ($remove = Request::getInt('remove', 0))
 		{
-			if (!$view->entry->item()->removeAsset($remove))
+			// As com_collections' own posts controller: the post is chosen by id
+			// and resolves to any row, so the item whose asset is deleted was the
+			// caller's to pick. The test is on the ITEM's owner, because the asset
+			// hangs off the item and a repost carries the reposter's created_by
+			// with the original author's item_id.
+			$item = $view->entry->item();
+
+			if ($item->get('created_by') != User::get('id'))
 			{
-				$view->setError($view->entry->item()->getError());
+				App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+			}
+
+			// Check for request forgeries
+			Request::checkToken();
+
+			if (!$item->removeAsset($remove))
+			{
+				$view->setError($item->getError());
 			}
 		}
 
@@ -1011,7 +1063,28 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 
 		// Get model
 		$item = new \Components\Collections\Models\Item(intval($fields['id']));
+
+		// The post being edited, if any. A member may edit their own post, and
+		// for a repost that post carries someone else's item.
+		$p = Request::getArray('post', array(), 'post');
+		$post = new \Components\Collections\Models\Post(isset($p['id']) ? intval($p['id']) : 0);
+		if ($post->exists()
+		 && ($post->get('created_by') != User::get('id') || intval($post->get('item_id')) !== intval($item->get('id'))))
+		{
+			App::abort(403, Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
+		}
+
+		// The item itself may only be written by its owner: for a repost the
+		// content stays the original author's and only the post is updated below
+		$writeItem = !$item->exists() || $item->get('created_by') == User::get('id');
+		if (!$post->exists() && !$writeItem)
+		{
+			App::abort(403, Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
+		}
+
 		$tmp = null;
+		if ($writeItem)
+		{
 		if (substr($item->get('title', ''), 0, 3) == 'tmp')
 		{
 			$tmp = $item->get('title');
@@ -1048,6 +1121,7 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 			$this->setError($item->getError());
 			return $this->_edit($item);
 		}
+		} // end of the item write (skipped for a repost)
 
 		// It's possible that multiple temporary items could have been created
 		// This can happen if someone drops multiple files at once on the file
@@ -1082,6 +1156,14 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 
 		// Create a post entry linking the item to the board
 		$p = Request::getArray('post', array(), 'post');
+
+		// The board is chosen from a select listing this member's own collections,
+		// but the id arrives from the request: only post to a board the member owns
+		// (or a group board they belong to). An empty value creates a new board below.
+		if (!empty($p['collection_id']) && !$this->mayPostToCollection($p['collection_id']))
+		{
+			App::abort(403, Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
+		}
 
 		$post = new \Components\Collections\Models\Post($p['id']);
 		if (!$post->exists())
@@ -1133,7 +1215,7 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 				'action'      => ($p['id'] ? 'updated' : 'created'),
 				'scope'       => 'collections.item',
 				'scope_id'    => $item->get('id'),
-				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_POST_' . ($p['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($url) . '">' . $collection->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_POST_' . ($p['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($url) . '">' . htmlspecialchars((string) ($collection->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'collection_id' => $collection->get('id'),
 					'post_id'       => $post->get('id'),
@@ -1150,6 +1232,24 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 		App::redirect(
 			Route::url($url)
 		);
+	}
+
+	/**
+	 * Whether the current user may post to an already-stored collection.
+	 *
+	 * The board id arrives from the request. The select that produces it lists
+	 * only boards the member can reach, but nothing re-checked that on save,
+	 * and Collection resolves any row -- so without this a member could drop a
+	 * post onto any board on the hub.
+	 *
+	 * @param   integer  $id  Collection id
+	 * @return  boolean
+	 */
+	private function mayPostToCollection($id)
+	{
+		$target = new \Components\Collections\Models\Collection(intval($id));
+
+		return $target->canBePostedToBy();
 	}
 
 	/**
@@ -1176,7 +1276,33 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 
 			if (!$post_id && $collection_id)
 			{
+				// ?board= here is the board's ALIAS, not its id -- it is read with
+				// Request::getString() and the Collect control links
+				// $row->get('alias'). So resolve it through the archive, which is
+				// the only thing that passes the object_id the alias lookup needs:
+				// a bare new Collection('<alias>') runs the alias branch of
+				// Tables\Collection::load() with the constructor's default
+				// object_id of 0 ANDed in, which no real row can match.
+				// com_collections' collectTask() can use a bare lookup because its
+				// ?board= is numeric; this one cannot.
+				//
+				// Fall back to an unscoped lookup for a numeric out-of-scope id,
+				// then ask the readability predicate. Without that test an
+				// out-of-scope board handed back an empty model, and
+				// Collection::item() then built an item with a null object_id,
+				// ignored check()'s false return and store()d it anyway: one junk
+				// #__collections_items row per request, repeatable.
 				$collection = $this->model->collection($collection_id);
+
+				if (!$collection->exists())
+				{
+					$collection = new \Components\Collections\Models\Collection($collection_id);
+				}
+
+				if (!$collection->isReadableBy())
+				{
+					App::abort(403, Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
+				}
 
 				$item_id       = $collection->item()->get('id');
 				$collection_id = $collection->item()->get('object_id');
@@ -1214,6 +1340,15 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 		Request::checkToken();
 
 		$collection_id = Request::getInt('collection_id', 0);
+
+		// Reposting writes a row into the named board, so the board has to be
+		// one this member can post to -- collection_id comes straight from the
+		// request and Collection resolves any row.
+		if ($collection_id && !$this->mayPostToCollection($collection_id))
+		{
+			App::abort(403, Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
+		}
+
 		if (!$collection_id)
 		{
 			$collection = new \Components\Collections\Models\Collection();
@@ -1227,6 +1362,19 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 			$collection_id = $collection->get('id');
 		}
 		$item_id       = Request::getInt('item_id', 0);
+
+		// The item a repost carries is a hidden form field, and nothing
+		// downstream re-checks it -- Tables\Post::check() only requires it to be
+		// non-zero, and it stamps created_by from the session. Without this a
+		// caller can mint a post of their own carrying any item on the hub,
+		// which defeats every guard keyed on "the item this post carries": the
+		// asset delete, the item delete, and the collection comment scope.
+		$__item = new \Components\Collections\Models\Item($item_id);
+
+		if (!$__item->isCollectableBy())
+		{
+			App::abort(403, Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
+		}
 
 		// Try loading the current board/bulletin to see
 		// if this has already been posted to the board (i.e., no duplicates)
@@ -1268,7 +1416,7 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 				'action'      => 'created',
 				'scope'       => 'collections.post',
 				'scope_id'    => $post->id,
-				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_POST_CREATED', '<a href="' . Route::url($collection->link()) . '">' . $collection->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_POST_CREATED', '<a href="' . Route::url($collection->link()) . '">' . htmlspecialchars((string) ($collection->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'collection_id' => $post->collection_id,
 					'item_id'       => $post->item_id,
@@ -1305,6 +1453,9 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 			return $this->_login();
 		}
 
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Access check
 		if (!$this->params->get('access-create-item'))
 		{
@@ -1314,6 +1465,20 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 
 		// Incoming
 		$post = \Components\Collections\Models\Post::getInstance(Request::getInt('post', 0));
+
+		// The post's own creator, or whoever owns the board it sits on. Keying
+		// this on the creator alone locked the board owner out of their own
+		// board: the view offers Remove on every post there -- _authorize()
+		// grants every access-* on your own profile -- and com_collections'
+		// collectTask() let anyone drop a post onto it, so the owner was left
+		// with content they could see, were offered a control for, and could
+		// not remove.
+		if ($post->get('id')
+		 && $post->get('created_by') != User::get('id')
+		 && !$this->model->collection($post->get('collection_id'))->canBeModeratedBy())
+		{
+			App::abort(403, Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
+		}
 
 		$collection = $this->model->collection($post->get('collection_id'));
 
@@ -1333,7 +1498,7 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 				'action'      => 'deleted',
 				'scope'       => 'collections.post',
 				'scope_id'    => $post->get('id'),
-				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_POST_DELETED', '<a href="' . $route . '">' . $collection->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_POST_DELETED', '<a href="' . $route . '">' . htmlspecialchars((string) ($collection->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'collection_id' => $post->get('collection_id'),
 					'item_id'       => $post->get('item_id'),
@@ -1378,7 +1543,31 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 		// Incoming
 		$post = \Components\Collections\Models\Post::getInstance(Request::getInt('post', 0));
 
-		if (!$post->move(Request::getInt('board', 0)))
+		// The post's own creator, or whoever owns the board it sits on. Keying
+		// this on the creator alone locked the board owner out of their own
+		// board: the view offers Remove on every post there -- _authorize()
+		// grants every access-* on your own profile -- and com_collections'
+		// collectTask() let anyone drop a post onto it, so the owner was left
+		// with content they could see, were offered a control for, and could
+		// not remove.
+		if ($post->get('id')
+		 && $post->get('created_by') != User::get('id')
+		 && !$this->model->collection($post->get('collection_id'))->canBeModeratedBy())
+		{
+			App::abort(403, Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
+		}
+
+		// The destination board arrives from the request like the source did, so
+		// it has to be one this member can post to -- otherwise a post can be
+		// moved onto any board on the hub.
+		$__dest = Request::getInt('board', 0);
+
+		if ($__dest && !$this->mayPostToCollection($__dest))
+		{
+			App::abort(403, Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
+		}
+
+		if (!$post->move($__dest))
 		{
 			$this->setError($post->getError());
 		}
@@ -1418,9 +1607,28 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 		$no_html = Request::getInt('no_html', 0);
 
 		$post = \Components\Collections\Models\Post::getInstance(Request::getInt('post', 0));
+
 		if (!$post->get('id'))
 		{
 			return $this->_collections();
+		}
+
+		// Two different actions share this route. Marking the ITEM deleted removes
+		// it from the board it was posted to and from every repost of it, so only
+		// the item's owner may do that: owning the post proves nothing, because
+		// _repost() will make one carrying an item you do not own.
+		//
+		// The board's own owner moderating their board takes the POST off
+		// instead, which leaves the item alone. That case belongs here because
+		// the view renders Delete (not Remove) for an original post and
+		// Post::remove() refuses originals.
+		$__item     = $post->item();
+		$__ownsItem = ($__item->get('created_by') == User::get('id'));
+		$__board    = $this->model->collection($post->get('collection_id'));
+
+		if (!$__ownsItem && !$__board->canBeModeratedBy())
+		{
+			App::abort(403, Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
 		}
 
 		$process = Request::getString('process', '');
@@ -1460,17 +1668,33 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 			return $view->loadTemplate();
 		}
 
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
 		Request::checkToken();
 
 		$msg = Lang::txt('Post deleted.');
 		$type = 'passed';
 
-		// Mark the entry as deleted
 		$item = $post->item();
-		$item->set('state', 2);
-		if (!$item->store())
+
+		if ($__ownsItem)
 		{
-			$msg = $item->getError();
+			// Mark the entry as deleted
+			$item->set('state', 2);
+			if (!$item->store())
+			{
+				$msg = $item->getError();
+				$type = 'error';
+			}
+		}
+		else if (!$post->delete())
+		{
+			// Moderation: drop the post, leave someone else's item alone
+			$msg  = $post->getError();
 			$type = 'error';
 		}
 
@@ -1483,7 +1707,7 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 				'action'      => 'deleted',
 				'scope'       => 'collections.item',
 				'scope_id'    => $item->get('id'),
-				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_ITEM_DELETED', '<a href="' . $route . '">' . $item->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_ITEM_DELETED', '<a href="' . $route . '">' . htmlspecialchars((string) ($item->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'collection_id' => $post->get('collection_id'),
 					'post_id'       => $post->get('id'),
@@ -1520,10 +1744,56 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 		}
 
 		// Incoming
+		// Check for request forgeries
+		Request::checkToken();
+
 		$comment = Request::getArray('comment', array(), 'post');
 
-		// Instantiate a new comment object and pass it the data
-		$row = \Hubzero\Item\Comment::blank()->set($comment);
+		// Never allow the author to be set from the request
+		unset($comment['created_by']);
+
+		// The post being commented on. comment[item_id] and comment[item_type]
+		// are form fields, so what the comment hangs off is taken from a post
+		// resolved here instead of from the request body.
+		$post = new \Components\Collections\Models\Post(Request::getInt('post', 0));
+
+		if (!$post->get('id') || !$post->get('item_id'))
+		{
+			$this->setError(Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
+			return $this->_post();
+		}
+
+		if (!empty($comment['id']))
+		{
+			$existing = \Hubzero\Item\Comment::oneOrFail((int) $comment['id']);
+
+			// Author only, plus a genuine site-wide manager. The profile-owner
+			// branch that used to be here was keyed on the comment sharing an
+			// item with this post -- and collection comments hang off the ITEM,
+			// shared across every repost of it, so any LEGAL repost of a visible
+			// item satisfied it. No view renders a comment edit or delete
+			// control, so narrowing to the author refuses nothing the page
+			// offers, and it matches com_collections' own controller.
+			if (User::get('id') != $existing->get('created_by')
+			 && !User::authorise('core.manage', 'com_collections'))
+			{
+				$this->setError(Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
+				return $this->_post();
+			}
+		}
+
+		// Instantiate a new comment object and pass it the data. Only the
+		// form's own fields are bound: every other comment[] key is a column
+		// (state, access, positive, negative, ...) the poster must not set.
+		$row = \Hubzero\Item\Comment::blank()->set(array_intersect_key($comment, array_flip(array('id', 'content', 'parent', 'anonymous'))));
+
+		// Pin what the comment hangs off, on both paths
+		$row->set('item_type', 'collection');
+		$row->set('item_id', (int) $post->get('item_id'));
+		if (empty($comment['id']))
+		{
+			$row->set('state', \Hubzero\Item\Comment::STATE_PUBLISHED);
+		}
 
 		// Store new content
 		if (!$row->save())
@@ -1532,8 +1802,7 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 			return $this->_post();
 		}
 
-		// Log activity
-		$post = new \Components\Collections\Models\Post(Request::getInt('post', 0));
+		// Log activity ($post is resolved above)
 
 		$recipients = array(
 			['collection', $post->get('collection_id')],
@@ -1554,7 +1823,7 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 				'action'      => (!empty($comment['id']) ? 'updated' : 'created'),
 				'scope'       => 'collections.comment',
 				'scope_id'    => $row->get('id'),
-				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_COMMENT_' . (!empty($comment['id']) ? 'UPDATED' : 'CREATED'), $row->get('id'), '<a href="' . $url . '#c' . $row->get('id') . '">' . $title . '</a>'),
+				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_COMMENT_' . (!empty($comment['id']) ? 'UPDATED' : 'CREATED'), $row->get('id'), '<a href="' . $url . '#c' . $row->get('id') . '">' . htmlspecialchars((string) ($title), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'collection_id' => $post->get('collection_id'),
 					'post_id'       => $post->get('id'),
@@ -1581,6 +1850,14 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 			return $this->_login();
 		}
 
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
+
 		// Incoming
 		$id = Request::getInt('comment', 0);
 		if (!$id)
@@ -1588,12 +1865,22 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 			return $this->_post();
 		}
 
+		// The post the comment is claimed to be on. The route that reaches this
+		// method is post/<id>/deletecomment, so the post id is in the request.
+		$post = new \Components\Collections\Models\Post(Request::getInt('post', 0));
+
 		// Initiate a whiteboard comment object
 		$comment = \Hubzero\Item\Comment::oneOrFail($id);
 
-		// Only the comment's author and the owner of the profile may remove it
+		// Author only, plus a genuine site-wide manager. The profile-owner
+		// branch that used to be here was keyed on the comment sharing an
+		// item with this post -- and collection comments hang off the ITEM,
+		// shared across every repost of it, so any LEGAL repost of a visible
+		// item satisfied it. No view renders a comment edit or delete
+		// control, so narrowing to the author refuses nothing the page
+		// offers, and it matches com_collections' own controller.
 		if (User::get('id') != $comment->get('created_by')
-		 && User::get('id') != $this->member->get('id'))
+		 && !User::authorise('core.manage', 'com_collections'))
 		{
 			$this->setError(Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
 			return $this->_post();
@@ -1618,11 +1905,55 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 	 */
 	private function _vote()
 	{
+		// Login check. The collection view offers this control only to a logged-in
+		// viewer -- a guest is given a login link instead -- and Item::vote() keys
+		// its de-duplication row on the user id, which is 0 for a guest: every
+		// guest would share one row and toggle it against the others.
+		if (User::isGuest())
+		{
+			return $this->_login();
+		}
+
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
+
 		// Incoming
 		$id = Request::getInt('post', 0);
 
 		// Get the post model
 		$post = \Components\Collections\Models\Post::getInstance($id);
+
+		if (!$post->get('id'))
+		{
+			App::abort(404, Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
+		}
+
+		// Apply the same visibility test _post() does, and for the same reason it
+		// cannot be "is this board the member's": the Like control is rendered by
+		// views/collection/tmpl/feed.php as well as collection/tmpl/default.php,
+		// and every post in the feed sits on a board this member merely FOLLOWS.
+		// Requiring the archive's own scope here would 403 every Like on the
+		// default view. Resolve through the archive, fall back to an unscoped
+		// lookup, then ask the readability predicate.
+		//
+		// What _vote() had was no check at all, which let a caller vote on a post
+		// in a collection they are not allowed to see.
+		$collection = $this->model->collection($post->get('collection_id'));
+
+		if (!$collection->exists())
+		{
+			$collection = new \Components\Collections\Models\Collection($post->get('collection_id'));
+		}
+
+		if (!$collection->isReadableBy())
+		{
+			App::abort(403, Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTH'));
+		}
 
 		// Record the vote
 		if (!$post->item()->vote())
@@ -1638,8 +1969,7 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 			exit;
 		}
 
-		// Get the collection model
-		$collection = $this->model->collection($post->get('collection_id'));
+		// ($collection is resolved and access-checked above)
 
 		$url = Route::url($this->member->link() . '&active=' . $this->_name . '&task=' . $collection->get('alias'));
 
@@ -1649,7 +1979,7 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 				'action'      => 'voted',
 				'scope'       => 'collections.item',
 				'scope_id'    => $post->item()->get('id'),
-				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_ITEM_VOTED', '<a href="' . $url . '">' . $collection->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_ITEM_VOTED', '<a href="' . $url . '">' . htmlspecialchars((string) ($collection->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'collection_id' => $collection->get('id'),
 					'post_id'       => $post->get('id'),
@@ -1783,7 +2113,29 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 
 		// Incoming
 		$fields = Request::getArray('fields', array(), 'post');
-		$fields['id'] = intval($fields['id']);
+		$fields['id'] = isset($fields['id']) ? intval($fields['id']) : 0;
+
+		// An EXISTING board has to be this one's already. bind() takes the id
+		// from the request and Model::store() turns that into an UPDATE, while
+		// object_id and object_type are bound from the form too -- so without
+		// this a caller could name any board on the hub and rewrite its owner to
+		// themselves, which satisfies canBePostedToBy(), canBeModeratedBy() and
+		// isReadableBy() on it in a single request.
+		if ($fields['id'])
+		{
+			$__stored = new \Components\Collections\Models\Collection($fields['id']);
+
+			if (!$__stored->exists()
+			 || $__stored->get('object_type') != 'member'
+			 || (int) $__stored->get('object_id') !== (int) $this->member->get('id'))
+			{
+				App::abort(403, Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
+			}
+		}
+
+		// ...and where it belongs is never the submitter's to set
+		$fields['object_type'] = 'member';
+		$fields['object_id']   = (int) $this->member->get('id');
 
 		// Bind new content
 		$collection = new \Components\Collections\Models\Collection();
@@ -1816,7 +2168,7 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 				'action'      => ($fields['id'] ? 'updated' : 'created'),
 				'scope'       => 'collections.collection',
 				'scope_id'    => $collection->get('id'),
-				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_COLLECTION_' . ($fields['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . $url . '">' . $collection->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_COLLECTION_' . ($fields['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . $url . '">' . htmlspecialchars((string) ($collection->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $collection->get('title'),
 					'id'    => $collection->get('id'),
@@ -1871,6 +2223,16 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 		// Get the collection model
 		$collection = $this->model->collection($id);
 
+		// Tables\Collection::load() short-circuits to parent::load() for a
+		// NUMERIC id and drops the object_id/object_type scope, so ?board=<id>
+		// resolves any board on the hub and this would soft-delete it.
+		if (!$collection->exists()
+		 || $collection->get('object_type') != 'member'
+		 || (int) $collection->get('object_id') !== (int) $this->member->get('id'))
+		{
+			App::abort(403, Lang::txt('PLG_MEMBERS_' . strtoupper($this->_name) . '_NOT_AUTHORIZED'));
+		}
+
 		// Did they confirm delete?
 		if (!$process || !$confirmdel)
 		{
@@ -1894,6 +2256,12 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 			return $view->loadTemplate();
 		}
 
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
 		Request::checkToken();
 
 		// Mark the entry as deleted
@@ -1909,7 +2277,7 @@ class plgMembersCollections extends \Hubzero\Plugin\Plugin
 				'action'      => 'deleted',
 				'scope'       => 'collections.collection',
 				'scope_id'    => $collection->get('id'),
-				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_COLLECTION_DELETED', '<a href="' . Route::url($collection->link()) . '">' . $collection->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_MEMBERS_COLLECTIONS_ACTIVITY_COLLECTION_DELETED', '<a href="' . Route::url($collection->link()) . '">' . htmlspecialchars((string) ($collection->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $collection->get('title'),
 					'id'    => $collection->get('id'),

@@ -38,19 +38,19 @@ jQuery(document).ready(function(jq){
 					.text($(this).attr('data-txt-inactive'));
 			}
 		})// Add confirm dialog to delete links
-		.on('click', 'a.delete', function (e) {
+		.on('click', 'a.delete, button.delete', function (e) {
 			var res = confirm($(this).attr('data-txt-confirm'));
 			if (!res) {
 				e.preventDefault();
 			}
 			return res;
 		})
-		.on('click', 'a.vote-button', function(e) {
+		.on('click', 'button.vote-button', function(e) {
 			e.preventDefault();
 
 			var el = $(this);
 
-			$.get(el.attr('href').nohtml(), {}, function(data) {
+			$.post(el.attr('formaction').nohtml(), $(this.form).serialize(), function(data) {
 				$(el.parent().parent()).html(data);
 			});
 		});

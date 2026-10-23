@@ -97,6 +97,13 @@ class plgProjectsLinks extends \Hubzero\Plugin\Plugin
 		// Publishing?
 		if (in_array($this->_task, $tasks))
 		{
+			// These actions read/write citation data and fetch URLs on behalf of
+			// the project; require project content access.
+			if (!$this->model->access('content'))
+			{
+				return;
+			}
+
 			// Set vars
 			$this->_database = App::get('db');
 			$this->_uid      = User::get('id');
@@ -174,6 +181,13 @@ class plgProjectsLinks extends \Hubzero\Plugin\Plugin
 		// Make sure this publication belongs to this project
 		$objP = new Components\Publications\Tables\Publication($this->_database);
 		if (!$objP->load($pid) || $objP->project_id != $this->model->get('id'))
+		{
+			$this->setError(Lang::txt('PLG_PROJECTS_LINKS_ERROR_CITATION_DELETE'));
+		}
+
+		// ...and the version is that publication's: pid was checked, vid is
+		// what the citation is detached from
+		if (!$this->getError() && !$this->_versionOfProject($vid))
 		{
 			$this->setError(Lang::txt('PLG_PROJECTS_LINKS_ERROR_CITATION_DELETE'));
 		}
@@ -270,6 +284,18 @@ class plgProjectsLinks extends \Hubzero\Plugin\Plugin
 		{
 			$this->setError(Lang::txt('PLG_PROJECTS_PUBLICATIONS_CITATIONS_ERROR_MISSING_REQUIRED'));
 		}
+		// The version has to be one of this project's publications, and an
+		// existing citation (cite[id] names any row on the hub) one already
+		// attached to that version -- otherwise this rewrote any citation.
+		elseif (!$this->_versionOfProject($vid)
+		 || (!$new && !Association::all()
+				->whereEquals('cid', (int) $cite['id'])
+				->whereEquals('tbl', 'publication')
+				->whereEquals('oid', (int) $vid)
+				->total()))
+		{
+			$this->setError(Lang::txt('PLG_PROJECTS_LINKS_ERROR_CITATION_DELETE'));
+		}
 		else
 		{
 			$citation = Components\Citations\Models\Citation::blank()->set($cite);
@@ -349,8 +375,12 @@ class plgProjectsLinks extends \Hubzero\Plugin\Plugin
 			->whereEquals('cid', $cid)
 			->rows();
 
-		// Remove citation if only one association
-		if (count($aPubs) == 1)
+		// Remove the citation itself only when its single association is the
+		// one being detached here: cid= names any citation on the hub, and one
+		// attached elsewhere is somebody else's
+		if (count($aPubs) == 1
+		 && $aPubs->first()->oid == $vid
+		 && $aPubs->first()->tbl == 'publication')
 		{
 			// Delete the citation
 			$c->destroy();
@@ -359,7 +389,7 @@ class plgProjectsLinks extends \Hubzero\Plugin\Plugin
 		// Remove association
 		foreach ($aPubs as $aPub)
 		{
-			if ($aPub->oid == $vid && $aPub->tbl = 'publication')
+			if ($aPub->oid == $vid && $aPub->tbl == 'publication')
 			{
 				$aPub->destroy();
 			}
@@ -904,28 +934,115 @@ class plgProjectsLinks extends \Hubzero\Plugin\Plugin
 		}
 		else
 		{
-			$ch = curl_init($url);
+			// Guard against SSRF: only http(s) to a public, non-reserved host.
+			// Every address the name resolves to (A and AAAA) must be public, each
+			// redirect hop is checked the same way before it is followed, and the
+			// connection is pinned to the checked address so the name cannot be
+			// re-pointed between the check and the connect.
+			$safeAddress = function ($u)
+			{
+				if (!preg_match('#^https?://#i', $u))
+				{
+					return false;
+				}
+				$h = parse_url($u, PHP_URL_HOST);
+				if (!$h)
+				{
+					return false;
+				}
+				$h = trim($h, '[]');
+				$addrs = array();
+				if (filter_var($h, FILTER_VALIDATE_IP))
+				{
+					$addrs[] = $h;
+				}
+				else
+				{
+					foreach ((array) @dns_get_record($h, DNS_A | DNS_AAAA) as $rec)
+					{
+						if (!empty($rec['ip']))
+						{
+							$addrs[] = $rec['ip'];
+						}
+						if (!empty($rec['ipv6']))
+						{
+							$addrs[] = $rec['ipv6'];
+						}
+					}
+				}
+				if (!$addrs)
+				{
+					return false;
+				}
+				foreach ($addrs as $a)
+				{
+					if (filter_var($a, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false)
+					{
+						return false;
+					}
+				}
+				return $addrs[0];
+			};
+
+			$addr = $safeAddress($url);
+			if (!$addr)
+			{
+				$output['error'] = Lang::txt('Please enter a valid URL starting with http:// or https://');
+				return json_encode($output);
+			}
 
 			$options = array(
 				CURLOPT_RETURNTRANSFER => true,     // return web page
 				CURLOPT_HEADER         => false,    // don't return headers
-				CURLOPT_FOLLOWLOCATION => true,     // follow redirects
+				CURLOPT_FOLLOWLOCATION => false,    // redirects are validated hop by hop below
 				CURLOPT_ENCODING       => '',       // handle all encodings
 				CURLOPT_USERAGENT      => 'HUBzero',// I am HUBzero
-				CURLOPT_AUTOREFERER    => true,     // set referer on redirect
 				CURLOPT_CONNECTTIMEOUT => 5,        // timeout on connect
 				CURLOPT_TIMEOUT        => 5,        // timeout on response
-				CURLOPT_MAXREDIRS      => 10,       // stop after 10 redirects
+				CURLOPT_PROTOCOLS      => CURLPROTO_HTTP | CURLPROTO_HTTPS,
 			);
 
-			curl_setopt_array($ch, $options);
-			curl_setopt($ch, CURLOPT_FAILONERROR, true);
+			$content  = false;
+			$finalUrl = $url;
+			for ($hop = 0; $hop <= 10; $hop++)
+			{
+				$rh = trim((string) parse_url($finalUrl, PHP_URL_HOST), '[]');
+				$rp = (int) parse_url($finalUrl, PHP_URL_PORT);
+				if (!$rp)
+				{
+					$rp = (strtolower((string) parse_url($finalUrl, PHP_URL_SCHEME)) == 'https') ? 443 : 80;
+				}
+				$pin = (strpos($addr, ':') !== false) ? '[' . $addr . ']' : $addr;
 
-			$content  = curl_exec($ch);
-			$finalUrl = curl_getinfo($ch, CURLINFO_EFFECTIVE_URL);
+				$ch = curl_init($finalUrl);
+				curl_setopt_array($ch, $options);
+				curl_setopt($ch, CURLOPT_FAILONERROR, true);
+				// An address literal needs no pin (there is no name to re-point), and
+				// an IPv6 literal host would make a malformed RESOLVE entry
+				if (!filter_var($rh, FILTER_VALIDATE_IP))
+				{
+					curl_setopt($ch, CURLOPT_RESOLVE, array($rh . ':' . $rp . ':' . $pin));
+				}
+				$content  = curl_exec($ch);
+				$code     = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+				$redirect = curl_getinfo($ch, CURLINFO_REDIRECT_URL);
+				curl_close($ch);
+
+				if ($code < 300 || $code >= 400 || !$redirect)
+				{
+					break;
+				}
+				// Follow the redirect only if its target is also a public host
+				$addr = $safeAddress($redirect);
+				if (!$addr)
+				{
+					$content = false;
+					break;
+				}
+				$finalUrl = $redirect;
+			}
 			$finalUrl = str_replace("HTTP", "http", $finalUrl);
 			$finalUrl = str_replace("HTTPS", "https", $finalUrl);
-			curl_close($ch);
 
 			if (!$finalUrl || !$content)
 			{
@@ -944,9 +1061,19 @@ class plgProjectsLinks extends \Hubzero\Plugin\Plugin
 				$out = '';
 
 				// Create DOM from URL or file
-				$html = file_get_html($finalUrl);
+				// Parse the body we already fetched (and checked) rather than fetching
+				// the final URL a second time with no check at all
+				$html = str_get_html($content);
+				if (!$html)
+				{
+					$output['message'] = Lang::txt('PLG_PROJECTS_LINKS_NO_PREVIEW');
+					return json_encode($output);
+				}
 
-				$title = $html->find('title', 0)->innertext; //Title Of Page
+				// Title Of Page -- find() returns null when there is none, and the
+				// remote markup is rendered into the preview, so escape it
+				$titleNode = $html->find('title', 0);
+				$title = $titleNode ? htmlspecialchars(trim((string) $titleNode->innertext), ENT_QUOTES, 'UTF-8') : '';
 
 				$out .= $title ? stripslashes('<h5>' . addslashes($title) . '</h5>') : '<h5>' . \Components\Projects\Helpers\Html::shortenText($finalUrl, 100) . '</h5>';
 
@@ -991,7 +1118,7 @@ class plgProjectsLinks extends \Hubzero\Plugin\Plugin
 
 				if ($images)
 				{
-					$out .= '<div id="link-image"><img src="' . $images[0] . '" alt="" /></div>';
+					$out .= '<div id="link-image"><img src="' . htmlspecialchars((string) $images[0], ENT_QUOTES, 'UTF-8') . '" alt="" /></div>';
 				}
 
 				$description = null;
@@ -1019,12 +1146,13 @@ class plgProjectsLinks extends \Hubzero\Plugin\Plugin
 					}
 					else
 					{
-						$description = $html->find('body', 0)->plaintext;
+						$bodyNode = $html->find('body', 0);
+						$description = $bodyNode ? $bodyNode->plaintext : '';
 					}
 				}
 
 				$out .= $description
-						? stripslashes('<p>' . Hubzero\Utility\Str::truncate(addslashes($description), 200) . '</p>')
+						? stripslashes('<p>' . Hubzero\Utility\Str::truncate(addslashes(htmlspecialchars((string) $description, ENT_QUOTES, 'UTF-8')), 200) . '</p>')
 						: '<p>' . Hubzero\Utility\Str::truncate(addslashes($finalUrl), 200) . '</p>';
 
 				if ($images)
@@ -1311,5 +1439,22 @@ class plgProjectsLinks extends \Hubzero\Plugin\Plugin
 		}
 
 		return $cannonical;
+	}
+
+	/**
+	 * Is this publication version one of this project's?
+	 *
+	 * @param   integer  $vid
+	 * @return  boolean
+	 */
+	protected function _versionOfProject($vid)
+	{
+		$v = \Components\Publications\Models\Orm\Version::oneOrNew((int) $vid);
+		if ($v->isNew())
+		{
+			return false;
+		}
+		$p = \Components\Publications\Models\Orm\Publication::oneOrNew((int) $v->get('publication_id'));
+		return (!$p->isNew() && (int) $p->get('project_id') === (int) $this->model->get('id'));
 	}
 }

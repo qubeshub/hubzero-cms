@@ -129,6 +129,23 @@ class Section extends Table
 			return false;
 		}
 
+		// Blank date boxes post ''; strict SQL refuses '' for a datetime, so store NULL
+		foreach (array('start_date', 'end_date', 'publish_up', 'publish_down') as $col)
+		{
+			if (isset($this->$col) && trim((string) $this->$col) === '')
+			{
+				$this->$col = null;
+			}
+		}
+		// NOT NULL TEXT without a default: an unset value is left out of the INSERT
+		foreach (array('params') as $col)
+		{
+			if (!isset($this->$col))
+			{
+				$this->$col = '';
+			}
+		}
+
 		if (!$this->id)
 		{
 			$this->created    = Date::toSql();
@@ -168,9 +185,9 @@ class Section extends Table
 
 		if (isset($filters['enrollment']))
 		{
-			$filters['enrollment'] = array_map('intval', $filters['enrollment']);
 			if (is_array($filters['enrollment']))
 			{
+				$filters['enrollment'] = array_map('intval', $filters['enrollment']);
 				$where[] = "os.enrollment IN (" . implode(',', $filters['enrollment']) . ")";
 			}
 			else
@@ -264,7 +281,7 @@ class Section extends Table
 			$filters['sort_Dir'] = 'ASC';
 		}
 
-		$query .= " ORDER BY " . $filters['sort'] . " " . $filters['sort_Dir'];
+		$query .= " ORDER BY " . (preg_replace('/[^a-zA-Z0-9_,. ]/', '', (string) $filters['sort']) ?: '1') . " " . (strtoupper((string) $filters['sort_Dir']) === 'ASC' ? 'ASC' : 'DESC');
 
 		if (isset($filters['limit']) && $filters['limit'] != 0)
 		{

@@ -43,7 +43,7 @@ $typetitle = \Components\Publications\Helpers\Html::writePubCategory($this->pub-
 		<div class="curation-wrap">
 			<div class="pubtitle">
 				<h3>
-					<span class="restype indlist"><?php echo $typetitle; ?></span> <?php echo \Hubzero\Utility\Str::truncate($this->pub->title, 65); ?> | <?php echo Lang::txt('COM_PUBLICATIONS_CURATION_VERSION') . ' ' . $this->pub->version_label; ?>
+					<span class="restype indlist"><?php echo $typetitle; ?></span> <?php echo $this->escape(\Hubzero\Utility\Str::truncate($this->pub->title, 65)); ?> | <?php echo Lang::txt('COM_PUBLICATIONS_CURATION_VERSION') . ' ' . $this->escape($this->pub->version_label); ?>
 				</h3>
 			</div>
 			<p class="instruct">
@@ -55,12 +55,12 @@ $typetitle = \Components\Publications\Helpers\Html::writePubCategory($this->pub-
 					echo $this->pub->reviewed ? Lang::txt('COM_PUBLICATIONS_CURATION_RESUBMITTED') : Lang::txt('COM_PUBLICATIONS_CURATION_SUBMITTED');
 					$name = $this->pub->modifier('name');
 					$name = $name ?: Lang::txt('JUNKNOWN');
-					echo ' ' . Date::of($this->pub->submitted)->toLocal('M d, Y') . ' ' . Lang::txt('COM_PUBLICATIONS_CURATION_BY', $name);
+					echo ' ' . Date::of($this->pub->submitted)->toLocal('M d, Y') . ' ' . Lang::txt('COM_PUBLICATIONS_CURATION_BY', $this->escape($name));
 					?>
 				</strong>
 				<?php if ($this->pub->curator()): ?>
 					<span class="block">
-						<?php echo Lang::txt('COM_PUBLICATIONS_CURATION_ASSIGNED_CURATOR') . ' <strong>' . $this->pub->curator('name') . ' (' . $this->pub->curator('username') . ')</strong>';  ?>
+						<?php echo Lang::txt('COM_PUBLICATIONS_CURATION_ASSIGNED_CURATOR') . ' <strong>' . $this->escape($this->pub->curator('name')) . ' (' . $this->escape($this->pub->curator('username')) . ')</strong>';  ?>
 					</span>
 				<?php endif; ?>
 				<?php echo Lang::txt('COM_PUBLICATIONS_CURATION_REVIEW_AND_ACT'); ?>
@@ -86,7 +86,7 @@ $typetitle = \Components\Publications\Helpers\Html::writePubCategory($this->pub-
 			<?php if ($this->history && $this->history->comment): ?>
 				<div class="submitter-comment">
 					<h5><?php echo Lang::txt('COM_PUBLICATIONS_CURATION_SUBMITTER_COMMENT'); ?></h5>
-					<p><?php echo $this->history->comment; ?></p>
+					<p><?php echo $this->history->comment; /* encoded where it is stored (saveHistory) */ ?></p>
 				</div>
 			<?php endif; ?>
 

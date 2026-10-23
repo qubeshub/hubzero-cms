@@ -50,7 +50,7 @@ class Auth extends SiteController
 		// Check for errors.
 		if ($this->getError())
 		{
-			App::abort(500, implode('<br />', $errors));
+			App::abort(500, implode('<br />', $this->getErrors()));
 		}
 
 		// Get the active menu
@@ -200,10 +200,22 @@ class Auth extends SiteController
 				// Dropping the return is the correct degradation: the user
 				// lands on the site default after login instead of being
 				// bounced back to a login page they have just left.
+				// Only the hub's own login and registration pages nest: the
+				// path is /login or /register (below the site root), or the
+				// query names view=login|register with no task. A path that
+				// merely contains such a segment -- /saml/idp/login, which the
+				// IdP sends guests to log in with, or /register/confirm in the
+				// e-mail confirmation chain -- is a real destination.
 				$rpath  = (string) parse_url($decoded_return, PHP_URL_PATH);
 				$rquery = (string) parse_url($decoded_return, PHP_URL_QUERY);
-				if (preg_match('#(^|/)(login|register)(/|$)#i', $rpath)
-				 || preg_match('#view=(login|register)(&|$)#i', $rquery))
+				$rbase  = rtrim((string) Request::base(true), '/');
+				if ($rbase !== '' && strpos($rpath, $rbase) === 0)
+				{
+					$rpath = substr($rpath, strlen($rbase));
+				}
+				if (preg_match('#^/?(login|register)/?$#i', $rpath)
+				 || (preg_match('#(^|&)view=(login|register)(&|$)#i', $rquery)
+				  && !preg_match('#(^|&)task=#i', $rquery)))
 				{
 					$return = null;
 					Request::setVar('return', null);
@@ -505,6 +517,8 @@ class Auth extends SiteController
 			if (!Uri::isInternal($return))
 			{
 				$data['return'] = '';
+				// the failed-login branch below redirects to $return too
+				$return = '';
 			}
 		}
 
@@ -554,13 +568,19 @@ class Auth extends SiteController
 			$data['remember'] = isset($options['remember']) ? (int)$options['remember'] : 0;
 			User::setState('login.form.data', $data);
 
-			// Facilitate third party login forms
+			// Facilitate third party login forms. Keep this un-routed: it is
+			// passed through Route::url() below, and routing an already-routed
+			// path ("/login") yields an empty URL, which is a 500 on every
+			// failed login.
 			if (!isset($return) || !$return)
 			{
-				$return	= Route::url('index.php?option=com_users&view=login');
+				$return	= 'index.php?option=com_users&view=login';
 			}
 
-			if (isset($freturn))
+			// $freturn is always assigned above (empty when the form did not
+			// post one), so test its value: an empty one routed to '' and every
+			// failed login became a 500 instead of the error message
+			if (!empty($freturn))
 			{
 				$return = $freturn;
 			}
@@ -622,6 +642,9 @@ class Auth extends SiteController
 	 **/
 	public function consentTask()
 	{
+		// The consent form posts a token
+		Request::checkToken();
+
 		Session::set('user_consent', true);
 
 		$return = Request::getString('return');

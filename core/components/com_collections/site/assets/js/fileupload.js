@@ -26,14 +26,18 @@ HUB.CollectionsFileUpload = {
 
 		if ($("#ajax-uploader").length) {
 
-			$('a.delete')
+			// Assets are saved in the order listed; the handles reorder them
+			if ($.ui && $.ui.sortable) {
+				$('#ajax-uploader-list').sortable({
+					handle: '.asset-handle'
+				});
+			}
+
+			$('#ajax-uploader-list button.delete')
 				.unbind('click')
 				.on('click', function(event){
 					event.preventDefault();
-					$.get($(this).attr('href'), {}, function(data) {
-						HUB.CollectionsFileUpload.updateFileList();
-						//$('#ajax-uploader-list').sortable('enable');
-					});
+					HUB.CollectionsFileUpload.deleteAsset(this);
 				});
 
 			if ($('#link-adder').length > 0) {
@@ -52,7 +56,8 @@ HUB.CollectionsFileUpload = {
 						'</p>'
 					);*/
 					//console.log($('#link-adder').attr('data-action') + $('#field-dir').val());
-					$.get($('#link-adder').attr('data-action') + $('#field-dir').val(), {}, function(data){
+					// Adding a link posts the page's token
+					$.post($('#link-adder').attr('data-action') + $('#field-dir').val(), $('#hz-post-action').serialize(), function(data){
 						var response = JSON.parse(data);
 
 						if (response.id != $('#field-dir').val()) {
@@ -93,25 +98,35 @@ HUB.CollectionsFileUpload = {
 		}
 	},
 	
+	deleteAsset: function(el) {
+		var $ = HUB.CollectionsFileUpload.jQuery;
+
+		var url = $(el).attr('formaction');
+
+		if (!/[?&]no_html=/.test(url)) {
+			url += (url.indexOf('?') == -1 ? '?' : '&') + 'no_html=1';
+		}
+		$.post(url, $(el.form).serialize(), function(data) {
+			HUB.CollectionsFileUpload.updateFileList();
+		});
+	},
+
 	updateFileList: function() {
 		var $ = HUB.CollectionsFileUpload.jQuery;
 
 		if ($('#ajax-uploader')) {
-			$('#ajax-uploader-list').sortable('enable');
-
 			$.get($('#ajax-uploader').attr('data-list') + $('#field-dir').val(), {}, function(data) {
-				$('#ajax-uploader-list')
-					.html(data)
-					.sortable('enable');
-				$('a.delete')
+				var list = $('#ajax-uploader-list').html(data);
+
+				if (list.hasClass('ui-sortable')) {
+					list.sortable('refresh');
+				}
+
+				$('#ajax-uploader-list button.delete')
 					.unbind('click')
 					.on('click', function(event){
 						event.preventDefault();
-						//console.log($(this).attr('href'));
-						$.get($(this).attr('href'), {}, function(data) {
-							//console.log(data);
-							HUB.CollectionsFileUpload.updateFileList();
-						});
+						HUB.CollectionsFileUpload.deleteAsset(this);
 					});
 			});
 		}

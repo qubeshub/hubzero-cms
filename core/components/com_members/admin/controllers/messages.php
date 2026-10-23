@@ -64,11 +64,9 @@ class Messages extends AdminController
 
 		$obj = Message\Component::blank();
 
-		// Get a record count
-		$total = $obj->getCount($filters, true);
-
-		// Get records
-		$rows = $obj->getRecords($filters, true);
+		// Get a record count, then the page
+		$total = $obj->getCount($filters);
+		$rows  = $obj->getRecords($filters);
 
 		$components = $obj->getComponents();
 

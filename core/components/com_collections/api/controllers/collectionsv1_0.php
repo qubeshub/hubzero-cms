@@ -34,6 +34,13 @@ class Collectionsv1_0 extends ApiController
 	 */
 	protected function _canManageObject($objectType, $objectId)
 	{
+		// Collection::_adapter() throws on any other scope, and that runs on
+		// every listing that links the row
+		if (!in_array($objectType, array('member', 'group'), true))
+		{
+			return false;
+		}
+
 		$uid = App::get('authn')['user_id'];
 		if ($objectType == 'group')
 		{
@@ -250,9 +257,13 @@ class Collectionsv1_0 extends ApiController
 			throw new Exception(Lang::txt('COM_COLLECTIONS_ERROR_SAVING_DATA'), 500);
 		}
 
-		$row->set('created', with(new Date($row->get('created')))->format('Y-m-d\TH:i:s\Z'));
+		// Format the date on the response, not the row: toObject() parses the
+		// description, and the wiki formatter stores the row back, which sent
+		// the ISO-8601 string to the DATETIME column (strict mode refused it)
+		$response = $row->toObject();
+		$response->created = with(new Date($row->get('created')))->format('Y-m-d\TH:i:s\Z');
 
-		$this->send($row->toObject());
+		$this->send($response);
 	}
 
 	/**
@@ -275,7 +286,9 @@ class Collectionsv1_0 extends ApiController
 
 		$row = new Collection($id);
 
-		if (!$row->exists())
+		// A private or members-only board is not readable through the API by
+		// someone who could not read it on the site.
+		if (!$row->exists() || !$row->isReadableBy())
 		{
 			throw new Exception(Lang::txt('COM_COLLECTIONS_ERROR_MISSING_RECORD'), 404);
 		}
@@ -428,9 +441,13 @@ class Collectionsv1_0 extends ApiController
 			throw new Exception(Lang::txt('COM_COLLECTIONS_ERROR_SAVING_DATA'), 500);
 		}
 
-		$row->set('created', with(new Date($row->get('created')))->format('Y-m-d\TH:i:s\Z'));
+		// Format the date on the response, not the row: toObject() parses the
+		// description, and the wiki formatter stores the row back, which sent
+		// the ISO-8601 string to the DATETIME column (strict mode refused it)
+		$response = $row->toObject();
+		$response->created = with(new Date($row->get('created')))->format('Y-m-d\TH:i:s\Z');
 
-		$this->send($row->toObject());
+		$this->send($response);
 	}
 
 	/**

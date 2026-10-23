@@ -87,6 +87,15 @@ class SectionDate extends Table
 			return false;
 		}
 
+		// Blank date boxes post ''; strict SQL refuses '' for a datetime, so store NULL
+		foreach (array('publish_up', 'publish_down') as $col)
+		{
+			if (isset($this->$col) && trim((string) $this->$col) === '')
+			{
+				$this->$col = null;
+			}
+		}
+
 		if (!$this->id)
 		{
 			$this->created    = Date::toSql();
@@ -177,7 +186,7 @@ class SectionDate extends Table
 			$filters['sort_Dir'] = 'ASC';
 		}
 
-		$query .= " ORDER BY " . $filters['sort'] . " " . $filters['sort_Dir'];
+		$query .= " ORDER BY " . (preg_replace('/[^a-zA-Z0-9_,. ]/', '', (string) $filters['sort']) ?: '1') . " " . (strtoupper((string) $filters['sort_Dir']) === 'ASC' ? 'ASC' : 'DESC');
 
 		if (isset($filters['limit']) && $filters['limit'] != 0)
 		{

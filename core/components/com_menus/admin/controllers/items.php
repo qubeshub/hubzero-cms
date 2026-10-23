@@ -219,13 +219,13 @@ class Items extends AdminController
 		{
 			if (stripos($search, 'id:') === 0)
 			{
-				$query->whereEquals('a.id', (int) substr($search, 3));
+				$query->whereEquals($a . '.id', (int) substr($search, 3));
 			}
 			elseif (stripos($search, 'link:') === 0)
 			{
 				if ($search = substr($search, 5))
 				{
-					$query->whereLink($a . '.link', $search);
+					$query->whereLike($a . '.link', $search);
 				}
 			}
 			else
@@ -241,7 +241,7 @@ class Items extends AdminController
 		$parentId = $filters['parent_id'];
 		if (!empty($parentId))
 		{
-			$query->whereEquals('p.id', (int)$parentId);
+			$query->whereEquals($a . '.parent_id', (int)$parentId);
 		}
 
 		// Filter the items over the menu id if set.
@@ -583,7 +583,7 @@ class Items extends AdminController
 
 		if (App::has('menu_associations') && App::get('menu_associations') != 0)
 		{
-			if ($pk != null)
+			if (!$row->isNew())
 			{
 				$row->set('associations', MenusHelper::getAssociations($row->get('id')));
 			}
@@ -866,7 +866,12 @@ class Items extends AdminController
 
 		$move = ($this->getTask() == 'orderup') ? -1 : +1;
 
-		if (!$model->move($move))
+		// Every menu's top-level items share the root as parent, so limit the
+		// neighbour to this menu (and client) or it can be another menu's item
+		$db = App::get('db');
+		$where = 'menutype = ' . $db->quote($model->get('menutype')) . ' AND client_id = ' . (int) $model->get('client_id');
+
+		if (!$model->move($move, $where))
 		{
 			Notify::error($model->getError());
 		}
@@ -883,6 +888,12 @@ class Items extends AdminController
 	public function rebuildTask()
 	{
 		Request::checkToken();
+
+		// The toolbar only offers this to super users
+		if (!User::authorise('core.admin', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 
 		// Initialise variables.
 		$model = Item::blank();
@@ -952,8 +963,13 @@ class Items extends AdminController
 	 */
 	public function setDefaultTask()
 	{
-		// Check for request forgeries
-		Request::checkToken();
+		// Check for request forgeries (the list's unset-default link carries the token in the URL)
+		Request::checkToken(['get', 'post']);
+
+		if (!User::authorise('core.edit.state', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 
 		// Get items to publish from the request.
 		$cid   = Request::getArray('cid', array(), '');
@@ -970,14 +986,9 @@ class Items extends AdminController
 			// Make sure the item ids are integers
 			\Hubzero\Utility\Arr::toInteger($cid);
 
-			$model = Item::oneOrFail($cid);
-
-			// Publish the items.
-			if (!$model->setHome($value))
-			{
-				Notify::error($model->getError());
-			}
-			else
+			// Publish the items. setHome() takes the id list itself and
+			// reports its own errors.
+			if (Item::setHome($cid, $value))
 			{
 				if ($value == 1)
 				{
@@ -1149,6 +1160,17 @@ class Items extends AdminController
 	 */
 	public function batchTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
+		if (
+			!User::authorise('core.edit', $this->_option)
+			&& !User::authorise('core.create', $this->_option)
+		)
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		$vars = Request::getArray('batch', array());
 		$pks  = Request::getArray('cid', array());
 
@@ -1178,7 +1200,7 @@ class Items extends AdminController
 			$model = Item::blank();
 
 			// Attempt to run the batch operation.
-			if ($model->batch($vars, $pks, $contexts))
+			if ($model->batchTask($vars, $pks, $contexts))
 			{
 				// Clear the cache
 				$this->cleanCache();

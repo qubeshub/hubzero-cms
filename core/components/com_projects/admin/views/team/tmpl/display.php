@@ -38,7 +38,7 @@ $this->css();
 			<p class="warning">
 				<?php echo Lang::txt(
 					'Membership is synced with group "%s".<br />Addition or removal of members in that group must handled through the group\'s membership interface.',
-					'<a href="' . Route::url('index.php?option=com_groups&controller=membership&gid=' . $group->get('cn')) . '">' . $group->get('description') . ' (' . $group->get('cn') . ')</a>'
+					'<a href="' . Route::url('index.php?option=com_groups&controller=membership&gid=' . $group->get('cn')) . '">' . $this->escape($group->get('description')) . ' (' . $this->escape($group->get('cn')) . ')</a>'
 				); ?>
 			</p>
 		</fieldset>
@@ -56,9 +56,10 @@ $this->css();
 					<label for="checkall-toggle" class="sr-only visually-hidden"><?php echo Lang::txt('JGLOBAL_CHECK_ALL'); ?></label>
 				</th>
 				<?php //} ?>
-				<th scope="col" class="priority-4"><?php echo Html::grid('sort', 'COM_PROJECTS_TEAM_USERID', 'uidNumber', @$this->filters['sort_Dir'], @$this->filters['sort']); ?></th>
-				<th scope="col"><?php echo Html::grid('sort', 'COM_PROJECTS_TEAM_NAME', 'name', @$this->filters['sort_Dir'], @$this->filters['sort']); ?></th>
-				<th scope="col" class="priority-3"><?php echo Html::grid('sort', 'COM_PROJECTS_TEAM_USERNAME', 'username', @$this->filters['sort_Dir'], @$this->filters['sort']); ?></th>
+				<?php // the controller names these sortby/sortdir (sort/sort_Dir were never set) ?>
+				<th scope="col" class="priority-4"><?php echo Html::grid('sort', 'COM_PROJECTS_TEAM_USERID', 'uidNumber', $this->filters['sortdir'], $this->filters['sortby']); ?></th>
+				<th scope="col"><?php echo Html::grid('sort', 'COM_PROJECTS_TEAM_NAME', 'name', $this->filters['sortdir'], $this->filters['sortby']); ?></th>
+				<th scope="col" class="priority-3"><?php echo Html::grid('sort', 'COM_PROJECTS_TEAM_USERNAME', 'username', $this->filters['sortdir'], $this->filters['sortby']); ?></th>
 				<th scope="col" class="priority-5"><?php echo Lang::txt('COM_PROJECTS_TEAM_ROLE'); ?></th>
 				<th scope="col" class="priority-4"><?php echo Lang::txt('COM_PROJECTS_TEAM_JOINED'); ?></th>
 				<th scope="col" class="priority-4"><?php echo Lang::txt('COM_PROJECTS_TEAM_LAST_VISIT'); ?></th>
@@ -165,7 +166,7 @@ $this->css();
 					?>
 				</td>
 				<td>
-					<?php echo $row->groupdesc ? \Hubzero\Utility\Str::truncate($row->groupdesc, 30) : ''; ?>
+					<?php echo $row->groupdesc ? $this->escape(\Hubzero\Utility\Str::truncate($row->groupdesc, 30)) : ''; ?>
 					<span class="block mini short prominent"><?php echo ($row->groupname) ? $row->groupname : Lang::txt('COM_PROJECTS_NONE'); ?></span>
 				</td>
 				<?php /*if (!$groupSynced) { ?>

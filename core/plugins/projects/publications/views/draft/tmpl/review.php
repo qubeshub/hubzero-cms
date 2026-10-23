@@ -136,22 +136,22 @@ $props = $this->pub->curation('blocks', $this->step, 'props');
 				<div class="element-instructions">
 					<label>
 						<span class="review-label"><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_PUB_PUBLISH_WHEN'); ?>*:</span>
-						<input type="text" id="publish_date" name="publish_date" value="<?php echo $pubdate; ?>" placeholder="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_IMMEDIATE'); ?>" />
+						<input type="text" id="publish_date" name="publish_date" value="<?php echo $this->escape($pubdate); ?>" placeholder="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_IMMEDIATE'); ?>" />
 						<span class="hint block"><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_HINT_EMBARGO'); ?></span>
 					</label>
 
 					<?php if ($this->pub->submitter())
 					{
 						// Do we have a submitter choice?
-						$submitter  = $this->pub->submitter()->name;
-						$submitter .= $this->pub->submitter()->organization ? ', ' . $this->pub->submitter()->organization : '';
+						$submitter  = $this->escape($this->pub->submitter()->name);
+						$submitter .= $this->pub->submitter()->organization ? ', ' . $this->escape($this->pub->submitter()->organization) : '';
 						$submitter .= '<input type="hidden" name="submitter" value="' . $this->pub->submitter()->user_id . '" />';
 						if ($this->pub->submitter()->user_id != User::get('id'))
 						{
 							$submitter  = '<select name="submitter">' . "\n";
-							$submitter .= '<option value="' . User::get('id') . '" selected="selected">' . User::get('name')
+							$submitter .= '<option value="' . User::get('id') . '" selected="selected">' . $this->escape(User::get('name'))
 								. '</option>' . "\n";
-							$submitter .= '<option value="' . $this->pub->submitter()->user_id . '">' . $this->pub->submitter()->name . '</option>' . "\n";
+							$submitter .= '<option value="' . $this->pub->submitter()->user_id . '">' . $this->escape($this->pub->submitter()->name) . '</option>' . "\n";
 							$submitter .= '</select>';
 						}
 						?>
@@ -174,17 +174,17 @@ $props = $this->pub->curation('blocks', $this->step, 'props');
 							?>
 							<li>
 								<span class="item-order"><input type="checkbox" name="contact[]" value="<?php echo $this->escape($author->id); ?>" <?php if ($author->repository_contact) { echo ' checked="checked"'; } ?>/></span>
-									<span class="item-title"><?php echo $name; ?> 
+									<span class="item-title"><?php echo $this->escape($name); ?> 
 										<?php if(!empty($dept)) {?>
-										<span id=<?php echo $this->escape($author->id) . "_dept" ?> class="item-subtext"><?php echo ' - ' . $dept; ?></span>
+										<span id=<?php echo $this->escape($author->id) . "_dept" ?> class="item-subtext"><?php echo ' - ' . $this->escape($dept); ?></span>
 										<?php } ?>
 										
 										<?php if(!empty($org)) {?>
-										<span id=<?php echo $this->escape($author->id) . "_org" ?> class="item-subtext"><?php echo ' - ' . $org; ?></span>
+										<span id=<?php echo $this->escape($author->id) . "_org" ?> class="item-subtext"><?php echo ' - ' . $this->escape($org); ?></span>
 										<?php } ?>
 										
 										<?php if(!empty($email)) { ?>
-										<span id=<?php echo $this->escape($author->id) . "_email" ?> class="item-subtext"><?php echo ' - ' . $email; ?></span>
+										<span id=<?php echo $this->escape($author->id) . "_email" ?> class="item-subtext"><?php echo ' - ' . $this->escape($email); ?></span>
 										<?php }?>
 									</span>
 								

@@ -119,7 +119,7 @@ class Job extends Relational
 
 		if (!$data['publish_up'] || $data['publish_up'] == '0000-00-00 00:00:00')
 		{
-			$data['publish_up'] = ($data['id'] ? $this->get('created') : \Date::toSql());
+			$data['publish_up'] = (!empty($data['id']) ? $this->get('created') : \Date::toSql());
 		}
 
 		return $data['publish_up'];
@@ -597,9 +597,54 @@ class Job extends Relational
 
 		$next = $row->get('next_run');
 
-		// Mirror the runner's due query (next_run <= now); a NULL next_run is
-		// not selected by that query, so treat it the same here.
-		return ($next !== null && $next <= Date::of('now')->toSql());
+		// Mirror the runner's due query: NULL (never scheduled yet) or
+		// next_run <= now.
+		return ($next === null || $next <= Date::of('now')->toSql());
+	}
+
+	/**
+	 * Release whatever job is in flight when the process ends.
+	 *
+	 * A fatal inside a job skips the caller's finally block, and the job then
+	 * stays active until STALE_ACTIVE_SECONDS pass. The returned holder's
+	 * ->job is set by the runner before triggering the job and cleared once
+	 * it has released it itself; anything still set at shutdown is released.
+	 *
+	 * @return  \stdClass  Holder with a ->job property
+	 */
+	public static function releaseOnShutdown()
+	{
+		$inFlight = new \stdClass;
+		$inFlight->job = null;
+
+		register_shutdown_function(function () use ($inFlight)
+		{
+			if (!$inFlight->job)
+			{
+				return;
+			}
+
+			$next = null;
+			try
+			{
+				$next = $inFlight->job->nextRun();
+			}
+			catch (\Throwable $e)
+			{
+				// leave next_run as-is if the recurrence can't be parsed
+			}
+
+			try
+			{
+				$inFlight->job->release(gmdate('Y-m-d H:i:s'), $next);
+			}
+			catch (\Throwable $e)
+			{
+				// best-effort: nothing more can be done at shutdown
+			}
+		});
+
+		return $inFlight;
 	}
 
 	/**

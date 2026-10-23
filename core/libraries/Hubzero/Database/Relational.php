@@ -94,6 +94,13 @@ class Relational implements \IteratorAggregate, \ArrayAccess
 	public static $connection = null;
 
 	/**
+	 * A connection for this instance alone, taking precedence over the default
+	 *
+	 * @var  \Hubzero\Database\Driver|object|null
+	 **/
+	private $instanceConnection = null;
+
+	/**
 	 * Whether or not we're caching query results
 	 *
 	 * @var  string
@@ -563,6 +570,34 @@ class Relational implements \IteratorAggregate, \ArrayAccess
 	}
 
 	/**
+	 * Sets the connection this instance's queries run on
+	 *
+	 * A model whose table lives in another database (a supergroup
+	 * component's sg_<cn> database, say) sets this per instance, or
+	 * overrides getConnection() to resolve it, without redirecting every
+	 * other model the way setDefaultConnection() would.
+	 *
+	 * @param   object  $connection  The connection to use
+	 * @return  $this
+	 **/
+	public function setConnection($connection)
+	{
+		$this->instanceConnection = $connection;
+
+		return $this;
+	}
+
+	/**
+	 * Gets the connection this instance's queries run on
+	 *
+	 * @return  \Hubzero\Database\Driver|object|null  The instance connection, else the default; null means the application database
+	 **/
+	public function getConnection()
+	{
+		return $this->instanceConnection ?: self::$connection;
+	}
+
+	/**
 	 * Disables query caching
 	 *
 	 * @return  self
@@ -855,7 +890,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess
 	 **/
 	public function getQuery()
 	{
-		return new Query(self::$connection);
+		return new Query($this->getConnection());
 	}
 
 	/**
@@ -866,7 +901,7 @@ class Relational implements \IteratorAggregate, \ArrayAccess
 	 **/
 	public function getStructure()
 	{
-		return new Structure(self::$connection);
+		return new Structure($this->getConnection());
 	}
 
 	/**

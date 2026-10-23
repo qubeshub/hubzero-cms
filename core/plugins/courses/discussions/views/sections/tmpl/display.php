@@ -58,14 +58,13 @@ $base = $this->offering->link() . '&active=discussions&unit=manage';
 								<input type="hidden" name="action" value="savesection" />
 								<input type="hidden" name="unit" value="manage" />
 								<input type="hidden" name="active" value="discussions" />
+								<?php echo Html::input('token'); ?>
 						<?php } else { ?>
 							<?php echo $this->escape(stripslashes($section->get('title'))); ?>
 						<?php } ?>
 						<?php if (($this->config->get('access-edit-section') || $this->config->get('access-delete-section')) && $section->get('id')) { ?>
 							<?php if ($this->config->get('access-delete-section')) { ?>
-								<a class="delete" href="<?php echo Route::url($base . '&b=' . $section->get('alias') . '&c=delete'); ?>" title="<?php echo Lang::txt('Delete'); ?>">
-									<span><?php echo Lang::txt('Delete'); ?></span>
-								</a>
+								<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&b=' . $section->get('alias') . '&c=delete'); ?>" class="delete" title="<?php echo Lang::txt('Delete'); ?>"><span><?php echo Lang::txt('Delete'); ?></span></button>
 							<?php } ?>
 							<?php if ($this->config->get('access-edit-section') && $this->edit != $section->get('alias') && $section->get('id')) { ?>
 								<a class="edit" href="<?php echo Route::url($base . '&b=' . $section->get('alias') . '&c=edit#s' . $section->get('id')); ?>" title="<?php echo Lang::txt('Edit'); ?>">
@@ -128,9 +127,7 @@ $base = $this->offering->link() . '&active=discussions&unit=manage';
 												</a>
 											<?php } ?>
 											<?php if ($this->config->get('access-delete-category') && $section->get('id')) { ?>
-												<a class="delete tooltips" title="<?php echo Lang::txt('PLG_COURSES_DISCUSSIONS_DELETE_CATEGORY'); ?>" href="<?php echo Route::url($base . '&b=' . $section->get('alias') . '&c=' . $row->get('alias') . '/delete'); ?>" title="<?php echo Lang::txt('Delete'); ?>">
-													<span><?php echo Lang::txt('Delete'); ?></span>
-												</a>
+												<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&b=' . $section->get('alias') . '&c=' . $row->get('alias') . '/delete'); ?>" class="delete tooltips" title="<?php echo Lang::txt('PLG_COURSES_DISCUSSIONS_DELETE_CATEGORY'); ?>"><span><?php echo Lang::txt('Delete'); ?></span></button>
 											<?php } ?>
 										</td>
 									<?php } ?>
@@ -178,6 +175,8 @@ $base = $this->offering->link() . '&active=discussions&unit=manage';
 						<input type="hidden" name="active" value="discussions" />
 						<input type="hidden" name="unit" value="manage" />
 						<input type="hidden" name="action" value="savesection" />
+
+						<?php echo Html::input('token'); ?>
 					</fieldset>
 				</form>
 			</div><!-- /.container -->

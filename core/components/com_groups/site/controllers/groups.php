@@ -598,11 +598,11 @@ class Groups extends Base
 		}
 
 		$g_cn              = trim(Request::getString('cn', '', 'post'));
-		$g_description     = preg_replace('/\s+/', ' ', trim(Request::getString('description', Lang::txt('NONE'), 'post')));
+		$g_description     = preg_replace('/\s+/', ' ', trim(strip_tags(Request::getString('description', Lang::txt('NONE'), 'post'))));
 		$g_discoverability = Request::getInt('discoverability', 0, 'post');
 		$g_public_desc     = Sanitize::clean(trim(Request::getString('public_desc', '', 'post', 'none', 2)));
 		$g_private_desc    = Sanitize::clean(trim(Request::getString('private_desc', '', 'post', 'none', 2)));
-		$g_restrict_msg    = Sanitize::clean(trim(Request::getString('restrict_msg', '', 'post', 'none', 2)));
+		$g_restrict_msg    = Sanitize::html(trim(Request::getString('restrict_msg', '', 'post', 'none', 2)));
 		$g_join_policy     = Request::getInt('join_policy', 0, 'post');
 		$tags              = trim(Request::getString('tags', ''));
 		$lid               = Request::getInt('lid', 0, 'post');
@@ -617,6 +617,15 @@ class Groups extends Base
 		{
 			$group = Group::getInstance($g_gidNumber);
 			$this->_task = 'edit';
+
+			// _authorize() and _authorizedForTask() read $this->cn, which is
+			// whatever cn the request carried; the group being written is the
+			// posted gidNumber. Authorise against that group.
+			if (!$group || !$group->get('gidNumber'))
+			{
+				App::abort(404, Lang::txt('COM_GROUPS_ERROR_NO_ID'));
+			}
+			$this->cn = $group->get('cn');
 			// Snapshot the pre-save state for groups.onGroupAfterSave listeners.
 			// Group::getInstance() is a singleton cache, so a second call would
 			// return the *same* instance as $group and reflect the post-save
@@ -974,7 +983,7 @@ class Groups extends Base
 				'action'      => ($this->_task == 'new' ? 'created' : 'updated'),
 				'scope'       => 'group',
 				'scope_id'    => $group->get('gidNumber'),
-				'description' => Lang::txt('COM_GROUPS_ACTIVITY_GROUP_' . ($this->_task == 'new' ? 'CREATED' : 'UPDATED'), '<a href="' . $url . '">' . $group->get('description') . '</a>'),
+				'description' => Lang::txt('COM_GROUPS_ACTIVITY_GROUP_' . ($this->_task == 'new' ? 'CREATED' : 'UPDATED'), '<a href="' . $url . '">' . htmlspecialchars((string) ($group->get('description')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title'     => $group->get('description'),
 					'url'       => $url,
@@ -1086,8 +1095,21 @@ class Groups extends Base
 		// Check if they're logged in
 		if (User::isGuest())
 		{
-			return $this->loginTask(Lang::txt('COM_GROUPS_DELETE_MUST_BE_LOGGED_IN'));
+			// Return to the confirmation form rather than to this POST-only task
+			return $this->loginTask(
+				Lang::txt('COM_GROUPS_DELETE_MUST_BE_LOGGED_IN'),
+				'index.php?option=' . $this->_option . '&cn=' . $this->cn . '&task=delete'
+			);
 		}
+
+		// Require POST to prevent accidental deletion by crawlers
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('COM_GROUPS_ERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		// Check for request forgeries
+		Request::checkToken();
 
 		// Check to make sure we have  cname
 		if (!$this->cn)
@@ -1238,7 +1260,7 @@ class Groups extends Base
 				'action'      => 'deleted',
 				'scope'       => 'group',
 				'scope_id'    => $deletedgroup->get('gidNumber'),
-				'description' => Lang::txt('COM_GROUPS_ACTIVITY_GROUP_DELETED', '<a href="' . Route::url('index.php?option=' . $this->_option . '&cn=' . $deletedgroup->get('cn')) . '">' . $deletedgroup->get('description') . '</a>'),
+				'description' => Lang::txt('COM_GROUPS_ACTIVITY_GROUP_DELETED', '<a href="' . Route::url('index.php?option=' . $this->_option . '&cn=' . $deletedgroup->get('cn')) . '">' . htmlspecialchars((string) ($deletedgroup->get('description')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title'     => $deletedgroup->get('description'),
 					'url'       => Route::url('index.php?option=' . $this->_option . '&cn=' . $deletedgroup->get('cn')),
@@ -1357,6 +1379,19 @@ class Groups extends Base
 		$filters = array();
 		$filters['cn'] = trim(Request::getString('group', ''));
 
+		// Without a group this handed every account on the hub to any
+		// logged-in user; and a hidden group's roster is for its members
+		// (support's ticket-owner picker relies on visible groups' lists).
+		$group = $filters['cn'] ? Group::getInstance($filters['cn']) : null;
+		if (!$group || !$group->get('gidNumber')
+		 || ($group->get('discoverability') == 1
+		  && !$group->isMember(User::get('id'))
+		  && !User::authorise('core.admin', $this->_option)))
+		{
+			echo '{"members":[]}';
+			exit();
+		}
+
 		// Limit number of returned rows because PHP runs out of memory and the hub fails with large numbers
 		if ($filters['cn'])
 		{
@@ -1386,7 +1421,7 @@ class Groups extends Base
 		{
 			foreach ($rows as $row)
 			{
-				$json[] = '{"username":"' . $row->username . '","name":"' . htmlentities(stripslashes($row->name), ENT_COMPAT, 'UTF-8') . '"}';
+				$json[] = json_encode(array('username' => $row->username, 'name' => htmlentities(stripslashes($row->name), ENT_COMPAT, 'UTF-8')));
 			}
 		}
 
@@ -1506,6 +1541,15 @@ class Groups extends Base
 				$scope = ($scope ? trim($scope, '/') . '/' : $scope);
 			}
 			$page = \Components\Wiki\Models\Page::oneByPath($scope . $pagename, 'group', $group->get('gidNumber'));
+
+			// An unknown page is a blank row: its id is null and the base path
+			// below would collapse to the wiki root, where every page's
+			// attachments live under <page id>/<file>.
+			if (!$page->get('id'))
+			{
+				$this->_errorHandler(404, Lang::txt('COM_GROUPS_ERROR_FILE_NOT_FOUND'));
+				return;
+			}
 
 			// Check specific wiki page access
 			if ($page->get('access') == 1 && !in_array(User::get('id'), $group->get('members')) && $authorized != 'admin')

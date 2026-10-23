@@ -41,6 +41,9 @@ class Media extends SiteController
 	 */
 	public function uploadTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		if (User::isGuest())
 		{
 			$this->setError(Lang::txt('COM_FEEDBACK_NOTAUTH'));
@@ -54,9 +57,16 @@ class Media extends SiteController
 			return $this->displayTask('', $id);
 		}
 
+		// Only act on the current user's own quote space
+		if (User::get('id') != $id)
+		{
+			$this->setError(Lang::txt('COM_FEEDBACK_NOTAUTH'));
+			return $this->displayTask('', User::get('id'));
+		}
+
 		// Incoming file
-		$file = Request::getArray('upload', '', 'files');
-		if (!$file['name'])
+		$file = Request::getArray('upload', array(), 'files');
+		if (empty($file['name']))
 		{
 			$this->setError(Lang::txt('COM_FEEDBACK_NO_FILE'));
 			return $this->displayTask('', $id);
@@ -102,6 +112,9 @@ class Media extends SiteController
 			return $this->displayTask();
 		}
 
+		// Do we have an old file we're replacing?
+		$curfile = basename(Request::getString('currentfile', ''));
+
 		// Perform the upload
 		if (!Filesystem::upload($file['tmp_name'], $path . DS . $file['name']))
 		{
@@ -110,9 +123,6 @@ class Media extends SiteController
 		}
 		else
 		{
-			// Do we have an old file we're replacing?
-			$curfile = Request::getString('currentfile', '');
-
 			if ($curfile != '' && file_exists($path . DS . $curfile))
 			{
 				if (!Filesystem::delete($path . DS . $curfile))
@@ -136,6 +146,9 @@ class Media extends SiteController
 	 */
 	public function deleteTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		if (User::isGuest())
 		{
 			$this->setError(Lang::txt('COM_FEEDBACK_NOTAUTH'));
@@ -204,7 +217,7 @@ class Media extends SiteController
 		$dir = Str::pad($id);
 
 		// Do we have a file or do we need to get one?
-		$file = $file ?: Request::getString('file', '');
+		$file = basename($file ?: Request::getString('file', ''));
 
 		// Build the directory path
 		$path = $this->path . DS . $dir;

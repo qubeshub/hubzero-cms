@@ -181,7 +181,7 @@ class plgCoursesReviews extends \Hubzero\Plugin\Plugin
 				break;
 			}
 
-			$pdt = strftime($yearFormat, $dt) . '-' . strftime($monthFormat, $dt) . '-' . strftime($dayFormat, $dt) . ' 00:00:00';
+			$pdt = date($yearFormat . '-' . $monthFormat . '-' . $dayFormat, $dt) . ' 00:00:00';
 			$today = Date::toSql();
 
 			// Can users create comments?
@@ -226,7 +226,8 @@ class plgCoursesReviews extends \Hubzero\Plugin\Plugin
 	 */
 	protected function _login()
 	{
-		$return = base64_encode(Request::getString('REQUEST_URI', Route::url($this->obj->link() . '&active=reviews', false, true), 'server'));
+		// Return to the reviews page rather than to the action that was requested
+		$return = base64_encode($this->url);
 
 		App::redirect(
 			Route::url('index.php?option=com_users&view=login&return=' . $return, false),
@@ -249,9 +250,22 @@ class plgCoursesReviews extends \Hubzero\Plugin\Plugin
 			return $this->_login();
 		}
 
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
+
 		$no_html = Request::getInt('no_html', 0);
 
-		// Record the vote
+		// Record the vote. Both start assigned: neither branch runs when the
+		// request carries no voteup or votedown, and $how and $item_id were then
+		// read undefined -- a warning this hub turns into a 500.
+		$item_id = 0;
+		$how     = 0;
+
 		if ($item_id = Request::getInt('voteup', 0))
 		{
 			$how = 1;
@@ -261,7 +275,22 @@ class plgCoursesReviews extends \Hubzero\Plugin\Plugin
 			$how = -1;
 		}
 
+		if (!$item_id || !$how)
+		{
+			App::redirect($this->url);
+			return;
+		}
+
 		$item = \Components\Courses\Models\Comment::oneOrFail($item_id);
+
+		// ...and it has to be a review on this course. oneOrFail() resolves any
+		// comment row on the hub, and nothing else here looks at which one.
+		if ((string) $item->get('item_type') !== (string) $this->obj_type
+		 || (int) $item->get('item_id') !== (int) $this->obj->get('id'))
+		{
+			App::redirect($this->url);
+			return;
+		}
 
 		if (!$item->vote($how, User::get('id')))
 		{
@@ -345,12 +374,76 @@ class plgCoursesReviews extends \Hubzero\Plugin\Plugin
 		// Incoming
 		$comment = Request::getArray('comment', array(), 'post');
 
-		// Instantiate a new comment object and pass it the data
-		$row = \Components\Courses\Models\Comment::blank()->set($comment);
+		// Resolve the row before anything is bound onto it.
+		//
+		// This used to be Comment::blank()->set($comment): set() copies id, and
+		// a Relational with an id is not new, so save() issues an UPDATE. A
+		// posted comment[id] therefore rewrote ANY course review on the hub --
+		// its content, its item_id and its state -- and the only thing in the
+		// way was access-edit-comment, which _authorize() grants on being a
+		// manager of the course being VIEWED while ignoring the $assetId it is
+		// handed.
+		$__cid = isset($comment['id']) ? (int) $comment['id'] : 0;
+		$row   = \Components\Courses\Models\Comment::oneOrNew($__cid);
 
-		$row->setUploadDir($this->params->get('comments_uploadpath', '/site/comments'));
+		// An existing review has to be on this course, and the caller has to own
+		// it or be able to moderate here.
+		if (!$row->isNew())
+		{
+			if ((string) $row->get('item_type') !== (string) $this->obj_type
+			 || (int) $row->get('item_id') !== (int) $this->obj->get('id'))
+			{
+				App::redirect(
+					$this->url,
+					Lang::txt('PLG_COURSES_REVIEWS_NOTAUTH'),
+					'warning'
+				);
+				return;
+			}
 
-		if ($row->get('id') && !$this->params->get('access-edit-comment'))
+			// item_id and item_type decide which course a review appears under.
+			// They are hidden inputs on the form, so keep the stored ones rather
+			// than letting the post move the review to another course.
+			unset($comment['item_id']);
+			unset($comment['item_type']);
+			unset($comment['created']);
+			unset($comment['created_by']);
+			unset($comment['state']);
+		}
+
+		$row->set($comment);
+
+		// On create, pin the review to the course being viewed. created and
+		// created_by are filled by the model's $initiate list.
+		if ($row->isNew())
+		{
+			$row->set('item_id', $this->obj->get('id'));
+			$row->set('item_type', $this->obj_type);
+			// The form carries no state and the column defaults to 0
+			// (unpublished), which _view() does not list: a new review saved
+			// but never appeared, even to its author
+			$row->set('state', \Components\Courses\Models\Comment::STATE_PUBLISHED);
+		}
+
+		// access-edit-comment is every enrolled student (comments_editable),
+		// so testing it alone let any student edit any other's review. The
+		// rule the view renders Edit on: the author, where reviews are
+		// editable, or a manager. A new review needs access-create-comment,
+		// which comments_close withdraws.
+		if ($row->get('id'))
+		{
+			if (!$this->params->get('access-manage-comment')
+			 && !$this->params->get('access-admin-comment')
+			 && !($this->params->get('access-edit-comment') && $row->get('created_by') == User::get('id')))
+			{
+				App::redirect(
+					$this->url,
+					Lang::txt('PLG_COURSES_REVIEWS_NOTAUTH'),
+					'warning'
+				);
+			}
+		}
+		elseif (!$this->params->get('access-create-comment'))
 		{
 			App::redirect(
 				$this->url,
@@ -390,15 +483,38 @@ class plgCoursesReviews extends \Hubzero\Plugin\Plugin
 			$this->_login();
 		}
 
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
+
 		// Incoming
 		$id = Request::getInt('comment', 0);
 		if (!$id)
 		{
-			return $this->_redirect();
+			// _redirect() is defined neither here nor on Hubzero\Plugin\Plugin,
+			// so reaching this with no comment id was a fatal.
+			App::redirect($this->url);
+			return;
 		}
 
 		// Initiate a comment object
 		$comment = \Components\Courses\Models\Comment::oneOrFail($id);
+
+		// oneOrFail() resolves any comment row on the hub, and the moderator arm
+		// below is access-delete-comment, which _authorize() grants on being a
+		// manager of the course being VIEWED and which ignores the $assetId it
+		// is handed. So the review has to be on this course first, or a manager
+		// of their own course could soft-delete every review on the site.
+		if ((string) $comment->get('item_type') !== (string) $this->obj_type
+		 || (int) $comment->get('item_id') !== (int) $this->obj->get('id'))
+		{
+			App::redirect($this->url);
+			return;
+		}
 
 		if (User::get('id') != $comment->get('created_by') && !$this->params->get('access-delete-comment'))
 		{

@@ -12,6 +12,8 @@ use Exception;
 use stdClass;
 use Request;
 use Lang;
+use User;
+use App;
 
 /**
  * API controller class for group members
@@ -49,12 +51,24 @@ class Membersv1_0 extends ApiController
 	 */
 	public function listTask()
 	{
+		$this->requiresAuthentication();
+
 		$id    = Request::getInt('id', 0);
 		$group = \Hubzero\User\Group::getInstance($id);
 
 		if (!$group)
 		{
 			throw new Exception(Lang::txt('COM_GROUPS_ERROR_MISSING_RECORD'), 404);
+		}
+
+		// A hidden group only exposes its roster to members, managers or admins
+		$uid = App::get('authn')['user_id'];
+		if ($group->get('discoverability') == 1
+			&& !$group->isMember($uid)
+			&& !in_array($uid, (array) $group->get('managers'))
+			&& !User::authorise('core.admin', 'com_groups'))
+		{
+			throw new Exception(Lang::txt('COM_GROUPS_ERROR_NOT_AUTH'), 403);
 		}
 
 		// get all group members, managers, etc
@@ -97,8 +111,13 @@ class Membersv1_0 extends ApiController
 			$response['managers'] = $managers;
 		}
 
+		// Pending invitations and applications are manager business: the
+		// site UI shows them to managers only.
+		$manages = in_array($uid, (array) $group->get('managers'))
+			|| User::authorise('core.admin', 'com_groups');
+
 		// add invitees
-		if (in_array('invitees', $list))
+		if ($manages && in_array('invitees', $list))
 		{
 			foreach ($invitees as $k => $invitee)
 			{
@@ -107,8 +126,8 @@ class Membersv1_0 extends ApiController
 			$response['invitees'] = $invitees;
 		}
 
-		// add managers
-		if (in_array('applicants', $list))
+		// add applicants
+		if ($manages && in_array('applicants', $list))
 		{
 			foreach ($applicants as $k => $applicant)
 			{

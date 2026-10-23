@@ -74,9 +74,7 @@ $base = $this->offering->link() . '&active=announcements';
 								<a class="icon-edit edit" href="<?php echo Route::url($base . '&action=edit&entry=' . $row->get('id')); ?>" title="<?php echo Lang::txt('PLG_COURSES_ANNOUNCEMENTS_EDIT'); ?>">
 									<?php echo Lang::txt('PLG_COURSES_ANNOUNCEMENTS_EDIT'); ?>
 								</a>
-								<a class="icon-delete delete" href="<?php echo Route::url($base . '&action=delete&entry=' . $row->get('id')); ?>" data-confirm="<?php echo Lang::txt('PLG_COURSES_ANNOUNCEMENTS_CONFIRM_DELETE'); ?>" title="<?php echo Lang::txt('PLG_COURSES_ANNOUNCEMENTS_DELETE'); ?>">
-									<?php echo Lang::txt('PLG_COURSES_ANNOUNCEMENTS_DELETE'); ?>
-								</a>
+								<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&action=delete&entry=' . $row->get('id')); ?>" class="icon-delete delete" title="<?php echo Lang::txt('PLG_COURSES_ANNOUNCEMENTS_DELETE'); ?>" data-confirm="<?php echo Lang::txt('PLG_COURSES_ANNOUNCEMENTS_CONFIRM_DELETE'); ?>"><?php echo Lang::txt('PLG_COURSES_ANNOUNCEMENTS_DELETE'); ?></button>
 							<?php } ?>
 							</dd>
 					<?php } ?>

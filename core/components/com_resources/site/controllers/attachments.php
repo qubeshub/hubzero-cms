@@ -50,6 +50,9 @@ class Attachments extends SiteController
 	 */
 	public function createTask()
 	{
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
 		// Push through to a different method if
 		// being created via AJAX
 		if (Request::getInt('no_html', 0))
@@ -94,6 +97,20 @@ class Attachments extends SiteController
 		}
 		$childId = Request::getInt('childid');
 		$resource = Entry::oneOrNew($childId);
+
+		// childid names any row on the hub. Attaching an existing resource
+		// grafts it under this parent -- and a child with two parents is
+		// served on the more permissive one -- so the caller has to be
+		// allowed to edit the child as well as the parent.
+		if (!$resource->isNew()
+		 && !$resource->access('edit') && !$resource->access('edit-own'))
+		{
+			App::abort(403, Lang::txt('COM_RESOURCES_ALERTNOTAUTH'));
+		}
+
+		// Attachments take the parent's access and group rather than being
+		// public until someone edits them a second time
+		$parentRow = Entry::oneOrNew($pid);
 		if ($resource->isNew())
 		{
 			// Create new record
@@ -105,7 +122,8 @@ class Attachments extends SiteController
 				'published'    => 1,
 				'publish_up'   => Date::toSql(),
 				'standalone'   => 0,
-				'access'       => 0,
+				'access'       => (int) $parentRow->get('access', 0),
+				'group_owner'  => $parentRow->get('group_owner', ''),
 				'path'         => 'http://', // make sure no path is specified just yet
 				'type'         =>  11
 			));
@@ -135,10 +153,14 @@ class Attachments extends SiteController
 	 */
 	public function ajaxCreateTask()
 	{
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
 		// Ensure we have an ID to work with
 		$pid = strtolower(Request::getInt('pid', 0));
 		$resourceTitle = Request::getString('resource-title');
 		header('Content-Type: application/json');
+		$createdHere = false;
 		if (!$pid && !empty($resourceTitle))
 		{
 			$parentResource = Entry::blank();
@@ -162,6 +184,7 @@ class Attachments extends SiteController
 				exit();
 			}
 			$pid = $parentResource->get('id');
+			$createdHere = true;
 		}
 		if (!$pid)
 		{
@@ -169,8 +192,34 @@ class Attachments extends SiteController
 			exit();
 		}
 
+		// Must be able to edit the parent resource (same rule as the upload
+		// twin); a parent this request just created belongs to the caller
+		if (!$createdHere)
+		{
+			$parentAuth = Entry::oneOrFail($pid);
+			if (!$parentAuth->access('edit') && !$parentAuth->access('edit-own'))
+			{
+				echo json_encode(array('error' => Lang::txt('JERROR_ALERTNOAUTHOR')));
+				exit();
+			}
+		}
+
 		$childId = Request::getInt('childid');
 		$resource = Entry::oneOrNew($childId);
+
+		// childid names any row on the hub. Attaching an existing resource
+		// grafts it under this parent -- and a child with two parents is
+		// served on the more permissive one -- so the caller has to be
+		// allowed to edit the child as well as the parent.
+		if (!$resource->isNew()
+		 && !$resource->access('edit') && !$resource->access('edit-own'))
+		{
+			App::abort(403, Lang::txt('COM_RESOURCES_ALERTNOTAUTH'));
+		}
+
+		// Attachments take the parent's access and group rather than being
+		// public until someone edits them a second time
+		$parentRow = Entry::oneOrNew($pid);
 		if ($resource->isNew())
 		{
 			// Create new record
@@ -182,7 +231,8 @@ class Attachments extends SiteController
 				'published'    => 1,
 				'publish_up'   => Date::toSql(),
 				'standalone'   => 0,
-				'access'       => 0,
+				'access'       => (int) $parentRow->get('access', 0),
+				'group_owner'  => $parentRow->get('group_owner', ''),
 				'path'         => Request::getString('url', 'http://'),
 				'type'         => 11
 			));
@@ -251,11 +301,22 @@ class Attachments extends SiteController
 	 */
 	public function ajaxUploadTask()
 	{
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
 		// Ensure we have an ID to work with
 		$pid = strtolower(Request::getInt('pid', 0));
 		if (!$pid)
 		{
 			echo json_encode(array('error' => Lang::txt('COM_RESOURCES_NO_ID')));
+			return;
+		}
+
+		// Must be able to edit the parent resource
+		$parentAuth = Entry::oneOrFail($pid);
+		if (!$parentAuth->access('edit') && !$parentAuth->access('edit-own'))
+		{
+			echo json_encode(array('error' => Lang::txt('JERROR_ALERTNOAUTHOR')));
 			return;
 		}
 
@@ -309,12 +370,25 @@ class Attachments extends SiteController
 		$filename = \Filesystem::clean($filename);
 		$filename = str_replace(' ', '_', $filename);
 
-		$ext = $pathinfo['extension'];
+		$ext = isset($pathinfo['extension']) ? $pathinfo['extension'] : '';
+
+		// Contributors upload archives, source and media of many types, so block
+		// only server-executable extensions and the markup types the download
+		// handler serves inline (a stored HTML file would run in the hub origin)
+		$blockedExtensions = array('php', 'php3', 'php4', 'php5', 'php7', 'php8', 'phtml', 'pht', 'phar', 'phps', 'cgi', 'pl', 'asp', 'aspx', 'jsp', 'shtml', 'htaccess', 'htpasswd', 'html', 'htm', 'xhtml', 'xml');
+		if (in_array(strtolower((string) $ext), $blockedExtensions))
+		{
+			echo json_encode(array('error' => Lang::txt('File type not allowed: %s', $ext)));
+			return;
+		}
 		/*while (file_exists($path . DS . $filename . '.' . $ext))
 		{
 			$filename .= rand(10, 99);
 		}*/
 
+		// Attachments take the parent's access and group rather than being
+		// public until someone edits them a second time
+		$parentRow = Entry::oneOrNew($pid);
 		// Instantiate a new resource object
 		$resource = Entry::blank()->set(array(
 			'title'        => $filename . '.' . $ext,
@@ -324,7 +398,8 @@ class Attachments extends SiteController
 			'published'    => 1,
 			'publish_up'   => Date::toSql(),
 			'standalone'   => 0,
-			'access'       => 0,
+			'access'       => (int) $parentRow->get('access', 0),
+			'group_owner'  => $parentRow->get('group_owner', ''),
 			'path'         => '', // make sure no path is specified just yet
 			'type'         => $this->_getChildType($filename . '.' . $ext)
 		));
@@ -463,10 +538,23 @@ class Attachments extends SiteController
 	 */
 	public function reorderTask()
 	{
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
 		// Incoming
 		$id   = Request::getInt('id', 0);
 		$pid  = Request::getInt('pid', 0);
 		$move = Request::getWord('move', 'down');
+
+		// Must be able to edit the parent resource
+		if ($pid)
+		{
+			$parentAuth = Entry::oneOrFail($pid);
+			if (!$parentAuth->access('edit') && !$parentAuth->access('edit-own'))
+			{
+				App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+			}
+		}
 
 		// Ensure we have an ID to work with
 		if (!$id)
@@ -512,6 +600,9 @@ class Attachments extends SiteController
 	 */
 	public function renameTask()
 	{
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
 		// Incoming
 		$id   = Request::getInt('id', 0);
 		$name = Request::getString('name', '');
@@ -520,12 +611,20 @@ class Attachments extends SiteController
 		if ($id && $name)
 		{
 			$resource = Entry::oneOrFail($id);
+			// Authorize against the parent resource the attachment belongs to, so
+			// any of its editors (not only whoever uploaded the file) may rename it
+			$assoc  = Association::all()->whereEquals('child_id', $id)->row();
+			$authOn = ($assoc && $assoc->get('parent_id')) ? Entry::oneOrFail($assoc->get('parent_id')) : $resource;
+			if (!$authOn->access('edit') && !$authOn->access('edit-own'))
+			{
+				App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+			}
 			$resource->set('title', (string)$name);
 			$resource->save();
 		}
 
 		// Echo the name
-		echo $name;
+		echo htmlspecialchars((string) $name, ENT_QUOTES, 'UTF-8');
 	}
 
 	/**
@@ -535,6 +634,9 @@ class Attachments extends SiteController
 	 */
 	public function saveTask()
 	{
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
 		if (Request::getInt('no_html', 0))
 		{
 			return $this->ajaxUploadTask();
@@ -546,6 +648,13 @@ class Attachments extends SiteController
 		{
 			$this->setError(Lang::txt('CONTRIBUTE_NO_ID'));
 			return $this->displayTask($pid);
+		}
+
+		// Must be able to edit the parent resource
+		$parentAuth = Entry::oneOrFail($pid);
+		if (!$parentAuth->access('edit') && !$parentAuth->access('edit-own'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
 		}
 
 		// Incoming file
@@ -561,6 +670,16 @@ class Attachments extends SiteController
 
 		// Ensure file names fit.
 		$ext = Filesystem::extension($file['name']);
+
+		// Contributors upload archives, source and media of many types, so block
+		// only server-executable extensions and the markup types the download
+		// handler serves inline (a stored HTML file would run in the hub origin)
+		$blockedExtensions = array('php', 'php3', 'php4', 'php5', 'php7', 'php8', 'phtml', 'pht', 'phar', 'phps', 'cgi', 'pl', 'asp', 'aspx', 'jsp', 'shtml', 'htaccess', 'htpasswd', 'html', 'htm', 'xhtml', 'xml');
+		if (in_array(strtolower((string) $ext), $blockedExtensions))
+		{
+			$this->setError(Lang::txt('File type not allowed: %s', $ext));
+			return $this->displayTask($pid);
+		}
 		$file['name'] = str_replace(' ', '_', $file['name']);
 		if (strlen($file['name']) > 230)
 		{
@@ -568,6 +687,9 @@ class Attachments extends SiteController
 			$file['name'] .= '.' . $ext;
 		}
 
+		// Attachments take the parent's access and group rather than being
+		// public until someone edits them a second time
+		$parentRow = Entry::oneOrNew($pid);
 		// Instantiate a new resource object
 		$resource = Entry::blank()->set(array(
 			'title'        => $file['name'],
@@ -577,7 +699,8 @@ class Attachments extends SiteController
 			'published'    => 1,
 			'publish_up'   => Date::toSql(),
 			'standalone'   => 0,
-			'access'       => 0,
+			'access'       => (int) $parentRow->get('access', 0),
+			'group_owner'  => $parentRow->get('group_owner', ''),
 			'path'         => '', // make sure no path is specified just yet
 			'type'         => $this->_getChildType($file['name'])
 		));
@@ -711,6 +834,9 @@ class Attachments extends SiteController
 	 */
 	public function deleteTask()
 	{
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
 		// Incoming parent ID
 		$pid = Request::getInt('pid', 0);
 		if (!$pid)
@@ -730,14 +856,22 @@ class Attachments extends SiteController
 		// Load resource info
 		$resource = Entry::oneOrFail($id);
 
-		if (!($resource->access('delete')))
+		// The attachment must really belong to the given parent, and the caller
+		// must be able to edit that parent (any of its editors, not only the
+		// uploader) to remove the attachment
+		$association = Association::oneByRelationship($pid, $id);
+		if (!$association || !$association->get('id'))
+		{
+			App::abort(404, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+		$parentAuth = Entry::oneOrFail($pid);
+		if (!$parentAuth->access('edit') && !$parentAuth->access('edit-own'))
 		{
 			App::abort(403, Lang::txt('COM_CONTRIBUTE_NOT_AUTH'));
 		}
 
 		if ($resource->get('standalone') == 1)
 		{
-			$association = Association::oneByRelationship($pid, $id);
 			$association->destroy();
 
 			return $this->displayTask($pid);
@@ -796,6 +930,9 @@ class Attachments extends SiteController
 	 */
 	public function accessTask()
 	{
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
 		// Incoming parent ID
 		$pid = Request::getInt('pid', 0);
 		if (!$pid)
@@ -814,6 +951,20 @@ class Attachments extends SiteController
 
 		// Load resource info
 		$resource = Entry::oneOrFail($id);
+
+		// The attachment must really belong to the given parent, and the caller
+		// must be able to edit that parent (any of its editors, not only the
+		// uploader) to change the attachment's access
+		$assoc = Association::oneByRelationship($pid, $id);
+		if (!$assoc || !$assoc->get('id'))
+		{
+			App::abort(404, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+		$parentAuth = Entry::oneOrFail($pid);
+		if (!$parentAuth->access('edit') && !$parentAuth->access('edit-own'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 
 		// Set value
 		$access = Request::getInt('access', 0);
@@ -856,6 +1007,13 @@ class Attachments extends SiteController
 
 		// Initiate a resource
 		$resource = Entry::oneOrFail($id);
+
+		// The list shows every child (drafts, private files) with its stored
+		// path, so only the resource's editors get it
+		if (!$resource->access('edit') && !$resource->access('edit-own'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 
 		$children = $resource->children()->order('ordering', 'ASC')->rows();
 

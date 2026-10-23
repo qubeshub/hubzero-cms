@@ -42,7 +42,8 @@
 	ol.comments .comment-options a {
 		margin-right: 1em;
 	}		
-	ol.comments .comment-options a span {
+	ol.comments .comment-options a span,
+	ol.comments .comment-options button span {
 		display: none;
 	}
 	ol.comments dl.comment-details {
@@ -53,27 +54,33 @@
 	ol.comments .comment-options a.reply {
 		visibility: visible;
 	}
-	ol.comments .comment-options a {
+	ol.comments .comment-options a,
+	ol.comments .comment-options button {
 		color: #ccc;
 		border: none;
 	}
-	ol.comments .comment-options:hover a {
+	ol.comments .comment-options:hover a,
+	ol.comments .comment-options:hover button {
 		color: #999;
 	}
 	ol.comments .comment-options a.active,
-	ol.comments .comment-options a:hover {
+	ol.comments .comment-options a:hover,
+	ol.comments .comment-options button:hover {
 		color: #333;
 	}
 	ol.comments .comment-options a.delete,
-	ol.comments .comment-options a.edit {
+	ol.comments .comment-options a.edit,
+	ol.comments .comment-options button.delete {
 		float: right;
 		display: block;
 	}
 	ol.comments .comment-options a.abuse:hover,
-	ol.comments .comment-options a.delete:hover {
+	ol.comments .comment-options a.delete:hover,
+	ol.comments .comment-options button.delete:hover {
 		color: #c00;
 	}
-	ol.comments .comment-options a:before {
+	ol.comments .comment-options a:before,
+	ol.comments .comment-options button:before {
 		margin-right: 0.4em;
 	}
 	ol.comments .comment-options a.active:before {

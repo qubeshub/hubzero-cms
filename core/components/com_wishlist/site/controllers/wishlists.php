@@ -145,13 +145,18 @@ class Wishlists extends SiteController
 	/**
 	 * Display a login form
 	 *
+	 * @param   string  $return  URL to return to after logging in. Defaults to the current URL.
 	 * @return  void
 	 */
-	public function loginTask()
+	public function loginTask($return = null)
 	{
 		if (User::isGuest())
 		{
-			$return = base64_encode(Request::getString('REQUEST_URI', Route::url('index.php?option=' . $this->_option . '&task=' . $this->_task, false, true), 'server'));
+			if (!$return)
+			{
+				$return = Request::getString('REQUEST_URI', Route::url('index.php?option=' . $this->_option . '&task=' . $this->_task, false, true), 'server');
+			}
+			$return = base64_encode($return);
 			App::redirect(
 				Route::url('index.php?option=com_users&view=login&return=' . $return, false),
 				$this->_msg,
@@ -674,7 +679,12 @@ class Wishlists extends SiteController
 			App::abort(403, Lang::txt('COM_WISHLIST_ALERTNOTAUTH'));
 		}
 
-		// Deeleting a user/group
+		// Check for request forgeries -- before the owner removal below. The
+		// three Remove buttons on the settings page and the settings form all
+		// POST the token.
+		Request::checkToken(['get', 'post']);
+
+		// Deleting a user/group
 		if ($action == 'delete')
 		{
 			$user  = Request::getInt('user', 0);
@@ -698,10 +708,12 @@ class Wishlists extends SiteController
 			return;
 		}
 
-		// Check for request forgeries
-		Request::checkToken();
-
 		$fields = Request::getArray('fields', array(), 'post');
+
+		// The settings form posts title, description and public; the list is
+		// the one whose manage right was checked above, and what it is a list
+		// OF is not the form's to change.
+		unset($fields['id'], $fields['category'], $fields['referenceid'], $fields['created_by'], $fields['created'], $fields['state']);
 
 		$wishlist->set($fields);
 		$wishlist->removeAttribute('admin');
@@ -772,6 +784,12 @@ class Wishlists extends SiteController
 			return $this->loginTask();
 		}
 
+		// Settings (owners, advisory members) are for list managers only
+		if (!$wishlist->access('manage'))
+		{
+			App::abort(403, Lang::txt('COM_WISHLIST_ALERTNOTAUTH'));
+		}
+
 		$this->view
 			->set('title', $this->_title)
 			->set('wishlist', $wishlist)
@@ -827,10 +845,24 @@ class Wishlists extends SiteController
 			return $this->loginTask();
 		}
 
+		// The implementation plan, assignee and due date are offered to list
+		// managers only (views/wishlists/tmpl/wish.php); the handler has to
+		// draw the same line
+		if (!$wishlist->access('manage'))
+		{
+			App::abort(403, Lang::txt('COM_WISHLIST_ALERTNOTAUTH_ACTION'));
+		}
+
 		$pageid = Request::getInt('pageid', 0, 'post');
 
 		// Initiate extended database class
 		$old  = Plan::oneOrNew($pageid);
+
+		// pageid= resolves any plan revision on the hub; it has to be this wish's
+		if ($old->get('id') && (int) $old->get('wishid') !== (int) $wishid)
+		{
+			App::abort(404, Lang::txt('COM_WISHLIST_ERROR_WISH_NOT_FOUND'));
+		}
 
 		$page = Plan::oneOrNew($pageid);
 		$page->set('version', Request::getInt('version', 1, 'post'));
@@ -843,7 +875,7 @@ class Wishlists extends SiteController
 		}
 
 		$page->set('wishid', $wishid);
-		$page->set('created_by', Request::getInt('created_by', User::get('id'), 'post'));
+		$page->set('created_by', User::get('id'));
 		$page->set('created', Date::toSql());
 		$page->set('approved', 1);
 		$page->set('pagetext', Request::getString('pagetext', '', 'post', 'none'));
@@ -1060,6 +1092,9 @@ class Wishlists extends SiteController
 			return $this->loginTask();
 		}
 
+		// The wish form posts a token
+		Request::checkToken();
+
 		$listid = Request::getInt('wishlist', 0);
 		$reward = Request::getString('reward', '');
 		$funds  = Request::getInt('funds', '0');
@@ -1077,14 +1112,61 @@ class Wishlists extends SiteController
 		// trim and addslashes all posted items
 		$fields = Request::getArray('fields', array(), 'post');
 
+		$existingId = isset($fields['id']) ? (int) $fields['id'] : 0;
+		$row = Wish::oneOrNew($existingId);
+		$canManage = $wishlist->access('manage');
+
+		// The manage right is granted per list, and for a personal list that
+		// includes its own owner -- so checking it against a list the caller
+		// named in the request says nothing about the wish they are editing.
+		// Tie the two together first: the wish must belong to this list.
+		if (!$row->isNew() && (int) $row->get('wishlist') !== (int) $wishlist->get('id'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
+		// Editing an existing wish requires ownership or list-manage rights
+		if (!$row->isNew() && !$canManage && $row->get('proposed_by') != User::get('id'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
+		// Only managers may add to a private list (as addwishTask)
+		if ($row->isNew() && !$canManage && !$wishlist->isPublic())
+		{
+			App::abort(403, Lang::txt('COM_WISHLIST_ALERTNOTAUTH'));
+		}
+
+		// Non-managers may only set descriptive fields
+		if (!$canManage)
+		{
+			foreach (array('status', 'assigned', 'ranking', 'private', 'proposed_by',
+				'granted', 'granted_by', 'granted_vid', 'accepted') as $k)
+			{
+				unset($fields[$k]);
+			}
+		}
+
 		// initiate class and bind posted items to database fields
-		$row = Wish::oneOrNew($fields['id'])->set($fields);
+		$isNewWish = $row->isNew();
+		$row->set($fields);
+
+		// The list a wish belongs to is the one resolved and access-checked
+		// above, never a posted field -- otherwise an author could move their
+		// own wish into someone else's list. A new wish needs this set too:
+		// the model requires a non-zero wishlist.
+		$row->set('wishlist', $wishlist->get('id'));
+
+		if ($isNewWish)
+		{
+			$row->set('proposed_by', User::get('id'));
+		}
 
 		$wishid = $row->get('id');
 
-		// If we are editing
+		// Managers may attribute the wish to another user
 		$by = Request::getString('by', '', 'post');
-		if ($by)
+		if ($by && $canManage)
 		{
 			$ruser = User::getInstance($by);
 			if (is_object($ruser))
@@ -1233,7 +1315,7 @@ class Wishlists extends SiteController
 				'action'      => ($wishid ? 'updated' : 'created'),
 				'scope'       => 'wishlist.wish',
 				'scope_id'    => $row->get('id'),
-				'description' => Lang::txt('COM_WISHLIST_ACTIVITY_WISH_' . ($wishid ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($row->link('permalink')) . '">' . $row->get('subject') . '</a>'),
+				'description' => Lang::txt('COM_WISHLIST_ACTIVITY_WISH_' . ($wishid ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($row->link('permalink')) . '">' . htmlspecialchars((string) ($row->get('subject')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'subject'    => $row->get('subject'),
 					'url'      => Route::url($row->link('permalink'))
@@ -1282,9 +1364,11 @@ class Wishlists extends SiteController
 		// load wish
 		$wish = Wish::oneOrFail(Request::getInt('wishid', 0));
 
-		if (!$wish->get('id'))
+		// wishid= resolves any wish on the hub; it has to be on THIS list, the
+		// one access('manage') below is checked against
+		if (!$wish->get('id') || (int) $wish->get('wishlist') !== (int) $wishlist->get('id'))
 		{
-			App::abort(404, Lang::txt('COM_WISHLIST_ERROR_WISH_NOT_FOUND'));
+			App::abort(404, Lang::txt('COM_WISHLIST_ERROR_WISH_NOT_FOUND_ON_LIST'));
 		}
 
 		$changed = false;
@@ -1454,6 +1538,14 @@ class Wishlists extends SiteController
 	 */
 	public function movewishTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
+		if (User::isGuest())
+		{
+			return $this->loginTask();
+		}
+
 		$listid   = Request::getInt('wishlist', 0);
 		$wishid   = Request::getInt('wish', 0);
 		$category = Request::getCmd('type', '');
@@ -1474,6 +1566,21 @@ class Wishlists extends SiteController
 		if (!$wishid)
 		{
 			App::abort(404, Lang::txt('COM_WISHLIST_ERROR_WISH_NOT_FOUND'));
+		}
+
+		// Moving a wish (to another list, a question or a ticket) is a
+		// manager action on the list it is on; the form is offered there only
+		$__wish = Wish::oneOrFail($wishid);
+		$__list = Wishlist::oneOrFail($listid);
+
+		if (!$__wish->get('id') || !$__list->get('id') || (int) $__wish->get('wishlist') !== (int) $__list->get('id'))
+		{
+			App::abort(404, Lang::txt('COM_WISHLIST_ERROR_WISH_NOT_FOUND_ON_LIST'));
+		}
+
+		if (!$__list->access('manage'))
+		{
+			App::abort(403, Lang::txt('COM_WISHLIST_ALERTNOTAUTH_ACTION'));
 		}
 
 		// missing or invalid resource ID
@@ -1645,6 +1752,9 @@ class Wishlists extends SiteController
 	 */
 	public function addbonusTask()
 	{
+		// The bonus form posts a token
+		Request::checkToken();
+
 		//$listid = Request::getInt('wishlist', 0);
 		$wishid = Request::getInt('wish', 0);
 		$amount = Request::getInt('amount', 0);
@@ -1733,7 +1843,8 @@ class Wishlists extends SiteController
 
 		$wish = Wish::oneOrNew(Request::getInt('wishid', 0));
 
-		if (!$wish->get('id'))
+		// The wish has to be on the list the manage right is checked against
+		if (!$wish->get('id') || (int) $wish->get('wishlist') !== (int) $wishlist->get('id'))
 		{
 			App::abort(404, Lang::txt('COM_WISHLIST_ERROR_WISH_NOT_FOUND'));
 		}
@@ -1750,8 +1861,13 @@ class Wishlists extends SiteController
 
 			// Set the pathway
 			$this->_buildPathway($wishlist);
-			return $this->loginTask();
+
+			// Return to the wish, which can be requested with GET, not to this task
+			return $this->loginTask(Route::url($wish->link(), false, true));
 		}
+
+		// Reached from the confirmation's Yes button, which posts the token
+		Request::checkToken();
 
 		if (!$wishlist->access('manage') && $wish->get('proposed_by') != User::get('id'))
 		{
@@ -1781,7 +1897,7 @@ class Wishlists extends SiteController
 				'action'      => 'deleted',
 				'scope'       => 'wishlist.wish',
 				'scope_id'    => $wish->get('id'),
-				'description' => Lang::txt('COM_WISHLIST_ACTIVITY_WISH_DELETED', '<a href="' . Route::url($wish->link('permalink')) . '">' . $wish->get('subject') . '</a>'),
+				'description' => Lang::txt('COM_WISHLIST_ACTIVITY_WISH_DELETED', '<a href="' . Route::url($wish->link('permalink')) . '">' . htmlspecialchars((string) ($wish->get('subject')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'subject' => $wish->get('subject'),
 					'url'     => Route::url($wish->link('permalink'))
@@ -1822,7 +1938,7 @@ class Wishlists extends SiteController
 		$wishid   = Request::getInt('wishid', 0);
 
 		$wish = Wish::oneOrFail($wishid);
-		if (!$wish->get('id'))
+		if (!$wish->get('id') || (int) $wish->get('wishlist') !== (int) $wishlist->get('id'))
 		{
 			App::abort(404, Lang::txt('COM_WISHLIST_ERROR_WISH_NOT_FOUND_ON_LIST'));
 		}
@@ -1887,7 +2003,7 @@ class Wishlists extends SiteController
 				'action'      => 'voted',
 				'scope'       => 'wishlist.wish',
 				'scope_id'    => $wish->get('id'),
-				'description' => Lang::txt('COM_WISHLIST_ACTIVITY_WISH_VOTED', '<a href="' . Route::url($wish->link()) . '">' . $wish->get('subject') . '</a>'),
+				'description' => Lang::txt('COM_WISHLIST_ACTIVITY_WISH_VOTED', '<a href="' . Route::url($wish->link()) . '">' . htmlspecialchars((string) ($wish->get('subject')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'subject' => $wish->get('subject'),
 					'url'     => Route::url($wish->link())
@@ -1958,7 +2074,60 @@ class Wishlists extends SiteController
 		{
 			$fields = Request::getArray('comment', array(), 'post');
 
-			$row = Comment::blank()->set($fields);
+			// The wish has to be on the list that was named; both ids come from
+			// the request and nothing above tied them together.
+			if ((int) $objWish->get('wishlist') !== (int) $wishlist->get('id'))
+			{
+				App::abort(404, Lang::txt('COM_WISHLIST_ERROR_WISH_NOT_FOUND_ON_LIST'));
+			}
+
+			// Resolve the row before anything is bound onto it.
+			//
+			// This was Comment::blank()->set($fields). set() copies id, and a
+			// Relational carrying an id is not new, so save() issues an UPDATE --
+			// a posted comment[id] rewrote ANY comment on the hub, from any
+			// logged-in account, with no ownership test anywhere in this method.
+			// item_id rode in the same way and was never pinned, so a new comment
+			// could be hung on any wish.
+			$__cid   = isset($fields['id']) ? (int) $fields['id'] : 0;
+			$row     = Comment::oneOrNew($__cid);
+			$__isNew = $row->isNew();
+
+			if (!$__isNew)
+			{
+				if ((int) $row->get('item_id') !== (int) $wishid
+				 || $row->get('created_by') != User::get('id'))
+				{
+					App::abort(403, Lang::txt('COM_WISHLIST_ERROR_ALERTNOTAUTH'));
+				}
+
+				// What the comment hangs off, who wrote it, when, and whether it
+				// is published are not the form's to change on an edit.
+				unset($fields['item_id'], $fields['item_type'], $fields['parent'],
+					$fields['created'], $fields['created_by'], $fields['state']);
+			}
+
+			$row->set($fields);
+
+			if ($__isNew)
+			{
+				// Both forms carry the wish as item_id; take it from the wish
+				// this request already loaded rather than from the form.
+				$row->set('item_id', $wishid);
+
+				// A reply joins a thread, so its parent has to be a comment on
+				// this same wish.
+				if ($row->get('parent'))
+				{
+					$__parent = Comment::oneOrNew((int) $row->get('parent'));
+
+					if (!$__parent->get('id')
+					 || (int) $__parent->get('item_id') !== (int) $wishid)
+					{
+						App::abort(403, Lang::txt('COM_WISHLIST_ERROR_ALERTNOTAUTH'));
+					}
+				}
+			}
 
 			// Perform some text cleaning, etc.
 			$row->set(
@@ -1976,8 +2145,15 @@ class Wishlists extends SiteController
 			}
 
 			$row->set('anonymous', ($row->get('anonymous') ? $row->get('anonymous') : 0));
-			$row->set('state', 1);
-			$row->set('item_type', $category);
+
+			// Create only. Applied on an edit as well, these would republish a
+			// comment its author had removed and re-file it under whatever `cat`
+			// the request carried.
+			if ($__isNew)
+			{
+				$row->set('state', 1);
+				$row->set('item_type', $category);
+			}
 
 			// Save the data
 			if (!$row->save())
@@ -2103,7 +2279,7 @@ class Wishlists extends SiteController
 					'action'      => 'created',
 					'scope'       => 'wishlist.comment',
 					'scope_id'    => $row->get('id'),
-					'description' => Lang::txt('COM_WISHLIST_ACTIVITY_COMMENT_CREATED', $row->get('id'), '<a href="' . Route::url($objWish->link()) . '">' . $objWish->get('subject') . '</a>'),
+					'description' => Lang::txt('COM_WISHLIST_ACTIVITY_COMMENT_CREATED', $row->get('id'), '<a href="' . Route::url($objWish->link()) . '">' . htmlspecialchars((string) ($objWish->get('subject')), ENT_QUOTES, 'UTF-8') . '</a>'),
 					'details'     => array(
 						'wish'    => $objWish->get('id'),
 						'url'     => Route::url($objWish->link())
@@ -2129,6 +2305,11 @@ class Wishlists extends SiteController
 	 */
 	public function deletereplyTask()
 	{
+		// This is reached by a GET link, so the token has to be accepted from the
+		// query string -- Comment::link() puts it there. Without any check, a page
+		// a logged-in user visited could delete their replies for them.
+		Request::checkToken(['get', 'post']);
+
 		// Incoming
 		$row = Comment::oneOrFail(Request::getInt('replyid', 0));
 
@@ -2172,7 +2353,7 @@ class Wishlists extends SiteController
 				'action'      => 'deleted',
 				'scope'       => 'wishlist.comment',
 				'scope_id'    => $row->get('id'),
-				'description' => Lang::txt('COM_WISHLIST_ACTIVITY_COMMENT_DELETED', $row->get('id'), '<a href="' . Route::url($wish->link()) . '">' . $wish->get('subject') . '</a>'),
+				'description' => Lang::txt('COM_WISHLIST_ACTIVITY_COMMENT_DELETED', $row->get('id'), '<a href="' . Route::url($wish->link()) . '">' . htmlspecialchars((string) ($wish->get('subject')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'id'  => $row->get('id'),
 					'url' => Route::url($wish->link())
@@ -2247,10 +2428,19 @@ class Wishlists extends SiteController
 			$this->_buildPathway($wishlist);
 
 			$this->_msg = Lang::txt('COM_WISHLIST_WARNING_WISHLIST_LOGIN_TO_RATE');
-			return $this->loginTask();
+
+			// Return to the page the vote was cast from, which can be requested with GET, not to this task
+			$route = Request::getCmd('page', 'wishlist') == 'wishlist' ? $wishlist->link() : $wish->link();
+			return $this->loginTask(Route::url($route, false, true));
 		}
 
-		Request::checkToken(['get', 'post']);
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
 
 		// Incoming
 		$page = Request::getCmd('page', 'wishlist');
@@ -2611,6 +2801,7 @@ class Wishlists extends SiteController
 			 break; // 1 day
 
 			case 5:
+			default:
 				$i = (24 * 60 * 60);
 				$w = (2 * 24 * 60 * 60);
 			break; // 4 hours

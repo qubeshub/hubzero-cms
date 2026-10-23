@@ -69,12 +69,12 @@ $curatorStatus = $this->pub->_curationModel->getCurationStatus($this->pub, $this
 							<span class="hint-reorder"><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_DRAG_TO_REORDER'); ?></span>
 							<?php } ?>
 							<a href="<?php echo Route::url( $this->pub->link('editversionid') . '&active=publications&action=editauthor&aid=' . $author->id . '&p=' . $props); ?>" class="showinbox item-edit" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_EDIT'); ?>">&nbsp;</a>
-							<a href="<?php echo Route::url( $this->pub->link('editversion') . '&active=publications&action=deleteitem&aid=' . $author->id . '&p=' . $props); ?>" class="item-remove" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_REMOVE'); ?>">&nbsp;</a>
+							<button type="submit" form="hz-post-action" formaction="<?php echo Route::url( $this->pub->link('editversion') . '&active=publications&action=deleteitem&aid=' . $author->id . '&p=' . $props); ?>" class="item-remove" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_REMOVE'); ?>">&nbsp;</button>
 						</span>
 					</span>
 					<span class="item-order"><?php echo $i; ?></span>
-					<span class="item-title"><?php echo $name; ?> <span class="item-subtext"><?php echo $org ? ' - ' . $org : ''; ?></span></span>
-					<span class="item-details"><?php echo $details; ?></span>
+					<span class="item-title"><?php echo $this->escape($name); ?> <span class="item-subtext"><?php echo $org ? ' - ' . $this->escape($org) : ''; ?></span></span>
+					<span class="item-details"><?php echo $this->escape($details); ?></span>
 				</li>
 		<?php	$i++; } ?>
 			</ul>
@@ -98,7 +98,7 @@ $curatorStatus = $this->pub->_curationModel->getCurationStatus($this->pub, $this
 			{ ?>
 
 			<div class="submitter"><p><strong><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_SUBMITTER'); ?>*: </strong>
-				<?php echo $this->pub->submitter()->name; ?><?php echo $this->pub->submitter()->organization ? ', ' . $this->pub->submitter()->organization : ''; ?></p>
+				<?php echo $this->escape($this->pub->submitter()->name); ?><?php echo $this->pub->submitter()->organization ? ', ' . $this->escape($this->pub->submitter()->organization) : ''; ?></p>
 				<p class="hint">* <?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_SUBMITTER_ABOUT'); ?>
 				</p>
 			</div>
@@ -112,7 +112,7 @@ $curatorStatus = $this->pub->_curationModel->getCurationStatus($this->pub, $this
 				$used = array();
 
 				?>
-			<div class="submitter groupowner"><p><strong><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_GROUP_OWNER'); ?>*: </strong> <?php if ($this->pub->_project->groupOwner()) { echo $this->pub->_project->groupOwner('description') . '(' . $this->pub->_project->groupOwner('cn') . ')'; } ?></p>
+			<div class="submitter groupowner"><p><strong><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_GROUP_OWNER'); ?>*: </strong> <?php if ($this->pub->_project->groupOwner()) { echo $this->escape($this->pub->_project->groupOwner('description')) . '(' . $this->escape($this->pub->_project->groupOwner('cn')) . ')'; } ?></p>
 				<?php if (!$this->pub->_project->groupOwner()) { ?>
 					<select name="group_owner">
 						<option value=""><?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_GROUP_OWNER_NONE'); ?></option>
@@ -123,7 +123,7 @@ $curatorStatus = $this->pub->_curationModel->getCurationStatus($this->pub, $this
 							}
 							$used[] = $g->gidNumber;
 							?>
-							<option value="<?php echo $g->gidNumber; ?>" <?php if ($this->pub->groupOwner('id') == $g->gidNumber) { echo 'selected="selected"'; } ?>><?php echo \Hubzero\Utility\Str::truncate($g->description, 30) . ' (' . $g->cn . ')'; ?></option>
+							<option value="<?php echo $g->gidNumber; ?>" <?php if ($this->pub->groupOwner('id') == $g->gidNumber) { echo 'selected="selected"'; } ?>><?php echo $this->escape(\Hubzero\Utility\Str::truncate($g->description, 30) . ' (' . $g->cn . ')'); ?></option>
 						<?php } ?>
 					</select>
 				<?php } else { ?>

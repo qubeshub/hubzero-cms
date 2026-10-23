@@ -1,6 +1,8 @@
 # QUBESHub Instance of The HUBzero® Platform for Scientific Collaboration
 
 [![HubZero Documentation](https://img.shields.io/badge/docs-hubzero.github.io-0fa1ca)](https://hubzero.github.io/hubzero-cms/)
+[![PHP lint](https://github.com/hubzero/hubzero-cms/actions/workflows/php-lint.yml/badge.svg?branch=2.4-main)](https://github.com/hubzero/hubzero-cms/actions/workflows/php-lint.yml)
+[![Tests](https://github.com/hubzero/hubzero-cms/actions/workflows/tests.yml/badge.svg?branch=2.4-main)](https://github.com/hubzero/hubzero-cms/actions/workflows/tests.yml)
 
 Instructions for installing the Hubzero platform from packages are in the
 [Installation](https://hubzero.github.io/hubzero-cms/installation/) book.

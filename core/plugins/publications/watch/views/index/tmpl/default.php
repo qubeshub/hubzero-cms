@@ -13,11 +13,11 @@ $this->css();
 <div class="item-watch <?php echo $this->watched ? 'watching' : ''; ?>">
 	<?php if ($this->watched) { ?>
 		<p>
-			<a class="btn unsubscribe" href="<?php echo Route::url($this->publication->link('version') . '&active=watch&confirm=1&action=unsubscribe'); ?>"><?php echo Lang::txt('PLG_PUBLICATIONS_WATCH_UNSUBSCRIBE'); ?></a>
+			<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($this->publication->link('version') . '&active=watch&confirm=1&action=unsubscribe'); ?>" class="btn unsubscribe"><?php echo Lang::txt('PLG_PUBLICATIONS_WATCH_UNSUBSCRIBE'); ?></button>
 		</p>
 	<?php } else { ?>
 		<p>
-			<a class="btn subscribe" href="<?php echo Route::url($this->publication->link('version') . '&active=watch&confirm=1&action=subscribe'); ?>"><?php echo Lang::txt('PLG_PUBLICATIONS_WATCH_SUBSCRIBE'); ?></a>
+			<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($this->publication->link('version') . '&active=watch&confirm=1&action=subscribe'); ?>" class="btn subscribe"><?php echo Lang::txt('PLG_PUBLICATIONS_WATCH_SUBSCRIBE'); ?></button>
 		</p>
 	<?php } ?>
 

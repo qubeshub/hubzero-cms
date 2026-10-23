@@ -94,9 +94,7 @@ if (isset($this->online) && in_array($comment->created_by, $this->online))
 							<?php } ?>
 							<?php if ($deletable) { ?>
 								<li id="pu_<?php echo $comment->id; ?>_delete">
-									<a class="icon-delete delete tooltips" data-confirm="<?php echo Lang::txt('PLG_PROJECTS_BLOG_DELETE_CONFIRMATION'); ?>" title="<?php echo Lang::txt('JACTION_DELETE'); ?>" href="<?php echo Route::url($this->model->link('feed') .'&action=deletecomment&cid=' . $comment->id); ?>"><!--
-										--><?php echo Lang::txt('JACTION_DELETE'); ?><!--
-									--></a>
+									<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($this->model->link('feed') .'&action=deletecomment&cid=' . $comment->id); ?>" class="icon-delete delete tooltips" title="<?php echo Lang::txt('JACTION_DELETE'); ?>" data-confirm="<?php echo Lang::txt('PLG_PROJECTS_BLOG_DELETE_CONFIRMATION'); ?>"><?php echo Lang::txt('JACTION_DELETE'); ?></button>
 								</li>
 							<?php } ?>
 						</ul>

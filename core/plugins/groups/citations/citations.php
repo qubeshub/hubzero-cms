@@ -613,8 +613,21 @@ class plgGroupsCitations extends \Hubzero\Plugin\Plugin
 		$isNew = ($cid < 0 ? true : false);
 
 		// get the citation (single) or create a new one
-		$citation = \Components\Citations\Models\Citation::oneOrNew($cid)
-			->set(array(
+		// Managing group citations is a manager action
+		if ($this->authorized != 'manager')
+		{
+			App::abort(403, Lang::txt('You are not authorized to perform this action.'));
+		}
+
+		$citation = \Components\Citations\Models\Citation::oneOrNew($cid);
+
+		if ($cid > 0 && $citation->get('id')
+		 && ($citation->get('scope') != 'group' || $citation->get('scope_id') != $this->group->get('gidNumber')))
+		{
+			App::abort(403, Lang::txt('You are not authorized to perform this action.'));
+		}
+
+		$citation->set(array(
 				'type' => Request::getInt('type'),
 				'cite' => Request::getString('cite'),
 				'ref_type' => Request::getString('ref_type'),
@@ -744,7 +757,15 @@ class plgGroupsCitations extends \Hubzero\Plugin\Plugin
 			{
 				$link['citation_id'] = $citation->id;
 
-				$l = \Components\Citations\Models\Link::oneOrNew($link['id']);
+				$l = \Components\Citations\Models\Link::oneOrNew(isset($link['id']) ? (int) $link['id'] : 0);
+
+				// links[n][id] names any link row on the hub; only this
+				// citation's own links are rewritten or removed here
+				if ($l->get('id') && (int) $l->get('citation_id') !== (int) $citation->id)
+				{
+					continue;
+				}
+
 				if ($link['url'] && $link['title'])
 				{
 					$l->set($link);
@@ -773,6 +794,14 @@ class plgGroupsCitations extends \Hubzero\Plugin\Plugin
 	 */
 	private function _publish()
 	{
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
+
 		// verify that the user is a manager.
 		$isManager = ($this->authorized == 'manager') ? true : false;
 		if (!$isManager)
@@ -787,7 +816,8 @@ class plgGroupsCitations extends \Hubzero\Plugin\Plugin
 		}
 
 		$id = Request::getInt('id', 0);
-		$citationIDs = Request::getArray('citationIDs', array());
+		// The bulk buttons send a comma-joined string of ids
+		$citationIDs = Request::getString('citationIDs', '');
 		$bulk = Request::getBool('bulk', false);
 
 		if ($id != 0 && !$bulk)
@@ -807,8 +837,17 @@ class plgGroupsCitations extends \Hubzero\Plugin\Plugin
 			}
 
 			// save the state
-			if ($citation->save() && $citation->scope == self::PLUGIN_SCOPE
-					&& $citation->scope_id == $this->group->get('gidNumber'))
+			// Scope FIRST: && is left-to-right, so save() ahead of the comparison
+			// wrote the new state to whatever citation the request named and let
+			// the scope test pick only the flash message. The bulk branches in
+			// this file already order it this way.
+			if ($citation->scope != self::PLUGIN_SCOPE
+			 || $citation->scope_id != $this->group->get('gidNumber'))
+			{
+				App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+			}
+
+			if ($citation->save())
 			{
 				App::redirect(
 					Route::url('index.php?option=com_groups&cn=' . $this->group->cn . '&active=citations'),
@@ -844,7 +883,7 @@ class plgGroupsCitations extends \Hubzero\Plugin\Plugin
 				return;
 			}
 			$published = array();
-			$citationIDs = explode(',', $citationIDs);
+			$citationIDs = array_filter(array_map('intval', explode(',', $citationIDs)));
 			$string = 'PLG_GROUPS_CITATIONS_CITATION_PUBLISHED';
 
 			// error, no such citation
@@ -929,9 +968,13 @@ class plgGroupsCitations extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
+		// Check for request forgeries
+		Request::checkToken();
+
 		// get the variables
 		$id = Request::getInt('id', 0);
-		$citationIDs = Request::getArray('citationIDs', array());
+		// The bulk buttons send a comma-joined string of ids
+		$citationIDs = Request::getString('citationIDs', '');
 		$bulk = Request::getBool('bulk', false);
 
 		// for single citation operation
@@ -940,8 +983,17 @@ class plgGroupsCitations extends \Hubzero\Plugin\Plugin
 			$citation = \Components\Citations\Models\Citation::oneOrFail($id);
 			$citation->set('published', $citation::STATE_DELETED);
 
-			if ($citation->save() && $citation->scope == self::PLUGIN_SCOPE
-					&& $citation->scope_id == $this->group->get('gidNumber'))
+			// Scope FIRST: && is left-to-right, so save() ahead of the comparison
+			// wrote the new state to whatever citation the request named and let
+			// the scope test pick only the flash message. The bulk branches in
+			// this file already order it this way.
+			if ($citation->scope != self::PLUGIN_SCOPE
+			 || $citation->scope_id != $this->group->get('gidNumber'))
+			{
+				App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+			}
+
+			if ($citation->save())
 			{
 				App::redirect(
 					Route::url('index.php?option=com_groups&cn=' . $this->group->cn . '&active=citations'),
@@ -979,7 +1031,7 @@ class plgGroupsCitations extends \Hubzero\Plugin\Plugin
 				}
 
 			$deleted = array();
-			$citationIDs = explode(',', $citationIDs);
+			$citationIDs = array_filter(array_map('intval', explode(',', $citationIDs)));
 			$string = 'PLG_GROUPS_CITATIONS_CITATION_DELETED';
 
 			// error, no such citation
@@ -1047,6 +1099,10 @@ class plgGroupsCitations extends \Hubzero\Plugin\Plugin
 	{
 		if ($_POST)
 		{
+			if ($this->authorized != 'manager')
+			{
+				App::abort(403, Lang::txt('You are not authorized to perform this action.'));
+			}
 			$display = Request::getString('display', '');
 			$format  = Request::getString('citation-format', '');
 
@@ -1214,11 +1270,18 @@ class plgGroupsCitations extends \Hubzero\Plugin\Plugin
 
 		Request::checkToken();
 
+		// Importing citations is a manager action
+		if ($this->authorized != 'manager')
+		{
+			App::abort(403, Lang::txt('You are not authorized to perform this action.'));
+		}
+
+
 		// get file
 		$file = Request::file('citations_file');
 
 		// make sure we have a file
-		$filename = $file->getClientOriginalName();
+		$filename = $file ? $file->getClientOriginalName() : '';
 		if ($filename == '')
 		{
 			App::redirect(
@@ -1326,6 +1389,13 @@ class plgGroupsCitations extends \Hubzero\Plugin\Plugin
 		$config  = new \Hubzero\Config\Registry($this->group->get('params'));
 
 		Request::checkToken();
+
+		// Importing citations is a manager action
+		if ($this->authorized != 'manager')
+		{
+			App::abort(403, Lang::txt('You are not authorized to perform this action.'));
+		}
+
 
 		$cites_require_attention    = $this->importer->readRequiresAttention();
 		$cites_require_no_attention = $this->importer->readRequiresNoAttention();
@@ -1647,7 +1717,12 @@ class plgGroupsCitations extends \Hubzero\Plugin\Plugin
 							$citations->where('year', '<=', $value);
 						break;
 						default:
-							$citations->where($filter, '=', $value);
+							// filters[] keys are request-supplied; only real, filterable
+							// columns reach the query
+							if (in_array($filter, array('type', 'scope', 'scope_id', 'published', 'year', 'affiliated', 'fundedby'), true))
+							{
+								$citations->where($filter, '=', $value);
+							}
 						break;
 					}
 				} // end if not search & not sort & non-empty value
@@ -1711,8 +1786,16 @@ class plgGroupsCitations extends \Hubzero\Plugin\Plugin
 
 				if ($filter == "sort" && $value != "")
 				{
+					// "column direction" from the request: only the offered columns
+					// and directions are honoured
 					$clause = explode(" ", $value);
-					$citations->order($clause[0], $clause[1]);
+					$column = strtolower($clause[0]);
+					$dir    = isset($clause[1]) ? strtolower($clause[1]) : 'asc';
+					if (in_array($column, array('year', 'created', 'title', 'author', 'journal'), true)
+					 && in_array($dir, array('asc', 'desc'), true))
+					{
+						$citations->order($column, $dir);
+					}
 				}
 			} // end foreach filters as filter
 

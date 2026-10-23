@@ -240,9 +240,7 @@ if (!$this->activity->log->get('anonymous'))
 						<?php } ?>
 						<?php if ($deletable) { ?>
 							<li>
-								<a class="icon-delete delete tooltips" data-confirm="<?php echo Lang::txt('PLG_PROJECTS_BLOG_DELETE_CONFIRMATION'); ?>" href="<?php echo Route::url($this->model->link('feed') . '&action=delete&activity=' . $this->activity->log->get('id'));  ?>" title="<?php echo Lang::txt('JACTION_DELETE'); ?>"><!--
-									--><?php echo Lang::txt('JACTION_DELETE'); ?><!--
-								--></a>
+								<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($this->model->link('feed') . '&action=delete&activity=' . $this->activity->log->get('id')); ?>" class="icon-delete delete tooltips" title="<?php echo Lang::txt('JACTION_DELETE'); ?>" data-confirm="<?php echo Lang::txt('PLG_PROJECTS_BLOG_DELETE_CONFIRMATION'); ?>"><?php echo Lang::txt('JACTION_DELETE'); ?></button>
 							</li>
 						<?php } ?>
 					</ul>

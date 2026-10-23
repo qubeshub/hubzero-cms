@@ -25,11 +25,15 @@ use Route;
 use Document;
 use Cache;
 
+require_once dirname(dirname(__DIR__)) . DS . 'helpers' . DS . 'pagepathway.php';
+
 /**
  * Wiki controller class for pages
  */
 class Pages extends SiteController
 {
+	use \Components\Wiki\Helpers\PagePathway;
+
 	/**
 	 * Book model
 	 *
@@ -195,25 +199,7 @@ class Pages extends SiteController
 			App::abort(403, Lang::txt('COM_WIKI_WARNING_NOT_AUTH'));
 		}
 
-		$parents = array();
-
-		if ($this->page->get('parent'))
-		{
-			$parents = $this->page->ancestors();
-
-			foreach ($parents as $p)
-			{
-				Pathway::append(
-					$p->get('title'),
-					$p->link()
-				);
-			}
-		}
-
-		Pathway::append(
-			$this->page->title,
-			$this->page->link()
-		);
+		$parents = $this->appendPagePathway();
 
 		// Retrieve a specific version if given
 		if ($version = Request::getInt('version', 0))
@@ -320,6 +306,25 @@ class Pages extends SiteController
 	}
 
 	/**
+	 * May the current user suggest a change to this page?
+	 *
+	 * Only on a knowledge-mode page with "allow changes" on (where the page
+	 * model grants 'modify'); a suggestion is saved unapproved. In ordinary
+	 * wiki mode 'modify' is granted to every member, so it confers nothing.
+	 *
+	 * @return  boolean
+	 */
+	protected function _canSuggest()
+	{
+		return !User::isGuest()
+			&& $this->page->exists()
+			&& $this->page->param('mode', 'wiki') == 'knol'
+			&& $this->page->param('allow_changes')
+			&& $this->page->access('modify')
+			&& !$this->page->isLocked();
+	}
+
+	/**
 	 * Show a form for editing an entry
 	 *
 	 * @param   object  $revision
@@ -337,8 +342,10 @@ class Pages extends SiteController
 		}
 
 		// Check if the page can be edited. access('edit') already encodes
-		// ownership (core.edit, or the creator via core.edit.own).
-		if (!$this->page->access('edit') && !$this->page->access('manage'))
+		// ownership (core.edit, or the creator via core.edit.own). A knowledge
+		// page with "allow changes" on also takes suggestions (access 'modify'):
+		// those are saved as unapproved revisions for an author to approve.
+		if (!$this->page->access('edit') && !$this->page->access('manage') && !$this->_canSuggest())
 		{
 			App::redirect(
 				Route::url($this->page->link()),
@@ -444,21 +451,7 @@ class Pages extends SiteController
 				'index.php?option=' . $this->_option . '&controller=' . $this->_controller
 			);
 		}
-		// Include the page's ancestors in the trail (matches the display view)
-		if ($this->page->get('parent'))
-		{
-			foreach ($this->page->ancestors() as $p)
-			{
-				Pathway::append(
-					$p->get('title'),
-					$p->link()
-				);
-			}
-		}
-		Pathway::append(
-			$this->page->title,
-			$this->page->link()
-		);
+		$parents = $this->appendPagePathway();
 		Pathway::append(
 			Lang::txt(strtoupper($this->_option . '_' . $this->_task)),
 			$this->page->link() . '&task=' . $this->_task
@@ -510,6 +503,7 @@ class Pages extends SiteController
 			->set('book', $this->book)
 			->set('page', $this->page)
 			->set('revision', $revision)
+			->set('parents', $parents)
 			->set('sub', $this->sub)
 			->set('tree', $tree)
 			->set('tags', $tags)
@@ -553,19 +547,112 @@ class Pages extends SiteController
 			$page['protected'] = 0;
 		}
 
-		$this->page = Page::oneOrNew(intval($revision->get('page_id')));
+		// The page the guards below check has to be the page the save lands on.
+		// page[id] is a posted field of the edit form (views/pages/tmpl/edit.php),
+		// so resolving the target from revision[page_id] alone let a caller send
+		// page_id=0 -- a blank page, every guard skipped because isNew() is true
+		// -- and then retarget the UPDATE with page[id], rewriting any page's
+		// title, access, state, scope and protected flag. Take the id from
+		// whichever of the two carries it, refuse a request that names two
+		// different pages, and write the resolved value back into both so
+		// nothing downstream can disagree about which page this is.
+		$postedPageId   = isset($page['id']) ? (int) $page['id'] : 0;
+		$revisionPageId = (int) $revision->get('page_id');
+
+		if ($postedPageId && $revisionPageId && $postedPageId !== $revisionPageId)
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
+		$pageId = $postedPageId ?: $revisionPageId;
+
+		$this->page = Page::oneOrNew($pageId);
+
+		// Naming a page that does not exist would otherwise skip the guards and
+		// then issue an UPDATE against a row that is not there.
+		if ($pageId && $this->page->isNew())
+		{
+			App::abort(404, Lang::txt('COM_WIKI_ERROR_PAGE_NOT_FOUND'));
+		}
+
+		$page['id'] = $pageId;
+		$revision->set('page_id', $pageId);
+
+		// The page's wiki is the one in the URL ($this->book), never the posted
+		// scope/scope_id: a new page otherwise lands in any group's wiki, and an
+		// existing one is moved. access(), state and protected are not offered
+		// on the form (protected only to managers), so they are not rebindable
+		// either -- an existing page keeps its values, a new page starts public
+		// and published.
+		unset($page['access'], $page['state']);
+
+		if ($this->page->isNew())
+		{
+			$page['scope']    = $this->book->get('scope');
+			$page['scope_id'] = (int) $this->book->get('scope_id');
+			// 0 is public (the column default); 1 reads as members-only in the
+			// group wiki's file download, so a new page's images 403'd for visitors
+			$page['access']   = 0;
+			$page['state']    = 1;
+
+			$this->page->set('scope', $page['scope']);
+			$this->page->set('scope_id', $page['scope_id']);
+
+			// Creating a page takes what editTask() asks of the blank page
+			if (!$this->page->access('edit') && !$this->page->access('modify'))
+			{
+				App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+			}
+		}
+		else
+		{
+			unset($page['scope'], $page['scope_id']);
+		}
+
+		// Editing an existing page requires edit/manage access and respects the
+		// page lock and the protected help namespace (as editTask does).
+		// A suggester (see editTask) submits a revision only: the page row
+		// itself -- title, access, params -- is left as stored
+		$suggestOnly = !$this->page->isNew()
+			&& !$this->page->access('edit') && !$this->page->access('manage')
+			&& $this->_canSuggest();
+
+		if (!$this->page->isNew())
+		{
+			if (!$this->page->access('edit') && !$this->page->access('manage') && !$suggestOnly)
+			{
+				App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+			}
+			if ($this->page->getNamespace() == 'help' && !$this->page->access('manage'))
+			{
+				App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+			}
+			if ($this->page->isLocked() && !$this->page->access('manage'))
+			{
+				App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+			}
+		}
+
+		if (!$this->page->access('manage'))
+		{
+			$page['protected'] = $this->page->isNew() ? 0 : (int) $this->page->get('protected');
+		}
+
+		if (!$suggestOnly)
+		{
 		$this->page->set($page);
 		$this->page->set('pagename', trim(Request::getString('pagename', '', 'post')));
+		}
 
-		// Get parameters
-		$p = Request::getArray('params', array(), 'post');
+		// Get parameters (a suggester's are ignored)
+		$p = $suggestOnly ? array() : Request::getArray('params', array(), 'post');
 
 		$params = new \Hubzero\Config\Registry($this->page->get('params', ''));
 		$params->merge($p);
 
 		foreach (array('hide_authors', 'allow_changes', 'allow_comments') as $key)
 		{
-			if (!isset($p[$key]) || !$p[$key])
+			if (!$suggestOnly && (!isset($p[$key]) || !$p[$key]))
 			{
 				$params->set($key, 0);
 			}
@@ -633,8 +720,9 @@ class Pages extends SiteController
 			return $this->editTask($revision);
 		}
 
-		// Get allowed authors
-		if (!Author::setForPage(Request::getString('authors', '', 'post'), $this->page->get('id')))
+		// Get allowed authors (a suggester submits a revision only: adding
+		// themselves as an author here would make their next save auto-approved)
+		if (!$suggestOnly && !Author::setForPage(Request::getString('authors', '', 'post'), $this->page->get('id')))
 		{
 			$this->setError(Lang::txt('COM_WIKI_ERROR_SAVING_AUTHORS'));
 			return $this->editTask($revision);
@@ -705,10 +793,15 @@ class Pages extends SiteController
 				return $this->editTask($revision);
 			}
 
-			$this->page->set('version_id', $revision->get('id'));
-			$this->page->set('modified', $revision->get('created'));
+			// Only an approved revision becomes the page's current text; a
+			// suggestion waits for an author to approve it (history approve)
+			if ($revision->get('approved'))
+			{
+				$this->page->set('version_id', $revision->get('id'));
+				$this->page->set('modified', $revision->get('created'));
+			}
 		}
-		else
+		else if (!$suggestOnly)
 		{
 			$this->page->set('modified', Date::toSql());
 		}
@@ -720,8 +813,20 @@ class Pages extends SiteController
 			return $this->editTask($revision);
 		}
 
-		// Process tags
-		$this->page->tag(Request::getString('tags', ''));
+		// Process tags (not for a suggestion, which changes the revision only)
+		if (!$suggestOnly)
+		{
+			$this->page->tag(Request::getString('tags', ''));
+		}
+
+		if ($suggestOnly)
+		{
+			// a suggestion changed no page content: nothing to announce or log
+			App::redirect(
+				Route::url($this->page->link())
+			);
+			return;
+		}
 
 		// Trigger after save event
 		Event::trigger('wiki.onWikiAfterSave', array(&$this->page, $isNew));
@@ -743,7 +848,7 @@ class Pages extends SiteController
 				'action'      => ($page['id'] ? 'updated' : 'created'),
 				'scope'       => 'wiki.page',
 				'scope_id'    => $this->page->get('id'),
-				'description' => Lang::txt('COM_WIKI_ACTIVITY_PAGE_' . ($page['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($this->page->link()) . '">' . $this->page->title . '</a>'),
+				'description' => Lang::txt('COM_WIKI_ACTIVITY_PAGE_' . ($page['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($this->page->link()) . '">' . htmlspecialchars((string) ($this->page->title), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title'    => $this->page->title,
 					'url'      => Route::url($this->page->link()),
@@ -829,7 +934,7 @@ class Pages extends SiteController
 						'action'      => 'deleted',
 						'scope'       => 'wiki.page',
 						'scope_id'    => $this->page->get('id'),
-						'description' => Lang::txt('COM_WIKI_ACTIVITY_PAGE_DELETED', '<a href="' . Route::url($this->page->link()) . '">' . $this->page->title . '</a>'),
+						'description' => Lang::txt('COM_WIKI_ACTIVITY_PAGE_DELETED', '<a href="' . Route::url($this->page->link()) . '">' . htmlspecialchars((string) ($this->page->title), ENT_QUOTES, 'UTF-8') . '</a>'),
 						'details'     => array(
 							'title' => $this->page->title,
 							'url'   => Route::url($this->page->link()),
@@ -857,25 +962,7 @@ class Pages extends SiteController
 					);
 				}
 
-				$parents = array();
-
-				if ($this->page->get('parent'))
-				{
-					$parents = $this->page->ancestors();
-
-					foreach ($parents as $p)
-					{
-						Pathway::append(
-							$p->get('title'),
-							$p->link()
-						);
-					}
-				}
-
-				Pathway::append(
-					$this->page->title,
-					$this->page->link()
-				);
+				$parents = $this->appendPagePathway();
 				Pathway::append(
 					Lang::txt(strtoupper($this->_option . '_' . $this->_task)),
 					$this->page->link('delete')
@@ -951,25 +1038,7 @@ class Pages extends SiteController
 			);
 		}
 
-		$parents = array();
-
-		if ($this->page->get('parent'))
-		{
-			$parents = $this->page->ancestors();
-
-			foreach ($parents as $p)
-			{
-				Pathway::append(
-					$p->get('title'),
-					$p->link()
-				);
-			}
-		}
-
-		Pathway::append(
-			$this->page->title,
-			$this->page->link()
-		);
+		$parents = $this->appendPagePathway();
 		Pathway::append(
 			Lang::txt(strtoupper('COM_WIKI_RENAME')),
 			$this->page->link('rename')
@@ -1086,7 +1155,7 @@ class Pages extends SiteController
 				'action'      => 'updated',
 				'scope'       => 'wiki.page',
 				'scope_id'    => $this->page->get('id'),
-				'description' => Lang::txt('COM_WIKI_ACTIVITY_PAGE_RENAMED', '<a href="' . Route::url($this->page->link()) . '">' . $this->page->get('title') . '</a>'),
+				'description' => Lang::txt('COM_WIKI_ACTIVITY_PAGE_RENAMED', '<a href="' . Route::url($this->page->link()) . '">' . htmlspecialchars((string) ($this->page->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $this->page->get('title'),
 					'url'   => Route::url($this->page->link()),
@@ -1115,6 +1184,12 @@ class Pages extends SiteController
 		if (!$this->page->exists() || $this->page->isDeleted())
 		{
 			App::abort(404, Lang::txt('COM_WIKI_WARNING_NOT_FOUND'));
+		}
+
+		// Respect the page's view access (as displayTask does)
+		if (!$this->page->access('view', 'page'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
 		}
 
 		// Retrieve a specific version if given
@@ -1156,7 +1231,7 @@ class Pages extends SiteController
 				'action'      => 'downloaded',
 				'scope'       => 'wiki.page',
 				'scope_id'    => $this->page->get('id'),
-				'description' => Lang::txt('COM_WIKI_ACTIVITY_PAGE_DOWNLOADED', '<a href="' . Route::url($this->page->link()) . '">' . $this->page->title . '</a>'),
+				'description' => Lang::txt('COM_WIKI_ACTIVITY_PAGE_DOWNLOADED', '<a href="' . Route::url($this->page->link()) . '">' . htmlspecialchars((string) ($this->page->title), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $this->page->title,
 					'url'   => Route::url($this->page->link()),

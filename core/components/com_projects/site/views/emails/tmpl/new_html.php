@@ -23,7 +23,7 @@ $browseLink = rtrim($base, '/') . '/' . trim($sef_browse, '/');
 
 // Main message
 $subtitle  = $this->project->owner('name') . ' ' .Lang::txt('COM_PROJECTS_EMAIL_STARTED_NEW_PROJECT');
-$subtitle .= ' "' . $this->project->get('title'). '"';
+$subtitle .= ' "' . $this->escape($this->project->get('title')) . '"'; // plain text title, escaped for HTML
 
 // Get the actual message
 $comment = '';
@@ -43,10 +43,10 @@ if ($this->project->config()->get('restricted_data', 0))
 if ($this->project->config()->get('grantinfo', 0))
 {
 	$comment .= '<ul style="' . $ulStyle . '">';
-	$comment .= '<li>' . Lang::txt('COM_PROJECTS_EMAIL_GRANT_TITLE') . ': ' . $this->project->params->get('grant_title') . '</li>';
-	$comment .= '<li>' . Lang::txt('COM_PROJECTS_EMAIL_GRANT_PI') . ': ' . $this->project->params->get('grant_PI') . '</li>';
-	$comment .= '<li>' . Lang::txt('COM_PROJECTS_EMAIL_GRANT_AGENCY') . ': ' . $this->project->params->get('grant_agency') . '</li>';
-	$comment .= '<li>' . Lang::txt('COM_PROJECTS_EMAIL_GRANT_BUDGET') . ': ' . $this->project->params->get('grant_budget') . '</li>';
+	$comment .= '<li>' . Lang::txt('COM_PROJECTS_EMAIL_GRANT_TITLE') . ': ' . $this->escape($this->project->params->get('grant_title')) . '</li>';
+	$comment .= '<li>' . Lang::txt('COM_PROJECTS_EMAIL_GRANT_PI') . ': ' . $this->escape($this->project->params->get('grant_PI')) . '</li>';
+	$comment .= '<li>' . Lang::txt('COM_PROJECTS_EMAIL_GRANT_AGENCY') . ': ' . $this->escape($this->project->params->get('grant_agency')) . '</li>';
+	$comment .= '<li>' . Lang::txt('COM_PROJECTS_EMAIL_GRANT_BUDGET') . ': ' . $this->escape($this->project->params->get('grant_budget')) . '</li>';
 	$comment .= '</ul>';
 }
 
@@ -105,7 +105,7 @@ $owner   = $this->project->groupOwner()
 	<tbody>
 		<tr>
 			<td align="left" valign="bottom" style="border-collapse: collapse; color: #666; line-height: 1; padding: 5px; text-align: center;">
-			<?php echo $subtitle; ?>
+			<?php echo $this->escape($subtitle); ?>
 			</td>
 		</tr>
 	</tbody>
@@ -132,7 +132,7 @@ $owner   = $this->project->groupOwner()
 					<tbody>
 						<tr>
 							<th style="text-align: right; padding: 0 0.5em; font-weight: bold; white-space: nowrap;" align="right">Project:</th>
-							<td style="text-align: left; padding: 0 0.5em;" width="100%" align="left"><?php echo $this->project->get('title') . '(' . $this->project->get('alias') . ')'; ?></td>
+							<td style="text-align: left; padding: 0 0.5em;" width="100%" align="left"><?php echo $this->escape($this->project->get('title') . '(' . $this->project->get('alias') . ')'); ?></td>
 						</tr>
 						<tr>
 							<th style="text-align: right; padding: 0 0.5em; font-weight: bold; white-space: nowrap;" align="right">Created:</th>
@@ -140,7 +140,7 @@ $owner   = $this->project->groupOwner()
 						</tr>
 						<tr>
 							<th style="text-align: right; padding: 0 0.5em; font-weight: bold; white-space: nowrap;" align="right">Owner:</th>
-							<td style="text-align: left; padding: 0 0.5em;" width="100%" align="left"><?php echo $this->project->groupOwner() ? $this->project->groupOwner('cn') . ' ' . Lang::txt('COM_PROJECTS_GROUP') : $this->project->owner('name'); ?></td>
+							<td style="text-align: left; padding: 0 0.5em;" width="100%" align="left"><?php echo $this->escape($this->project->groupOwner() ? $this->project->groupOwner('cn') . ' ' . Lang::txt('COM_PROJECTS_GROUP') : $this->project->owner('name')); ?></td>
 						</tr>
 						<tr>
 							<th style="text-align: right; padding: 0 0.5em; font-weight: bold; white-space: nowrap;" align="right">Link:</th>

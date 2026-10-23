@@ -410,6 +410,12 @@ class Publications extends SiteController
 	 */
 	public function browseTask()
 	{
+		// Who may browse and search is a view access level, Public by default
+		if (!$this->requireViewLevel($this->config->get('browse_access', 1), Lang::txt('COM_PUBLICATIONS_SEARCH_LOGIN_REQUIRED')))
+		{
+			return;
+		}
+
 		// Set the default sort
 		$default_sort = 'date';
 
@@ -1335,6 +1341,16 @@ class Publications extends SiteController
 			return;
 		}
 
+		// The trigger names a method that Event::trigger() calls on every plugin
+		// of the group, so without a list any public method of any publications plugin
+		// was callable from a URL (windowstools' command-line builder among
+		// them). Only the triggers this component's own pages link to.
+		if (!in_array($trigger, array('onPublicationsRecoms'), true))
+		{
+			echo '<p class="error">' . Lang::txt('COM_PUBLICATIONS_NO_TRIGGER_FOUND') . '</p>';
+			return;
+		}
+
 		// Call the trigger
 		$results = Event::trigger('publications.' . $trigger, array($this->_option));
 		if (is_array($results))
@@ -1610,6 +1626,13 @@ class Publications extends SiteController
 		$tags    = Request::getString('tags', '');
 		$no_html = Request::getInt('no_html', 0);
 
+		// Only a publication the caller can see may be tagged
+		$pub = new Models\Publication($id);
+		if (!$pub->exists() || !$pub->access('view'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		// Process tags
 		$rt = new Helpers\Tags($this->database);
 		$rt->tag_object(User::get('id'), $id, $tags, 1, 0);
@@ -1666,6 +1689,15 @@ class Publications extends SiteController
 			$this->_msg = Lang::txt('COM_PUBLICATIONS_LOGIN_TO_START');
 			$this->_login();
 			return;
+		}
+
+		// Make sure the actor is allowed to view the source version BEFORE any
+		// project is provisioned for the fork, so a refused fork leaves nothing behind
+		$version   = Models\Orm\Version::oneOrFail($vid);
+		$sourcePub = new Models\Publication(null, 'default', $version->get('id'));
+		if (!$sourcePub->access('view'))
+		{
+			return $this->_blockAccess();
 		}
 
 		// Get project model
@@ -1764,8 +1796,7 @@ class Publications extends SiteController
 
 		include_once dirname(dirname(__DIR__)) . '/models/orm/publication.php';
 
-		// Load the version
-		$version = Models\Orm\Version::oneOrFail($vid);
+		// (The source version was loaded and checked above, before provisioning.)
 
 		// Make sure the license applied allows for derivations
 		if (!$version->license->get('derivatives'))
@@ -1855,19 +1886,19 @@ class Publications extends SiteController
 			$rt->tag_object(User::get('id'), $version->get('publication_id'), $tags, 1);
 		}
 
-		// Copy citations
+		// Copy citations (associations are keyed on the version id, see Publication::getCitations)
 		include_once Component::path('com_citations')  . '/models/association.php';
 
 		$citations = \Components\Citations\Models\Association::all()
 			->whereEquals('tbl', 'publication')
-			->whereEquals('oid', $pub_id)
+			->whereEquals('oid', $vid)
 			->rows();
 		foreach ($citations as $citation)
 		{
 			$ca = \Components\Citations\Models\Association::blank();
 			$ca->set('cid', $citation->cid);
 			$ca->set('tbl', $citation->tbl);
-			$ca->set('oid', $pub_id);
+			$ca->set('oid', $version->get('id'));
 
 			if (!$ca->save())
 			{
@@ -2276,7 +2307,7 @@ class Publications extends SiteController
 				'action'      => 'forked',
 				'scope'       => 'publication',
 				'scope_id'    => $pub_id,
-				'description' => Lang::txt('COM_PUBLICATIONS_ACTIVITY_ENTRY_FORKED', '<a href="' . Route::url('index.php?option=com_publications&id=' . $pub_id . '&v=' . $vnum) . '">' . $version->get('title') . '</a>'),
+				'description' => Lang::txt('COM_PUBLICATIONS_ACTIVITY_ENTRY_FORKED', '<a href="' . Route::url('index.php?option=com_publications&id=' . $pub_id . '&v=' . $vnum) . '">' . htmlspecialchars((string) ($version->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $version->get('title'),
 					'url'   => Route::url('index.php?option=com_publications&id=' . $pub_id . '&v=' . $vnum),
@@ -2348,6 +2379,13 @@ class Publications extends SiteController
 			App::redirect(
 				Route::url('index.php?option=' . $this->_option)
 			);
+		}
+
+		// Make sure the actor is allowed to view the lft (source) version
+		$lsource = new Models\Publication(null, 'default', $lversion->get('id'));
+		if (!$lsource->access('view'))
+		{
+			return $this->_blockAccess();
 		}
 
 		// Load the rgt version and make sure the user has access

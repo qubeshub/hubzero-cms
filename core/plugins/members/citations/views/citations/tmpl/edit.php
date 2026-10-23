@@ -34,8 +34,12 @@ foreach ($this->badges as $badge)
 	$b[] = $badge;
 }
 
-$tags_list = Event::trigger('hubzero.onGetMultiEntry', array(array('tags', 'tags', 'actags', '', implode(",", $t))));
-$badges_list = Event::trigger('hubzero.onGetMultiEntry', array(array('tags', 'badges', 'actags1', '', implode(",", $b))));
+// Plain-input fallbacks below; $t is reused by the type list further down
+$tags   = implode(",", $t);
+$badges = implode(",", $b);
+
+$tags_list = Event::trigger('hubzero.onGetMultiEntry', array(array('tags', 'tags', 'actags', '', $tags)));
+$badges_list = Event::trigger('hubzero.onGetMultiEntry', array(array('tags', 'badges', 'actags1', '', $badges)));
 
 //get the referrer
 $backLink = Route::url('index.php?option=' . $this->_name);
@@ -384,6 +388,7 @@ if (isset($_SERVER['HTTP_REFERER']) && filter_var($_SERVER['HTTP_REFERER'], FILT
 		<input type="hidden" name="id" value="<?php echo $this->member->get('id'); ?>" />
 		<input type="hidden" name="option" value="com_members" />
 		<input type="hidden" name="active" value="citations" />
+		<?php echo Html::input('token'); ?>
 		<input type="hidden" name="action" value="save" />
 
 		<p class="submit">

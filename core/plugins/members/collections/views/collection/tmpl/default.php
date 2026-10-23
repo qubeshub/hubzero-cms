@@ -63,13 +63,13 @@ $allow_comments = Component::params('com_collections')->get('allow_comments');
 			<?php if (!User::isGuest()) { ?>
 				<?php if (!$this->params->get('access-create-item')) { ?>
 					<?php if ($this->collection->isFollowing()) { ?>
-						<a class="icon-unfollow unfollow btn tooltips" data-text-follow="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_FOLLOW_THIS'); ?>" data-text-unfollow="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_UNFOLLOW_THIS'); ?>" title="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_UNFOLLOW_TITLE'); ?>" href="<?php echo Route::url($this->collection->link() . '/unfollow'); ?>">
+						<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($this->collection->link() . '/unfollow'); ?>" class="icon-unfollow unfollow btn tooltips" data-text-follow="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_FOLLOW_THIS'); ?>" data-text-unfollow="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_UNFOLLOW_THIS'); ?>" title="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_UNFOLLOW_TITLE'); ?>">
 							<span><?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_UNFOLLOW_THIS'); ?></span>
-						</a>
+						</button>
 					<?php } else { ?>
-						<a class="icon-follow follow btn tooltips" data-text-follow="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_FOLLOW_THIS'); ?>" data-text-unfollow="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_UNFOLLOW_THIS'); ?>" title="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_FOLLOW_TITLE'); ?>" href="<?php echo Route::url($this->collection->link() . '/follow'); ?>">
+						<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($this->collection->link() . '/follow'); ?>" class="icon-follow follow btn tooltips" data-text-follow="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_FOLLOW_THIS'); ?>" data-text-unfollow="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_UNFOLLOW_THIS'); ?>" title="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_FOLLOW_TITLE'); ?>">
 							<span><?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_FOLLOW_THIS'); ?></span>
-						</a>
+						</button>
 					<?php } ?>
 					<a class="icon-repost repost btn tooltips" title="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_COLLECT_TITLE'); ?>" href="<?php echo Route::url($this->collection->link() . '/collect'); ?>">
 						<span><?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_COLLECT'); ?></span>
@@ -104,7 +104,7 @@ $allow_comments = Component::params('com_collections')->get('allow_comments');
 			<div class="post <?php echo $item->type(); ?>" id="post_<?php echo $row->get('id'); ?>" data-id="<?php echo $row->get('id'); ?>" data-closeup-url="<?php echo Route::url($base . '&task=post/' . $row->get('id')); ?>">
 				<div class="content">
 					<?php
-						$this->view('default_' . $item->type(), 'post')
+						$this->view('default_' . $item->layout(dirname(__DIR__, 2) . DS . 'post' . DS . 'tmpl', 'default_'), 'post')
 						     ->set('name', $this->name)
 						     ->set('option', $this->option)
 						     ->set('member', $this->member)
@@ -142,9 +142,9 @@ $allow_comments = Component::params('com_collections')->get('allow_comments');
 										<span><?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_EDIT'); ?></span>
 									</a>
 								<?php } else { ?>
-									<a class="btn vote <?php echo ($item->get('voted')) ? 'unlike' : 'like'; ?>" data-id="<?php echo $row->get('id'); ?>" data-text-like="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_LIKE'); ?>" data-text-unlike="<?php echo Lang::txt('Unlike'); ?>" href="<?php echo Route::url($base . '&task=post/' . $row->get('id') . '/vote'); ?>">
+									<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&task=post/' . $row->get('id') . '/vote'); ?>" class="btn vote <?php echo ($item->get('voted')) ? 'unlike' : 'like'; ?>" data-id="<?php echo $row->get('id'); ?>" data-text-like="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_LIKE'); ?>" data-text-unlike="<?php echo Lang::txt('Unlike'); ?>">
 										<span><?php echo ($item->get('voted')) ? Lang::txt('PLG_MEMBERS_COLLECTIONS_UNLIKE') : Lang::txt('PLG_MEMBERS_COLLECTIONS_LIKE'); ?></span>
-									</a>
+									</button>
 								<?php } ?>
 								<?php
 								// Let comment only if enabled
@@ -162,9 +162,9 @@ $allow_comments = Component::params('com_collections')->get('allow_comments');
 										<span><?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_DELETE'); ?></span>
 									</a>
 								<?php } else if ($row->get('created_by') == User::get('id') || $this->params->get('access-edit-item')) { ?>
-									<a class="btn unpost" data-id="<?php echo $row->get('id'); ?>" href="<?php echo Route::url($base . '&task=post/' . $row->get('id') . '/remove'); ?>">
+									<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&task=post/' . $row->get('id') . '/remove'); ?>" class="btn unpost" data-id="<?php echo $row->get('id'); ?>">
 										<span><?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_REMOVE'); ?></span>
-									</a>
+									</button>
 								<?php } ?>
 							<?php } else { ?>
 									<a class="btn vote like tooltips" href="<?php echo Route::url('index.php?option=com_users&view=login&return=' . base64_encode(Route::url($base . '&task=' . $this->collection->get('alias'), false, true)), false); ?>" title="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_WARNING_LOGIN_TO_LIKE'); ?>">

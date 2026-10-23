@@ -160,6 +160,12 @@ class Pluginsv1_0 extends ApiController
 			throw new Exception(Lang::txt('Group does not exist.'), 404);
 		}
 
+		// Only group members or admins may act on this group's plugin data
+		if (!User::authorise('core.admin') && !in_array(User::get('id'), $group->get('members')))
+		{
+			throw new Exception(Lang::txt('You are not authorized to access this group.'), 403);
+		}
+
 		// Check for an active plugin
 		$active = Request::getCmd('active', '');
 
@@ -192,7 +198,8 @@ class Pluginsv1_0 extends ApiController
 		// Check for errors at this point
 		if (!$response)
 		{
-			throw new Exception(Lang::txt('Expected data object not found.'), 500);
+			// no plugin answered for this "active" name: nothing to find, not a server fault
+			throw new Exception(Lang::txt('Expected data object not found.'), 404);
 		}
 
 		$this->send($response);
@@ -246,6 +253,12 @@ class Pluginsv1_0 extends ApiController
 			throw new Exception(Lang::txt('Group does not exist.'), 404);
 		}
 
+		// Only group members or admins may act on this group's plugin data
+		if (!User::authorise('core.admin') && !in_array(User::get('id'), $group->get('members')))
+		{
+			throw new Exception(Lang::txt('You are not authorized to access this group.'), 403);
+		}
+
 		// Check for an active plugin
 		$active = Request::getCmd('active', '');
 
@@ -281,7 +294,8 @@ class Pluginsv1_0 extends ApiController
 		// Check for errors at this point
 		if (!$response)
 		{
-			throw new Exception(Lang::txt('Expected data object not found.'), 500);
+			// no plugin answered for this "active" name: nothing to find, not a server fault
+			throw new Exception(Lang::txt('Expected data object not found.'), 404);
 		}
 
 		$this->send($response);
@@ -335,6 +349,12 @@ class Pluginsv1_0 extends ApiController
 			throw new Exception(Lang::txt('Group does not exist.'), 404);
 		}
 
+		// Only group members or admins may act on this group's plugin data
+		if (!User::authorise('core.admin') && !in_array(User::get('id'), $group->get('members')))
+		{
+			throw new Exception(Lang::txt('You are not authorized to access this group.'), 403);
+		}
+
 		// Check for an active plugin
 		$active = Request::getCmd('active', '');
 
@@ -370,7 +390,8 @@ class Pluginsv1_0 extends ApiController
 		// Check for errors at this point
 		if (!$response)
 		{
-			throw new Exception(Lang::txt('Expected data object not found.'), 500);
+			// no plugin answered for this "active" name: nothing to find, not a server fault
+			throw new Exception(Lang::txt('Expected data object not found.'), 404);
 		}
 
 		$this->send($response);
@@ -422,6 +443,12 @@ class Pluginsv1_0 extends ApiController
 		if (!$group)
 		{
 			throw new Exception(Lang::txt('Group does not exist.'), 404);
+		}
+
+		// Only group members or admins may act on this group's plugin data
+		if (!User::authorise('core.admin') && !in_array(User::get('id'), $group->get('members')))
+		{
+			throw new Exception(Lang::txt('You are not authorized to access this group.'), 403);
 		}
 
 		// Check for an active plugin

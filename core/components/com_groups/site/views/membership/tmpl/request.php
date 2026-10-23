@@ -39,7 +39,10 @@ defined('_HZEXEC_') or die();
 				<legend><?php echo Lang::txt('COM_GROUPS_JOIN_SECTION_TITLE'); ?></legend>
 
 				<?php if ($this->group->get('restrict_msg')) { ?>
-					<p class="warning"><?php echo Lang::txt('NOTE') . ': ' . $this->escape(stripslashes($this->group->get('restrict_msg'))); ?></p>
+					<div class="warning">
+						<strong><?php echo Lang::txt('NOTE'); ?>:</strong>
+						<?php echo \Hubzero\Utility\Sanitize::html($this->group->get('restrict_msg')); ?>
+					</div>
 				<?php } ?>
 
 				<label for="reason">

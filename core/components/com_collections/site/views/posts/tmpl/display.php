@@ -61,13 +61,13 @@ if (!$no_html) {
 								</span>
 							</p>
 						<?php } else { ?>
-							<p class="typeof <?php echo $item->get('type'); ?>">
+							<p class="typeof <?php echo $this->escape($item->get('type')); ?>">
 								<?php echo $this->escape($item->type('title')); ?>
 							</p>
 						<?php } ?>
 					</div><!-- / .attribution -->
 					<?php
-					$this->view('display_' . $item->type(), 'posts')
+					$this->view('display_' . $item->layout(__DIR__, 'display_'), 'posts')
 					     ->set('actual', true)
 					     ->set('option', $this->option)
 					     ->set('params', $this->config)
@@ -174,7 +174,7 @@ if (!$no_html) {
 									</a>
 								</p>
 								<div class="comment-body">
-									<p><?php echo stripslashes($comment->content); ?></p>
+									<p><?php echo $this->escape(stripslashes($comment->content)); ?></p>
 								</div>
 							</div>
 						</li>
@@ -275,20 +275,20 @@ if (!$no_html) {
 											<span><?php echo Lang::txt('COM_COLLECTIONS_COLLECT'); ?></span>
 										</a>
 									<?php if ($this->collection->isFollowing()) { ?>
-										<a class="btn unfollow" data-id="<?php echo $this->collection->get('id'); ?>" data-text-follow="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?>" data-text-unfollow="<?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW'); ?>" href="<?php echo Route::url($this->collection->link() . '/unfollow'); ?>">
+										<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($this->collection->link() . '/unfollow'); ?>" class="btn unfollow" data-id="<?php echo $this->collection->get('id'); ?>" data-text-follow="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?>" data-text-unfollow="<?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW'); ?>">
 											<span><?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW'); ?></span>
-										</a>
+										</button>
 									<?php } else { ?>
-										<a class="btn follow" data-id="<?php echo $this->collection->get('id'); ?>" data-text-follow="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?>" data-text-unfollow="<?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW'); ?>" href="<?php echo Route::url($this->collection->link() . '/follow'); ?>">
+										<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($this->collection->link() . '/follow'); ?>" class="btn follow" data-id="<?php echo $this->collection->get('id'); ?>" data-text-follow="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?>" data-text-unfollow="<?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW'); ?>">
 											<span><?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?></span>
-										</a>
+										</button>
 									<?php } ?>
 								<?php } ?>
 							<?php } else { ?>
 								<a class="btn repost tooltips" href="<?php echo Route::url('index.php?option=com_users&view=login&return=' . base64_encode(Route::url($base . '&controller=posts&board=' . $this->collection->get('id') . '&task=collect', false, true)), false); ?>" title="<?php echo Lang::txt('COM_COLLECTIONS_WARNING_LOGIN_TO_COLLECT'); ?>" aria-label="<?php echo Lang::txt('COM_COLLECTIONS_COLLECT') . ': ' . $this->escape($this->collection->get('title')); ?>">
 									<span><?php echo Lang::txt('COM_COLLECTIONS_COLLECT'); ?></span>
 								</a>
-								<a class="btn follow tooltips" href="<?php echo Route::url('index.php?option=com_users&view=login&return=' . base64_encode(Route::url($this->collection->link() . '/follow')), false); ?>" title="<?php echo Lang::txt('COM_COLLECTIONS_WARNING_LOGIN_TO_FOLLOW'); ?>" aria-label="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW') . ': ' . $this->escape($this->collection->get('title')); ?>">
+								<a class="btn follow tooltips" href="<?php echo Route::url('index.php?option=com_users&view=login&return=' . base64_encode(Route::url($this->collection->link(), false, true)), false); ?>" title="<?php echo Lang::txt('COM_COLLECTIONS_WARNING_LOGIN_TO_FOLLOW'); ?>" aria-label="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW') . ': ' . $this->escape($this->collection->get('title')); ?>">
 									<span><?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?></span>
 								</a>
 							<?php } ?>
@@ -377,20 +377,20 @@ if (!$no_html) {
 												<span><?php echo Lang::txt('COM_COLLECTIONS_COLLECT'); ?></span>
 											</a>
 										<?php if ($collection->isFollowing()) { ?>
-											<a class="btn unfollow" data-id="<?php echo $collection->get('id'); ?>" data-text-follow="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?>" data-text-unfollow="<?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW'); ?>" href="<?php echo Route::url($collection->link() . '/unfollow'); ?>">
+											<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($collection->link() . '/unfollow'); ?>" class="btn unfollow" data-id="<?php echo $collection->get('id'); ?>" data-text-follow="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?>" data-text-unfollow="<?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW'); ?>">
 												<span><?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW'); ?></span>
-											</a>
+											</button>
 										<?php } else { ?>
-											<a class="btn follow" data-id="<?php echo $collection->get('id'); ?>" data-text-follow="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?>" data-text-unfollow="<?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW'); ?>" href="<?php echo Route::url($collection->link() . '/follow'); ?>">
+											<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($collection->link() . '/follow'); ?>" class="btn follow" data-id="<?php echo $collection->get('id'); ?>" data-text-follow="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?>" data-text-unfollow="<?php echo Lang::txt('COM_COLLECTIONS_UNFOLLOW'); ?>">
 												<span><?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?></span>
-											</a>
+											</button>
 										<?php } ?>
 									<?php } ?>
 								<?php } else { ?>
 									<a class="btn repost tooltips" href="<?php echo Route::url('index.php?option=com_users&view=login&return=' . base64_encode(Route::url($base . '&controller=posts&board=' . $collection->get('id') . '&task=collect', false, true)), false); ?>" title="<?php echo Lang::txt('COM_COLLECTIONS_WARNING_LOGIN_TO_COLLECT'); ?>" aria-label="<?php echo Lang::txt('COM_COLLECTIONS_COLLECT') . ': ' . $this->escape($collection->get('title')); ?>">
 										<span><?php echo Lang::txt('COM_COLLECTIONS_COLLECT'); ?></span>
 									</a>
-									<a class="btn follow tooltips" href="<?php echo Route::url('index.php?option=com_users&view=login&return=' . base64_encode(Route::url($collection->link() . '/follow')), false); ?>" title="<?php echo Lang::txt('COM_COLLECTIONS_WARNING_LOGIN_TO_FOLLOW'); ?>" aria-label="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW') . ': ' . $this->escape($collection->get('title')); ?>">
+									<a class="btn follow tooltips" href="<?php echo Route::url('index.php?option=com_users&view=login&return=' . base64_encode(Route::url($collection->link(), false, true)), false); ?>" title="<?php echo Lang::txt('COM_COLLECTIONS_WARNING_LOGIN_TO_FOLLOW'); ?>" aria-label="<?php echo Lang::txt('COM_COLLECTIONS_FOLLOW') . ': ' . $this->escape($collection->get('title')); ?>">
 										<span><?php echo Lang::txt('COM_COLLECTIONS_FOLLOW'); ?></span>
 									</a>
 								<?php } ?>

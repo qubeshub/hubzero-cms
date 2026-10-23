@@ -114,7 +114,7 @@ $this->css();
 							foreach ($this->categories as $id => $title)
 							{
 							?>
-								<option value="<?php echo $id; ?>"<?php if ($this->category == $id) { echo ' selected="selected"'; } ?>><?php echo stripslashes($title); ?></option>
+								<option value="<?php echo $id; ?>"<?php if ($this->category == $id) { echo ' selected="selected"'; } ?>><?php echo $this->escape(stripslashes($title)); ?></option>
 							<?php
 							}
 						}
@@ -186,6 +186,46 @@ $this->css();
 
 			<div class="calendarwrap">
 				<p class="datenav">
+					<?php
+					$this_date = new \Components\Events\Helpers\EventsDate();
+					$this_date->setDate( $this->year, $this->month, $this->day );
+
+					$prev_week = clone($this_date);
+					$prev_week->addDays( -7 );
+					$next_week = clone($this_date);
+					$next_week->addDays( +7 );
+
+					//$this->week is the last day shown; get a DateTime for the first day of this week and of the next
+					$next_week_dt = new DateTime($this->week['year'] . '-' . $this->week['month'] . '-' . $this->week['day']);
+					$next_week_dt->add(new DateInterval("P1D"));
+					$this_week_dt = clone($next_week_dt);
+					$this_week_dt->sub(new DateInterval("P7D"));
+
+					if ($this_week_dt > $first_event_time) {
+						$prev_week_url = Route::url('index.php?option='.$this->option.'&'.$prev_week->toDateURL($this->task));
+						$prev_week_text = Lang::txt('EVENTS_CAL_LANG_PREVIOUSWEEK');
+					} else {
+						$prev_week_url = '';
+						$prev_week_text = Lang::txt('EVENTS_CAL_LANG_NO_EVENTFOR') . ' ' . Lang::txt('EVENTS_CAL_LANG_PREVIOUSWEEK');
+					}
+					if ($next_week_dt <= $last_event_time) {
+						$next_week_url = Route::url('index.php?option='.$this->option.'&'.$next_week->toDateURL($this->task));
+						$next_week_text = Lang::txt('EVENTS_CAL_LANG_NEXTWEEK');
+					} else {
+						$next_week_url = '';
+						$next_week_text = Lang::txt('EVENTS_CAL_LANG_NO_EVENTFOR') . ' ' . Lang::txt('EVENTS_CAL_LANG_NEXTWEEK');
+					}
+					?>
+					<?php if ($prev_week_url) { ?>
+						<a class="prv" rel="nofollow" href="<?php echo $prev_week_url; ?>" title="<?php echo $prev_week_text; ?>" aria-label="<?php echo $prev_week_text; ?>">&lsaquo;</a>
+					<?php } else { ?>
+						<span class="prv" aria-disabled="true" title="<?php echo $prev_week_text; ?>">&lsaquo;</span>
+					<?php } ?>
+					<?php if ($next_week_url) { ?>
+						<a class="nxt" rel="nofollow" href="<?php echo $next_week_url; ?>" title="<?php echo $next_week_text; ?>" aria-label="<?php echo $next_week_text; ?>">&rsaquo;</a>
+					<?php } else { ?>
+						<span class="nxt" aria-disabled="true" title="<?php echo $next_week_text; ?>">&rsaquo;</span>
+					<?php } ?>
 					<?php echo $this->startdate.' to '.$this->enddate; ?>
 				</p>
 			</div><!-- / .calendarwrap -->

@@ -89,8 +89,9 @@ if ($images)
 			{
 				if ($si->filename == $ima)
 				{
-					$new['title'] = stripslashes($si->title);
-					$new['title'] = preg_replace('/"((.)*?)"/i', "&#147;\\1&#148;", $new['title']);
+					// Escape before the quote swap so a stray quote cannot end the attribute
+					$new['title'] = $this->escape(stripslashes($si->title));
+					$new['title'] = preg_replace('/&quot;((.)*?)&quot;/i', "&#147;\\1&#148;", $new['title']);
 					$new['ordering'] = $si->ordering;
 				}
 			}
@@ -138,11 +139,11 @@ for ($i=0, $n=count($images); $i < $n; $i++)
 		else
 		{
 			$k++;
-			$title = (isset($images[$i]['title']) && $images[$i]['title']!='') ? $images[$i]['title']: Lang::txt('COM_TOOLS_SCREENSHOT').' #'.$k;
+			$title = (isset($images[$i]['title']) && $images[$i]['title']!='') ? $images[$i]['title'] : Lang::txt('COM_TOOLS_SCREENSHOT').' #'.$k;
 			$els .= '<li>';
 				$els .= '<span class="dev_ss">';
 					$els .= '<a href="' . $base . '/index.php?option='.$this->option.'&amp;controller='.$this->controller.'&amp;task=edit&amp;pid='.$this->rid.'&amp;filename='.$images[$i]['img'].'&amp;version='.$this->version.'&amp;tmpl=component" class="icon-edit edit popup" rel="external">'.Lang::txt('COM_TOOLS_EDIT').'</a>';
-					$els .= '<a href="' . $base . '/index.php?option='.$this->option.'&amp;controller='.$this->controller.'&amp;task=delete&amp;pid='.$this->rid.'&amp;filename='.$images[$i]['img'].'&amp;version='.$this->version.'&amp;tmpl=component" class="icon-delete delete">'.Lang::txt('COM_TOOLS_DELETE').'</a>';
+					$els .= '<a href="' . $base . '/index.php?option='.$this->option.'&amp;controller='.$this->controller.'&amp;task=delete&amp;pid='.$this->rid.'&amp;filename='.$images[$i]['img'].'&amp;version='.$this->version.'&amp;tmpl=component&amp;' . Session::getFormToken() . '=1" class="icon-delete delete">'.Lang::txt('COM_TOOLS_DELETE').'</a>';
 				$els .= '</span>';
 				$els .= '<a href="' . $base . '/index.php?option='.$this->option.'&amp;controller='.$this->controller.'&amp;task=edit&amp;pid='.$this->rid.'&amp;filename='.$images[$i]['img'].'&amp;version='.$this->version.'&amp;tmpl=component" class="popup" title="'.$title.'">';
 					$els .= '<img src="'.$this->wpath.'/'.$tn.'" alt="'.$title.'" id="ss_'.$i.'" />';
@@ -153,7 +154,7 @@ for ($i=0, $n=count($images); $i < $n; $i++)
 		if ($i != ($n-1))
 		{
 			$els .= '<li>';
-				$els .= '<a class="icon-reorder reorder" href="' . $base . '/index.php?option=' . $this->option . '&amp;controller=' . $this->controller . '&amp;task=order&amp;pid='.$this->rid.'&amp;fl='.$images[$i+1]['img'].'&amp;fr='.$images[$i]['img'].'&amp;ol='.($i+1).'&amp;or='.$i.'&amp;version='.$this->version.'&amp;tmpl=component" title="' .Lang::txt('COM_TOOLS_REORDER'). '">';
+				$els .= '<a class="icon-reorder reorder" href="' . $base . '/index.php?option=' . $this->option . '&amp;controller=' . $this->controller . '&amp;task=order&amp;pid='.$this->rid.'&amp;fl='.$images[$i+1]['img'].'&amp;fr='.$images[$i]['img'].'&amp;ol='.($i+1).'&amp;or='.$i.'&amp;version='.$this->version.'&amp;tmpl=component&amp;' . Session::getFormToken() . '=1" title="' .Lang::txt('COM_TOOLS_REORDER'). '">';
 					$els .= Lang::txt('COM_TOOLS_REORDER');
 				$els .= '</a>';
 			$els .= '</li>'."\n";
@@ -191,10 +192,11 @@ echo $html;
 		<input type="hidden" name="controller" value="<?php echo $this->controller; ?>" />
 		<input type="hidden" name="tmpl" value="component" />
 		<input type="hidden" name="changing_version" value="0" />
-		<input type="hidden" name="version" id="version" value="<?php echo $this->version; ?>" />
+		<input type="hidden" name="version" id="version" value="<?php echo $this->escape($this->version); ?>" />
 		<input type="hidden" name="pid" id="pid" value="<?php echo $this->rid; ?>" />
 		<input type="hidden" name="path" id="path" value="<?php echo $this->upath; ?>" />
 		<input type="hidden" name="task" value="upload" />
+		<?php echo Html::input('token'); ?>
 	</fieldset>
 </form>
 <?php if ($this->published && $this->version=='dev') { ?>
@@ -203,11 +205,12 @@ echo $html;
 			<legend><?php echo Lang::txt('COM_TOOLS_COPY_SCREENSHOTS'); ?></legend>
 
 			<input type="hidden" name="option" value="<?php echo $this->option; ?>" />
-			<input type="hidden" name="version" value="<?php echo $this->version; ?>" />
+			<input type="hidden" name="version" value="<?php echo $this->escape($this->version); ?>" />
 			<input type="hidden" name="controller" value="<?php echo $this->controller; ?>" />
 			<input type="hidden" name="task" value="copy" />
 			<input type="hidden" name="rid" value="<?php echo $this->rid; ?>" />
 			<input type="hidden" name="tmpl" value="component" />
+			<?php echo Html::input('token'); ?>
 			<label>
 				<?php
 				$v = $this->version=='dev' ? 'current' : 'development';

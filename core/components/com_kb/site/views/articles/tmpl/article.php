@@ -58,7 +58,7 @@ Document::setTitle(Lang::txt('COM_KB') . ': ' . $this->category->get('title') . 
 						</div><!-- / .entry-tags -->
 					<?php } ?>
 
-					<p class="entry-voting voting">
+					<div class="entry-voting voting">
 						<?php
 							$this->view('_vote')
 								 ->set('option', $this->option)
@@ -68,7 +68,7 @@ Document::setTitle(Lang::txt('COM_KB') . ': ' . $this->category->get('title') . 
 								 ->set('id', 0) //$this->article->get('id');
 								 ->display();
 						?>
-					</p>
+					</div>
 
 					<p class="entry-details">
 						<?php echo Lang::txt('COM_KB_LAST_MODIFIED'); ?>
@@ -180,6 +180,15 @@ Document::setTitle(Lang::txt('COM_KB') . ': ' . $this->category->get('title') . 
 					<?php
 					$replyto = \Components\Kb\Models\Comment::oneOrNew(Request::getInt('replyto'));
 
+					// The id is taken from the URL: only quote a comment that is
+					// published on this very article, otherwise treat it as none.
+					if (!$replyto->isNew()
+					 && ($replyto->get('entry_id') != $this->article->get('id')
+					  || $replyto->get('state') != \Components\Kb\Models\Comment::STATE_PUBLISHED))
+					{
+						$replyto = \Components\Kb\Models\Comment::blank();
+					}
+
 					if (!User::isGuest())
 					{
 						if (!$replyto->isNew())
@@ -203,7 +212,7 @@ Document::setTitle(Lang::txt('COM_KB') . ': ' . $this->category->get('title') . 
 									<span class="date"><time datetime="<?php echo $replyto->created(); ?>"><?php echo $replyto->created('date'); ?></time></span>
 								</p>
 								<p>
-									<?php echo $replyto->content('raw', 300); ?>
+									<?php echo \Hubzero\Utility\Sanitize::html((string) $replyto->get('content')); ?>
 								</p>
 							</blockquote>
 							<?php

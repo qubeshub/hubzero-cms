@@ -114,9 +114,9 @@ $this->css();
 							<?php echo Lang::txt('PLG_RESOURCES_QUESTIONS_VOTE_LIKES', $row->get('helpful', 0)); ?>
 						</span>
 					<?php } else { ?>
-						<a class="vote-button <?php echo ($row->get('helpful', 0) > 0) ? 'like' : 'neutral'; ?> tooltips" href="<?php echo Route::url('index.php?option=com_answers&task=vote&id=' . $row->get('id') . '&category=question&vote=yes'); ?>" title="<?php echo Lang::txt('PLG_RESOURCES_QUESTIONS_VOTE_UP', $row->get('helpful', 0)); ?>">
+						<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=com_answers&task=vote&id=' . $row->get('id') . '&category=question&vote=yes'); ?>" class="vote-button <?php echo ($row->get('helpful', 0) > 0) ? 'like' : 'neutral'; ?> tooltips" title="<?php echo Lang::txt('PLG_RESOURCES_QUESTIONS_VOTE_UP', $row->get('helpful', 0)); ?>">
 							<?php echo Lang::txt('PLG_RESOURCES_QUESTIONS_VOTE_LIKES', $row->get('helpful', 0)); ?>
-						</a>
+						</button>
 					<?php } ?>
 					</span>
 				</td>

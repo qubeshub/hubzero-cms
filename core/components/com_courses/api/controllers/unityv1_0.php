@@ -9,6 +9,8 @@ namespace Components\Courses\Api\Controllers;
 
 use Components\Courses\Models\Course;
 use Components\Courses\Models\Member;
+use Components\Courses\Tables\AssetUnity;
+use Components\Courses\Tables\GradeBook;
 use Request;
 use App;
 use Date;
@@ -55,7 +57,7 @@ class Unityv1_0 extends base
 		$referer = (!empty($_SERVER['HTTP_REFERER'])) ? $_SERVER['HTTP_REFERER'] : Request::getString('referrer');
 		preg_match('/\/asset\/([[:digit:]]*)/', $referer, $matches);
 
-		if (!$asset_id = $matches[1])
+		if (empty($matches[1]) || !($asset_id = (int) $matches[1]))
 		{
 			App::abort(400, 'Failed to get asset ID');
 		}
@@ -94,6 +96,12 @@ class Unityv1_0 extends base
 		// Get the key and IV - Trim the first xx characters from the payload for IV
 		$key  = $course->config()->get('unity_key', 0);
 
+		// Fail closed: without a configured key any payload could be forged
+		if (empty($key) || $key === '0')
+		{
+			App::abort(500, 'Unity key is not configured');
+		}
+
 	        $data = base64_decode($data);
 		$iv_size = openssl_cipher_iv_length('AES-256-CBC');
 		$iv = substr($data, 0, $iv_size);
@@ -112,7 +120,7 @@ class Unityv1_0 extends base
 		$now = Date::toSql();
 
 		// Save the unity details
-		$unity = new AssetUnity($this->db);
+		$unity = new AssetUnity(App::get('db'));
 		$unity->set('member_id', $member_id);
 		$unity->set('asset_id', $asset_id);
 		$unity->set('created', $now);
@@ -124,7 +132,7 @@ class Unityv1_0 extends base
 		}
 
 		// Now set/update the gradebook item
-		$gradebook = new GradeBook($this->db);
+		$gradebook = new GradeBook(App::get('db'));
 		$gradebook->loadByUserAndAssetId($member_id, $asset_id);
 
 		// Score is either 100 or 0

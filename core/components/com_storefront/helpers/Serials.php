@@ -164,6 +164,9 @@ class Serials
 
 	public static function delete($ids)
 	{
+		// The controller hands over a single id; the list view posts srId[]
+		$ids = array_map('intval', (array) $ids);
+
 		$msg = new \stdClass();
 		$msg->type = 'message';
 
@@ -211,7 +214,7 @@ class Serials
 
 		$db = \App::get('db');
 		$sql = "INSERT IGNORE INTO `#__storefront_serials`";
-		$sql .= " SET `srStatus` = 'available', `srNumber` = '{$serial}', `srSId` = {$sId}";
+		$sql .= " SET `srStatus` = 'available', `srNumber` = " . $db->quote($serial) . ", `srSId` = " . (int) $sId;
 
 		$db->setQuery($sql);
 		$db->execute();

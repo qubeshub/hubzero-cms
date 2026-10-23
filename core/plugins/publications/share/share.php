@@ -67,6 +67,8 @@ class plgPublicationsShare extends \Hubzero\Plugin\Plugin
 
 		// Incoming action
 		$sharewith = Request::getString('sharewith', '');
+		// Stored into the owner's activity feed as HTML: escape it once here
+		$sharewith = htmlspecialchars((string) $sharewith, ENT_QUOTES, 'UTF-8');
 
 		if ($sharewith)
 		{
@@ -78,7 +80,7 @@ class plgPublicationsShare extends \Hubzero\Plugin\Plugin
 						'action'      => 'shared',
 						'scope'       => 'publication',
 						'scope_id'    => $publication->id,
-						'description' => Lang::txt('PLG_PUBLICATIONS_SHARE_ENTRY_SHARED', '<a href="' . $sef . '">' . $publication->title . '</a>', $sharewith),
+						'description' => Lang::txt('PLG_PUBLICATIONS_SHARE_ENTRY_SHARED', '<a href="' . $sef . '">' . htmlspecialchars((string) ($publication->title), ENT_QUOTES, 'UTF-8') . '</a>', $sharewith),
 						'details'     => array(
 							'with'    => $sharewith,
 							'title'   => $publication->title,

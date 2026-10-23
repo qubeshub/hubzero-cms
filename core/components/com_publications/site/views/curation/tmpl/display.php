@@ -99,7 +99,7 @@ $this->css()
 									// Get submitter
 									$submitter  = $pa->getSubmitter($row->version_id, $row->created_by);
 									$submitter->name = $submitter->name ?: Lang::txt('JUNKNOWN');
-									$submitted .= ' <span class="block">' . Lang::txt('COM_PUBLICATIONS_CURATION_BY', $submitter->name) . '</span>';
+									$submitted .= ' <span class="block">' . Lang::txt('COM_PUBLICATIONS_CURATION_BY', $this->escape($submitter->name)) . '</span>';
 
 									if ($row->state == 7)
 									{
@@ -112,7 +112,7 @@ $this->css()
 											$reviewer = User::getInstance($row->reviewed_by);
 											$name = $reviewer->get('name');
 											$name = $name ?: Lang::txt('JUNKNOWN');
-											$reviewed .= $reviewer ? ' <span class="block">' . Lang::txt('COM_PUBLICATIONS_CURATION_BY', $name) . '</span>' : '';
+											$reviewed .= $reviewer ? ' <span class="block">' . Lang::txt('COM_PUBLICATIONS_CURATION_BY', $this->escape($name)) . '</span>' : '';
 										}
 									}
 
@@ -140,7 +140,7 @@ $this->css()
 											<?php } ?>
 										</td>
 										<td>
-											v.<?php echo $row->version_label; ?>
+											v.<?php echo $this->escape($row->version_label); ?>
 										</td>
 										<td>
 											<span class="icon <?php echo $row->base; ?>">&nbsp;</span><?php echo $row->base; ?>

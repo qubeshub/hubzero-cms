@@ -11,7 +11,7 @@ defined('_HZEXEC_') or die();
 if (substr($this->xmessage->type, -8) == '_message')
 {
 	$u = User::getInstance($this->xmessage->created_by);
-	$from = '<a href="' . Route::url('index.php?option=' . $this->option . '&id=' . $u->get('id')) . '">' . $u->get('name') . '</a>';
+	$from = '<a href="' . Route::url('index.php?option=' . $this->option . '&id=' . $u->get('id')) . '">' . $this->escape($u->get('name')) . '</a>';
 }
 else
 {
@@ -22,7 +22,7 @@ else
 <div class="subject">
 	<?php if (!$this->no_html): ?>
 	<ul class="entries-menu">
-		<li><a class="active" href="<?php echo Route::url('index.php?option='.$option.'&cn='.$this->group->get('cn').'&active=messages'); ?>"><span><?php echo Lang::txt('PLG_GROUPS_MESSAGES_SENT'); ?></span></a></li>
+		<li><a class="active" href="<?php echo Route::url('index.php?option='.$this->option.'&cn='.$this->group->get('cn').'&active=messages'); ?>"><span><?php echo Lang::txt('PLG_GROUPS_MESSAGES_SENT'); ?></span></a></li>
 		<?php if ($this->authorized == 'admin' || $this->authorized == 'manager') { ?>
 			<li><a href="<?php echo Route::url('index.php?option='.$this->option.'&cn='.$this->group->get('cn').'&active=messages&action=new'); ?>"><span><?php echo Lang::txt('PLG_GROUPS_MESSAGES_SEND'); ?></span></a></li>
 		<?php } ?>
@@ -52,7 +52,7 @@ else
 					</tr>
 					<tr>
 						<th><?php echo Lang::txt('PLG_GROUPS_MESSAGES_SUBJECT'); ?>:</th>
-						<td><?php echo stripslashes($this->xmessage->subject); ?></td>
+						<td><?php echo $this->escape(stripslashes($this->xmessage->subject)); ?></td>
 					</tr>
 					<tr>
 						<th><?php echo Lang::txt('PLG_GROUPS_MESSAGES_MESSAGE'); ?>:</th>

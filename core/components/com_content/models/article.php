@@ -79,6 +79,7 @@ class Article extends Relational implements \Hubzero\Search\Searchable
 	 * @var  array
 	 */
 	public $always = array(
+		'alias',
 		'publish_up',
 		'publish_down',
 		'fulltext',
@@ -147,7 +148,10 @@ class Article extends Relational implements \Hubzero\Search\Searchable
 	 */
 	public function automaticAssetId()
 	{
-		if (!empty($this->assetRules))
+		// Posted rules are applied only for core.admin now, so a row created by
+		// anyone else arrives with none; it still needs its asset (the column
+		// is NOT NULL), or the save fails
+		if (!empty($this->assetRules) || !$this->get('asset_id'))
 		{
 			return parent::automaticAssetId();
 		}
@@ -321,6 +325,51 @@ class Article extends Relational implements \Hubzero\Search\Searchable
 	public function asset()
 	{
 		return $this->belongsToOne('\Hubzero\Access\Asset', 'asset_id');
+	}
+
+	/**
+	 * Generates automatic alias field value
+	 *
+	 * An article saved with no alias used to be stored with an empty one,
+	 * which the site router then matched against the bare index.php.
+	 *
+	 * @param   array   $data  the data being saved
+	 * @return  string
+	 */
+	public function automaticAlias($data)
+	{
+		// An alias the editor typed is kept (normalised to the characters the
+		// router can carry, never regenerated from the title). One is made
+		// from the title only when none was given: an empty alias used to be
+		// stored, and the site router then matched it against the bare
+		// index.php.
+		$alias = isset($data['alias']) ? trim((string) $data['alias']) : '';
+
+		if ($alias === '')
+		{
+			$alias = strip_tags(isset($data['title']) ? (string) $data['title'] : '');
+		}
+
+		$alias = trim(preg_replace('/[^a-z0-9\-]+/', '-', strtolower(Lang::transliterate($alias))), '-');
+
+		if ($alias === '')
+		{
+			$alias = Date::of('now')->format('Y-m-d-H-i-s');
+		}
+
+		// The router looks an article up by alias within its category, so
+		// the alias is kept unique there (other rows only: a row's own alias
+		// is not a collision)
+		$catid = isset($data['catid']) ? (int) $data['catid'] : 0;
+		$id    = isset($data['id']) ? (int) $data['id'] : 0;
+		$base  = $alias;
+		$n     = 2;
+		while (self::all()->whereEquals('alias', $alias)->whereEquals('catid', $catid)->where('id', '!=', $id)->total())
+		{
+			$alias = $base . '-' . $n++;
+		}
+
+		return $alias;
 	}
 
 	/**
@@ -976,7 +1025,7 @@ class Article extends Relational implements \Hubzero\Search\Searchable
 				\Hubzero\Utility\Arr::toInteger($articleId);
 				$articleId = implode(',', $articleId);
 				$type = $filters['article_id.include'] ? 'IN' : 'NOT IN';
-				$query->whereRaw('a.id', $type . ' (' . $articleId . ')');
+				$query->whereRaw('a.id ' . $type . ' (' . $articleId . ')');
 			}
 		}
 
@@ -1043,7 +1092,7 @@ class Article extends Relational implements \Hubzero\Search\Searchable
 				if (!empty($categoryId))
 				{
 					$type = $filters['category_id.include'] ? 'IN' : 'NOT IN';
-					$query->whereRaw('a.catid', $type . ' (' . $categoryId . ')');
+					$query->whereRaw('a.catid ' . $type . ' (' . $categoryId . ')');
 				}
 			}
 		}
@@ -1106,9 +1155,10 @@ class Article extends Relational implements \Hubzero\Search\Searchable
 				{
 					\Hubzero\Utility\Arr::toString($authorAlias);
 
+					$db = \App::get('db');
 					foreach ($authorAlias as $key => $alias)
 					{
-						$authorAlias[$key] = $db->Quote($alias);
+						$authorAlias[$key] = $db->quote($alias);
 					}
 
 					$authorAlias = implode(',', $authorAlias);

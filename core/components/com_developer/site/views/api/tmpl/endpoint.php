@@ -53,8 +53,8 @@ foreach (array_keys($endpoints) as $version) {
 	}
 }
 $token = "";
-if (!empty($this->tokens)) {
-	$token = $this->tokens->first()->access_token;
+if (!empty($this->tokens) && count($this->tokens) && $this->tokens->first()) {
+	$token = $this->tokens->first()->get('access_token');
 }
 
 // pull list of versions from doc
@@ -105,7 +105,7 @@ $base = 'index.php?option=' . $this->option . '&controller=' . $this->controller
 					->display();
 			}
 			?>
-			<h2 class="doc-section-header" id="<?php echo $this->active; ?>">
+			<h2 class="doc-section-header" id="<?php echo $this->escape($this->active); ?>">
 				<?php echo ucfirst($this->active); ?>
 				<?php if (!empty($versions)): ?>
 					<div class="btn-group dropdown">

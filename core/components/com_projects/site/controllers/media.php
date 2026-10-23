@@ -53,7 +53,7 @@ class Media extends Base
 		{
 			$stream = true;
 			$file = $_GET['qqfile'];
-			$size = (int) $_SERVER["CONTENT_LENGTH"];
+			$size = (int) ($_SERVER["CONTENT_LENGTH"] ?? 0);
 		}
 		elseif (isset($_FILES['qqfile']))
 		{
@@ -83,7 +83,7 @@ class Media extends Base
 		//check to make sure we have an allowable extension
 		$pathinfo = pathinfo($file);
 		$filename = $pathinfo['filename'];
-		$ext      = $pathinfo['extension'];
+		$ext      = $pathinfo['extension'] ?? '';
 		if ($allowedExtensions && !in_array(strtolower($ext), $allowedExtensions))
 		{
 			$these = implode(', ', $allowedExtensions);
@@ -265,6 +265,9 @@ class Media extends Base
 	 */
 	public function deleteimgTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Incoming
 		$ajax = Request::getInt('ajax', 0);
 
@@ -296,7 +299,8 @@ class Media extends Base
 		}
 
 		// Incoming file
-		$file = Request::getString('file', '');
+		// Incoming file (bare filename only - no traversal)
+		$file = basename(Request::getString('file', ''));
 		$file = $file ? $file : $this->model->get('picture');
 		if (!$file)
 		{
@@ -470,8 +474,12 @@ class Media extends Base
 					return;
 				}
 
+				// basename after urldecode, as deleteimgTask does: the value
+				// arrives percent-encoded from the SCRIPT_URL branches above, so
+				// %2e%2e%2f becomes ../ here and Hubzero\Content\Server performs
+				// no containment of its own -- this serves the file inline.
 				$path     = trim($this->config->get('imagepath', '/site/projects'), DS);
-				$source   = PATH_APP . DS . $path . DS . $this->model->get('alias') . DS . $dir . DS . urldecode($media);
+				$source   = PATH_APP . DS . $path . DS . $this->model->get('alias') . DS . $dir . DS . basename(str_replace('\\', '/', urldecode($media)));
 				$redirect = true;
 			}
 		}

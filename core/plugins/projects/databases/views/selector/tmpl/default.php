@@ -47,10 +47,10 @@ if ($attachments)
 				<input type="hidden" name="version" value="<?php echo $this->publication->get('version_number'); ?>" />
 				<input type="hidden" name="option" value="<?php echo $this->option; ?>" />
 				<input type="hidden" name="ajax" value="<?php echo $this->ajax; ?>" />
-				<input type="hidden" name="p" id="p" value="<?php echo $this->props; ?>" />
+				<input type="hidden" name="p" id="p" value="<?php echo $this->escape($this->props); ?>" />
 				<input type="hidden" name="pid" value="<?php echo $this->publication->get('id'); ?>" />
 				<input type="hidden" name="vid" value="<?php echo $this->publication->get('version_id'); ?>" />
-				<input type="hidden" name="section" id="section" value="<?php echo $this->block; ?>" />
+				<input type="hidden" name="section" id="section" value="<?php echo $this->escape($this->block); ?>" />
 				<input type="hidden" name="step" value="<?php echo $this->step; ?>" />
 				<input type="hidden" name="element" value="<?php echo $this->element; ?>" />
 				<input type="hidden" name="active" value="publications" />
@@ -68,9 +68,9 @@ if ($attachments)
 					?>
 					<li class="c-click databases allowed <?php if ($sel) { echo ' selectedfilter'; } ?>" id="<?php echo $liId; ?>">
 						<span class="item-info"></span>
-						<span class="item-wrap"><?php echo $item->title; ?></span>
+						<span class="item-wrap"><?php echo $this->escape($item->title); ?></span>
 						<span class="item-fullinfo">
-							<?php echo $item->description; ?>
+							<?php echo $this->escape($item->description); ?>
 						</span>
 					</li>
 				<?php } ?>

@@ -76,7 +76,7 @@ $this->css()
 					<div class="post <?php echo $item->type(); ?>" id="b<?php echo $row->get('id'); ?>" data-id="<?php echo $row->get('id'); ?>" data-closeup-url="<?php echo Route::url($base . '&controller=posts&post=' . $row->get('id')); ?>">
 						<div class="content">
 							<?php
-								$this->view('display_' . $item->type(), 'posts')
+								$this->view('display_' . $item->layout(dirname(__DIR__, 2) . DS . 'posts' . DS . 'tmpl', 'display_'), 'posts')
 								     ->set('option', $this->option)
 								     ->set('params', $this->config)
 								     ->set('row', $row)
@@ -111,9 +111,9 @@ $this->css()
 												<span><?php echo Lang::txt('JACTION_EDIT'); ?></span>
 											</a>
 										<?php } else { ?>
-											<a class="btn vote <?php echo ($item->get('voted')) ? 'unlike' : 'like'; ?>" data-id="<?php echo $item->get('id'); ?>" data-text-like="<?php echo Lang::txt('COM_COLLECTIONS_LIKE'); ?>" data-text-unlike="<?php echo Lang::txt('COM_COLLECTIONS_UNLIKE'); ?>" href="<?php echo Route::url($base . '&controller=posts&post=' . $row->get('id') . '&task=vote'); ?>">
+											<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&controller=posts&post=' . $row->get('id') . '&task=vote'); ?>" class="btn vote <?php echo ($item->get('voted')) ? 'unlike' : 'like'; ?>" data-id="<?php echo $item->get('id'); ?>" data-text-like="<?php echo Lang::txt('COM_COLLECTIONS_LIKE'); ?>" data-text-unlike="<?php echo Lang::txt('COM_COLLECTIONS_UNLIKE'); ?>">
 												<span><?php echo ($item->get('voted')) ? Lang::txt('COM_COLLECTIONS_UNLIKE') : Lang::txt('COM_COLLECTIONS_LIKE'); ?></span>
-											</a>
+											</button>
 										<?php } ?>
 										<?php
 										// Display comment button only if enabled

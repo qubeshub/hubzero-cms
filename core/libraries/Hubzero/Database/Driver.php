@@ -307,14 +307,17 @@ abstract class Driver
 		$parts = (strpos($name, '.') !== false) ? explode('.', $name) : (array)$name;
 		$bits  = array();
 
+		// A backtick inside a part would end the quoting; doubling it is how
+		// MySQL spells a literal one. Several ORDER BY columns come from the
+		// request, so this is what stands between them and the query.
 		foreach ($parts as $part)
 		{
-			$bits[] = sprintf($this->wrapper, $part);
+			$bits[] = sprintf($this->wrapper, str_replace('`', '``', (string) $part));
 		}
 
 		// Put back together and add 'AS' clause
 		$string  = implode('.', $bits);
-		$string .= (isset($as)) ? ' AS ' . sprintf($this->wrapper, $as) : '';
+		$string .= (isset($as)) ? ' AS ' . sprintf($this->wrapper, str_replace('`', '``', (string) $as)) : '';
 
 		return $string;
 	}
@@ -345,7 +348,7 @@ abstract class Driver
 		foreach ($parts as $part)
 		{
 			// Make sure it's not an *, which shouldn't be quoted
-			$quoted[] = $part !== '*' ? sprintf($this->wrapper, $part) : $part;
+			$quoted[] = $part !== '*' ? sprintf($this->wrapper, str_replace('`', '``', (string) $part)) : $part;
 		}
 
 		// Put it back together and return
@@ -382,6 +385,14 @@ abstract class Driver
 
 			// Ignore any internal fields
 			if ($k[0] == '_')
+			{
+				continue;
+			}
+
+			// An empty primary key on insert means "new row": leave it to the
+			// auto-increment. Forms post id="" for new records, and strict SQL
+			// mode refuses '' for an integer column.
+			if ($key && $k === $key && ($v === '' || $v === 0 || $v === '0'))
 			{
 				continue;
 			}

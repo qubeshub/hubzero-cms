@@ -404,7 +404,8 @@ class Manage extends AdminController
 		$group->set('restrict_msg', $g['restrict_msg']);
 		$group->set('logo', $g['logo']);
 		$group->set('plugins', $g['plugins']);
-		$group->set('discussion_email_autosubscribe', isset($g['discussion_email_autosubscribe']) ? $g['discussion_email_autosubscribe'] : '');
+		// Integer column: '' is rejected by strict SQL mode, so cast (unset means 0)
+		$group->set('discussion_email_autosubscribe', isset($g['discussion_email_autosubscribe']) ? (int) $g['discussion_email_autosubscribe'] : 0);
 		$group->set('params', $params);
 		$group->update();
 
@@ -502,7 +503,8 @@ class Manage extends AdminController
 		$query->where('s.home', '=', 1);
 		$query->leftJoin('#__extensions as e', 'e.element', 's.template');
 		$query->where('e.type', '=', 'template');
-		$query->where('e.client_id', '=', 's.client_id');
+		// A column-to-column condition: where() would bind 's.client_id' as a string
+		$query->whereRaw('e.client_id = s.client_id');
 		$db->setQuery($query);
 		$template = $db->loadObject();
 		if ($template)
@@ -539,18 +541,18 @@ class Manage extends AdminController
 		if ($srcTplPath)
 		{
 			$uploadTplPath = $uploadPath . DS . 'template';
-			shell_exec("cp -rf $srcTplPath $uploadTplPath 2>&1");
+			shell_exec("cp -rf " . escapeshellarg($srcTplPath) . " " . escapeshellarg($uploadTplPath) . " 2>&1");
 		}
 
 		// copy over default template recursively
 		// must have  /. at the end of source path to get all items in that directory
 		// also doesnt overwrite already existing files/folders
-		shell_exec("cp -rn $srcPath $uploadPath 2>&1");
+		shell_exec("cp -rn " . escapeshellarg($srcPath) . " " . escapeshellarg($uploadPath) . " 2>&1");
 
 		// make sure files are group read and writable
 		// make sure files are all group owned properly
-		shell_exec("chmod -R 2770 $uploadPath 2>&1");
-		shell_exec("chgrp -R " . escapeshellcmd($this->config->get('super_group_file_owner', 'access-content')) . " " . $uploadPath . " 2>&1");
+		shell_exec("chmod -R 2770 " . escapeshellarg($uploadPath) . " 2>&1");
+		shell_exec("chgrp -R " . escapeshellarg($this->config->get('super_group_file_owner', 'access-content')) . " " . escapeshellarg($uploadPath) . " 2>&1");
 
 		// get all current users granted permissionss
 		$this->database->setQuery("SHOW GRANTS FOR CURRENT_USER();");
@@ -740,7 +742,7 @@ class Manage extends AdminController
 		$uploadPath = PATH_APP . DS . trim($this->config->get('uploadpath', '/site/groups'), DS) . DS . $group->get('gidNumber');
 
 		// build author info for making first commit
-		$authorInfo = '"' . Config::get('sitename') . ' Groups <groups@' . $_SERVER['HTTP_HOST'] . '>"';
+		$authorInfo = escapeshellarg(Config::get('sitename') . ' Groups <groups@' . $_SERVER['HTTP_HOST'] . '>');
 
 		// check to see if we already have git repo
 		// only run gitlab setup once.
@@ -756,7 +758,7 @@ class Manage extends AdminController
 		// build command to run via shell
 		// this will init the git repo, make the initial commit and push to the repo management machine
 		$cmd  = 'sh ' . dirname(dirname(__DIR__)) . DS . 'admin' . DS . 'assets' . DS . 'scripts' . DS . 'gitlab_setup.sh ';
-		$cmd .= $uploadPath  . ' ' . $authorInfo . ' ' . $gitLabUrl . ' 2>&1';
+		$cmd .= escapeshellarg($uploadPath) . ' ' . $authorInfo . ' ' . escapeshellarg($gitLabUrl) . ' 2>&1';
 
 		// execute command
 		$output = shell_exec($cmd);
@@ -880,7 +882,8 @@ class Manage extends AdminController
 
 				// setup stage environment
 				$cmd  = 'sh ' . dirname(dirname(__DIR__)). DS . 'admin' . DS . 'assets' . DS . 'scripts' . DS . 'gitlab_setup_stage.sh ';
-				$cmd .= str_replace('/' . $group->get('gidNumber'), '', $uploadPath) . ' ' . $group->get('gidNumber') . ' ' . $group->get('cn') . ' ' . $gitLabUrl . ' 2>&1';
+				// as _handleSuperGroup/_handSuperGroupGitlab above
+				$cmd .= escapeshellarg(str_replace('/' . $group->get('gidNumber'), '', $uploadPath)) . ' ' . escapeshellarg((string) $group->get('gidNumber')) . ' ' . escapeshellarg((string) $group->get('cn')) . ' ' . escapeshellarg((string) $gitLabUrl) . ' 2>&1';
 
 				// execute command
 				$output = shell_exec($cmd);
@@ -896,12 +899,18 @@ class Manage extends AdminController
 
 			// Check to make sure using correct token
 			$output = shell_exec($cmd . "git remote -v");
-			$url_bits = parse_url(explode("\t", explode(" ", $output)[1])[1]);
+			// A repo with no remote yet prints nothing; indexing that is a
+			// PHP 8 warning (500) on Fetch. parse_url() leaves 'pass' out
+			// when the URL carries no credentials.
+			$remote   = explode(" ", (string) $output);
+			$remote   = isset($remote[1]) ? explode("\t", $remote[1]) : array();
+			$url_bits = isset($remote[1]) ? parse_url($remote[1]) : false;
 			$gitLabKey = $client->get('token');
-			if ($url_bits["pass"] !== $gitLabKey) {
+			if (is_array($url_bits) && isset($url_bits['scheme'], $url_bits['user'], $url_bits['host'], $url_bits['path'])
+			 && (!isset($url_bits['pass']) || $url_bits['pass'] !== $gitLabKey)) {
 				$gitLabUrl = $url_bits["scheme"] . '://' . $url_bits["user"] . ':' . $gitLabKey . '@' . $url_bits["host"] . $url_bits["path"];
 				$rcmd  = 'sh ' . dirname(dirname(__DIR__)) . DS . 'admin' . DS . 'assets' . DS . 'scripts' . DS . 'gitlab_reset_remote.sh ';
-				$rcmd .= $uploadPath  . ' ' . $gitLabUrl . ' 2>&1';
+				$rcmd .= escapeshellarg((string) $uploadPath) . ' ' . escapeshellarg((string) $gitLabUrl) . ' 2>&1';
 				$output = shell_exec($rcmd);
 			}
 
@@ -910,7 +919,7 @@ class Manage extends AdminController
 			$museCmd = 'update';
 
 			// Run as (hubadmin)
-			$sudo =  '/usr/bin/sudo -u ' . $user . ' ';
+			$sudo =  '/usr/bin/sudo -u ' . escapeshellarg((string) $user) . ' ';
 
 			// Determines the path to muse and run the group update muse command
 			$cmd .= $sudo . PATH_CORE . '/bin/muse' . ' ' . $task . ' ' . $museCmd . ' --format=json';
@@ -1025,7 +1034,7 @@ class Manage extends AdminController
 			$museCmd = 'update';
 
 			// Run as (hubadmin)
-			$sudo =  '/usr/bin/sudo -u ' . $user . ' ';
+			$sudo =  '/usr/bin/sudo -u ' . escapeshellarg((string) $user) . ' ';
 
 			// Determines the path to muse and run the group update muse command
 			$cmd .= $sudo . PATH_CORE . '/bin/muse' . ' ' . $task . ' ' . $museCmd . ' -f --no-colors';

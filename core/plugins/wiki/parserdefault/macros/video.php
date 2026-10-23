@@ -126,7 +126,7 @@ class VideoMacro extends WikiMacro
 
 					if (!file_exists($video_url))
 					{
-						return '(video:' . $url . ' not found)' . $this->_path($url);
+						return '(video:' . htmlspecialchars((string) $url, ENT_QUOTES, 'UTF-8') . ' not found)';
 					}
 				}
 			}
@@ -146,6 +146,8 @@ class VideoMacro extends WikiMacro
 
 			if (strstr($video_url, '?'))
 			{
+				$video_id = '';
+
 				//split the string into two parts
 				//uri and query string
 				$full_url_parts = explode('?', $video_url);
@@ -161,7 +163,7 @@ class VideoMacro extends WikiMacro
 					$pairs_parts = explode("%3D", $qsp);
 					if ($pairs_parts[0] == 'v')
 					{
-						$video_id = $pairs_parts[1];
+						$video_id = isset($pairs_parts[1]) ? $pairs_parts[1] : '';
 						break;
 					}
 				}
@@ -194,20 +196,20 @@ class VideoMacro extends WikiMacro
 				{
 					if (strtolower($bit) == 'partner_id')
 					{
-						$partner_id = $bits[$i+1];
+						$partner_id = isset($bits[$i+1]) ? $bits[$i+1] : 0;
 					}
 					switch (strtolower($bit))
 					{
 						case 'partner_id':
-							$partner_id = $bits[$i+1];
+							$partner_id = isset($bits[$i+1]) ? $bits[$i+1] : 0;
 						break;
 
 						case 'uiconf_id':
-							$uiconf_id = $bits[$i+1];
+							$uiconf_id = isset($bits[$i+1]) ? $bits[$i+1] : 0;
 						break;
 
 						case 'entry_id':
-							$entry_id = $bits[$i+1];
+							$entry_id = isset($bits[$i+1]) ? $bits[$i+1] : 0;
 						break;
 					}
 				}
@@ -232,16 +234,16 @@ class VideoMacro extends WikiMacro
 				case 'mov':
 				case 'mp4':
 				case 'm4v':
-					$html .= '<source src="' . $this->_link($url) . '" type="video/mp4" />';
+					$html .= '<source src="' . htmlspecialchars((string) $this->_link($url), ENT_QUOTES, 'UTF-8') . '" type="video/mp4" />';
 				break;
 
 				case 'ogg':
 				case 'ogv':
-					$html .= '<source src="' . $this->_link($url) . '" type="video/ogg" />';
+					$html .= '<source src="' . htmlspecialchars((string) $this->_link($url), ENT_QUOTES, 'UTF-8') . '" type="video/ogg" />';
 				break;
 
 				case 'webm':
-					$html .= '<source src="' . $this->_link($url) . '" type="video/webm" />';
+					$html .= '<source src="' . htmlspecialchars((string) $this->_link($url), ENT_QUOTES, 'UTF-8') . '" type="video/webm" />';
 				break;
 			}
 			$html .= '</video>';
@@ -251,7 +253,15 @@ class VideoMacro extends WikiMacro
 		else
 		{
 			$title = isset($this->attr['title']) ? $this->attr['title'] : ucfirst($type) . ' video';
-			$html = '<iframe sandbox="allow-scripts allow-same-origin" id="movie' . rand(0, 1000) . '" src="' . $video_url . '" width="' . $width . '" height="' . $height . '" title="' . htmlspecialchars($title) . '" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+			// As youtube.php: the url and the dimensions come from macro args and
+			// land in unquoted-by-nothing attributes, so a title containing a
+			// quote closes src= and adds its own handler -- and an onload there
+			// runs in the page, not inside the sandbox.
+			$safeUrl    = htmlspecialchars((string) $video_url, ENT_QUOTES, 'UTF-8');
+			$safeWidth  = preg_replace('/[^0-9%]/', '', (string) $width);
+			$safeHeight = preg_replace('/[^0-9%]/', '', (string) $height);
+
+			$html = '<iframe sandbox="allow-scripts allow-same-origin" id="movie' . rand(0, 1000) . '" src="' . $safeUrl . '" width="' . $safeWidth . '" height="' . $safeHeight . '" title="' . htmlspecialchars((string) $title, ENT_QUOTES, 'UTF-8') . '" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
 		}
 
 		// Return the emdeded youtube video

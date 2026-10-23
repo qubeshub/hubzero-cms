@@ -40,6 +40,12 @@ class View extends AbstractView
 	public function __construct($config = array())
 	{
 		// Set the override path
+		//
+		// For a plugin view this is the template root it may be overridden
+		// from. Left alone it is the site template and the base view's
+		// override_root (the supergroup template, then the site template)
+		// does the searching; given explicitly it is the only root searched,
+		// and '' turns overrides off.
 		if (!array_key_exists('override_path', $config))
 		{
 			$config['override_path'] = '';
@@ -49,7 +55,24 @@ class View extends AbstractView
 				$config['override_path'] = \App::get('template')->path;
 			}
 		}
+		elseif (!array_key_exists('override_root', $config))
+		{
+			$config['override_root'] = $config['override_path'] ? array($config['override_path'] . '/html') : array();
+		}
 		$this->_overridePath = $config['override_path'];
+
+		// Template override roots, highest priority first (this constructor
+		// does not go through the base one, which would otherwise set them)
+		if (!array_key_exists('override_root', $config))
+		{
+			$config['override_root'] = array();
+
+			foreach (\Hubzero\Template\Overrides::roots() as $root)
+			{
+				$config['override_root'][] = $root . '/html';
+			}
+		}
+		$this->_overrideRoot = array_values(array_filter((array) $config['override_root']));
 
 		// Set the view name
 		if (!array_key_exists('folder', $config))
@@ -213,15 +236,16 @@ class View extends AbstractView
 		$this->addPath($type, $path);
 
 		// Always add the fallback directories as last resort
-		if ($type == 'template' && $this->_overridePath)
+		if ($type == 'template' && $this->_overridePath && $this->_overrideRoot)
 		{
-			// Set the alternative template search dir
 			$option = 'plg_' . $this->_folder . '_' . $this->_element;
 			$option = preg_replace('/[^A-Z0-9_\.-]/i', '', $option);
 
-			$path = $this->_overridePath . DIRECTORY_SEPARATOR . 'html' . DIRECTORY_SEPARATOR . $option . DIRECTORY_SEPARATOR . $this->getName();
-
-			$this->addPath($type, $path);
+			// Lowest priority first: addPath() pushes onto the top of the stack
+			foreach (array_reverse($this->_overrideRoot) as $root)
+			{
+				$this->addPath($type, $root . DIRECTORY_SEPARATOR . $option . DIRECTORY_SEPARATOR . $this->getName());
+			}
 		}
 	}
 

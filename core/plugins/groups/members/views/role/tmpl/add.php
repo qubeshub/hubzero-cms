@@ -26,7 +26,7 @@ defined('_HZEXEC_') or die();
 		<legend><?php echo Lang::txt('PLG_GROUPS_MEMBERS_ROLE_DETAILS'); ?></legend>
 		<label>
 			<?php echo Lang::txt('PLG_GROUPS_MEMBERS_ROLE_NAME'); ?>: <span class="required"><?php echo Lang::txt('JREQUIRED'); ?></span>
-			<input type="text" name="role[name]" value="<?php echo $this->role->name; ?>" >
+			<input type="text" name="role[name]" value="<?php echo $this->escape($this->role->name); ?>" >
 		</label>
 		<fieldset>
 			<legend><?php echo Lang::txt('PLG_GROUPS_MEMBERS_ROLE_PERMISSIONS'); ?></legend>
@@ -46,6 +46,7 @@ defined('_HZEXEC_') or die();
 	<input type="hidden" name="active" value="members" />
 	<input type="hidden" name="option" value="<?php echo $this->option; ?>" />
 	<input type="hidden" name="action" value="saverole" />
+	<?php echo Html::input('token'); ?>
 
 	<p class="submit">
 		<input type="submit" value="<?php echo Lang::txt('PLG_GROUPS_MEMBERS_SUBMIT'); ?>" />

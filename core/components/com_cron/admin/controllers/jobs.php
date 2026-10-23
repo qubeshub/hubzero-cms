@@ -216,7 +216,17 @@ class Jobs extends AdminController
 
 		if ($row->get('recurrence'))
 		{
-			$row->set('next_run', $row->nextRun());
+			// A bad custom expression throws here; report it the way a failed
+			// save() would instead of surfacing an error page.
+			try
+			{
+				$row->set('next_run', $row->nextRun());
+			}
+			catch (\Throwable $e)
+			{
+				Notify::error($e->getMessage());
+				return $this->editTask($row);
+			}
 		}
 
 		$p = new \Hubzero\Config\Registry(Request::getArray('params', array(), 'post'));
@@ -253,6 +263,12 @@ class Jobs extends AdminController
 		// Check for request forgeries
 		Request::checkToken();
 
+		if (!User::authorise('core.edit', $this->_option) && !User::authorise('core.manage', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
+
 		// Incoming
 		$ids = Request::getArray('id', array());
 
@@ -265,6 +281,11 @@ class Jobs extends AdminController
 
 		$output = new stdClass;
 		$output->jobs = array();
+
+		// A fatal inside a job skips the finally below and left the job marked
+		// active until STALE_ACTIVE_SECONDS (6 hours) passed. Release whatever
+		// is in flight at shutdown, as the site tick does.
+		$inFlight = Job::releaseOnShutdown();
 
 		// Loop through each ID
 		foreach ($ids as $id)
@@ -285,6 +306,8 @@ class Jobs extends AdminController
 			}
 
 			$job->mark('start_run');
+
+			$inFlight->job = $job;
 
 			try
 			{
@@ -309,6 +332,8 @@ class Jobs extends AdminController
 				}
 
 				$job->release(Date::toSql(), $next);
+
+				$inFlight->job = null;
 			}
 
 			$output->jobs[] = $job->toArray();
@@ -465,10 +490,11 @@ class Jobs extends AdminController
 		foreach ($ids as $id)
 		{
 			$row = Job::oneOrFail(intval($id));
-			$row->set('active', 0);
 
-			// Attempt to delete
-			if (!$row->save())
+			// release() clears the lock and its pid columns without going through
+			// save(), so a job whose stored recurrence no longer validates can
+			// still be deactivated.
+			if (!$row->release())
 			{
 				Notify::error($row->getError());
 				continue;

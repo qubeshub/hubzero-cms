@@ -188,12 +188,16 @@ class Ticketsv2_1 extends ApiController
 			$tickets->whereEquals('type', $type);
 		}
 
-		if ($owner = Request::getInt('owner', null))
+		// 0 is a real value for each of these (unassigned, status "new/closed",
+		// no category): test for presence, not truth
+		$owner = Request::getInt('owner', null);
+		if (!is_null($owner))
 		{
 			$tickets->whereEquals('owner', $owner);
 		}
 
-		if ($status = Request::getInt('status', null))
+		$status = Request::getInt('status', null);
+		if (!is_null($status))
 		{
 			$tickets->whereEquals('status', $status);
 		}
@@ -201,10 +205,12 @@ class Ticketsv2_1 extends ApiController
 		$open = Request::getInt('open', null);
 		if (!is_null($open))
 		{
-			$tickets->whereEquals('status', $open);
+			// (this filtered the status column)
+			$tickets->whereEquals('open', $open);
 		}
 
-		if ($category_id = Request::getInt('category', null))
+		$category_id = Request::getInt('category', null);
+		if (!is_null($category_id))
 		{
 			$tickets->whereEquals('category', $category_id);
 		}
@@ -441,7 +447,8 @@ class Ticketsv2_1 extends ApiController
 		//make sure we have a user
 		if (!$result || !$result->get('id'))
 		{
-			throw new Exception(Lang::txt('User not found.'), 500);
+			// an anonymous caller is a 401, not a server error
+			throw new Exception(Lang::txt('User not found.'), 401);
 		}
 
 		//check required fields
@@ -560,16 +567,20 @@ class Ticketsv2_1 extends ApiController
 	{
 		$this->requiresAuthentication();
 
-		if (!$this->acl->check('read', 'tickets'))
-		{
-			throw new Exception(Lang::txt('Not authorized'), 403);
-		}
-
 		// Initiate class and bind data to database fields
 		$ticket_id = Request::getInt('id', 0);
 
 		// Initiate class and bind data to database fields
-		$ticket = Ticket::oneOrFail($ticket_id);
+		$ticket = Ticket::oneOrNew($ticket_id);
+
+		// The same test the site ticket page uses: agents, and the ticket's own
+		// submitter (a component-wide acl check refused submitters their own
+		// ticket). A ticket the caller may not read answers like a missing one,
+		// so the id space cannot be enumerated.
+		if (!$ticket->get('id') || !$ticket->access('read', 'tickets'))
+		{
+			throw new Exception(Lang::txt('COM_SUPPORT_ERROR_TICKET_NOT_FOUND'), 404);
+		}
 
 		$owner     = $ticket->assignee;
 		$submitter = $ticket->submitter;

@@ -43,7 +43,8 @@ if ($attributes)
 			if (strstr($b, ':'))
 			{
 				$b = explode(':', $b);
-				$bits[] = trim($b[0]) . '="' . trim($b[1]) . '"';
+				// Attribute names and values come from the author's file description
+				$bits[] = preg_replace('/[^a-zA-Z0-9_-]/', '', trim($b[0])) . '="' . $this->escape(trim($b[1])) . '"';
 			}
 		}
 	}
@@ -80,7 +81,7 @@ $viewUrl = Route::url('index.php?option=com_publications&id=' . $this->publicati
 
 ?>
 <div class="sample">
-	<p><?php echo Lang::txt('COM_PUBLICATIONS_PUBLICATION') . ': <strong>' . $this->publication->title . '</strong>'; ?> <?php if ($this->primary->role != 1) { echo '&nbsp;&nbsp; Supporting Doc: <strong>' . $this->primary->path . '</strong>'; } ?></p>
+	<p><?php echo Lang::txt('COM_PUBLICATIONS_PUBLICATION') . ': <strong>' . $this->escape($this->publication->title) . '</strong>'; ?> <?php if ($this->primary->role != 1) { echo '&nbsp;&nbsp; Supporting Doc: <strong>' . $this->escape($this->primary->path) . '</strong>'; } ?></p>
 </div>
 
 <?php

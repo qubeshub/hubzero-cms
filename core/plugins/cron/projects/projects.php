@@ -166,7 +166,10 @@ class plgCronProjects extends \Hubzero\Plugin\Plugin
 
 		// Get all projects
 		$obj = new \Components\Projects\Tables\Project($database);
-		$projects = $obj->getValidProjects(array(), array(), $pconfig, false, 'alias');
+		// (getValidProjects() no longer exists; the job wants every live
+		// project's alias -- the admin branch of getRecords() filters state=1
+		// for filterby=active)
+		$projects = array_map(function ($p) { return $p->alias; }, (array) $obj->getRecords(array('filterby' => 'active'), 'admin', 0, 1));
 
 		if (!$projects)
 		{

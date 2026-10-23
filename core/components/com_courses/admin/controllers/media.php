@@ -28,10 +28,24 @@ class Media extends AdminController
 		$course_id = Request::getInt('course', 0);
 
 		$path = PATH_APP . DS . trim($this->config->get('uploadpath', '/site/courses'), DS) . DS . $course_id . DS . $listdir;
+
 		if ($subdir)
 		{
-			$path .= DS . trim($subdir, DS);
+			// Refuse rather than drop. Silently ignoring a traversing subdir
+			// left $path pointing at the PARENT directory, and the callers then
+			// listed, uploaded into or deleted from there -- a same-named file
+			// one level up would be removed. The delFolder guard further down
+			// already fails closed this way.
+			$safe = \Hubzero\Filesystem\SafePath::relative($subdir);
+
+			if ($safe === false)
+			{
+				\App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+			}
+
+			$path .= DS . trim($safe, DS);
 		}
+
 		return $path;
 	}
 
@@ -122,14 +136,12 @@ class Media extends AdminController
 		$filename = Filesystem::clean($filename);
 		$filename = str_replace(' ', '_', $filename);
 
-		$ext = $pathinfo['extension'];
+		$ext = isset($pathinfo['extension']) ? $pathinfo['extension'] : '';
 		while (file_exists($path . DS . $filename . '.' . $ext))
 		{
 			$filename .= rand(10, 99);
 		}
 		$file = $path . DS . $filename . '.' . $ext;
-
-		$ext = Filesystem::extension($file['name']);
 
 		// Check that the file type is allowed
 		$allowed = array_values(array_filter(explode(',', $mediaConfig->get('upload_extensions'))));
@@ -359,6 +371,10 @@ class Media extends AdminController
 
 		// Incoming directory to delete
 		$folder = trim(Request::getString('delFolder', ''), DS);
+		if (strpos($folder, '..') !== false)
+		{
+			$folder = '';
+		}
 		if (!$folder)
 		{
 			$this->setError(Lang::txt('COM_COURSES_ERROR_MISSING_DIRECTORY'));
@@ -410,7 +426,7 @@ class Media extends AdminController
 		$path = $this->_buildUploadPath($listdir, $subdir);
 
 		// Incoming file to delete
-		$file = Request::getString('delFile', '');
+		$file = basename(Request::getString('delFile', ''));
 		if (!$file)
 		{
 			$this->setError(Lang::txt('COM_COURSES_ERROR_NO_FILE'));

@@ -14,7 +14,7 @@ $this->css()
 // Directory path breadcrumbs
 $bc = \Components\Projects\Helpers\Html::buildFileBrowserCrumbs($this->subdir, $this->url, $parent);
 
-$endPath = ' &raquo; <span class="subheader"><a href="' . $this->url . '/?action=history&amp;asset=' . urlencode($this->file->get('name')) . '&amp;subdir=' . $this->subdir . '">' . Lang::txt('PLG_PROJECTS_FILES_SHOW_REV_HISTORY_FOR') . ' <span class="italic">' . \Components\Projects\Helpers\Html::shortenFileName($this->file->get('name'), 40) . '</span></a></span> &raquo; <span class="subheader">' . Lang::txt('PLG_PROJECTS_FILES_SHOW_HISTORY_DIFF') . '</span>';
+$endPath = ' &raquo; <span class="subheader"><a href="' . $this->url . '/?action=history&amp;asset=' . urlencode($this->file->get('name')) . '&amp;subdir=' . $this->escape($this->subdir) . '">' . Lang::txt('PLG_PROJECTS_FILES_SHOW_REV_HISTORY_FOR') . ' <span class="italic">' . $this->escape(\Components\Projects\Helpers\Html::shortenFileName($this->file->get('name'), 40)) . '</span></a></span> &raquo; <span class="subheader">' . Lang::txt('PLG_PROJECTS_FILES_SHOW_HISTORY_DIFF') . '</span>';
 
 ?>
 
@@ -29,8 +29,9 @@ if ($this->getError()) {
 ?>
 <?php } else {
 
-	$rev1Parts = explode('@', $this->params['rev1']);
-	$rev2Parts = explode('@', $this->params['rev2']);
+	// old/new are rev@hash@path; a short value must not be a warning here
+	$rev1Parts = array_pad(explode('@', (string) $this->params['rev1']), 3, '');
+	$rev2Parts = array_pad(explode('@', (string) $this->params['rev2']), 3, '');
 
 	$old = array(
 		'rev'   => $rev1Parts[0],
@@ -58,7 +59,7 @@ if ($this->getError()) {
 	<?php } ?>
 
 	<fieldset class="diff-form">
-		<input type="hidden" name="subdir" value="<?php echo $this->subdir; ?>" />
+		<input type="hidden" name="subdir" value="<?php echo $this->escape($this->subdir); ?>" />
 		<input type="hidden" name="file" value="<?php echo urlencode($this->file->get('localPath')); ?>" />
 		<input type="hidden" name="action" value="diff" />
 
@@ -99,8 +100,8 @@ if ($this->getError()) {
 			<table id="table-diff" class="diff diffSideBySide">
 			 <thead>
 				<tr>
-					<th colspan="2"><?php echo Lang::txt('PLG_PROJECTS_FILES_REV') . ' @' . $old['rev'] . ' (' . $old['hash'] . ')'; ?></th>
-					<th colspan="2"><?php echo Lang::txt('PLG_PROJECTS_FILES_REV') . ' @' . $new['rev'] . ' (' . $new['hash'] . ')'; ?></th>
+					<th colspan="2"><?php echo Lang::txt('PLG_PROJECTS_FILES_REV') . ' @' . $this->escape($old['rev']) . ' (' . $this->escape($old['hash']) . ')'; ?></th>
+					<th colspan="2"><?php echo Lang::txt('PLG_PROJECTS_FILES_REV') . ' @' . $this->escape($new['rev']) . ' (' . $this->escape($new['hash']) . ')'; ?></th>
 				</tr>
 			 </thead>
 
@@ -116,8 +117,8 @@ if ($this->getError()) {
 			<table id="table-diff" class="diff diffInline">
 			 <thead>
 				<tr>
-					<th><?php echo Lang::txt('PLG_PROJECTS_FILES_REV') . ' @' . $old['rev']; ?></th>
-					<th><?php echo Lang::txt('PLG_PROJECTS_FILES_REV') . ' @' . $new['rev']; ?></th>
+					<th><?php echo Lang::txt('PLG_PROJECTS_FILES_REV') . ' @' . $this->escape($old['rev']); ?></th>
+					<th><?php echo Lang::txt('PLG_PROJECTS_FILES_REV') . ' @' . $this->escape($new['rev']); ?></th>
 					<th><?php echo Lang::txt('PLG_PROJECTS_FILES_DIFF_DIFFERENCES'); ?></th>
 				</tr>
 			 </thead>
@@ -135,7 +136,7 @@ if ($this->getError()) {
 				?>
 				<div class="diffGit">
 					<h5>
-					<?php echo Lang::txt('PLG_PROJECTS_FILES_DIFF_COMPARING') . '  @' . $old['rev'] . ' (' . $old['hash'] . ') and @' . $new['rev'] . ' (' . $new['hash'] . ') '; ?></h5>
+					<?php echo Lang::txt('PLG_PROJECTS_FILES_DIFF_COMPARING') . '  @' . $this->escape($old['rev']) . ' (' . $this->escape($old['hash']) . ') and @' . $this->escape($new['rev']) . ' (' . $this->escape($new['hash']) . ') '; ?></h5>
 					<?php if ($this->diff) { echo '<pre>' . $this->diff . '</pre>'; } else {  ?>
 					<pre><?php echo Lang::txt('PLG_PROJECTS_FILES_DIFF_EMPTY_IDENTICAL'); ?></pre>
 				<?php } ?>

@@ -39,14 +39,12 @@ if ($this->group->isSuperGroup())
 	<?php elseif (in_array(User::get("id"), $this->group->get("invitees"))) : ?>
 		<?php if ($membership_control == 1) : ?>
 			<li>
-				<a class="invited btn btn-success icon" href="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&task=accept'); ?>">
+				<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&task=accept'); ?>" class="invited btn btn-success icon">
 					<?php echo Lang::txt('COM_GROUPS_TOOLBAR_ACCEPT'); ?>
-				</a>
+				</button>
 			</li>
 			<li>
-				<a class="invited btn btn-secondary" href="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&task=cancel'); ?>">
-					<?php echo Lang::txt('COM_GROUPS_TOOLBAR_DECLINE'); ?>
-				</a>
+				<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&task=cancel'); ?>" class="invited btn btn-secondary"><?php echo Lang::txt('COM_GROUPS_TOOLBAR_DECLINE'); ?></button>
 			</li>
 		<?php endif; ?>
 	<?php elseif ($this->group->get('join_policy') == 3 && !in_array(User::get("id"), $this->group->get("members"))) : ?>
@@ -60,7 +58,7 @@ if ($this->group->isSuperGroup())
 	<?php elseif ($this->group->get('join_policy') == 0 && !in_array(User::get("id"), $this->group->get("members"))) : ?>
 		<?php if ($membership_control == 1) : ?>
 			<li>
-				<a class="join btn" href="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&task=join'); ?>"><?php echo Lang::txt('COM_GROUPS_TOOLBAR_JOIN'); ?></a>
+				<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&task=join'); ?>" class="join btn"><?php echo Lang::txt('COM_GROUPS_TOOLBAR_JOIN'); ?></button>
 			</li>
 		<?php endif; ?>
 	<?php elseif ($this->group->get('join_policy') == 1 && !in_array(User::get("id"), $this->group->get("members"))) : ?>
@@ -117,7 +115,7 @@ if ($this->group->isSuperGroup())
 
 		if ($canCancel && $membership_control == 1)
 		{
-			$menuItems[] = '<li role="none"><a role="menuitem" class="group-cancel cancel_group_membership" href="' . Route::url('index.php?option=com_groups&cn=' . $cn . '&task=cancel') . '">' . Lang::txt('COM_GROUPS_TOOLBAR_CANCEL') . '</a></li>';
+			$menuItems[] = '<li role="none"><button type="submit" form="hz-post-action" formaction="' . Route::url('index.php?option=com_groups&cn=' . $cn . '&task=cancel') . '" role="menuitem" class="group-cancel cancel_group_membership">' . Lang::txt('COM_GROUPS_TOOLBAR_CANCEL') . '</button></li>';
 			if ($isManager)
 			{
 				$menuItems[] = '<li class="divider" role="separator"></li>';

@@ -112,10 +112,26 @@ class Entriesv1_0 extends ApiController
 			'search'     => Request::getString('search', ''),
 			'scope'      => Request::getWord('scope', ''),
 			'scope_id'   => Request::getInt('scope_id', 0),
-			'taggerid'   => Request::getInt('tagger', 0),
+			'tagger_id'  => Request::getInt('tagger', 0),
 			'sort'       => Request::getWord('sort', 'raw_tag'),
 			'sort_Dir'   => strtoupper(Request::getWord('sortDir', 'ASC'))
 		);
+
+		// A scope named with no scope_id asks for the whole scope's tags; an
+		// always-present 0 would pin the query to a non-existent object
+		if (!Request::has('scope_id'))
+		{
+			unset($filters['scope_id']);
+		}
+		// Columns of the tags table (and the 'total' alias Cloud maps to objects)
+		if (!in_array($filters['sort'], array('raw_tag', 'tag', 'id', 'created', 'modified', 'objects', 'total')))
+		{
+			$filters['sort'] = 'raw_tag';
+		}
+		if (!in_array($filters['sort_Dir'], array('ASC', 'DESC')))
+		{
+			$filters['sort_Dir'] = 'ASC';
+		}
 		if ($filters['scope'] == 'members' || $filters['scope'] == 'member')
 		{
 			$filters['scope'] = 'xprofiles';
@@ -197,6 +213,17 @@ class Entriesv1_0 extends ApiController
 	public function createTask()
 	{
 		$this->requiresAuthentication();
+
+		// Tags are global site taxonomy, and this task also sets the description,
+		// which the site renders as markup. None of create, update or delete
+		// tested any right at all -- authentication was the whole of it -- so all
+		// three take core.manage now. Ordinary tagging does not come through here
+		// -- it goes through Cloud::setTags(), which creates the row itself -- and
+		// nothing in the tree posts to this endpoint.
+		if (!User::authorise('core.manage', 'com_tags'))
+		{
+			throw new Exception(Lang::txt('JERROR_ALERTNOAUTHOR'), 403);
+		}
 
 		$tag   = Request::getString('tag', null, 'post');
 		$raw   = Request::getString('raw_tag', null, 'post');
@@ -351,6 +378,12 @@ class Entriesv1_0 extends ApiController
 			throw new Exception(Lang::txt('COM_TAGS_ERROR_MISSING_DATA'), 500);
 		}
 
+		// Tags are global site taxonomy; editing them is a management action.
+		if (!User::authorise('core.manage', 'com_tags'))
+		{
+			throw new Exception(Lang::txt('JERROR_ALERTNOAUTHOR'), 403);
+		}
+
 		$tag   = Request::getString('tag', $record->get('tag'));
 		$raw   = Request::getString('raw_tag', $record->get('raw_tag'));
 		$desc  = Request::getString('description', $record->get('description'));
@@ -420,6 +453,12 @@ class Entriesv1_0 extends ApiController
 			throw new Exception(Lang::txt('Specified tag does not exist.'), 404);
 		}
 
+		// Tags are global site taxonomy; removing them is a management action.
+		if (!User::authorise('core.manage', 'com_tags'))
+		{
+			throw new Exception(Lang::txt('JERROR_ALERTNOAUTHOR'), 403);
+		}
+
 		// Trigger before delete event
 		Event::trigger('tags.onTagDelete', array($id));
 
@@ -482,7 +521,16 @@ class Entriesv1_0 extends ApiController
 
 		$scope    = Request::getWord('scope', '');
 		$scope_id = Request::getInt('scope_id', 0);
-		$tagger   = Request::getInt('tagger', 0);
+
+		// Whose tagging to remove. A zero tagger means "any", and removeFrom()
+		// skips the taggerid filter for it, so the default has to be the caller's
+		// own tagging; only a manager may clear someone else's.
+		$tagger = (int) User::get('id');
+
+		if (User::authorise('core.manage', 'com_tags'))
+		{
+			$tagger = Request::getInt('tagger', 0);
+		}
 
 		if (!$scope || !$scope_id)
 		{
@@ -548,7 +596,16 @@ class Entriesv1_0 extends ApiController
 
 		$scope    = Request::getWord('scope', '');
 		$scope_id = Request::getInt('scope_id', 0);
-		$tagger   = Request::getInt('tagger', User::get('id'));
+
+		// Who gets recorded as having applied the tag. Letting the caller name
+		// someone else lets any account attribute a tagging to any user, so only
+		// a manager may tag on another's behalf.
+		$tagger = (int) User::get('id');
+
+		if (User::authorise('core.manage', 'com_tags'))
+		{
+			$tagger = Request::getInt('tagger', $tagger);
+		}
 
 		if (!$scope || !$scope_id)
 		{

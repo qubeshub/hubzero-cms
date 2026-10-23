@@ -117,11 +117,11 @@ if ($showtoc)
 				if ($this->page->get('scope') == 'group')
 				{
 					$grp = \Hubzero\User\Group::getInstance($this->page->get('scope_id'));
-					if ($grp && !User::isGuest() && in_array(User::get('id'), (array) $grp->get('managers')))
+					if ($grp && !User::isGuest() && $grp->isManager(User::get('id')))
 					{
 						?>
 						<li class="page-settings">
-							<a href="<?php echo Route::url('index.php?option=com_groups&cn=' . $grp->get('cn') . '&active=wiki&action=settings'); ?>">
+							<a href="<?php echo Route::url($this->page->link('base') . '&action=settings'); ?>">
 								<?php echo Lang::txt('COM_WIKI_SETTINGS'); ?>
 							</a>
 						</li>

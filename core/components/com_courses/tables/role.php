@@ -83,6 +83,13 @@ class Role extends Table
 		}
 		$this->alias = preg_replace("/[^a-zA-Z0-9\-_]/", '', $this->alias);
 
+		// permissions is NOT NULL MEDIUMTEXT with no default and the admin
+		// form has no field for it; strict SQL refused every new role
+		if ($this->permissions === null)
+		{
+			$this->permissions = '';
+		}
+
 		return true;
 	}
 
@@ -123,7 +130,7 @@ class Role extends Table
 		}
 		if (isset($filters['search']) && $filters['search'])
 		{
-			$where[] = "LOWER(r.`title`) LIKE " . $this->_db->quote('%' . strtolower($filters['title']) . '%');
+			$where[] = "LOWER(r.`title`) LIKE " . $this->_db->quote('%' . strtolower($filters['search']) . '%');
 		}
 
 		if (count($where) > 0)
@@ -163,7 +170,7 @@ class Role extends Table
 			if (is_array($filters['offering_id']))
 			{
 				$offering_id = array_map('intval', $filters['offering_id']);
-				$offering_id = implode(',', $filters['offering_id']);
+				$offering_id = implode(',', $offering_id);
 			}
 			else
 			{
@@ -174,17 +181,17 @@ class Role extends Table
 		$query .= ") AS total";
 		$query .= $this->_buildquery($filters);
 
-		if (!empty($filters['start']) && !empty($filters['limit']))
-		{
-			$query .= " LIMIT " . $filters['start'] . "," . $filters['limit'];
-		}
 		if (isset($filters['sort']) && $filters['sort'])
 		{
 			if (!isset($filters['sort_Dir']) || !in_array(strtoupper($filters['sort_Dir']), array('ASC', 'DESC')))
 			{
 				$filters['sort_Dir'] = 'ASC';
 			}
-			$query .= " ORDER BY " . $filters['sort'] . " " . $filters['sort_Dir'];
+			$query .= " ORDER BY " . (preg_replace('/[^a-zA-Z0-9_,. ]/', '', (string) $filters['sort']) ?: '1') . " " . (strtoupper((string) $filters['sort_Dir']) === 'ASC' ? 'ASC' : 'DESC');
+		}
+		if (isset($filters['limit']) && (int) $filters['limit'] > 0)
+		{
+			$query .= " LIMIT " . (int) (isset($filters['start']) ? $filters['start'] : 0) . "," . (int) $filters['limit'];
 		}
 
 		$this->_db->setQuery($query);

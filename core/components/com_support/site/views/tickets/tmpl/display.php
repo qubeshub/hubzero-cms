@@ -71,9 +71,9 @@ $this->css()
 								<span class="icon-folder folder" id="<?php echo $this->escape($folder->id); ?>-title" data-id="<?php echo $this->escape($folder->id); ?>"><?php echo $this->escape($folder->title); ?></span>
 								<?php if ($this->acl->check('read', 'tickets')) { ?>
 									<span class="folder-options">
-										<a class="delete" href="<?php echo Route::url('index.php?option=' . $this->option . '&controller=queries&task=removefolder&id=' . $folder->id . '&' . Session::getFormToken() . '=1'); ?>" data-confirm="<?php echo Lang::txt('COM_SUPPORT_QUERIES_CONFIRM_DELETE'); ?>" title="<?php echo Lang::txt('JACTION_DELETE'); ?>">
+										<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=' . $this->option . '&controller=queries&task=removefolder&id=' . $folder->id); ?>" class="delete" title="<?php echo Lang::txt('JACTION_DELETE'); ?>" data-confirm="<?php echo Lang::txt('COM_SUPPORT_QUERIES_CONFIRM_DELETE'); ?>">
 											<?php echo Lang::txt('JACTION_DELETE'); ?>
-										</a>
+										</button>
 										<a class="edit editfolder" data-id="<?php echo $this->escape($folder->id); ?>" href="<?php echo Route::url('index.php?option=' . $this->option . '&controller=queries&task=editfolder&id=' . $folder->id . '&tmpl=component&' . Session::getFormToken() . '=1'); ?>" data-href="<?php echo Route::url('index.php?option=' . $this->option . '&controller=queries&task=savefolder&' . Session::getFormToken() . '=1&fields[id]=' . $folder->id); ?>" data-name="<?php echo Lang::txt('COM_SUPPORT_FOLDER_NAME'); ?>" title="<?php echo Lang::txt('JACTION_EDIT'); ?>">
 											<?php echo Lang::txt('JACTION_EDIT'); ?>
 										</a>
@@ -87,9 +87,9 @@ $this->css()
 											</a>
 											<?php if ($this->acl->check('read', 'tickets')) { ?>
 												<span class="query-options">
-													<a class="delete" href="<?php echo Route::url('index.php?option=' . $this->option . '&controller=queries&task=remove&id=' . $query->id . '&' . Session::getFormToken() . '=1'); ?>" data-confirm="<?php echo Lang::txt('COM_SUPPORT_QUERIES_CONFIRM_DELETE'); ?>" title="<?php echo Lang::txt('JACTION_DELETE'); ?>">
+													<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=' . $this->option . '&controller=queries&task=remove&id=' . $query->id); ?>" class="delete" title="<?php echo Lang::txt('JACTION_DELETE'); ?>" data-confirm="<?php echo Lang::txt('COM_SUPPORT_QUERIES_CONFIRM_DELETE'); ?>">
 														<?php echo Lang::txt('JACTION_DELETE'); ?>
-													</a>
+													</button>
 													<a class="modal edit" href="<?php echo Route::url('index.php?option=' . $this->option . '&controller=queries&task=edit&id=' . $query->id . '&tmpl=component&' . Session::getFormToken() . '=1'); ?>" title="<?php echo Lang::txt('JACTION_EDIT'); ?>" rel="{handler: 'iframe', size: {x: 570, y: 550}}">
 														<?php echo Lang::txt('JACTION_EDIT'); ?>
 													</a>
@@ -287,9 +287,7 @@ $this->css()
 										<span><?php echo $this->escape($row->get('severity', 'normal')); ?></span>
 									</span>
 									<?php if ($this->acl->check('delete', 'tickets')) { ?>
-										<a class="delete" href="<?php echo Route::url($row->link('delete')); ?>" data-confirm="<?php echo Lang::txt('COM_SUPPORT_QUERIES_CONFIRM_DELETE'); ?>" title="<?php echo Lang::txt('JACTION_DELETE'); ?>">
-											<?php echo Lang::txt('JACTION_DELETE'); ?>
-										</a>
+										<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($row->link('delete')); ?>" class="delete" title="<?php echo Lang::txt('JACTION_DELETE'); ?>" data-confirm="<?php echo Lang::txt('COM_SUPPORT_QUERIES_CONFIRM_DELETE'); ?>"><?php echo Lang::txt('JACTION_DELETE'); ?></button>
 									<?php } ?>
 								</td>
 							</tr>

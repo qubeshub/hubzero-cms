@@ -57,6 +57,21 @@ class Categories extends AdminController
 	 */
 	public function batchTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
+		// The category belongs to an extension (com_content, com_kb, ...) and
+		// the edit form and entry point authorise against it; com_categories
+		// has no rules of its own.
+		$__ext = Request::getCmd('extension', $this->_option) ?: $this->_option;
+		if (
+			!User::authorise('core.edit', $__ext)
+			&& !User::authorise('core.create', $__ext)
+		)
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		$ids = Request::getArray('cid', array());
 		if (empty($ids))
 		{
@@ -179,6 +194,13 @@ class Categories extends AdminController
 			$categories->where('level', '<=', $filters['level']);
 		}
 
+		// Only the columns the list headings offer
+		if (!in_array($filters['sort'], array('lft', 'title', 'published', 'access', 'language', 'id'), true))
+		{
+			$filters['sort'] = 'lft';
+		}
+		$filters['sort_Dir'] = (strtoupper((string) $filters['sort_Dir']) == 'DESC' ? 'DESC' : 'ASC');
+
 		$categories->order($filters['sort'], $filters['sort_Dir']);
 		$items = $categories->paginated('limitstart', 'limit');
 		$itemsArray = array();
@@ -291,11 +313,57 @@ class Categories extends AdminController
 	{
 		Request::checkToken();
 
+		// The category belongs to an extension (com_content, com_kb, ...) and
+		// the edit form and entry point authorise against it; com_categories
+		// has no rules of its own.
+		$__ext = Request::getCmd('extension', $this->_option) ?: $this->_option;
+		if (
+			!User::authorise('core.edit', $__ext)
+			&& !User::authorise('core.create', $__ext)
+		)
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		$items      = Request::getArray('fields', array());
 		$extension  = Request::getCmd('extension');
 		$categoryId = Request::getInt('id');
 
 		$category = Category::oneOrNew($categoryId);
+
+		// The same per-row test editTask applies: an existing category is
+		// edited under its own asset (or edit.own by its creator) and stays in
+		// the extension it belongs to; a new one needs create on the extension.
+		if (!$category->isNew())
+		{
+			if ($category->get('extension') != $extension)
+			{
+				App::abort(404, Lang::txt('COM_CATEGORIES_NO_ITEM_SELECTED'));
+			}
+			if (!User::authorise('core.edit', $category->get('asset_id')))
+			{
+				if (!User::authorise('core.edit.own', $category->get('asset_id'))
+				|| $category->get('created_user_id') != User::get('id'))
+				{
+					App::abort(403, Lang::txt('COM_CONTENT_NOT_AUTHORIZED'));
+				}
+			}
+		}
+		else if (!User::authorise('core.create', $extension))
+		{
+			App::abort(403, Lang::txt('COM_CONTENT_NOT_AUTHORIZED'));
+		}
+
+		// Columns the form marks filter="unset": the tree, asset and
+		// bookkeeping fields are computed, never posted.
+		unset(
+			$items['id'], $items['asset_id'], $items['extension'],
+			$items['lft'], $items['rgt'], $items['level'], $items['path'],
+			$items['checked_out'], $items['checked_out_time'],
+			$items['created_user_id'], $items['created_time'],
+			$items['modified_user_id'], $items['modified_time'], $items['hits']
+		);
+		$items['extension'] = $extension;
 
 		if ($category->get('checked_out'))
 		{
@@ -304,7 +372,10 @@ class Categories extends AdminController
 			$category->save();
 		}
 
-		if (!empty($items['rules']))
+		// Permission rules only from someone the form would show them to
+		// (canDo core.admin on this category); a posted one is dropped.
+		if (!empty($items['rules'])
+		 && CategoriesHelper::getActions($extension, 'category', $category->get('id', 0))->get('core.admin'))
 		{
 			$rules = array_map(
 				function($item)
@@ -379,6 +450,10 @@ class Categories extends AdminController
 				'lang' => 'COM_CATEGORIES_N_ITEMS_TRASHED'
 			)
 		);
+		if (!isset($states[$this->_task]))
+		{
+			return $this->cancelTask();
+		}
 		$state = $states[$this->_task];
 
 		$ids = Request::getArray('cid');
@@ -429,6 +504,13 @@ class Categories extends AdminController
 	public function checkinTask()
 	{
 		Request::checkToken();
+
+		// The Check-in button is offered on core.edit.state for the extension
+		$extension = Request::getState($this->_option . '.' . $this->_controller . '.extension', 'extension') ?: $this->_option;
+		if (!User::authorise('core.edit.state', $extension))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 
 		$ids = Request::getArray('cid');
 
@@ -547,6 +629,12 @@ class Categories extends AdminController
 
 		$ordering  = Request::getArray('order', array());
 		$extension = Request::getState($this->_option . '.' . $this->_controller . '.extension', 'extension');
+
+		// The ordering inputs are offered on core.edit.state for the extension
+		if (!User::authorise('core.edit.state', $extension ?: $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 
 		if (!Category::saveorder($ordering, $extension))
 		{

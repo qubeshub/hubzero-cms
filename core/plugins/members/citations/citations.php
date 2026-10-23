@@ -520,6 +520,9 @@ class plgMembersCitations extends \Hubzero\Plugin\Plugin
 			return $this->loginAction();
 		}
 
+		// Check for request forgeries
+		Request::checkToken();
+
 		if (!$this->params->get('access-manage'))
 		{
 			throw new Exception(\Lang::txt('PLG_MEMBERS_CITATIONS_NOT_AUTHORIZED'), 403);
@@ -539,9 +542,15 @@ class plgMembersCitations extends \Hubzero\Plugin\Plugin
 		$cid = Request::getInt('cid');
 		$isNew = ($cid < 0 ? true : false);
 
-		// Get the citation (single) or create a new one
-		$citation = \Components\Citations\Models\Citation::oneOrNew($cid)
-			->set(array(
+		// Get the citation (single) or create a new one. cid names any row
+		// on the hub; an existing one has to be this member's own.
+		$citation = \Components\Citations\Models\Citation::oneOrNew($cid);
+		if (!$citation->isNew()
+		 && ($citation->get('scope') != $scope || (int) $citation->get('scope_id') !== (int) $scopeID))
+		{
+			throw new Exception(\Lang::txt('PLG_MEMBERS_CITATIONS_NOT_AUTHORIZED'), 403);
+		}
+		$citation->set(array(
 				'type' => Request::getInt('type'),
 				'cite' => Request::getString('cite'),
 				'ref_type' => Request::getString('ref_type'),
@@ -670,6 +679,9 @@ class plgMembersCitations extends \Hubzero\Plugin\Plugin
 	 */
 	private function deleteAction()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Check if they're logged in
 		if (User::isGuest())
 		{
@@ -690,10 +702,15 @@ class plgMembersCitations extends \Hubzero\Plugin\Plugin
 		if ($id != 0 && !$bulk)
 		{
 			$citation = \Components\Citations\Models\Citation::oneOrFail($id);
+
+			// Decide before the write, not after it
+			if ($citation->scope != 'member' || $citation->scope_id != $this->member->get('id'))
+			{
+				throw new Exception(\Lang::txt('PLG_MEMBERS_CITATIONS_NOT_AUTHORIZED'), 403);
+			}
 			$citation->set('published', $citation::STATE_DELETED);
 
-			if ($citation->save() && $citation->scope == 'member'
-			 && $citation->scope_id == $this->member->get('id'))
+			if ($citation->save())
 			{
 				App::redirect(
 					Route::url($this->member->link() . '&active=' . $this->_name),
@@ -737,11 +754,16 @@ class plgMembersCitations extends \Hubzero\Plugin\Plugin
 			foreach ($citationIDs as $id)
 			{
 				$citation = \Components\Citations\Models\Citation::oneOrFail($id);
+
+				// Decide before the write, not after it
+				if ($citation->scope != 'member' || $citation->scope_id != $this->member->get('id'))
+				{
+					continue;
+				}
 				$citation->set('published', $citation::STATE_DELETED);
 
 				// update the record
-				if ($citation->save() && $citation->scope == 'member'
-				&& $citation->scope_id == $this->member->get('id'))
+				if ($citation->save())
 				{
 					array_push($deleted, $id);
 				}
@@ -775,6 +797,13 @@ class plgMembersCitations extends \Hubzero\Plugin\Plugin
 	{
 		if ($_POST)
 		{
+			// Check for request forgeries and manage rights
+			Request::checkToken();
+			if (!$this->params->get('access-manage'))
+			{
+				throw new Exception(\Lang::txt('PLG_MEMBERS_CITATIONS_NOT_AUTHORIZED'), 403);
+			}
+
 			$display = Request::getString('display', '');
 			$format = Request::getString('citation-format', '');
 
@@ -906,6 +935,9 @@ class plgMembersCitations extends \Hubzero\Plugin\Plugin
 	 */
 	private function publishAction()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		$id = Request::getInt('cid', 0);
 		$citationIDs = Request::getString('citationIDs', '');
 		$bulk = Request::getBool('bulk', false);
@@ -913,6 +945,12 @@ class plgMembersCitations extends \Hubzero\Plugin\Plugin
 		if ($id != 0 && !$bulk)
 		{
 			$citation = \Components\Citations\Models\Citation::oneOrFail($id);
+
+			// This member's citation only -- decided before the write
+			if ($citation->scope != 'member' || $citation->scope_id != $this->member->get('id'))
+			{
+				throw new Exception(\Lang::txt('PLG_MEMBERS_CITATIONS_NOT_AUTHORIZED'), 403);
+			}
 
 			if ($citation->uid != $this->member->get('id'))
 			{
@@ -983,6 +1021,12 @@ class plgMembersCitations extends \Hubzero\Plugin\Plugin
 			{
 				$citation = \Components\Citations\Models\Citation::oneOrFail($id);
 
+				// This member's citations only
+				if ($citation->scope != 'member' || $citation->scope_id != $this->member->get('id'))
+				{
+					continue;
+				}
+
 				// toggle the state
 				if ($citation->published != $citation::STATE_PUBLISHED)
 				{
@@ -1025,8 +1069,11 @@ class plgMembersCitations extends \Hubzero\Plugin\Plugin
 	 */
 	private function loginAction()
 	{
+		// A posted action can't be replayed by the GET that follows login
+		$action = (Request::method() == 'POST') ? '' : '&action=' . $this->action;
+
 		App::redirect(
-			Route::url('index.php?option=com_users&view=login&return=' . base64_encode(Route::url($this->member->link() . '&active=' . $this->_name . '&action=' . $this->action, false, true))),
+			Route::url('index.php?option=com_users&view=login&return=' . base64_encode(Route::url($this->member->link() . '&active=' . $this->_name . $action, false, true))),
 			Lang::txt('PLG_MEMBERS_CITATIONS_NOT_LOGGEDIN'),
 			'warning'
 		);
@@ -1406,6 +1453,12 @@ class plgMembersCitations extends \Hubzero\Plugin\Plugin
 		{
 			foreach ($filters as $filter => $value)
 			{
+				// every filter is a scalar; filters[x][]=y is not a value
+				if (is_array($value))
+				{
+					continue;
+				}
+
 				// sanitization
 				$value = \Hubzero\Utility\Sanitize::clean($value);
 
@@ -1439,7 +1492,12 @@ class plgMembersCitations extends \Hubzero\Plugin\Plugin
 							$citations->where('affiliated', '=', $value);
 						break;
 						default:
-							$citations->where($filter, '=', $value);
+							// the filter key would otherwise become the column
+							// name; only the form's remaining field is a column
+							if ($filter == 'type')
+							{
+								$citations->where($filter, '=', $value);
+							}
 						break;
 					}
 				} // end if not search & not sort & non-empty value
@@ -1503,8 +1561,13 @@ class plgMembersCitations extends \Hubzero\Plugin\Plugin
 
 				if ($filter == "sort" && $value != "")
 				{
+					// only the columns the sort menu offers, and a real direction
 					$clause = explode(" ", $value);
-					$citations->order($clause[0], $clause[1]);
+					if (in_array($clause[0], array('year', 'created', 'title', 'author', 'journal')))
+					{
+						$dir = (isset($clause[1]) && strtolower($clause[1]) == 'desc') ? 'desc' : 'asc';
+						$citations->order($clause[0], $dir);
+					}
 				}
 			} // end foreach filters as filter
 

@@ -146,7 +146,7 @@ $onOffLabel = function($v)
 							<tr>
 								<th style="text-align: right; padding: 0 0.5em; font-weight: bold; white-space: nowrap; vertical-align: top;" align="right"><?php echo Lang::txt('Group:'); ?></th>
 								<td style="text-align: left; padding: 0 0.5em;" align="left">
-									<?php echo $this->group->get('description'); ?>
+									<?php echo $this->escape($this->group->get('description')); ?>
 								</td>
 							</tr>
 							<tr>
@@ -304,7 +304,7 @@ $onOffLabel = function($v)
 
 									if ($this->group->get('join_policy') == 1)
 									{
-										echo '<br /><em>' . $this->group->get('restrict_msg') . '</em>';
+										echo '<br /><em>' . \Hubzero\Utility\Sanitize::html($this->group->get('restrict_msg')) . '</em>';
 										echo $wasMarker('restrict_msg', $this->group->get('restrict_msg'), isset($before['restrict_msg']) ? $before['restrict_msg'] : null);
 									}
 									?>

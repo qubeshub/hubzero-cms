@@ -110,8 +110,6 @@ class plgGroupsWiki extends \Hubzero\Plugin\Plugin
 		include_once Component::path('com_wiki') . DS . 'helpers' . DS . 'editor.php';
 		include_once Component::path('com_wiki') . DS . 'helpers' . DS . 'parser.php';
 
-		Components\Wiki\Models\Page::addAdapterPath(__DIR__ . '/adapters/group.php');
-
 		$book = new Components\Wiki\Models\Book('group', $group->get('gidNumber'));
 		$arr['metadata']['count'] = $book->pages()
 			->whereEquals('state', Components\Wiki\Models\Page::STATE_PUBLISHED)
@@ -179,7 +177,7 @@ class plgGroupsWiki extends \Hubzero\Plugin\Plugin
 				Request::setVar('scope', $group->get('cn') . DS . $active);
 			}*/
 
-			// Group wiki settings (managers only): automatic table-of-contents behavior
+			// Group wiki settings (managers only): automatic table-of-contents and page crumbs
 			if ($action == 'settings' || $action == 'savesettings')
 			{
 				if (User::isGuest() || ($authorized != 'manager' && $authorized != 'admin'))
@@ -200,6 +198,9 @@ class plgGroupsWiki extends \Hubzero\Plugin\Plugin
 
 					$threshold = Request::getString('toc_threshold', '');
 					$params->set('toc_threshold', ($threshold !== '' && ctype_digit($threshold)) ? (int) $threshold : '');
+
+					$crumbs = Request::getString('wiki_crumbs', '');
+					$params->set('wiki_crumbs', in_array($crumbs, array('0', '1'), true) ? (int) $crumbs : '');
 
 					$group->set('params', $params->toString());
 					$group->update();

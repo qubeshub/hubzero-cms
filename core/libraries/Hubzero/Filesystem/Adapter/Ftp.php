@@ -416,7 +416,7 @@ class Ftp implements AdapterInterface
 			return false;
 		}
 
-		$this->setPermissions($path, $visibility);
+		$this->setPermissions($path);
 
 		return true;
 	}
@@ -433,7 +433,7 @@ class Ftp implements AdapterInterface
 			return false;
 		}
 
-		$this->setPermissions($path, $visibility);
+		$this->setPermissions($path);
 
 		return true;
 	}
@@ -592,7 +592,8 @@ class Ftp implements AdapterInterface
 	{
 		$connection = $this->getConnection();
 
-		$contents = array_reverse($this->listDirectoryContents($dirname));
+		// deepest entries first (listDirectoryContents() was never defined; listContents() is the adapter's lister)
+		$contents = array_reverse($this->listContents($dirname, '.', true, false));
 
 		foreach ($contents as $object)
 		{
@@ -630,7 +631,7 @@ class Ftp implements AdapterInterface
 	 */
 	public function isDirectory($directory)
 	{
-		$result = @ftp_chdir($this->connection(), $directory);
+		$result = @ftp_chdir($this->getConnection(), $directory);
 		$result = $result ? true : false;
 
 		return $result;
@@ -649,7 +650,7 @@ class Ftp implements AdapterInterface
 	 */
 	public function isFile($file)
 	{
-		$result = @ftp_chdir($this->connection(), $file);
+		$result = @ftp_chdir($this->getConnection(), $file);
 		$result = $result ? false : true;
 
 		return $result;
@@ -704,7 +705,12 @@ class Ftp implements AdapterInterface
 	 */
 	public function setPermissions($path, $filemode = '0644', $foldermode = '0755')
 	{
-		if (!ftp_chmod($this->getConnection(), $foldermode, $path))
+		// callers pass files; the folder mode always applied before, and a
+		// string mode was read as decimal by ftp_chmod()
+		$mode = $this->isDirectory($path) ? $foldermode : $filemode;
+		$mode = is_string($mode) ? octdec($mode) : (int) $mode;
+
+		if (!ftp_chmod($this->getConnection(), $mode, $path))
 		{
 			return false;
 		}

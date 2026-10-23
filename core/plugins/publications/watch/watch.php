@@ -139,6 +139,20 @@ class plgPublicationsWatch extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
+		// A link followed from an email, or the return from logging in,
+		// arrives as a GET: ask for the change to be confirmed with a POST
+		if (Request::method() !== 'POST')
+		{
+			$view = $this->view('confirm', 'index')
+				->set('publication', $this->publication)
+				->set('action', $this->action)
+				->set('email', $email);
+
+			return $view->loadTemplate();
+		}
+
+		Request::checkToken();
+
 		$watch = \Hubzero\Item\Watch::oneByScope(
 			$this->publication->get('id'),
 			'publication',
@@ -176,7 +190,7 @@ class plgPublicationsWatch extends \Hubzero\Plugin\Plugin
 				'action'      => $this->action . 'd',
 				'scope'       => 'publication',
 				'scope_id'    => $this->publication->get('id'),
-				'description' => Lang::txt('PLG_PUBLICATIONS_WATCH_' . strtoupper($this->action) . 'D', '<a href="' . $url . '">' . $this->publication->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_PUBLICATIONS_WATCH_' . strtoupper($this->action) . 'D', '<a href="' . $url . '">' . htmlspecialchars((string) ($this->publication->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $this->publication->get('title'),
 					'url'   => $url

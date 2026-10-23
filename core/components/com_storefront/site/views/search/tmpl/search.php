@@ -30,7 +30,7 @@ $this->css()
 				<input class="entry-search-submit" type="submit" value="Search">
 				<fieldset class="entry-search">
 					<label for="entry-search-field">Search</label>
-					<input type="text" name="q" id="entry-search-field" value="<?php echo $this->search; ?>" placeholder="Search">
+					<input type="text" name="q" id="entry-search-field" value="<?php echo $this->escape($this->search); ?>" placeholder="Search">
 				</fieldset>
 			</div>
 		</form>
@@ -69,10 +69,10 @@ $this->css()
 					echo ')"></div>';
 				}
 				echo '<a href="';
-				echo Route::url('index.php?option=' . Request::getCmd('option')) . 'product/' . $productIdentificator;
+				echo Route::url('index.php?option=' . Request::getCmd('option')) . 'product/' . $this->escape($productIdentificator);
 				echo '">';
 				echo '<div class="content">';
-				echo '<h3>' . $product->pName . '</h3>';
+				echo '<h3>' . $this->escape($product->pName) . '</h3>';
 				echo '</div>';
 				echo '</a>';
 				echo '</li>';

@@ -546,7 +546,7 @@ if (!$form_redirect && !in_array($current, array('/register/update', '/members/u
 
 					$errors = (!empty($this->xregistration->_invalid[$field->get('name')])) ? '<span class="error" role="alert">' . $this->xregistration->_invalid[$field->get('name')] . '</span>' : '';
 					?>
-					<div class="form-group<?php echo $errors ? ' fieldWithErrors' : ''; ?>" id="input-<?php echo $field->get('name'); ?>">
+					<div class="form-group<?php echo $errors ? ' fieldWithErrors' : ''; ?>" id="input-<?php echo $this->escape($field->get('name')); ?>">
 						<?php
 						echo $formfield->label;
 						echo $formfield->input;
@@ -600,7 +600,7 @@ if (!$form_redirect && !in_array($current, array('/register/update', '/members/u
 			$captchas = Event::trigger('captcha.onDisplay');
 
 			if (count($captchas) > 0) { ?>
-				<fieldset>
+				<fieldset<?php echo !empty($this->xregistration->_invalid['captcha']) ? ' class="fieldWithErrors"' : ''; ?>>
 					<legend><?php echo Lang::txt('COM_MEMBERS_REGISTER_HUMAN_CHECK'); ?></legend>
 					<?php echo (isset($this->xregistration->_invalid['captcha']) && !empty($this->xregistration->_invalid['captcha'])) ? '<span class="error" role="alert">' . $this->xregistration->_invalid['captcha'] . '</span>' : ''; ?>
 			<?php } ?>

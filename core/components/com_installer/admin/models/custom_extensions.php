@@ -85,6 +85,30 @@ class Custom_extensions extends Relational
 	);
 
 	/**
+	 * Sets up additional custom rules
+	 *
+	 * The alias and folder become part of the extension's path, which the
+	 * repository commands then work in, so only allow plain names (the form's
+	 * own check is client-side only)
+	 *
+	 * @return  void
+	 */
+	public function setup()
+	{
+		foreach (array('alias', 'folder') as $key)
+		{
+			$this->addRule($key, function($data) use ($key)
+			{
+				if (!empty($data[$key]) && !preg_match('/^[A-Za-z0-9][A-Za-z0-9_]*$/', $data[$key]))
+				{
+					return $key . ' may only contain letters, numbers and underscores, and cannot start with an underscore';
+				}
+				return false;
+			});
+		}
+	}
+
+	/**
 	 * Automatically fillable fields
 	 *
 	 * @var  array
@@ -175,13 +199,9 @@ class Custom_extensions extends Relational
 	 */
 	public function automaticModified($data)
 	{
-		if (!isset($data['modified'])
-		 || !$data['modified']
-		  || $data['modified'] == '0000-00-00 00:00:00')
-		{
-			$data['modified'] = Date::of('now')->toSql();
-		}
-		return $data['modified'];
+		// A loaded row always carries its last modified date, so stamp every
+		// save rather than only filling in a missing value
+		return Date::of('now')->toSql();
 	}
 
 	/**
@@ -191,11 +211,7 @@ class Custom_extensions extends Relational
 	 */
 	public function automaticModifiedBy($data)
 	{
-		if (!isset($data['modified_by']) || !$data['modified_by'])
-		{
-			$data['modified_by'] = User::get('id');
-		}
-		return $data['modified_by'];
+		return User::get('id');
 	}
 
 	/**

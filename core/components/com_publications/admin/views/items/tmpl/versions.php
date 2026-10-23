@@ -46,8 +46,8 @@ Toolbar::cancel();
 			<tr class="mini <?php if ($v->main == 1) { echo ' vprime'; } ?>">
 				<td class="centeralign"><?php echo $v->version_number ? $v->version_number : ''; ?></td>
 				<td><?php echo $v->id; ?></td>
-				<td><?php echo $v->version_label; ?></td>
-				<td><?php echo $v->title; ?></td>
+				<td><?php echo $this->escape($v->version_label); ?></td>
+				<td><?php echo $this->escape($v->title); ?></td>
 				<td class="v-status">
 					<span class="<?php echo $class; ?>"><?php echo $status; ?></span>
 					<?php
@@ -56,7 +56,7 @@ Toolbar::cancel();
 					endif;
 					?>
 				</td>
-				<td><?php echo $doi_notice; ?></td>
+				<td><?php echo $this->escape($doi_notice); ?></td>
 				<td><a href="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller . '&task=edit&id[]=' . $this->pub->id . '&version=' . $v->version_number); ?>"><?php echo Lang::txt('COM_PUBLICATIONS_MANAGE_VERSION'); ?></a></td>
 			</tr>
 			<?php

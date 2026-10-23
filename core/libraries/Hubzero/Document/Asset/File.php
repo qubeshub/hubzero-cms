@@ -351,8 +351,21 @@ class File extends Obj
 	{
 		if (!isset($this->paths['override']))
 		{
-			$this->paths['override']  = \App::get('template')->path . DS . 'html';
-			$this->paths['override'] .= DS . $this->extensionName() . DS . ($this->extensionType() == 'system' ? $this->type() . DS : '') . $this->file();
+			$suffix = DS . 'html' . DS . $this->extensionName() . DS . ($this->extensionType() == 'system' ? $this->type() . DS : '') . $this->file();
+
+			// The first template root (the supergroup's, then the site's)
+			// that carries an override; failing that the site template's
+			// location, so callers still get a well-formed path to test
+			$this->paths['override'] = \App::get('template')->path . $suffix;
+
+			foreach (\Hubzero\Template\Overrides::roots() as $root)
+			{
+				if (file_exists($root . $suffix))
+				{
+					$this->paths['override'] = $root . $suffix;
+					break;
+				}
+			}
 		}
 		return $this->paths['override'];
 	}

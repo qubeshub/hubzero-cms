@@ -8,6 +8,11 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
+require_once __DIR__ . '/helpers/roleorder.php';
+
+use Plugins\Groups\Members\Helpers\RoleOrder;
+use Components\Groups\Models\Role;
+
 // include role lib
 require_once Component::path('com_groups') . DS . 'models' . DS . 'role.php';
 use Components\Groups\Tables\Reason;
@@ -189,7 +194,13 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 				}
 
 				$action = strtolower(trim($action));
-				if (!method_exists($this, $action))
+
+				// Only this plugin's own parameterless actions are dispatchable --
+				// not inherited helpers whose required arguments would be missing
+				$__method = method_exists($this, $action) ? new \ReflectionMethod($this, $action) : null;
+				if (!$__method
+				 || $__method->getDeclaringClass()->getName() !== get_class($this)
+				 || $__method->getNumberOfRequiredParameters() > 0)
 				{
 					App::abort(404, Lang::txt('PLG_GROUPS_MESSAGES_ERROR_ACTION_NOTFOUND'));
 				}
@@ -243,10 +254,7 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 				}
 
 				//get all member roles
-				$db = App::get('db');
-				$sql = "SELECT * FROM `#__xgroups_roles` WHERE gidNumber=" . $db->quote($group->get('gidNumber'));
-				$db->setQuery($sql);
-				$view->member_roles = $db->loadAssocList();
+				$view->member_roles = $this->getRoles();
 
 				$group_inviteemails = new \Hubzero\User\Group\InviteEmail();
 				$view->current_inviteemails = $group_inviteemails->getInviteEmails($this->group->get('gidNumber'), true);
@@ -456,6 +464,14 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 	 */
 	private function approve()
 	{
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
+
 		// Membership cannot be changed
 		if ($this->group->get('join_policy') == 3)
 		{
@@ -498,6 +514,12 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 			if (is_object($targetuser))
 			{
 				$uid = $targetuser->get('id');
+
+				// Only a pending applicant of this group can be approved
+				if (!in_array($uid, (array) $this->group->get('applicants')))
+				{
+					continue;
+				}
 
 				// The list of applicants to remove from the applicant list
 				$applicants[] = $uid;
@@ -582,6 +604,14 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 	 */
 	private function promote()
 	{
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
+
 		if ($this->authorized != 'manager' && $this->authorized != 'admin')
 		{
 			return false;
@@ -611,6 +641,12 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 			if (is_object($targetuser))
 			{
 				$uid = $targetuser->get('id');
+
+				// Only a member of this group can be promoted
+				if (!in_array($uid, (array) $this->group->get('members')))
+				{
+					continue;
+				}
 
 				// Loop through existing managers and make sure the user isn't already a manager
 				if (in_array($uid, $managers))
@@ -689,6 +725,14 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 	 */
 	private function demote()
 	{
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
+
 		if ($this->authorized != 'manager' && $this->authorized != 'admin')
 		{
 			return false;
@@ -1006,6 +1050,15 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 			return false;
 		}
 
+		// Require POST to prevent accidental removal by crawlers
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('PLG_GROUPS_MEMBERS_ERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		// Check for request forgeries
+		Request::checkToken();
+
 		if ($this->membership_control == 0)
 		{
 			return false;
@@ -1152,6 +1205,8 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 	 */
 	private function deny()
 	{
+		// Only shows the form (the deny responses page and its redirect come
+		// back here by GET); confirmdeny() makes the change and checks the token
 		if ($this->authorized != 'manager' && $this->authorized != 'admin')
 		{
 			return false;
@@ -1174,6 +1229,7 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 		$view->group = $this->group;
 		$view->authorized = $this->authorized;
 		$view->users = Request::getArray('users', array());
+		$view->responses = $this->getDenyResponses();
 
 		foreach ($this->getErrors() as $error)
 		{
@@ -1181,6 +1237,149 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 		}
 
 		$this->_output = $view->loadTemplate();
+	}
+
+	/**
+	 * Get the canned replies a group's managers have saved for denying membership
+	 *
+	 * @return  array  List of arrays with 'title' and 'text' keys
+	 */
+	private function getDenyResponses()
+	{
+		$params = new Hubzero\Config\Registry($this->group->get('params'));
+
+		$responses = array();
+		foreach ((array) $params->get('deny_responses', array()) as $response)
+		{
+			// Stored as a JSON list, so entries read back as objects
+			$response = (array) $response;
+
+			if (isset($response['text']) && trim($response['text']) !== '')
+			{
+				$responses[] = array(
+					'title' => isset($response['title']) ? (string) $response['title'] : '',
+					'text'  => (string) $response['text']
+				);
+			}
+		}
+
+		return $responses;
+	}
+
+	/**
+	 * Display a form for managing the group's canned deny responses
+	 *
+	 * @param   array  $responses  Responses to show instead of the saved ones,
+	 *                             so a failed save can hand back what was typed
+	 * @return  void
+	 */
+	private function denyresponses($responses = null)
+	{
+		if (!$this->canManageRoles())
+		{
+			return false;
+		}
+
+		Document::setTitle(Lang::txt(strtoupper($this->name)) . ': ' . $this->group->get('description') . ': ' . Lang::txt('PLG_GROUPS_MEMBERS_DENY_RESPONSES'));
+
+		$view = $this->view('default', 'responses');
+		$view->option = $this->_option;
+		$view->group = $this->group;
+		$view->authorized = $this->authorized;
+		$view->responses = is_array($responses) ? $responses : $this->getDenyResponses();
+		// Users on their way to being denied, so saving can return to that form
+		$view->users = Request::getArray('users', array());
+
+		foreach ($this->getErrors() as $error)
+		{
+			$view->setError($error);
+		}
+
+		$this->_output = $view->loadTemplate();
+	}
+
+	/**
+	 * Save the group's canned deny responses
+	 *
+	 * @return  void
+	 */
+	private function savedenyresponses()
+	{
+		if (!$this->canManageRoles())
+		{
+			return false;
+		}
+
+		Request::checkToken();
+
+		$responses = array();
+		foreach (Request::getArray('responses', array(), 'post') as $response)
+		{
+			if (!is_array($response))
+			{
+				continue;
+			}
+
+			$title = isset($response['title']) ? trim((string) $response['title']) : '';
+			$text  = isset($response['text']) ? trim((string) $response['text']) : '';
+
+			// A row with no text is how a response gets removed
+			if ($text === '')
+			{
+				continue;
+			}
+
+			if ($title === '')
+			{
+				$title = mb_strimwidth(preg_replace('/\s+/', ' ', $text), 0, 60, '...');
+			}
+
+			$responses[] = array(
+				'title' => $title,
+				'text'  => $text
+			);
+		}
+
+		$params = new Hubzero\Config\Registry($this->group->get('params'));
+		$params->set('deny_responses', $responses);
+
+		$serialized = $params->toString();
+
+		// `#__xgroups`.`params` is a TEXT column. Refusing an oversized write
+		// here beats letting MySQL truncate it, which would leave the group
+		// with unparsable JSON and so lose every other group setting.
+		if (strlen($serialized) > 65535)
+		{
+			$this->setError(Lang::txt('PLG_GROUPS_MEMBERS_DENY_RESPONSES_TOO_LONG'));
+			return $this->denyresponses($responses);
+		}
+
+		$this->group->set('params', $serialized);
+
+		// A failed write must not report success - the responses would be gone
+		if (!$this->group->update())
+		{
+			$this->setError(Lang::txt('PLG_GROUPS_MEMBERS_DENY_RESPONSES_NOT_SAVED'));
+			return $this->denyresponses($responses);
+		}
+
+		$url = 'index.php?option=' . $this->_option . '&cn=' . $this->group->get('cn') . '&active=members';
+
+		$users = array_filter(array_map('intval', Request::getArray('users', array(), 'post')));
+		if (count($users))
+		{
+			$url .= '&action=deny&users[]=' . implode('&users[]=', $users);
+		}
+		else
+		{
+			$url .= '&filter=pending';
+		}
+
+		App::redirect(
+			Route::url($url, false),
+			Lang::txt('PLG_GROUPS_MEMBERS_DENY_RESPONSES_SAVED'),
+			'passed'
+		);
 	}
 
 	/**
@@ -1194,6 +1393,15 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 		{
 			return false;
 		}
+
+		// Require POST to prevent accidental denial by crawlers
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('PLG_GROUPS_MEMBERS_ERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		// Check for request forgeries
+		Request::checkToken();
 
 		if ($this->membership_control == 0)
 		{
@@ -1326,6 +1534,15 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 			return false;
 		}
 
+		// Require POST to prevent accidental cancellation by crawlers
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('PLG_GROUPS_MEMBERS_ERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		// Check for request forgeries
+		Request::checkToken();
+
 		if ($this->membership_control == 0)
 		{
 			return false;
@@ -1416,7 +1633,8 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 		$db = App::get('db');
 		foreach ($user_emails as $ue)
 		{
-			$sql = "DELETE FROM `#__xgroups_inviteemails` WHERE email=" . $db->Quote($ue);
+			// Only this group's invitation for the address
+			$sql = "DELETE FROM `#__xgroups_inviteemails` WHERE email=" . $db->Quote($ue) . " AND gidNumber=" . $db->Quote($this->group->get('gidNumber'));
 			$db->setQuery($sql);
 			$db->query();
 		}
@@ -1429,6 +1647,103 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 		));
 
 		App::redirect(Route::url('index.php?option=com_groups&cn=' . $this->group->get('cn') . '&active=members&filter=invitees'), '', '', true);
+	}
+
+	/**
+	 * Get the group's member roles in the order its managers have set
+	 *
+	 * @return  array
+	 */
+	private function getRoles()
+	{
+		return Role::forGroup($this->group->get('gidNumber'))->rows()->toArray();
+	}
+
+	/**
+	 * May the current user manage this group's roles?
+	 *
+	 * @return  bool
+	 */
+	private function canManageRoles()
+	{
+		return ($this->authorized == 'manager' || $this->authorized == 'admin') && $this->membership_control == 1;
+	}
+
+	/**
+	 * Put the group's member roles in a sensible default order
+	 *
+	 * Plain names (universities, departments) come first in alphabetical
+	 * order, then graduation terms in date order. A manager can still drag
+	 * anything afterwards.
+	 *
+	 * @return  void
+	 */
+	private function sortroles()
+	{
+		if (!$this->canManageRoles())
+		{
+			App::abort(403, Lang::txt('PLG_GROUPS_MEMBERS_ROLE_ORDER_NOT_AUTHORIZED'));
+		}
+
+		Request::checkToken();
+
+		$ids = array_map(function ($role)
+		{
+			return $role['id'];
+		}, RoleOrder::sort($this->getRoles()));
+
+		if ($ids && !Role::saveOrder($this->group->get('gidNumber'), $ids))
+		{
+			App::abort(500, Lang::txt('PLG_GROUPS_MEMBERS_ROLE_ORDER_ERROR'));
+		}
+
+		App::redirect(
+			Route::url('index.php?option=' . $this->_option . '&cn=' . $this->group->get('cn') . '&active=members'),
+			Lang::txt('PLG_GROUPS_MEMBERS_ROLE_SORT_DONE'),
+			'passed'
+		);
+	}
+
+	/**
+	 * Save the order of the group's member roles (AJAX)
+	 *
+	 * @return  void
+	 */
+	private function reorderroles()
+	{
+		$response = array('success' => false);
+
+		if (!$this->canManageRoles())
+		{
+			$response['message'] = Lang::txt('PLG_GROUPS_MEMBERS_ROLE_ORDER_NOT_AUTHORIZED');
+		}
+		elseif (!App::get('session')->checkToken('post', true))
+		{
+			$response['message'] = Lang::txt('JINVALID_TOKEN');
+		}
+		else
+		{
+			$ids = array_values(array_filter(array_map('intval', Request::getArray('roles', array(), 'post'))));
+
+			// Nothing usable to order by. Saying so beats reporting success
+			// for a list the browser is still showing but nobody stored.
+			if (empty($ids))
+			{
+				$response['message'] = Lang::txt('PLG_GROUPS_MEMBERS_ROLE_ORDER_ERROR');
+			}
+			elseif (!Role::saveOrder($this->group->get('gidNumber'), $ids))
+			{
+				$response['message'] = Lang::txt('PLG_GROUPS_MEMBERS_ROLE_ORDER_ERROR');
+			}
+			else
+			{
+				$response['success'] = true;
+			}
+		}
+
+		header('Content-type: application/json');
+		echo json_encode($response);
+		exit();
 	}
 
 	/**
@@ -1500,6 +1815,9 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 		{
 			return false;
 		}
+
+		// Check for request forgeries
+		Request::checkToken();
 
 		// get request vars
 		$fields = Request::getArray('role', array());
@@ -1583,6 +1901,9 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 		{
 			return false;
 		}
+
+		// Check for request forgeries
+		Request::checkToken();
 
 		$role = Request::getInt('role', 0);
 
@@ -1672,9 +1993,7 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 		// Cancel membership confirmation screen
 		$view = $this->view('assign', 'role');
 
-		$db = App::get('db');
-		$db->setQuery("SELECT * FROM `#__xgroups_roles` WHERE gidNumber=" . $db->Quote($this->group->get('gidNumber')));
-		$roles = $db->loadAssocList();
+		$roles = $this->getRoles();
 
 		$view->option = $this->_option;
 		$view->group = $this->group;
@@ -1704,6 +2023,8 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 			return false;
 		}
 
+		Request::checkToken();
+
 		if ($this->membership_control == 0)
 		{
 			return false;
@@ -1731,6 +2052,12 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 
 		if (!$existing->get('id')
 		 || $existing->get('gidNumber') != $this->group->get('gidNumber'))
+		{
+			return false;
+		}
+
+		// ... and the grantee has to be a member of this group
+		if (!in_array($uid, (array) $this->group->get('members')))
 		{
 			return false;
 		}
@@ -1766,6 +2093,9 @@ class plgGroupsMembers extends \Hubzero\Plugin\Plugin
 		{
 			return false;
 		}
+
+		// Check for request forgeries
+		Request::checkToken();
 
 		$uid  = Request::getInt('uid', 0);
 		$role = Request::getInt('role', 0);

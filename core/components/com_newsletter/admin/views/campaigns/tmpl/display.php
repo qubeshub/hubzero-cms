@@ -99,7 +99,7 @@ $this->js();
 							<?php echo Date::of($campaign->expire_date)->toLocal("Y-m-d H:ia"); ?>
 						</td>
 						<td class="priority-3">
-							<?php echo $campaign->description; ?>
+							<?php echo $this->escape($campaign->description); ?>
 						</td>
 						<td class="priority-3">
 							<?php echo Date::of($campaign->campaign_date)->toLocal("Y-m-d H:ia"); ?>
@@ -108,7 +108,7 @@ $this->js();
 							<?php echo Date::of($campaign->modified)->toLocal("Y-m-d H:ia"); ?>
 						</td>
 						<td class="priority-3">
-							<?php echo User::one($campaign->modified_by)->name; ?>
+							<?php echo $this->escape(User::one($campaign->modified_by)->name); ?>
 						</td>
 					</tr>
 				<?php $k++; } ?>

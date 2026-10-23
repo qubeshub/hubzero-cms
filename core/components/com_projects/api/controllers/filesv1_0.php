@@ -20,6 +20,7 @@ use Route;
 use Lang;
 use Event;
 use Filesystem;
+use User;
 
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'project.php';
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'orm' . DS . 'project.php';
@@ -57,15 +58,22 @@ class Filesv1_0 extends ApiController
 			throw new Exception(Lang::txt('COM_PROJECTS_PROJECT_CANNOT_LOAD'), 404);
 		}
 
-		$contentTasks = array('insert', 'update', 'delete', 'move', 'rename', 'makedirectory');
+		// Read-only tasks; every other task writes and needs content access.
+		// An allowlist, and compared the way parent::execute() dispatches
+		// (lowercased getCmd): the old list of write tasks missed save itself
+		// (insert/update are only its aliases) and chunkedupload, and was
+		// case-sensitive against a case-insensitive dispatch, so a read-only
+		// member -- or, on an open project, anyone -- could write or delete.
+		$task      = strtolower(Request::getCmd('task', 'list'));
+		$readTasks = array('list', 'files', 'get', 'download', 'getmetadata', 'connections');
 
 		//tasks specific to adapters
-		$connectionTasks = array('upload', 'download', 'getmetadata', 'setmetadata');
+		$connectionTasks = array('upload', 'chunkedupload', 'download', 'getmetadata', 'setmetadata');
 
 		// Check authorization
-		if ((in_array($this->_task, $contentTasks) && !$this->model->access('content'))
-			|| (in_array($this->_task, $connectionTasks) && !$this->model->access('content'))
-			|| !$this->model->access('member'))
+		if (!$this->model->access('member')
+			|| (!in_array($task, $readTasks) && !$this->model->access('content'))
+			|| (in_array($task, $connectionTasks) && !$this->model->access('content')))
 		{
 			throw new Exception(Lang::txt('ALERTNOTAUTH'), 401);
 		}
@@ -82,10 +90,19 @@ class Filesv1_0 extends ApiController
 		//if there is a connection id, get an ORM Connection object as well
 		if ($this->cid || ($this->_task == 'connections'))
 		{
-			$this->ormproj = \Components\Projects\Models\Orm\Project::oneOrFail($id);
+			// $id is the raw request value, which may be an alias; the model
+			// above resolved it. oneOrFail() on the raw value would let the
+			// database coerce a digit-leading alias to another project's id.
+			$this->ormproj = \Components\Projects\Models\Orm\Project::oneOrFail((int) $this->model->get('id'));
 			if ($this->cid)
 			{
 				$this->ormconn = \Components\Projects\Models\Orm\Connection::oneOrFail($this->cid);
+
+				// The connection must belong to the authorized project
+				if ($this->ormconn->get('project_id') != $this->ormproj->get('id'))
+				{
+					throw new Exception(Lang::txt('ALERTNOTAUTH'), 401);
+				}
 			}
 		}
 
@@ -803,6 +820,9 @@ class Filesv1_0 extends ApiController
 	 */
 	public function chunkedUploadTask()
 	{
+		$response = new stdClass;
+		$result   = false;
+		$flowChunkNumber = $flowTotalChunks = 0;
 
 		// Check if request is GET and the requested chunk exists or not.
 		if (Request::getMethod() === 'GET')
@@ -902,23 +922,17 @@ class Filesv1_0 extends ApiController
 
 		if ($result)
 		{
-			$file  = Entity::fromPath($subdir . DS . $_FILES["file"]["name"], $this->ormconn->adapter());
-			if ($file->exists())
-			{
-				$updateType = 'updated';
-			}
-			$file->contents = file_get_contents($_FILES["file"]["tmp_name"]);
-			$file->size = (int) $_FILES["file"]["size"];
-			if ($file->save())
-			{
-				$parsedResults = array();
+			// createFileFromChunks() has already assembled and saved the file
+			// (and the last chunk's tmp_name is gone), so only report it
+			$file = Entity::fromPath(trim($subdir, DS) . DS . $flowFilename, $this->ormconn->adapter());
 
-				// Get metadata
-				$parsedResults[] = $this->ormconn->adapter()->getMetadata($file->getPath());
+			$parsedResults = array();
 
-				$response->results = $parsedResults;
-				$this->send($response);
-			}
+			// Get metadata
+			$parsedResults[] = $this->ormconn->adapter()->getMetadata($file->getPath());
+
+			$response->results = $parsedResults;
+			$this->send($response);
 		}
 		else
 		{
@@ -987,8 +1001,8 @@ class Filesv1_0 extends ApiController
 		// Check items
 		if (!$items || count($items) == 0)
 		{
-			$this->setError(Lang::txt('PLG_PROJECTS_FILES_ERROR_NO_FILES_TO_SHOW_HISTORY'));
-			return;
+			// (an API controller has no error bag; setError() here was a fatal)
+			throw new Exception(Lang::txt('PLG_PROJECTS_FILES_ERROR_NO_FILES_TO_SHOW_HISTORY'), 404);
 		}
 
 		if (count($items) > 1)
@@ -1054,6 +1068,11 @@ class Filesv1_0 extends ApiController
 		if (empty($dataPath))
 		{
 			throw new Exception(Lang::txt('No data path given'), 404);
+		}
+
+		if (!$this->_acceptDataPath($dataPath))
+		{
+			throw new Exception(Lang::txt('ALERTNOTAUTH'), 403);
 		}
 
 		// Insert file
@@ -1623,5 +1642,55 @@ class Filesv1_0 extends ApiController
 		$name = basename(str_replace('\\', '/', (string) $name));
 
 		return ($name === '.' || $name === '..') ? '' : $name;
+	}
+
+	/**
+	 * May this caller hand the repository this data_path?
+	 *
+	 * Repo::insert() copies a local path straight into the project, and fetches
+	 * anything else with curl. From any collaborator that was a read of every
+	 * file the web server can see (configuration.php included) into a project
+	 * they can download from, and a request from the server to any address.
+	 * A server-local path stays available to a site super admin; a remote one
+	 * must be http(s) to a host that resolves only to public addresses.
+	 *
+	 * @param   string   $dataPath
+	 * @return  boolean
+	 */
+	protected function _acceptDataPath($dataPath)
+	{
+		$scheme = strtolower((string) parse_url($dataPath, PHP_URL_SCHEME));
+
+		if ($scheme === '')
+		{
+			return User::authorise('core.admin');
+		}
+
+		if ($scheme !== 'http' && $scheme !== 'https')
+		{
+			return false;
+		}
+
+		$host = trim((string) parse_url($dataPath, PHP_URL_HOST), '[]');
+		if ($host === '')
+		{
+			return false;
+		}
+
+		$ips = filter_var($host, FILTER_VALIDATE_IP) ? array($host) : (array) gethostbynamel($host);
+		if (empty($ips))
+		{
+			return false;
+		}
+
+		foreach ($ips as $ip)
+		{
+			if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

@@ -695,6 +695,7 @@ class Threadsv1_0 extends ApiController
 		}
 
 		$row->set('anonymous', ($fields['anonymous'] ? 1 : 0));
+		$row->set('created_by', User::get('id'));
 
 		$category = Category::all()
 			->whereEquals('id', $row->get('category_id'))
@@ -708,16 +709,73 @@ class Threadsv1_0 extends ApiController
 			throw new Exception(Lang::txt('COM_FORUM_ERROR_CATEGORY_NOT_FOUND'), 400);
 		}
 
+		// Everything above came from the request. The category lookup proves the
+		// ids agree with each other, not that this caller may post there.
+		$isManager = User::authorise('core.manage', 'com_forum');
+
+		if (!$isManager)
+		{
+			// Moderation and bookkeeping fields are not the poster's to set.
+			$row->set('sticky', 0);
+			$row->set('closed', 0);
+			$row->set('hits', 0);
+			$row->set('state', Post::STATE_PUBLISHED);
+			$row->set('created', with(new Date('now'))->toSql());
+
+			if ($category->isClosed())
+			{
+				throw new Exception(Lang::txt('JERROR_ALERTNOAUTHOR'), 403);
+			}
+
+			// A group's forum is its members'. Other non-site scopes (courses,
+			// projects) have their own rules that this endpoint does not know.
+			if ($row->get('scope') == 'group')
+			{
+				$group = \Hubzero\User\Group::getInstance($row->get('scope_id'));
+				if (!$group || !in_array(User::get('id'), (array) $group->get('members')))
+				{
+					throw new Exception(Lang::txt('JERROR_ALERTNOAUTHOR'), 403);
+				}
+			}
+			elseif ($row->get('scope') != 'site')
+			{
+				throw new Exception(Lang::txt('JERROR_ALERTNOAUTHOR'), 403);
+			}
+			// A site category's access is a view level. (A group category's is
+			// the group plugin's own scale -- 5 is "members" -- which the
+			// membership test above already stands for.)
+			elseif (!in_array($category->get('access'), User::getAuthorisedViewLevels()))
+			{
+				throw new Exception(Lang::txt('JERROR_ALERTNOAUTHOR'), 403);
+			}
+		}
+
+		if ($row->get('parent'))
+		{
+			// A reply goes into an open thread of this category, under a post of
+			// that same thread.
+			$thread = Post::oneOrNew($row->get('thread'));
+			$parent = Post::oneOrNew($row->get('parent'));
+			if ($thread->isNew() || $parent->isNew()
+			 || $thread->get('parent')
+			 || $thread->get('category_id') != $category->get('id')
+			 || $parent->get('thread') != $thread->get('id')
+			 || ($thread->isClosed() && !$isManager))
+			{
+				throw new Exception(Lang::txt('JERROR_ALERTNOAUTHOR'), 403);
+			}
+		}
+		else
+		{
+			// A thread starter is its own thread; save() fills that in.
+			$row->set('thread', 0);
+		}
+
 		if (!$row->save())
 		{
 			throw new Exception(Lang::txt('COM_FORUM_ERROR_SAVING_DATA'), 500);
 		}
 
-		if ($fields['created_by'])
-		{
-			$row->set('created_by', (int)$fields['created_by']);
-			$row->save();
-		}
 
 		if ($tags = Request::getString('tags', null, 'post'))
 		{
@@ -739,7 +797,7 @@ class Threadsv1_0 extends ApiController
 		$type = 'thread';
 		$desc = Lang::txt(
 			'COM_FORUM_ACTIVITY_' . strtoupper($type) . '_CREATED',
-			'<a href="' . $url . '">' . $row->get('title') . '</a>'
+			'<a href="' . $url . '">' . htmlspecialchars((string) $row->get('title'), ENT_QUOTES, 'UTF-8') . '</a>'
 		);
 
 		// If this is a post in a thread and not the thread starter...
@@ -751,17 +809,17 @@ class Threadsv1_0 extends ApiController
 			// Editing an existing post must not re-sort the thread to the top
 			// of the activity-ordered listing or misrepresent the most recent
 			// post (see support ticket #2145).
-			if (!$fields['id'])
-			{
-				$thread->set('last_activity', $row->get('created'));
-				$thread->save();
-			}
+			// createTask() only ever creates: this is always a NEW reply.
+			// ($fields has no 'id' key -- reading one was an undefined-index
+			// warning, a 500 here, after every reply had already been saved.)
+			$thread->set('last_activity', $row->get('created'));
+			$thread->save();
 
 			$type = 'post';
 			$desc = Lang::txt(
 				'COM_FORUM_ACTIVITY_' . strtoupper($type) . '_CREATED',
 				$row->get('id'),
-				'<a href="' . $url . '">' . $thread->get('title') . '</a>'
+				'<a href="' . $url . '">' . htmlspecialchars((string) $thread->get('title'), ENT_QUOTES, 'UTF-8') . '</a>'
 			);
 
 			// If the parent post is not the same as the
@@ -911,15 +969,30 @@ class Threadsv1_0 extends ApiController
 			'start'        => Request::getInt('limitstart', 0),
 			'section'      => Request::getCmd('section', ''),
 			'category'     => Request::getCmd('category', ''),
-			'state'        => Request::getInt('state', Post::STATE_PUBLISHED),
+			'state'        => Post::STATE_PUBLISHED,
 			'scope'        => Request::getWord('scope', ''),
 			'scope_id'     => Request::getInt('scope_id', 0),
 			'scope_sub_id' => Request::getInt('scope_sub_id', 0),
 			'object_id'    => Request::getInt('object_id', 0),
 			'start_id'     => Request::getInt('start_id', 0),
 			'start_at'     => Request::getString('start_at', ''),
-			'sticky'       => false
+			'sticky'       => false,
+			'access'       => User::getAuthorisedViewLevels()
 		);
+
+		// Only published posts the caller may see, as listTask() does. Without
+		// the access filter every post in a private group forum came back to
+		// anyone who named the group's scope_id, and state= from the request
+		// handed out unpublished and deleted posts as well.
+		if ($filters['scope'] == 'group')
+		{
+			$group = \Hubzero\User\Group::getInstance($filters['scope_id']);
+
+			if ($group && in_array(User::get('id'), $group->get('members')))
+			{
+				$filters['access'][] = 5; // Private
+			}
+		}
 
 		$forum = new Manager($filters['scope'], $filters['scope_id']);
 
@@ -951,6 +1024,14 @@ class Threadsv1_0 extends ApiController
 		$data = new stdClass();
 		$data->code = 0;
 
+		// The results branch also needs this row (start_id walks its tree),
+		// so resolve it before the count/results split.
+		$post = Post::all()
+			->whereEquals('object_id', $filters['object_id'])
+			->whereEquals('scope_id', $filters['scope_id'])
+			->whereEquals('scope', $filters['scope'])
+			->row();
+
 		if ($find == 'count')
 		{
 			$data->count = 0;
@@ -961,11 +1042,6 @@ class Threadsv1_0 extends ApiController
 				$data->count = $forum->posts($filters)->total();
 			}
 
-			$post = Post::all()
-				->whereEquals('object_id', $filters['object_id'])
-				->whereEquals('scope_id', $filters['scope_id'])
-				->whereEquals('scope', $filters['scope'])
-				->row();
 			if ($post->get('id'))
 			{
 				$threadsstart = Request::getString('threads_start', '');
@@ -999,7 +1075,7 @@ class Threadsv1_0 extends ApiController
 						$v->set('created', with(new Date($v->get('created')))->format('Y-m-d\TH:i:s\Z'));
 
 						$pt      = $v->get('parent');
-						$list    = @$children[$pt] ? $children[$pt] : array();
+						$list    = isset($children[$pt]) ? $children[$pt] : array();
 						array_push($list, $v);
 						$children[$pt] = $list;
 					}
@@ -1026,7 +1102,37 @@ class Threadsv1_0 extends ApiController
 					$rows = array_slice($newlist, $filters['start'], $filters['limit']);
 				}
 			}
-			$data->response = $rows;
+			// Shape each post the way listTask() shapes a thread: a Rows object
+			// serialises to {} (so the read returned nothing unless start_id
+			// built an array), and raw rows would expose every column
+			$posts = array();
+			foreach (($rows ?: array()) as $row)
+			{
+				$obj = new stdClass;
+				$obj->id          = $row->get('id');
+				$obj->title       = $row->get('title');
+				$obj->comment     = $row->get('comment');
+				$obj->created     = with(new Date($row->get('created')))->format('Y-m-d\TH:i:s\Z');
+				$obj->modified    = $row->get('modified');
+				$obj->anonymous   = $row->get('anonymous');
+				$obj->scope       = $row->get('scope');
+				$obj->scope_id    = $row->get('scope_id');
+				$obj->thread      = $row->get('thread');
+				$obj->parent      = $row->get('parent');
+				$obj->category_id = $row->get('category_id');
+
+				$obj->creator = new stdClass;
+				$obj->creator->id   = 0;
+				$obj->creator->name = Lang::txt('JANONYMOUS');
+				if (!$row->get('anonymous'))
+				{
+					$obj->creator->id   = $row->get('created_by');
+					$obj->creator->name = $row->creator->get('name');
+				}
+
+				$posts[] = $obj;
+			}
+			$data->response = $posts;
 		}
 
 		$this->send($data);
@@ -1046,7 +1152,7 @@ class Threadsv1_0 extends ApiController
 	 */
 	private function treeRecurse($id, $indent, $list, $children, $maxlevel=9999, $level=0, $type=1)
 	{
-		if (@$children[$id] && $level <= $maxlevel)
+		if (!empty($children[$id]) && $level <= $maxlevel)
 		{
 			foreach ($children[$id] as $v)
 			{
@@ -1067,7 +1173,7 @@ class Threadsv1_0 extends ApiController
 
 				$list[$id] = $v;
 				$list[$id]->treename = "$indent$txt";
-				$list[$id]->children = count(@$children[$id]);
+				$list[$id]->children = count($children[$id] ?? array());
 
 				$list = $this->treeRecurse($id, $indent . $spacer, $list, $children, $maxlevel, $level+1, $type);
 			}

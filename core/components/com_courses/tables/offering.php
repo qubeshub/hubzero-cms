@@ -121,6 +121,23 @@ class Offering extends Table
 			return false;
 		}
 
+		// Blank date boxes post ''; strict SQL refuses '' for a datetime, so store NULL
+		foreach (array('publish_up', 'publish_down') as $col)
+		{
+			if (isset($this->$col) && trim((string) $this->$col) === '')
+			{
+				$this->$col = null;
+			}
+		}
+		// NOT NULL TEXT without a default: an unset value is left out of the INSERT
+		foreach (array('params') as $col)
+		{
+			if (!isset($this->$col))
+			{
+				$this->$col = '';
+			}
+		}
+
 		if (!$this->id)
 		{
 			$this->created    = Date::toSql();
@@ -262,6 +279,11 @@ class Offering extends Table
 			$orderby = "ci." . $sort . " " . $sortDir;
 		}
 
+		// Only the request-derived branch needs filtering, and it is already
+		// allowlisted above. The 'available' branch composes its own expression
+		// with =, parentheses and quoted literals -- running that through a
+		// character class strips all three and leaves "CASE WHEN ci.ordering  0
+		// THEN", which is a syntax error, i.e. a 500 on every course page.
 		$query .= " ORDER BY " . $orderby;
 
 		if (isset($filters['limit']) && $filters['limit'] != 0)

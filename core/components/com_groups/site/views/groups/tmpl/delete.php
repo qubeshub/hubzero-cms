@@ -46,7 +46,7 @@ $this->css()
 		<fieldset>
 			<legend><?php echo Lang::txt('COM_GROUPS_DELETE_CONFIRM_BOX_HEADING'); ?></legend>
 
-	 		<p class="warning"><?php echo Lang::txt('COM_GROUPS_DELETE_CONFIRM_BOX_WARNING', $this->group->get('description')) . '<br /><br />' . $this->log; ?></p>
+	 		<p class="warning"><?php echo Lang::txt('COM_GROUPS_DELETE_CONFIRM_BOX_WARNING', $this->escape($this->group->get('description'))) . '<br /><br />' . $this->log; ?></p>
 
 			<div class="form-group form-check">
 				<label for="confirmdel">
@@ -67,6 +67,7 @@ $this->css()
 		<input type="hidden" name="option" value="<?php echo $this->option; ?>" />
 		<input type="hidden" name="cn" value="<?php echo $this->group->get('cn'); ?>" />
 		<input type="hidden" name="task" value="dodelete" />
+		<?php echo Html::input('token'); ?>
 
 		<p class="submit">
 			<input class="btn btn-danger" type="submit" value="<?php echo Lang::txt('DELETE'); ?>" />

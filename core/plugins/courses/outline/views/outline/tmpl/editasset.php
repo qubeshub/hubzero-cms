@@ -46,12 +46,12 @@ $tool_path = $config->get('tool_path');
 
 		<p>
 			<label for="title">Title:</label>
-			<input type="text" name="title" value="<?php echo $asset->get('title') ?>" placeholder="Asset Title" />
+			<input type="text" name="title" value="<?php echo $this->escape($asset->get('title')); ?>" placeholder="Asset Title" />
 		</p>
 		<?php if ($asset->get('type') != 'form') : ?>
 		<p>
 			<label for="title">URL:</label>
-			<input type="text" name="url" value="<?php echo $asset->get('url') ?>" placeholder="Asset URL" />
+			<input type="text" name="url" value="<?php echo $this->escape($asset->get('url')) ?>" placeholder="Asset URL" />
 		</p>
 		<?php endif; ?>
 		<p>
@@ -84,7 +84,7 @@ $tool_path = $config->get('tool_path');
 			<select name="scope_id">
 				<?php foreach ($assetgroups as $assetgroup) : ?>
 					<?php $selected = ($assetgroup['id'] == $this->scope_id) ? 'selected' : ''; ?>
-					<option value="<?php echo $assetgroup['id'] ?>" <?php echo $selected ?>><?php echo $assetgroup['title'] ?></option>
+					<option value="<?php echo $assetgroup['id'] ?>" <?php echo $selected ?>><?php echo $this->escape($assetgroup['title']); ?></option>
 				<?php endforeach; ?>
 			</select>
 		</p>
@@ -115,7 +115,7 @@ $tool_path = $config->get('tool_path');
 					<?php foreach ($tools as $tool) : ?>
 						<?php preg_match('/\/tools\/([0-9a-z]+)\//', $asset->get('url'), $substr); ?>
 						<?php $selected = ($substr && isset($substr[1]) && $substr[1] == $tool->alias) ? 'selected="selected"' : ''; ?>
-						<option value="<?php echo $tool->alias ?>" <?php echo $selected ?>><?php echo $tool->title ?></option>
+						<option value="<?php echo $this->escape($tool->alias) ?>" <?php echo $selected ?>><?php echo $this->escape($tool->title) ?></option>
 					<?php endforeach; ?>
 				</select>
 			</p>

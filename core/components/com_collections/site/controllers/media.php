@@ -18,6 +18,7 @@ use Filesystem;
 use Exception;
 use Request;
 use Lang;
+use App;
 use User;
 use Component;
 
@@ -117,6 +118,14 @@ class Media extends SiteController
 			return;
 		}
 
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
+
 		// Ensure we have an ID to work with
 		$listdir = Request::getInt('dir', 0, 'post');
 		if (!$listdir)
@@ -140,6 +149,13 @@ class Media extends SiteController
 				}
 			}
 			$listdir = $item->get('id');
+		}
+
+		// Only the item's owner (or an admin) may attach assets to it
+		if (!$this->userOwnsItem($listdir))
+		{
+			$this->setError(Lang::txt('COM_COLLECTIONS_ERROR_ACCESS_DENIED'));
+			return $this->displayTask();
 		}
 
 		// Create database entry
@@ -172,6 +188,14 @@ class Media extends SiteController
 			return;
 		}
 
+		// Require POST: the link-adder posts the page's token
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
+
 		// Ensure we have an ID to work with
 		$listdir = strtolower(Request::getString('dir', ''));
 		if (!$listdir)
@@ -202,6 +226,13 @@ class Media extends SiteController
 				}
 			}
 			$listdir = $item->get('id');
+		}
+
+		// Only the item's owner (or an admin) may attach assets to it
+		if (!$this->userOwnsItem($listdir))
+		{
+			echo json_encode(array('error' => Lang::txt('COM_COLLECTIONS_ERROR_ACCESS_DENIED')));
+			return;
 		}
 
 		// Create database entry
@@ -271,6 +302,13 @@ class Media extends SiteController
 				}
 			}
 			$listdir = $item->get('id');
+		}
+
+		// Only the item's owner (or an admin) may attach assets to it
+		if (!$this->userOwnsItem($listdir))
+		{
+			echo json_encode(array('error' => Lang::txt('COM_COLLECTIONS_ERROR_ACCESS_DENIED')));
+			return;
 		}
 
 		// Get media config
@@ -377,6 +415,16 @@ class Media extends SiteController
 			move_uploaded_file($_FILES['qqfile']['tmp_name'], $file);
 		}
 
+		// Virus scan. uploadTask() (the no-JS form) scans; this, the path the
+		// post editor's uploader takes, stored any file unscanned.
+		if (!Filesystem::isSafe($file))
+		{
+			Filesystem::delete($file);
+
+			echo json_encode(array('error' => Lang::txt('File rejected because the anti-virus scan failed.')));
+			return;
+		}
+
 		// Create database entry
 		$asset->set('item_id', intval($listdir));
 		$asset->set('filename', $filename . '.' . $ext);
@@ -445,6 +493,13 @@ class Media extends SiteController
 		if (!$listdir)
 		{
 			$this->setError(Lang::txt('COM_COLLECTIONS_NO_ID'));
+			return $this->displayTask();
+		}
+
+		// Only the item's owner (or an admin) may attach assets to it
+		if (!$this->userOwnsItem($listdir))
+		{
+			$this->setError(Lang::txt('COM_COLLECTIONS_ERROR_ACCESS_DENIED'));
 			return $this->displayTask();
 		}
 
@@ -561,6 +616,14 @@ class Media extends SiteController
 			return;
 		}
 
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
+
 		// Incoming asset
 		$id = Request::getInt('asset', 0, 'get');
 
@@ -586,6 +649,30 @@ class Media extends SiteController
 	 *
 	 * @param   object   $asset
 	 * @return  boolean
+	 */
+	protected function userOwnsItem($itemId)
+	{
+		if (User::isGuest())
+		{
+			return false;
+		}
+
+		if (User::authorise('core.admin', $this->_option))
+		{
+			return true;
+		}
+
+		$item = new Item((int) $itemId);
+
+		// A brand new (tmp) item is created for the caller a few lines up
+		return ($item->exists() && $item->get('created_by') == User::get('id'));
+	}
+
+	/**
+	 * Is the current user allowed to delete this asset?
+	 *
+	 * @param   object  $asset
+	 * @return  bool
 	 */
 	protected function userOwnsAsset($asset)
 	{
@@ -630,12 +717,23 @@ class Media extends SiteController
 	 */
 	public function ajaxDeleteTask()
 	{
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
 		// Must be logged in
 		if (User::isGuest())
 		{
 			echo json_encode(array('success' => false, 'error' => Lang::txt('Login required.')));
 			return;
 		}
+
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
 
 		// Incoming
 		$id = Request::getInt('asset', 0);
@@ -712,6 +810,11 @@ class Media extends SiteController
 		if (!$this->view->item->exists())
 		{
 			$this->setError(Lang::txt('COM_COLLECTIONS_NO_ID'));
+		}
+		elseif (!$this->userOwnsItem($listdir))
+		{
+			$this->setError(Lang::txt('COM_COLLECTIONS_ERROR_ACCESS_DENIED'));
+			$this->view->item = Item::getInstance(0);
 		}
 
 		$this->view->config  = $this->config;

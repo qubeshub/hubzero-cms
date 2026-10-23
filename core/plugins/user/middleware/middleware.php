@@ -133,7 +133,7 @@ class plgUserMiddleware extends \Hubzero\Plugin\Plugin
 						$cids = $db->loadObjectList();
 					}
 					// Loop through each usergroup and find the highest 'jobs allowed' value
-					foreach ($cids as $cls);
+					foreach ($cids as $cls)
 					{
 						$cls->jobs = intval($cls->jobs);
 
@@ -240,6 +240,8 @@ class plgUserMiddleware extends \Hubzero\Plugin\Plugin
 	 * @param   string   $user_id      User Id
 	 */
     public function onUserDeidentify($user_id) {
+        $user_id = (int) $user_id;
+
         // Access from main CMS tables
         $select_UsersById_Query = "SELECT id, username, email, password FROM `#__users` WHERE id='" . $user_id . "';";
         $userJsonObj = $this->runSelectQuery($select_UsersById_Query);

@@ -178,7 +178,7 @@ class Host extends Table
 		if (isset($filters['hosttype']) && $filters['hosttype'])
 		{
 			$query .= " JOIN hosttype AS t ON c.provisions & t.value != 0";
-			$where[] = "t.name = " . $mwdb->Quote($this->view->filters['hosttype']);
+			$where[] = "t.name = " . $this->_db->quote($filters['hosttype']);
 		}
 		if (count($where) > 0)
 		{
@@ -227,7 +227,7 @@ class Host extends Table
 		{
 			$filters['sort_Dir'] = 'ASC';
 		}
-		$query .= " ORDER BY " . $filters['sort'] . " " . $filters['sort_Dir'];
+		$query .= " ORDER BY " . (preg_replace('/[^a-zA-Z0-9_,. ]/', '', (string) $filters['sort']) ?: '1') . " " . (strtoupper((string) $filters['sort_Dir']) === 'ASC' ? 'ASC' : 'DESC');
 
 		if (isset($filters['limit']) && $filters['limit'] != 0)
 		{

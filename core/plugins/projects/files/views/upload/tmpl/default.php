@@ -41,7 +41,7 @@ $bc = \Components\Projects\Helpers\Html::buildFileBrowserCrumbs($this->subdir, $
 		<p id="upload-instruct"><?php echo Lang::txt('PLG_PROJECTS_FILES_PICK_FILES_UPLOAD') . ' ';
 			if ($this->subdir)
 			{
-				echo Lang::txt('PLG_PROJECTS_FILES_PICK_FILES_UPLOAD_SUBDIR') . ' <span class="prominent">' . $this->subdir . '</span> ' . Lang::txt('PLG_PROJECTS_FILES_DIR') . ':';
+				echo Lang::txt('PLG_PROJECTS_FILES_PICK_FILES_UPLOAD_SUBDIR') . ' <span class="prominent">' . $this->escape($this->subdir) . '</span> ' . Lang::txt('PLG_PROJECTS_FILES_DIR') . ':';
 			}
 			else
 			{
@@ -135,8 +135,8 @@ $bc = \Components\Projects\Helpers\Html::buildFileBrowserCrumbs($this->subdir, $
 		<input type="hidden" name="task" value="view" />
 		<input type="hidden" name="active" value="files" />
 		<input type="hidden" name="avail" id="avail" value="<?php echo $this->unused; ?>" />
-		<input type="hidden" name="repo" value="<?php echo $this->repo->get('name'); ?>" />
-		<input type="hidden" name="subdir" value="<?php echo $this->subdir; ?>" />
+		<input type="hidden" name="repo" value="<?php echo $this->escape($this->repo->get('name')); ?>" />
+		<input type="hidden" name="subdir" value="<?php echo $this->escape($this->subdir); ?>" />
 		<input type="hidden" name="option" value="<?php echo $this->option; ?>" />
 		<input type="hidden" name="ajax" value="<?php echo $this->ajax; ?>" />
 

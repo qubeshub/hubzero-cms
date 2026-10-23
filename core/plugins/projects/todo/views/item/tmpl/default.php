@@ -78,15 +78,15 @@ $assignee = $this->row->owner('name') ? $this->row->owner('name') : Lang::txt('P
 				</div>
 			</div>
 		</section>
-	<p class="td-options">
+	<div class="td-options">
 		<?php if (!$this->row->isComplete() && $this->model->access('content')) { ?>
 		<span class="edit"><a href="<?php echo Route::url($url . '&action=edit') . '/?todoid=' . $this->row->get('id'); ?>" class="showinbox"><?php echo Lang::txt('PLG_PROJECTS_TODO_EDIT'); ?></a></span>
-		<span class="checked"><a href="<?php echo Route::url($url . '&action=changestate') . '/?todoid=' . $this->row->get('id') . '&amp;state=1&amp;' . Session::getFormToken() . '=1'; ?>" class="confirm-checkoff"><?php echo Lang::txt('PLG_PROJECTS_TODO_TODO_CHECK_OFF'); ?></a></span>
+		<span class="checked"><button type="submit" form="hz-post-action" formaction="<?php echo Route::url($url . '&action=changestate') . '/?todoid=' . $this->row->get('id') . '&amp;state=1'; ?>" class="confirm-checkoff"><?php echo Lang::txt('PLG_PROJECTS_TODO_TODO_CHECK_OFF'); ?></button></span>
 		<?php } ?>
 		<?php if ($deletable) { ?>
-		<span class="trash"><a href="<?php echo Route::url($url . '&action=delete') . '/?todoid=' . $this->row->get('id'); ?>" class="confirm-it" id="deltd"><?php echo Lang::txt('PLG_PROJECTS_TODO_DELETE'); ?></a></span>
+		<span class="trash"><button type="submit" form="hz-post-action" formaction="<?php echo Route::url($url . '&action=delete') . '/?todoid=' . $this->row->get('id'); ?>" class="confirm-it" id="deltd"><?php echo Lang::txt('PLG_PROJECTS_TODO_DELETE'); ?></button></span>
 		<?php } ?>
-	</p>
+	</div>
 	<div class="comment-wrap">
 		<h4 class="comment-blurb"><?php echo ucfirst(Lang::txt('PLG_PROJECTS_TODO_COMMENTS')) . ' (' . $this->row->comments('count') . ')'; ?>:</h4>
 		<?php if ($this->row->comments() && $this->row->comments() instanceof \Hubzero\Base\ItemList) { ?>
@@ -94,7 +94,7 @@ $assignee = $this->row->owner('name') ? $this->row->owner('name') : Lang::txt('P
 			<?php foreach ($this->row->comments() as $comment) { ?>
 				<li>
 					<p><?php echo $comment->content('parsed'); ?></p>
-					<p class="todo-assigned"><?php echo $comment->creator('name'); ?> <span class="date"> &middot; <?php echo \Components\Projects\Helpers\Html::timeAgo($comment->get('created')).' '.Lang::txt('PLG_PROJECTS_TODO_AGO'); ?> </span> <?php if ($comment->get('created_by') == $this->uid) { ?><a href="<?php echo Route::url($url . '&action=deletecomment').'/?todoid=' . $this->row->get('id') . '&amp;cid=' . $comment->get('id'); ?>" id="delc-<?php echo $comment->get('id'); ?>" class="confirm-it">[<?php echo Lang::txt('PLG_PROJECTS_TODO_DELETE'); ?>]</a><?php  } ?></p>
+					<p class="todo-assigned"><?php echo $comment->creator('name'); ?> <span class="date"> &middot; <?php echo \Components\Projects\Helpers\Html::timeAgo($comment->get('created')).' '.Lang::txt('PLG_PROJECTS_TODO_AGO'); ?> </span> <?php if ($comment->get('created_by') == $this->uid) { ?><button type="submit" form="hz-post-action" formaction="<?php echo Route::url($url . '&action=deletecomment').'/?todoid=' . $this->row->get('id') . '&amp;cid=' . $comment->get('id'); ?>" class="confirm-it" id="delc-<?php echo $comment->get('id'); ?>">[<?php echo Lang::txt('PLG_PROJECTS_TODO_DELETE'); ?>]</button><?php  } ?></p>
 				</li>
 			<?php } ?>
 			</ul>

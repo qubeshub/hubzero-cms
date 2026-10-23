@@ -26,11 +26,12 @@ jQuery(document).ready(function(jq){
 
 	//add count to url
 	$(".delete-tag").each(function(i, el) {
+		// Delete is a POST form's button now; the count rides on the form's action
 		var count = i + 1,
-			url = $(el).attr("href");
+			url = $(el).attr("formaction");
 
 		url += (url.indexOf("?") == -1 ? "?" : "&") + "count=" + count;
-		$(el).attr("href", url);
+		$(el).attr("formaction", url);
 
 		$(el).on('click', function (e) {
 			var res = confirm($(el).attr('data-confirm'));

@@ -81,7 +81,7 @@ $i = 0;
 			<?php $removeData = $creator ? '&removedata=1' : '';  ?>
 			<p>
 				<span class=" <?php echo $creator ? ' creator' : ''; ?>">
-					<a href="<?php echo Route::url($this->model->link('files') . '&action=disconnect&service=' . $servicename . $removeData); ?>" id="disconnect"><?php echo ucfirst(Lang::txt('PLG_PROJECTS_FILES_CONNECT_DISCONNECT')); ?> &raquo;</a>
+					<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($this->model->link('files') . '&action=disconnect&service=' . $servicename . $removeData); ?>" id="disconnect"><?php echo ucfirst(Lang::txt('PLG_PROJECTS_FILES_CONNECT_DISCONNECT')); ?> &raquo;</button>
 				</span>
 				&nbsp; &nbsp;
 				<span>

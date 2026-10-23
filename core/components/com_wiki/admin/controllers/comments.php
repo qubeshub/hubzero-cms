@@ -114,7 +114,8 @@ class Comments extends AdminController
 			foreach ($rows as $k)
 			{
 				$pt = $k->get('parent');
-				$list = @$children[$pt] ? $children[$pt] : array();
+				// isset, not @: the error handler still logs a suppressed missing key
+				$list = isset($children[$pt]) ? $children[$pt] : array();
 				array_push($list, $k);
 				$children[$pt] = $list;
 			}
@@ -146,7 +147,7 @@ class Comments extends AdminController
 	 */
 	public function treeRecurse($id, $indent, $list, $children, $maxlevel=9999, $level=0, $type=1)
 	{
-		if (@$children[$id] && $level <= $maxlevel)
+		if (!empty($children[$id]) && $level <= $maxlevel)
 		{
 			foreach ($children[$id] as $v)
 			{
@@ -175,7 +176,7 @@ class Comments extends AdminController
 
 				$list[$id] = $v;
 				$list[$id]->set('treename', "$indent$txt");
-				$list[$id]->set('children', count(@$children[$id]));
+				$list[$id]->set('children', count($children[$id] ?? array()));
 				$list = $this->treeRecurse($id, $indent . $spacer, $list, $children, $maxlevel, $level+1, $type);
 			}
 		}
@@ -301,9 +302,10 @@ class Comments extends AdminController
 		$ids = Request::getArray('id', array());
 		$ids = (!is_array($ids) ? array($ids) : $ids);
 
+		$removed = 0;
+
 		if (count($ids) > 0)
 		{
-			$removed = 0;
 
 			// Loop through all the IDs
 			foreach ($ids as $id)

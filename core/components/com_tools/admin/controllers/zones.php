@@ -300,6 +300,9 @@ class Zones extends AdminController
 	 */
 	public function defaultTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Get item to default from request
 		$id = Request::getArray('id', [], '', 'array');
 
@@ -425,7 +428,7 @@ class Zones extends AdminController
 		$filename = Filesystem::clean($filename);
 		$filename = str_replace(' ', '_', $filename);
 
-		$ext = $pathinfo['extension'];
+		$ext = isset($pathinfo['extension']) ? $pathinfo['extension'] : '';
 		if (!in_array(strtolower($ext), $allowedExtensions))
 		{
 			echo json_encode(array('error' => Lang::txt('COM_TOOLS_ERROR_INVALID_FILE_TYPE')));
@@ -547,6 +550,15 @@ class Zones extends AdminController
 		// Make the filename safe
 		$file['name'] = Filesystem::clean($file['name']);
 		$file['name'] = str_replace(' ', '_', $file['name']);
+
+		// Restrict to image types, as the ajax upload path does
+		$allowedExtensions = array('png', 'jpeg', 'jpg', 'gif');
+		if (!in_array(strtolower(Filesystem::extension($file['name'])), $allowedExtensions))
+		{
+			$this->setError(Lang::txt('COM_TOOLS_ERROR_INVALID_FILE_TYPE'));
+			$this->pictureTask('', $id);
+			return;
+		}
 
 		// Perform the upload
 		if (!Filesystem::upload($file['tmp_name'], $path . DS . $file['name']))

@@ -646,8 +646,13 @@ class Rule extends Relational
 
 		$fullname = self::normalize($name);
 
-		$words[] = $fullname;
-		$words[] = strrev($fullname);
+		// A name too short to be meaningful ("Al") would otherwise reject
+		// any password that happens to contain it
+		if (strlen($fullname) > 3)
+		{
+			$words[] = $fullname;
+			$words[] = strrev($fullname);
+		}
 
 		foreach ($names as $e)
 		{
@@ -664,8 +669,11 @@ class Rule extends Relational
 		{
 			$e = self::normalize($names[0] . $names[$count-1]);
 
-			$words[] = $e;
-			$words[] = strrev($e);
+			if (strlen($e) > 3)
+			{
+				$words[] = $e;
+				$words[] = strrev($e);
+			}
 		}
 
 		foreach ($words as $w)
@@ -675,7 +683,9 @@ class Rule extends Relational
 				continue;
 			}
 
-			if (strpos($w, $word) !== false)
+			// the name (or a part of it) inside the password, or the
+			// password inside the name
+			if (strpos($word, $w) !== false || strpos($w, $word) !== false)
 			{
 				return true;
 			}

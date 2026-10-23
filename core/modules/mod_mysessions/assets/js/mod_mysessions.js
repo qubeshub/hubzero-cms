@@ -27,6 +27,10 @@ var failedScreenshotLookup = 0;
 HUB.Modules.MySessions = {
 	jQuery: jq,
 
+	// The snapshot refresh interval, and whether the api made us stop it
+	snapshotRefreshTimer: null,
+	snapshotRefreshStopped: false,
+
 	initialize: function() {
 		//session snapshots
 		HUB.Modules.MySessions.sessionSnapshots();
@@ -102,9 +106,30 @@ HUB.Modules.MySessions = {
 
 		// refresh snapshots
 		if (!retry) {
-			setInterval(function() {
-				module.refreshSessionSnapshotImages();
-			}, 60000);
+			this.startSnapshotRefresh();
+		}
+	},
+
+	startSnapshotRefresh: function() {
+		var module = this;
+
+		if (this.snapshotRefreshTimer) {
+			return;
+		}
+
+		this.snapshotRefreshStopped = false;
+		this.snapshotRefreshTimer = setInterval(function() {
+			module.refreshSessionSnapshotImages();
+		}, 60000);
+	},
+
+	stopSnapshotRefresh: function(reason) {
+		clearInterval(this.snapshotRefreshTimer);
+		this.snapshotRefreshTimer = null;
+		this.snapshotRefreshStopped = true;
+
+		if (window.console && console.warn) {
+			console.warn('mod_mysessions: snapshot refresh stopped (' + reason + ')');
 		}
 	},
 
@@ -134,6 +159,17 @@ HUB.Modules.MySessions = {
 						HUB.Modules.MySessions.sessionSnapshotImages(true);
 					}
 				});
+			},
+			error: function(jqXHR) {
+				// A rejected or rate-limited token will not be accepted a
+				// minute later either, and each rejected poll re-arms the
+				// rate limit window. Stop until the token is renewed rather
+				// than hammering the api for as long as the tab stays open;
+				// other failures are left alone so a transient error does
+				// not stop snapshots refreshing for good.
+				if (jqXHR.status == 401 || jqXHR.status == 403 || jqXHR.status == 429) {
+					HUB.Modules.MySessions.stopSnapshotRefresh('api answered ' + jqXHR.status);
+				}
 			}
 		});
 	},
@@ -178,4 +214,13 @@ HUB.Modules.MySessions = {
 
 jQuery(document).ready(function($){
 	Hubzero.initApi(HUB.Modules.MySessions.initialize);
+
+	// A fresh token restarts a refresh the api made us stop
+	if (Hubzero.api) {
+		Hubzero.api.onRenewed(function() {
+			if (HUB.Modules.MySessions.snapshotRefreshStopped) {
+				HUB.Modules.MySessions.startSnapshotRefresh();
+			}
+		});
+	}
 });

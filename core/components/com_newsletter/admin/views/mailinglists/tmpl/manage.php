@@ -10,7 +10,7 @@ defined('_HZEXEC_') or die();
 
 $canDo = Components\Newsletter\Helpers\Permissions::getActions('mailinglist');
 
-Toolbar::title(Lang::txt('COM_NEWSLETTER_NEWSLETTER_MAILINGLISTS') . ': ' . $this->list->name, 'list');
+Toolbar::title(Lang::txt('COM_NEWSLETTER_NEWSLETTER_MAILINGLISTS') . ': ' . $this->escape($this->list->name), 'list');
 if ($canDo->get('core.edit'))
 {
 	Toolbar::addNew('addemail', 'COM_NEWSLETTER_TOOLBAR_ADDEMAILS');
@@ -72,11 +72,11 @@ $this->js();
 							<label for="cb<?php echo $k; ?>" class="sr-only visually-hidden"><?php echo $le->id; ?></label>
 						</td>
 						<td>
-							<a href="mailto:<?php echo $le->email; ?>"><?php echo $this->escape($le->email); ?></a>
+							<a href="mailto:<?php echo $this->escape($le->email); ?>"><?php echo $this->escape($le->email); ?></a>
 							<?php
 								if ($le->unsubscribe->reason)
 								{
-									echo '<p><strong>' . Lang::txt('COM_NEWSLETTER_MAILINGLIST_MANAGE_UNSUBSCRIBE_REASON') . '</strong> ' . $le->unsubscribe->reason . '</p>';
+									echo '<p><strong>' . Lang::txt('COM_NEWSLETTER_MAILINGLIST_MANAGE_UNSUBSCRIBE_REASON') . '</strong> ' . $this->escape($le->unsubscribe->reason) . '</p>';
 								}
 							?>
 						</td>

@@ -23,6 +23,11 @@ if ($this->condition->expressions)
 {
 	foreach ($this->condition->expressions as $expression)
 	{
+		// A stored field name the condition builder no longer knows
+		if (!isset($expression->fldval) || !isset($this->conditions->{$expression->fldval}))
+		{
+			continue;
+		}
 		$operators = $this->conditions->{$expression->fldval}->operators;
 		$values    = $this->conditions->{$expression->fldval}->values;
 		?>
@@ -49,7 +54,7 @@ if ($this->condition->expressions)
 					foreach ($operators as $operator)
 					{
 						?>
-						<option value="<?php echo $operator->val; ?>"<?php if ($expression->opval == $operator->val) { echo ' selected="selected"'; } ?>><?php echo $operator->label; ?></option>
+						<option value="<?php echo $this->escape($operator->val); ?>"<?php if ($expression->opval == $operator->val) { echo ' selected="selected"'; } ?>><?php echo $this->escape($operator->label); ?></option>
 						<?php
 					}
 				}
@@ -64,7 +69,7 @@ if ($this->condition->expressions)
 			foreach ($values as $value)
 			{
 				?>
-				<option value="<?php echo $value->val; ?>"<?php if ($expression->val == $value->val) { echo ' selected="selected"'; } ?>><?php echo $value->label; ?></option>
+				<option value="<?php echo $this->escape($value->val); ?>"<?php if ($expression->val == $value->val) { echo ' selected="selected"'; } ?>><?php echo $this->escape($value->label); ?></option>
 				<?php
 			}
 			?>

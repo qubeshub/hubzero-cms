@@ -115,7 +115,7 @@ class Logo extends AdminController
 		$filename = Filesystem::clean($filename);
 		$filename = str_replace(' ', '_', $filename);
 
-		$ext = $pathinfo['extension'];
+		$ext = isset($pathinfo['extension']) ? $pathinfo['extension'] : '';
 		if (!in_array(strtolower($ext), $allowedExtensions))
 		{
 			echo json_encode(array('error' => Lang::txt('COM_COURSES_ERROR_UNKNOWN_FILE_TYPE')));
@@ -152,7 +152,7 @@ class Logo extends AdminController
 		}
 
 		// Do we have an old file we're replacing?
-		if (($curfile = Request::getString('currentfile', '')))
+		if (($curfile = basename(Request::getString('currentfile', ''))))
 		{
 			// Remove old image
 			if (file_exists($path . DS . $curfile))
@@ -255,7 +255,7 @@ class Logo extends AdminController
 			$this->displayTask('', $id);
 			return;
 		}
-		$curfile = Request::getString('curfile', '');
+		$curfile = basename(Request::getString('curfile', ''));
 
 		if (!is_dir($path))
 		{
@@ -276,7 +276,7 @@ class Logo extends AdminController
 
 		if ($file['size'] > $sizeLimit)
 		{
-			$this->setError(Lang::txt('COM_COURSES_ERROR_UPLOADING_FILE_TOO_BIG', \Hubsero\Utility\Number::formatBytes($sizeLimit)));
+			$this->setError(Lang::txt('COM_COURSES_ERROR_UPLOADING_FILE_TOO_BIG', \Hubzero\Utility\Number::formatBytes($sizeLimit)));
 			return $this->displayTask($file['name'], $id);
 		}
 
@@ -312,7 +312,7 @@ class Logo extends AdminController
 			}
 
 			// Do we have an old file we're replacing?
-			if (($curfile = Request::getString('currentfile', '')))
+			if (($curfile = basename(Request::getString('currentfile', ''))))
 			{
 				// Remove old image
 				if (file_exists($path . DS . $curfile))
@@ -477,7 +477,7 @@ class Logo extends AdminController
 		}
 
 		// Incoming file
-		$file = Request::getString('file', '');
+		$file = basename(Request::getString('file', ''));
 		if (!$file)
 		{
 			$this->setError(Lang::txt('COM_COURSES_ERROR_NO_FILE_FOUND'));

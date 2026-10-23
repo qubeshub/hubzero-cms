@@ -268,8 +268,8 @@ HUB.ProjectSetup = {
 			e.preventDefault();
 			var url = $('#deleteimg').attr('href') + '?ajax=1&no_html=1';
 
-			// Ajax call 
-			$.post(url, {},
+			// Ajax call -- post the shared action form's CSRF token
+			$.post(url, $('#hz-post-action').serialize(),
 				function (response) {
 				response = $.parseJSON(response);
 				if (response.success)
@@ -279,6 +279,14 @@ HUB.ProjectSetup = {
 					var src = $("#project-image-content").attr('src');
 					$("#project-image-content").attr('src', src + '?' + d.getTime());
 				}
+				else if (response.error)
+				{
+					alert(response.error);
+				}
+			}).fail(function () {
+				// A 403 from the token check, or an expired session, used to be
+				// swallowed silently and the thumbnail just stayed on screen
+				alert('The picture could not be deleted. Reload the page and try again.');
 			});
 		});
 	},

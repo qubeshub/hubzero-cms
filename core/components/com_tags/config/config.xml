@@ -8,6 +8,7 @@
 
 <config>
 	<fieldset name="basic">
+		<field name="search_access" type="accesslevel" default="1" label="COM_TAGS_SEARCH_ACCESS_LABEL" description="COM_TAGS_SEARCH_ACCESS_DESC" />
 		<field name="focus_area_01" type="text" menu="hide" default="" label="COM_TAGS_FOCUS_AREA1" description="COM_TAGS_FOCUS_AREA_DESC" />
 		<field name="focus_area_02" type="text" menu="hide" default="" label="COM_TAGS_FOCUS_AREA2" description="COM_TAGS_FOCUS_AREA_DESC" />
 		<field name="focus_area_03" type="text" menu="hide" default="" label="COM_TAGS_FOCUS_AREA3" description="COM_TAGS_FOCUS_AREA_DESC" />

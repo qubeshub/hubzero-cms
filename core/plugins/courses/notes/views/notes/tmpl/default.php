@@ -99,7 +99,7 @@ $base = $this->offering->link();
 						<div class="jStickyNote">
 							<textarea name="note_<?php echo $note->get('id'); ?>"><?php echo $this->escape(stripslashes($note->get('content'))); ?></textarea>
 						</div>
-						<a class="jSticky-delete" href="<?php echo Route::url($base . '&active=notes&action=delete&note=' . $note->get('id')); ?>" title="<?php echo Lang::txt('PLG_COURSES_NOTES_DELETE_NOTE'); ?>">x</a>
+						<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&active=notes&action=delete&note=' . $note->get('id')); ?>" class="jSticky-delete" title="<?php echo Lang::txt('PLG_COURSES_NOTES_DELETE_NOTE'); ?>">x</button>
 					</div>
 				<?php endforeach; ?>
 				<div class="clear"></div>
@@ -121,9 +121,9 @@ $base = $this->offering->link();
 						txt = $(this).val();
 
 					typewatch(function () {
-						$.getJSON(url + id + '&action=save&txt=' + txt, {}, function(data) {
+						$.post(url + id + '&action=save', $('#hz-post-action').serialize() + '&' + $.param({txt: txt}), function(data) {
 							// Nothing going on here...
-						});
+						}, 'json');
 					}, 500);
 				});
 			});

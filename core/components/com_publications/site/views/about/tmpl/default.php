@@ -152,7 +152,7 @@ $schema = $metaElements->getSchema();
 				elseif ($value = $metaElements->display($field->type, $data[$field->name]))
 				{
 					?>
-					<h3><?php echo $field->label; ?></h3>
+					<h3><?php echo $this->escape($field->label); ?></h3>
 					<div class="pub-content">
 						<?php echo $value; ?>
 					</div>
@@ -211,7 +211,7 @@ $schema = $metaElements->getSchema();
 			$submitter  = $this->publication->_submitter->name;
 			$submitter .= $this->publication->_submitter->organization
 					? ', ' . $this->publication->_submitter->organization : '';
-			echo $submitter;
+			echo $this->escape($submitter);
 		?>
 	</div>
 <?php } ?>

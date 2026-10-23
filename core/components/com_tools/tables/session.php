@@ -164,7 +164,7 @@ class Session extends Table
 		$a = "";
 		if ($appname)
 		{
-			$a = "AND s.appname='$appname'";
+			$a = "AND s.appname=" . $this->_db->quote($appname);
 		}
 
 		$mv = new Viewperm($this->_db);
@@ -254,7 +254,7 @@ class Session extends Table
 			AND s.sessnum=" . $this->_db->quote($sess);
 
 		$this->_db->setQuery($query);
-		return $mwdb->loadResult();
+		return $this->_db->loadResult();
 	}
 
 	/**
@@ -315,11 +315,11 @@ class Session extends Table
 		
 		if( $filters['sort'] == "viewuser")
 		{
-				$query .= " ORDER BY v." . $filters['sort'] . " " . $filters['sort_Dir'];
+				$query .= " ORDER BY v." . preg_replace('/[^a-zA-Z0-9_.]/', '', (string) $filters['sort']) . " " . $filters['sort_Dir'];
 		} 
 		else
 		{
-				$query .= " ORDER BY s." . $filters['sort'] . " " . $filters['sort_Dir'];
+				$query .= " ORDER BY s." . preg_replace('/[^a-zA-Z0-9_.]/', '', (string) $filters['sort']) . " " . $filters['sort_Dir'];
 		}
 
 		if (isset($filters['limit']) && $filters['limit'] != 0  && $filters['limit'] != 'all')

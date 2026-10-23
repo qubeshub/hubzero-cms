@@ -276,8 +276,36 @@ class Entries extends SiteController
 		}
 		$fields['scope'] = 'site';
 		$fields['scope_id'] = 0;
+		$fields['id'] = isset($fields['id']) ? (int) $fields['id'] : 0;
 
-		$row = Entry::oneOrNew($fields['id'])->set($fields);
+		// Decide before binding: this controller only edits site entries, and
+		// only the author or an editor/manager may rewrite an existing one.
+		// Without this a posted entry[id] could pull any member or group blog
+		// entry into the site blog.
+		$row = Entry::oneOrNew($fields['id']);
+
+		if (!$row->isNew())
+		{
+			if ($row->get('scope') != 'site')
+			{
+				App::abort(404, Lang::txt('COM_BLOG_NOT_FOUND'));
+			}
+			if ($row->get('created_by') != User::get('id')
+			 && !$this->config->get('access-edit-entry')
+			 && !$this->config->get('access-manage-entry'))
+			{
+				App::abort(403, Lang::txt('COM_BLOG_NOT_AUTH'));
+			}
+		}
+
+		// The byline is the caller's (new) or the stored one (existing)
+		// unless a manager is saving.
+		if (!$this->config->get('access-manage-entry'))
+		{
+			unset($fields['created_by']);
+		}
+
+		$row->set($fields);
 
 		// Trigger before save event
 		$isNew  = $row->isNew();
@@ -312,7 +340,7 @@ class Entries extends SiteController
 				'action'      => ($fields['id'] ? 'updated' : 'created'),
 				'scope'       => 'blog.entry',
 				'scope_id'    => $row->get('id'),
-				'description' => Lang::txt('COM_BLOG_ACTIVITY_ENTRY_' . ($fields['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($row->link()) . '">' . $row->get('title') . '</a>'),
+				'description' => Lang::txt('COM_BLOG_ACTIVITY_ENTRY_' . ($fields['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($row->link()) . '">' . htmlspecialchars((string) ($row->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $row->get('title'),
 					'url'   => Route::url($row->link())
@@ -411,7 +439,7 @@ class Entries extends SiteController
 				'action'      => 'deleted',
 				'scope'       => 'blog.entry',
 				'scope_id'    => $id,
-				'description' => Lang::txt('COM_BLOG_ACTIVITY_ENTRY_DELETED', '<a href="' . Route::url($entry->link()) . '">' . $entry->get('title') . '</a>'),
+				'description' => Lang::txt('COM_BLOG_ACTIVITY_ENTRY_DELETED', '<a href="' . Route::url($entry->link()) . '">' . htmlspecialchars((string) ($entry->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $entry->get('title'),
 					'url'   => Route::url($entry->link())
@@ -521,7 +549,7 @@ class Entries extends SiteController
 				$item->link        = Route::url($row->link());
 				$item->date        = date('r', strtotime($row->published()));
 				$item->category    = '';
-				$item->author      = $row->creator()->get('email') . ' (' . $row->creator()->get('name') . ')';
+				$item->author      = $row->creator()->get('name');
 
 				// Loads item info into rss array
 				$doc->addItem($item);
@@ -554,8 +582,49 @@ class Entries extends SiteController
 		// Incoming
 		$data = Request::getArray('comment', array(), 'post', 'none', 2);
 
-		// Instantiate a new comment object and pass it the data
-		$comment = Comment::oneOrNew($data['id'])->set($data);
+		// comment[id], comment[entry_id], comment[parent], comment[created_by]
+		// and comment[state] are all hidden inputs, and oneOrNew() resolves
+		// any row of #__blog_comments -- so binding the array as posted let a
+		// member overwrite any comment on the hub, put any author on it and
+		// attach it to any entry. Resolve first, then decide what may bind.
+		$__cid   = isset($data['id']) ? (int) $data['id'] : 0;
+		$comment = Comment::oneOrNew($__cid);
+
+		if (!$comment->isNew())
+		{
+			if ($comment->get('created_by') != User::get('id')
+			 && !User::authorise('core.manage', 'com_blog'))
+			{
+				App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+			}
+
+			// What the comment hangs off, who wrote it and its moderation
+			// state are not the editor's to change.
+			unset($data['entry_id'], $data['parent'], $data['created_by'], $data['created'], $data['state']);
+		}
+		else
+		{
+			unset($data['id'], $data['created'], $data['state']);
+
+			// A new comment goes on an entry that exists, under a comment of
+			// that same entry if it is a reply.
+			$__entry = Entry::oneOrNew(isset($data['entry_id']) ? (int) $data['entry_id'] : 0);
+			if ($__entry->isNew())
+			{
+				App::abort(404, Lang::txt('COM_BLOG_NOT_FOUND'));
+			}
+			if (!empty($data['parent']))
+			{
+				$__parent = Comment::oneOrNew((int) $data['parent']);
+				if ($__parent->isNew() || (int) $__parent->get('entry_id') !== (int) $__entry->get('id'))
+				{
+					App::abort(404, Lang::txt('COM_BLOG_NOT_FOUND'));
+				}
+			}
+			$data['created_by'] = User::get('id');
+		}
+
+		$comment->set($data);
 
 		// Trigger before save event
 		$isNew  = $comment->isNew();
@@ -596,7 +665,7 @@ class Entries extends SiteController
 				'scope'       => 'blog.entry.comment',
 				'scope_id'    => $comment->get('id'),
 				'anonymous'   => $comment->get('anonymous', 0),
-				'description' => Lang::txt('COM_BLOG_ACTIVITY_COMMENT_' . ($data['id'] ? 'UPDATED' : 'CREATED'), $comment->get('id'), '<a href="' . Route::url($entry->link() . '#c' . $comment->get('id')) . '">' . $entry->get('title') . '</a>'),
+				'description' => Lang::txt('COM_BLOG_ACTIVITY_COMMENT_' . ($data['id'] ? 'UPDATED' : 'CREATED'), $comment->get('id'), '<a href="' . Route::url($entry->link() . '#c' . $comment->get('id')) . '">' . htmlspecialchars((string) ($entry->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title'    => $entry->get('title'),
 					'entry_id' => $entry->get('id'),
@@ -622,6 +691,15 @@ class Entries extends SiteController
 			$this->setError(Lang::txt('COM_BLOG_LOGIN_NOTICE'));
 			return $this->entryTask();
 		}
+
+		// Require POST to prevent accidental deletion by crawlers
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('COM_BLOG_ERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		// Check for request forgeries
+		Request::checkToken();
 
 		// Incoming
 		$id    = Request::getInt('comment', 0);
@@ -666,7 +744,7 @@ class Entries extends SiteController
 				'action'      => 'deleted',
 				'scope'       => 'blog.entry.comment',
 				'scope_id'    => $comment->get('id'),
-				'description' => Lang::txt('COM_BLOG_ACTIVITY_COMMENT_DELETED', $comment->get('id'), '<a href="' . Route::url($entry->link()) . '">' . $entry->get('title') . '</a>'),
+				'description' => Lang::txt('COM_BLOG_ACTIVITY_COMMENT_DELETED', $comment->get('id'), '<a href="' . Route::url($entry->link()) . '">' . htmlspecialchars((string) ($entry->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title'    => $entry->get('title'),
 					'entry_id' => $entry->get('id'),
@@ -777,7 +855,7 @@ class Entries extends SiteController
 		}
 		else
 		{
-			$item->author = $row->creator->get('email') . ' (' . $row->creator->get('name') . ')';
+			$item->author = $row->creator->get('name');
 		}
 		$item->date     = $row->created();
 		$item->category = '';

@@ -115,8 +115,8 @@ class Zones extends Table
 			if (!is_array($filters['id']))
 			{
 				$filters['id'] = array($filters['id']);
-				$filters['id'] = array_map('intval', $filters['id']);
 			}
+			$filters['id'] = array_map('intval', $filters['id']);
 			if (empty($filters['id']))
 			{
 				$filters['id'][] = 0;
@@ -202,7 +202,8 @@ class Zones extends Table
 			case 'count':
 				$filters['limit'] = 0;
 
-				$query = "SELECT COUNT(*) " . $this->_buildQuery($filters);
+				// _buildQuery() groups by zone, so count the grouped rows
+				$query = "SELECT COUNT(*) FROM (SELECT c.id " . $this->_buildQuery($filters) . ") AS z";
 
 				$this->_db->setQuery($query);
 				return $this->_db->loadResult();
@@ -225,7 +226,7 @@ class Zones extends Table
 				{
 					$filters['sort_Dir'] = 'ASC';
 				}
-				$query .= " ORDER BY " . $filters['sort'] . " " . $filters['sort_Dir'];
+				$query .= " ORDER BY " . (preg_replace('/[^a-zA-Z0-9_,. ]/', '', (string) $filters['sort']) ?: '1') . " " . (strtoupper((string) $filters['sort_Dir']) === 'ASC' ? 'ASC' : 'DESC');
 
 				if (isset($filters['limit']) && $filters['limit'] != 0)
 				{

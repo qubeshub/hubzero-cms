@@ -86,9 +86,9 @@ class Wishlist extends GenericItem
 
 		include_once \Component::path('com_wishlist') . DS . 'models' . DS . 'wishlist.php';
 
-		$wish = new Wish($id);
+		$wish = Wish::oneOrNew($id);
 
-		if (!$wish->exists())
+		if (!$wish->get('id'))
 		{
 			$this->setError(Lang::txt('Wish not found.'));
 			return false;
@@ -99,7 +99,7 @@ class Wishlist extends GenericItem
 		     ->set('created', $wish->get('proposed'))
 		     ->set('created_by', $wish->get('proposed_by'))
 		     ->set('title', $wish->get('subject'))
-		     ->set('description', $wish->content('clean', 200))
+		     ->set('description', \Hubzero\Utility\Str::truncate(strip_tags((string) $wish->content), 200))
 		     ->set('url', Route::url($wish->link()));
 
 		if (!$this->store())

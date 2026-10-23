@@ -71,7 +71,8 @@ class Terms extends Obj
 	 */
 	public function __construct($raw)
 	{
-		$this->raw = preg_replace('/^\s+|\s+$/', '', preg_replace('/\s+/', ' ', $raw));
+		// The search page builds this with no terms (null) on a bare visit
+		$this->raw = preg_replace('/^\s+|\s+$/', '', preg_replace('/\s+/', ' ', (string) $raw));
 		if ($this->is_set())
 		{
 			$this->parse_searchable_chunks();
@@ -111,7 +112,7 @@ class Terms extends Obj
 			return $this->raw;
 		}
 
-		return preg_replace('/^'.implode(':', $this->section).':/', '', $this->raw);
+		return preg_replace('/^' . implode(':', array_map('preg_quote', $this->section)) . ':/', '', $this->raw);
 	}
 
 	/**
@@ -121,7 +122,8 @@ class Terms extends Obj
 	 */
 	public function get_section()
 	{
-		return $this->section;
+		// Callers unpack [plugin, section]; "blogs:fossil" names only the plugin
+		return is_array($this->section) ? array_pad($this->section, 2, null) : $this->section;
 	}
 
 	/**
@@ -226,12 +228,12 @@ class Terms extends Obj
 			$this->section = explode(':', $match[1]);
 			$raw = preg_replace('/^' . preg_quote($match[1]) . ':/', '', $raw);
 		}
-		else if (array_key_exists('section', $_GET))
+		else if (array_key_exists('section', $_GET) && is_string($_GET['section']))
 		{
-			$this->section = array($_GET['section']);
+			$this->section = array(preg_replace('/[^a-z0-9_:.\-]/i', '', (string) $_GET['section']));
 		}
 
-		$raw = preg_replace('#[^-:/\\+"[:alnum:] ]#', '', preg_replace('/\s+/', ' ', trim($raw)));
+		$raw = preg_replace('#[^-:/+"[:alnum:] ]#', '', preg_replace('/\s+/', ' ', trim($raw)));
 		for ($idx = 0, $len = strlen($raw); $idx < $len; ++$idx)
 		{
 			$cur = $raw[$idx];

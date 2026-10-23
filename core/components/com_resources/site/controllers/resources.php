@@ -198,6 +198,12 @@ class Resources extends SiteController
 	 */
 	public function browseTask()
 	{
+		// Who may browse and search is a view access level, Public by default
+		if (!$this->requireViewLevel($this->config->get('browse_access', 1), Lang::txt('COM_RESOURCES_SEARCH_LOGIN_REQUIRED')))
+		{
+			return;
+		}
+
 		// Set the default sort
 		$default_sort = 'date';
 
@@ -410,6 +416,12 @@ class Resources extends SiteController
 			return $this->browseTask();
 		}
 
+		// Who may browse and search is a view access level, Public by default
+		if (!$this->requireViewLevel($this->config->get('browse_access', 1), Lang::txt('COM_RESOURCES_SEARCH_LOGIN_REQUIRED')))
+		{
+			return;
+		}
+
 		// Incoming
 		$tag  = preg_replace("/[^a-zA-Z0-9]/", '', strtolower(Request::getString('tag', '')));
 		$tag2 = preg_replace("/[^a-zA-Z0-9]/", '', strtolower(Request::getString('with', '')));
@@ -546,6 +558,12 @@ class Resources extends SiteController
 	 */
 	public function browserTask()
 	{
+		// Who may browse and search is a view access level, Public by default
+		if (!$this->requireViewLevel($this->config->get('browse_access', 1), Lang::txt('COM_RESOURCES_SEARCH_LOGIN_REQUIRED')))
+		{
+			return;
+		}
+
 		// Incoming
 		$level = Request::getInt('level', 0);
 
@@ -622,7 +640,7 @@ class Resources extends SiteController
 
 				$model = Entry::getInstance($id);
 
-				if (!$model->get('id'))
+				if (!$model->get('id') || !$model->access('view'))
 				{
 					App::abort(404);
 				}
@@ -693,6 +711,14 @@ class Resources extends SiteController
 			App::abort(404);
 		}
 
+		// The play layout emits the child's link target, file name and title,
+		// so the caller must be able to view the parent (viewTask's own test
+		// only runs on the non-AJAX path)
+		if (!$resource->access('view'))
+		{
+			App::abort(403, Lang::txt('COM_RESOURCES_ALERTNOTAUTH'));
+		}
+
 		// Do we have a child ID?
 		if (!$this->resid)
 		{
@@ -712,6 +738,13 @@ class Resources extends SiteController
 		if (!isset($activechild))
 		{
 			$activechild = Entry::oneOrFail($this->resid);
+
+			// ...and it must be one of this resource's children, not any row
+			$assoc = \Components\Resources\Models\Association::oneByRelationship($id, $this->resid);
+			if (!$assoc || !$assoc->get('id'))
+			{
+				App::abort(404);
+			}
 		}
 
 		// Store the object in our registry
@@ -750,19 +783,26 @@ class Resources extends SiteController
 	 *
 	 * @return  void
 	 */
-	protected function selectPresentation()
+	public function selectpresentationTask()
 	{
 		$presentation = Request::getInt('presentation', 0);
 
-		$firstchild = Entry::oneOrFail($presentation)
-			->whereEquals('published', Entry::STATE_PUBLISHED)
+		$parent = Entry::oneOrFail($presentation);
+
+		if (!$parent->access('view'))
+		{
+			App::abort(403, Lang::txt('COM_RESOURCES_ALERTNOTAUTH'));
+		}
+
+		$firstChild = $parent
 			->children()
+			->whereEquals('published', Entry::STATE_PUBLISHED)
 			->order('ordering', 'asc')
 			->limit(1)
 			->start(0)
 			->row();
 
-		$resid = $firstChild->id;
+		$resid = $firstChild->get('id');
 
 		App::redirect(
 			Route::url('index.php?option=com_resources&id=' . $presentation . '&task=watch&resid=' . $resid . '&tmpl=component')
@@ -932,7 +972,7 @@ class Resources extends SiteController
 			$model = Entry::oneOrFail($parent);
 			$activeChild = Entry::oneOrFail($child);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			App::abort(404, Lang::txt('COM_RESOURCES_RESOURCE_NOT_FOUND'));
 		}
@@ -1059,7 +1099,7 @@ class Resources extends SiteController
 			$model = Entry::oneOrFail($parent);
 			$activechild = Entry::oneOrFail($child);
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			App::abort(404, Lang::txt('COM_RESOURCES_RESOURCE_NOT_FOUND'));
 		}
@@ -1742,6 +1782,12 @@ class Resources extends SiteController
 		{
 			$filters['sortby'] = Request::getString('sortby', 'ranking');
 		}
+		// sortby goes into ORDER BY as a column name; only a column of the
+		// children listing is one.
+		if (!in_array($filters['sortby'], array('ordering', 'ranking', 'title', 'created', 'publish_up', 'id'), true))
+		{
+			$filters['sortby'] = ($resource->get('type') == 2) ? 'ordering' : 'ranking';
+		}
 		$filters['limit'] = Request::getInt('limit', 100);
 		$filters['start'] = Request::getInt('limitstart', 0);
 		$filters['year']  = Request::getInt('year', 0);
@@ -2185,6 +2231,16 @@ class Resources extends SiteController
 			return;
 		}
 
+		// The trigger names a method that Event::trigger() calls on every plugin
+		// of the group, so without a list any public method of any resources plugin
+		// was callable from a URL (windowstools' command-line builder among
+		// them). Only the triggers this component's own pages link to.
+		if (!in_array($trigger, array('invoke', 'onResourcesRecoms'), true))
+		{
+			echo '<p class="error">' . Lang::txt('COM_RESOURCES_NO_TRIGGER_FOUND') . '</p>';
+			return;
+		}
+
 		// Call the trigger
 		$html = '';
 
@@ -2285,10 +2341,19 @@ class Resources extends SiteController
 
 			$session = \Hubzero\Session\Helper::getSession($session_id);
 
-			$user = User::getInstance($session->userid);
-			$user->set('guest', 0);
-			$user->set('id', $session->userid);
-			$user->set('usertype', $session->usertype);
+			// Only a live, logged-in session matching that id acts here; any
+			// other token -- garbage decrypts to garbage -- is a guest.
+			if ($session && !empty($session->userid) && empty($session->guest))
+			{
+				$user = User::getInstance($session->userid);
+				$user->set('guest', 0);
+				$user->set('id', $session->userid);
+				$user->set('usertype', $session->usertype);
+			}
+			else
+			{
+				$user = User::getInstance();
+			}
 		}
 		else
 		{
@@ -2551,6 +2616,11 @@ class Resources extends SiteController
 		{
 			$row = Entry::oneOrFail($resource);
 
+			if (!$row->access('view'))
+			{
+				App::abort(403, Lang::txt('COM_RESOURCES_ALERTNOTAUTH'));
+			}
+
 			$rt = License::oneByName('custom' . $resource);
 
 			$row->set('license', stripslashes($rt->text));
@@ -2759,7 +2829,7 @@ class Resources extends SiteController
 	{
 		$user_agent = (isset($_SERVER["HTTP_USER_AGENT"]))
 					? $_SERVER["HTTP_USER_AGENT"]
-					: $HTTP_USER_AGENT;
+					: '';
 
 		while(ob_get_level())
 			ob_end_clean();

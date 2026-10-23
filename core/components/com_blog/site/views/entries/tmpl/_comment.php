@@ -97,11 +97,9 @@ else
 				<?php echo $comment; ?>
 			</div>
 
-			<p class="comment-options">
+			<div class="comment-options">
 			<?php if ($this->config->get('access-delete-comment')) { ?>
-				<a class="icon-delete delete" data-confirm="<?php echo Lang::txt('COM_BLOG_CONFIRM_DELETE'); ?>" href="<?php echo Route::url($this->base . '&action=deletecomment&comment=' . $this->comment->get('id')); ?>"><!--
-					--><?php echo Lang::txt('JACTION_DELETE'); ?><!--
-				--></a>
+				<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($this->base . '&action=deletecomment&comment=' . $this->comment->get('id')); ?>" class="icon-delete delete" data-confirm="<?php echo Lang::txt('COM_BLOG_CONFIRM_DELETE'); ?>"><?php echo Lang::txt('JACTION_DELETE'); ?></button>
 			<?php } ?>
 			<?php if (!$this->comment->isReported()) { ?>
 				<?php if ($this->config->get('access-edit-comment') || User::get('id') == $this->comment->get('created_by')) { ?>
@@ -124,7 +122,7 @@ else
 					--><?php echo Lang::txt('COM_BLOG_REPORT_ABUSE'); ?><!--
 				--></a>
 			<?php } ?>
-			</p>
+			</div>
 
 		<?php if ($this->depth < $this->config->get('comments_depth', 3)) { ?>
 			<div class="addcomment comment-add<?php if (Request::getInt('reply', 0) != $this->comment->get('id')) { echo ' hide'; } ?>" id="comment-form<?php echo $this->comment->get('id'); ?>">

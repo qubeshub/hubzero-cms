@@ -228,6 +228,14 @@ class Jobs extends SiteController
 	{
 		$rtrn = Request::getString('REQUEST_URI', Route::url('index.php?option=' . $this->_option . '&task=' . $this->_task, false, true), 'server');
 
+		// A posted action can't be replayed by the GET that follows logging
+		// in; come back to the job it was about instead
+		if (Request::method() == 'POST')
+		{
+			$rtrn = 'index.php?option=' . $this->_option . ($this->_jobCode ? '&task=job&code=' . $this->_jobCode : '');
+			$rtrn = Route::url($rtrn, false, true);
+		}
+
 		App::redirect(
 			Route::url('index.php?option=com_users&view=login&return=' . base64_encode($rtrn))
 		);
@@ -246,6 +254,16 @@ class Jobs extends SiteController
 
 		// Ensure we have a trigger
 		if (!$trigger)
+		{
+			echo '<p class="error">' . Lang::txt('COM_JOBS_ERROR_NO_TRIGGER_FOUND') . '</p>';
+			return;
+		}
+
+		// The trigger names a method that Event::trigger() calls on every plugin
+		// of the group, so without a list any public method of any members plugin
+		// was callable from a URL (windowstools' command-line builder among
+		// them). Only the triggers this component's own pages link to.
+		if (!in_array($trigger, array('onMembersShortlist'), true))
 		{
 			echo '<p class="error">' . Lang::txt('COM_JOBS_ERROR_NO_TRIGGER_FOUND') . '</p>';
 			return;
@@ -640,6 +658,9 @@ class Jobs extends SiteController
 			return;
 		}
 
+		// Check for request forgeries (the subscribe form is the only producer)
+		Request::checkToken();
+
 		$uid = Request::getInt('uid', User::get('id'));
 		if ($uid && User::get('id') != $uid && !$this->_admin)
 		{
@@ -843,6 +864,10 @@ class Jobs extends SiteController
 			return;
 		}
 
+		// Check for request forgeries: the cancel button and the confirm
+		// screen's YES both post the token
+		Request::checkToken();
+
 		$uid = Request::getInt('uid', User::get('id'));
 
 		// non-admins can only cancel their own subscription
@@ -878,6 +903,8 @@ class Jobs extends SiteController
 		$unitsleft = $subscription->getRemaining('unit', $service->maxunits, $service->unitsize);
 
 		// get cost per unit (to compute required refund)
+		$unitcost     = $service->unitprice;
+		$prevunitcost = $unitcost;
 		$refund = ($subscription->totalpaid > 0 && $unitsleft > 0 && ($subscription->totalpaid - $unitsleft * $unitcost) > 0) ? $unitsleft * $prevunitcost : 0;
 
 		// cancel previous subscription & issue a refund if applicable
@@ -1155,7 +1182,7 @@ class Jobs extends SiteController
 
 		if (!$code)
 		{
-			$this->display();
+			$this->displayTask();
 			return;
 		}
 
@@ -1166,6 +1193,9 @@ class Jobs extends SiteController
 			$this->login();
 			return;
 		}
+
+		// Check for request forgeries (the apply form and the withdraw buttons post it)
+		Request::checkToken();
 
 		$job = new Job($this->database);
 		$ja  = new JobApplication($this->database);
@@ -1198,8 +1228,19 @@ class Jobs extends SiteController
 			}
 			else
 			{
-				// Save new information
-				$ja->bind($_POST);
+				// Save new information -- only what the application form
+				// carries. bind($_POST) also took id, uid, jid and status, which
+				// rewrote any application on the hub or filed one in another
+				// member's name.
+				$ja->bind(array_intersect_key($_POST, array_flip(array('cover', 'resumeid'))));
+				// A new application belongs to the caller and to this job; the
+				// form used to supply both, and without them the row was stored
+				// with uid 0 / jid 0, visible to nobody
+				if (!$ja->id)
+				{
+					$ja->uid = User::get('id');
+					$ja->jid = $job->id;
+				}
 				$ja->applied = $appid ? $ja->applied : $now;
 				$ja->status  = 1;
 			}
@@ -1320,8 +1361,11 @@ class Jobs extends SiteController
 		// Get category & type names
 		$jt = new JobType($this->database);
 		$jc = new JobCategory($this->database);
-		$job->type = $jt->getType($job->type);
-		$job->cat = $jc->getCat($job->cid);
+		// Labels go to the view, not onto the table row: a property that is
+		// not a column ends up in the UPDATE if the row is stored (the view's
+		// content() call can), and type/cid must stay the ids
+		$this->view->jobtype = $jt->getType($job->type);
+		$this->view->jobcat  = $jc->getCat($job->cid);
 
 		// Get applications
 		$ja = new JobApplication($this->database);
@@ -1387,6 +1431,10 @@ class Jobs extends SiteController
 			return;
 		}
 
+		// Check for request forgeries: the edit form, and the publish,
+		// unpublish, reopen and remove buttons all post the token
+		Request::checkToken();
+
 		// Do we need admin approval for job publications?
 		$autoapprove = $this->config->get('autoapprove', 1);
 
@@ -1426,6 +1474,20 @@ class Jobs extends SiteController
 		$employerid = $code ? $job->employerid : $employerid;
 		$job->employerid = $employerid;
 
+		// A new posting starts as a draft (4) for the preview/confirm step; the
+		// form's status field is not bound (see the allowlist below), so set it
+		if (!$code)
+		{
+			$job->status = 4;
+		}
+
+		// A new job is posted under the caller's own employer account unless
+		// an administrator is posting it; employerid came from the request.
+		if (!$code && $employerid != User::get('id') && !$this->_admin && !$this->_masterAdmin)
+		{
+			App::abort(403, Lang::txt('COM_JOBS_ERROR_NOT_AUTHORIZED'));
+		}
+
 		// load Employer
 		if (!$employer->loadEmployer($employerid))
 		{
@@ -1455,7 +1517,7 @@ class Jobs extends SiteController
 			// missing required information
 			if (!$job->description or !$job->title or !$job->companyName or !$job->companyLocation)
 			{
-				$job->bind($_POST);
+				$job->bind(array_intersect_key($_POST, array_flip(array('title', 'companyName', 'companyLocation', 'companyLocationCountry', 'companyWebsite', 'description', 'type', 'cid', 'closedate', 'expiredate', 'opendate', 'startdate', 'applyExternalUrl', 'applyInternal', 'contactName', 'contactEmail', 'contactPhone'))));
 				$this->_job     = $job;
 				$this->_jobCode = $code;
 				$this->setError(Lang::txt('COM_JOBS_ERROR_MISSING_INFORMATION'));
@@ -1469,7 +1531,7 @@ class Jobs extends SiteController
 		// Save new information
 		if (!$min)
 		{
-			$job->bind($_POST);
+			$job->bind(array_intersect_key($_POST, array_flip(array('title', 'companyName', 'companyLocation', 'companyLocationCountry', 'companyWebsite', 'description', 'type', 'cid', 'closedate', 'expiredate', 'opendate', 'startdate', 'applyExternalUrl', 'applyInternal', 'contactName', 'contactEmail', 'contactPhone'))));
 			$job->description      = rtrim(stripslashes($_POST['description']));
 			$job->title            = rtrim(stripslashes($_POST['title']));
 			$job->companyName      = rtrim(stripslashes($_POST['companyName']));
@@ -1537,6 +1599,16 @@ class Jobs extends SiteController
 			$subscription = Subscription::blank();
 			$code         = $subscription->generateCode(8, 8, 0, 1, 0);
 			$job->code    = $code;
+		}
+
+		// The form's date fields are optional; a blank one posts '', which
+		// strict SQL refuses for a datetime column. Store it as NULL.
+		foreach (array('closedate', 'expiredate', 'opendate', 'startdate') as $dateField)
+		{
+			if (isset($job->$dateField) && $job->$dateField === '')
+			{
+				$job->$dateField = null;
+			}
 		}
 
 		if (!$job->store())
@@ -1905,9 +1977,19 @@ class Jobs extends SiteController
 
 				if (count($col) > 0)
 				{
+					// only the search filters belong here: the stored text is built
+					// from the request, so a name outside this list (say _admin)
+					// must never become a property of the controller
+					$allowed = array('filterby', 'match', 'search', 'category', 'type', 'sortby');
+
 					foreach ($col as $c)
 					{
-						$nuk = explode('=', $c);
+						$nuk = explode('=', $c, 2);
+
+						if (count($nuk) != 2 || !in_array($nuk[0], $allowed, true))
+						{
+							continue;
+						}
 
 						// set filter variables
 						$this->setProperty($nuk[0], $nuk[1]);
@@ -1992,6 +2074,12 @@ class Jobs extends SiteController
 
 		// Incoming
 		$pile = Request::getString('pile', 'all');
+
+		// the pile names the zip file; only the three the dashboard offers
+		if (!in_array($pile, array('all', 'shortlisted', 'applied'), true))
+		{
+			$pile = 'all';
+		}
 
 		// Zip the requested resumes
 		$archive = $this->_archiveResumes($pile);
@@ -2192,7 +2280,7 @@ class Jobs extends SiteController
 			);
 		}
 
-		$objS->bind($default2);
+		$objS->set($default2);
 
 		if (!$objS->save())
 		{

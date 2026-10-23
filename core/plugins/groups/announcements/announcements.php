@@ -387,13 +387,38 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 		}
 
 		// Are we creating the announcement?
-		if (!isset($fields['id']) || !$fields['id'])
+		$__aid = isset($fields['id']) ? (int) $fields['id'] : 0;
+
+		if (!$__aid)
 		{
 			$fields['id']         = 0;
 			$fields['scope']      = 'group';
 			$fields['scope_id']   = $this->group->get('gidNumber');
 			$fields['created']    = Date::toSql();
 			$fields['created_by'] = User::get('id');
+		}
+		else
+		{
+			// An existing announcement has to be this group's before anything is
+			// bound onto it. _edit() makes exactly this test before it will even
+			// render the form; the writer did not, and oneOrNew() resolves any
+			// row on the hub. $this->authorized == 'manager' is no more than
+			// being in the managers list of the group being VIEWED, which any
+			// registered user gets by creating a group -- and scope, scope_id
+			// and created_by all ride in through the set() below, so this was a
+			// way to rewrite any group's announcement and re-scope it into your
+			// own group.
+			$__existing = Hubzero\Item\Announcement::oneOrNew($__aid);
+
+			if (!$__existing->get('id')
+			 || !$__existing->belongsToObject('group', $this->group->get('gidNumber')))
+			{
+				$this->setError(Lang::txt('PLG_GROUPS_ANNOUNCEMENTS_PERMISSION_DENIED'));
+				return $this->_list();
+			}
+
+			// Where it lives and who wrote it are not the form's to change.
+			unset($fields['scope'], $fields['scope_id'], $fields['created'], $fields['created_by']);
 		}
 
 		// Do we want to mark sticky?
@@ -415,7 +440,7 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 		}
 
 		// Bind data
-		$model = Hubzero\Item\Announcement::oneOrNew($fields['id'])->set($fields);
+		$model = Hubzero\Item\Announcement::oneOrNew($__aid)->set($fields);
 
 		if ($model->get('publish_down')
 		 && $model->get('publish_down') != '0000-00-00 00:00:00'
@@ -427,7 +452,7 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 
 		if (!$model->save())
 		{
-			$this->setError($model->setError());
+			$this->setError($model->getError());
 			return $this->_edit($model);
 		}
 
@@ -502,12 +527,27 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 
 		$model = Hubzero\Item\Announcement::oneOrFail($id);
 
+		// It has to be this group's announcement. oneOrFail() resolves any row on
+		// the hub, and the ownership test below cannot refuse anything: it is
+		// ANDed with $this->authorized != 'manager', which is false for the
+		// manager of the group being viewed -- so a manager of a group they just
+		// created could soft-delete every group announcement on the site. _edit()
+		// makes this same test before it will show the row.
+		if (!$model->belongsToObject('group', $this->group->get('gidNumber')))
+		{
+			$this->setError(Lang::txt('PLG_GROUPS_ANNOUNCEMENTS_PERMISSION_DENIED'));
+			return $this->_list();
+		}
+
 		// Make sure we are the one who created it
 		if ($model->get('created_by') != User::get('id') && $this->authorized != 'manager')
 		{
 			$this->setError(Lang::txt('PLG_GROUPS_ANNOUNCEMENTS_ONLY_MANAGER_CAN_DELETE', $model->creator()->get('name')));
 			return $this->_list();
 		}
+
+		// Check for request forgeries
+		Request::checkToken();
 
 		// Set to deleted state
 		$model->set('state', Hubzero\Item\Announcement::STATE_DELETED);
@@ -709,8 +749,9 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		// Only admins and group managers
-		if (!User::authorise('core.admin') || !in_array(User::get('id'), $group->get('managers')))
+		// Only admins and group managers. (This was ||, which demanded both, so a
+		// group manager who was not also a super admin was always refused.)
+		if (!User::authorise('core.admin') && !in_array(User::get('id'), (array) $group->get('managers')))
 		{
 			throw new Exception(Lang::txt('You are not authorized to perform this action.'), 403);
 		}
@@ -720,6 +761,11 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 			'id'           => 0,
 			'scope'        => 'group',
 			'scope_id'     => $group->get('gidNumber'),
+			// the text and state were never read, so every API announcement was
+			// saved empty and unpublished, and could not be updated or deleted
+			// afterwards (save() then failed "content cannot be empty")
+			'content'      => trim(Request::getString('content', '', 'post')),
+			'state'        => Request::getInt('state', Hubzero\Item\Announcement::STATE_PUBLISHED, 'post'),
 			'sticky'       => Request::getInt('sticky', 0, 'post'),
 			'priority'     => Request::getInt('priority', 0, 'post'),
 			'publish_up'   => Request::getString('publish_up', '', 'post'),
@@ -776,8 +822,9 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 		// Load the record
 		$model = Hubzero\Item\Announcement::oneOrFail($id);
 
-		// Was it actually found?
-		if (!$model->get('id'))
+		// Was it actually found? The id names any announcement on the hub,
+		// so it also has to be this group's.
+		if (!$model->get('id') || !$model->belongsToObject('group', $group->get('gidNumber')))
 		{
 			throw new Exception(Lang::txt('Announcement not found.'), 404);
 		}
@@ -800,25 +847,35 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		// Only admins and group managers
-		if (!User::authorise('core.admin') || !in_array(User::get('id'), $group->get('managers')))
+		// Only admins and group managers. (This was ||, which demanded both, so a
+		// group manager who was not also a super admin was always refused.)
+		if (!User::authorise('core.admin') && !in_array(User::get('id'), (array) $group->get('managers')))
 		{
 			throw new Exception(Lang::txt('You are not authorized to perform this action.'), 403);
 		}
 
 		$model = Hubzero\Item\Announcement::oneOrFail($id);
 
+		// Managing this group's announcements is not managing another group's.
+		if (!$model->belongsToObject('group', $group->get('gidNumber')))
+		{
+			throw new Exception(Lang::txt('Announcement not found.'), 404);
+		}
+
 		// Incoming data
 		$fields = array(
 			'id'           => $id,
 			'scope'        => 'group',
 			'scope_id'     => $group->get('gidNumber'),
+			// the text was never read (see onGroupsApiCreate); a PUT body is not
+			// in the 'post' hash, so read it from the request
+			'content'      => trim((string) Request::getString('content', (string) $model->get('content'))),
 			'sticky'       => Request::getInt('sticky', $model->get('sticky', 0), 'post'),
 			'priority'     => Request::getInt('priority', $model->get('priority', 0), 'post'),
 			'publish_up'   => Request::getString('publish_up', $model->get('publish_up'), 'post'),
 			'publish_down' => Request::getString('publish_down', $model->get('publish_down'), 'post'),
-			'created'      => Request::getString('created', $model->get('created'), 'post'),
-			'created_by'   => Request::getInt('created_by', $model->get('created_by'), 'post'),
+			'created'      => $model->get('created'),
+			'created_by'   => $model->get('created_by'),
 		);
 
 		// Format publish up
@@ -868,8 +925,9 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		// Only admins and group managers
-		if (!User::authorise('core.admin') || !in_array(User::get('id'), $group->get('managers')))
+		// Only admins and group managers. (This was ||, which demanded both, so a
+		// group manager who was not also a super admin was always refused.)
+		if (!User::authorise('core.admin') && !in_array(User::get('id'), (array) $group->get('managers')))
 		{
 			throw new Exception(Lang::txt('You are not authorized to perform this action.'), 403);
 		}
@@ -877,8 +935,8 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 		// Load the record
 		$model = Hubzero\Item\Announcement::oneOrFail($id);
 
-		// Was it actually found?
-		if (!$model->get('id'))
+		// Was it actually found, in this group?
+		if (!$model->get('id') || !$model->belongsToObject('group', $group->get('gidNumber')))
 		{
 			throw new Exception(Lang::txt('Announcement not found.'), 404);
 		}

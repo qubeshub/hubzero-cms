@@ -125,6 +125,7 @@ $this->css('jobs', 'com_jobs');
 					</div>
 					<input type="hidden" name="activeres" value="<?php echo $this->editpref == 1 ? 1 : $this->js->active; ?>" />
 					<input type="hidden" name="action" value="saveprefs" />
+					<?php echo Html::input('token'); ?>
 				</fieldset>
 			</form>
 		<?php } ?>
@@ -180,6 +181,7 @@ $this->css('jobs', 'com_jobs');
 									<label class="resume">
 										<input type="text" name="title" value="<?php echo $this->escape($title); ?>" class="gettitle" maxlength="40" />
 										<input type="hidden" name="author" value="<?php echo $this->member->get('id'); ?>" />
+										<?php echo Html::input('token'); ?>
 										<input type="submit" class="btn" value="<?php echo Lang::txt('PLG_MEMBERS_RESUME_ACTION_SAVE'); ?>" />
 									</label>
 								</fieldset>
@@ -194,9 +196,7 @@ $this->css('jobs', 'com_jobs');
 							<time datetime="<?php echo $this->resume->created; ?>"><?php echo Date::of($this->resume->created)->toLocal(Lang::txt('DATE_FORMAT_HZ1')); ?></time>
 						</td>
 						<td>
-							<a class="trash" href="<?php echo Route::url($this->member->link() . '&active=resume&action=deleteresume'); ?>" title="<?php echo Lang::txt('PLG_MEMBERS_RESUME_ACTION_DELETE_THIS_RESUME'); ?>">
-								<?php echo Lang::txt('PLG_MEMBERS_RESUME_ACTION_DELETE'); ?>
-							</a>
+							<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($this->member->link() . '&active=resume&action=deleteresume'); ?>" class="trash" title="<?php echo Lang::txt('PLG_MEMBERS_RESUME_ACTION_DELETE_THIS_RESUME'); ?>"><?php echo Lang::txt('PLG_MEMBERS_RESUME_ACTION_DELETE'); ?></button>
 						</td>
 					</tr>
 				</tbody>

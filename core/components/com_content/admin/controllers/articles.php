@@ -57,6 +57,17 @@ class Articles extends AdminController
 	 */
 	public function batchTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
+		if (
+			!User::authorise('core.edit', $this->_option)
+			&& !User::authorise('core.create', $this->_option)
+		)
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		$ids = Request::getArray('cid', array());
 
 		if (empty($ids))
@@ -73,7 +84,20 @@ class Articles extends AdminController
 			return $this->cancelTask();
 		}
 
+		$batchOptions['move_copy'] = isset($batchOptions['move_copy']) ? $batchOptions['move_copy'] : 'm';
 		$action = $batchOptions['move_copy'] == 'm' ? 'moved' : 'copied';
+
+		// The batch form is offered on create + edit + edit.state, and it
+		// files rows into a category: the target category has to admit the
+		// caller, and the access level is an edit.state change.
+		if (!User::authorise('core.create', 'com_content.category.' . (int) $batchOptions['category_id']))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+		if (!empty($batchOptions['assetgroup_id']) && !User::authorise('core.edit.state', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 
 		$params = array(
 			'catid'    => $batchOptions['category_id'],
@@ -83,16 +107,39 @@ class Articles extends AdminController
 		$params = array_filter($params);
 
 		$articles = Article::all()->whereIn('id', $ids)->rows();
+		$saved = 0;
+		$denied = 0;
 		foreach ($articles as $article)
 		{
+			// Each row under its own asset, as editTask/saveTask test it
+			if (!User::authorise('core.edit', $article->get('asset_id')))
+			{
+				$denied++;
+				continue;
+			}
+
 			$article->set($params);
 			if ($batchOptions['move_copy'] == 'c')
 			{
 				$article->removeAttribute('id');
 			}
+
+			if ($article->save())
+			{
+				$saved++;
+			}
+			else
+			{
+				Notify::error($article->getError());
+			}
 		}
 
-		if ($articles->save())
+		if ($denied)
+		{
+			Notify::warning(Lang::txt('COM_CONTENT_NOT_AUTHORIZED'));
+		}
+
+		if ($saved)
 		{
 			Notify::success(Lang::txt('COM_CONTENT_BATCH_SUCCESS', $action));
 		}
@@ -154,6 +201,13 @@ class Articles extends AdminController
 				'ASC'
 			)
 		);
+
+		// Only the columns the list headings offer
+		if (!in_array($filters['sort'], array('title', 'state', 'a.featured', 'catid', 'ordering', 'access_level', 'created_by', 'created', 'hits', 'language', 'id'), true))
+		{
+			$filters['sort'] = 'title';
+		}
+		$filters['sort_Dir'] = (strtolower((string) $filters['sort_Dir']) == 'desc' ? 'DESC' : 'ASC');
 
 		$articles = Article::all()
 			->select('`#__languages`.title', 'language_title')
@@ -281,6 +335,13 @@ class Articles extends AdminController
 				'ASC'
 			)
 		);
+
+		// Only the columns the list headings offer
+		if (!in_array($filters['sort'], array('ordering', 'a.title', 'a.state', 'a.catid', 'fp.ordering', 'a.access', 'a.created_by', 'a.created', 'a.hits', 'a.language', 'a.id'), true))
+		{
+			$filters['sort'] = 'ordering';
+		}
+		$filters['sort_Dir'] = (strtolower((string) $filters['sort_Dir']) == 'desc' ? 'DESC' : 'ASC');
 
 		$query = Article::all();
 
@@ -466,12 +527,53 @@ class Articles extends AdminController
 		// Check for request forgeries
 		Request::checkToken();
 
+		if (
+			!User::authorise('core.edit', $this->_option)
+			&& !User::authorise('core.create', $this->_option)
+			&& !User::authorise('core.edit.own', $this->_option)
+		)
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		// Incoming data
 		$items = Request::getArray('fields', array(), 'post');
 
 		$articleId = Request::getInt('id');
 
 		$article = Article::oneOrNew($articleId);
+
+		// The same test editTask() makes: the component-level gate above admits
+		// core.edit.own, which is not a licence to save someone else's article.
+		if (!$article->isNew())
+		{
+			if (!User::authorise('core.edit', $article->get('asset_id'))
+			 && (!User::authorise('core.edit.own', $article->get('asset_id'))
+			  || $article->get('created_by') != User::get('id')))
+			{
+				App::abort(403, Lang::txt('COM_CONTENT_NOT_AUTHORIZED'));
+			}
+		}
+		elseif (!User::authorise('core.create', 'com_content'))
+		{
+			App::abort(403, Lang::txt('COM_CONTENT_NOT_AUTHORIZED'));
+		}
+
+		// The row is the one checked above; set() would otherwise take a posted
+		// fields[id] and save onto that one instead.
+		unset($items['id']);
+
+		// The form only disables these for users without edit.state; the
+		// site controller strips them, this one has to as well. The owner is
+		// a hidden input and is not the submitter's to change.
+		if (!User::authorise('core.edit.state', $article->get('asset_id')))
+		{
+			unset($items['state'], $items['featured'], $items['access']);
+		}
+		if (!User::authorise('core.admin', 'com_content'))
+		{
+			unset($items['created_by']);
+		}
 
 		$checkedOut = $article->get('checked_out');
 		if ($checkedOut)
@@ -481,7 +583,10 @@ class Articles extends AdminController
 			$article->save();
 		}
 
-		if (!empty($items['rules']))
+		// Permission rules are for core.admin only, as in the category, forum
+		// and access-group editors; the form's field is hidden from everyone else
+		// and a posted one is dropped.
+		if (!empty($items['rules']) && User::authorise('core.admin', 'com_content'))
 		{
 			$rules = array_map(
 				function($item)
@@ -577,6 +682,12 @@ class Articles extends AdminController
 	public function saveorderTask()
 	{
 		Request::checkToken();
+
+		// Same right reorderTask requires
+		if (!User::authorise('core.edit.state', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 
 		$ordering = Request::getArray('order', array());
 

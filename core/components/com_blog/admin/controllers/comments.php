@@ -99,6 +99,19 @@ class Comments extends AdminController
 			$comments->whereEquals('entry_id', $filters['entry_id']);
 		}
 
+		// ordered() treats a dotted value as relationship.field and calls the
+		// relationship by name, so the column is confined to this table
+		if (!in_array($filters['sort'], array('id', 'created', 'created_by', 'state', 'entry_id', 'parent'), true))
+		{
+			$filters['sort'] = 'created';
+		}
+		if (!in_array(strtoupper($filters['sort_Dir']), array('ASC', 'DESC'), true))
+		{
+			$filters['sort_Dir'] = 'ASC';
+		}
+		Request::setVar('filter_order', $filters['sort'], 'get');
+		Request::setVar('filter_order_Dir', $filters['sort_Dir'], 'get');
+
 		$rows = $comments
 			->ordered('filter_order', 'filter_order_Dir')
 			->rows();
@@ -113,7 +126,8 @@ class Comments extends AdminController
 			foreach ($rows as $k)
 			{
 				$pt = $k->get('parent');
-				$list = @$children[$pt] ? $children[$pt] : array();
+				// isset, not @: the error handler still logs a suppressed missing key
+				$list = isset($children[$pt]) ? $children[$pt] : array();
 				array_push($list, $k);
 				$children[$pt] = $list;
 			}
@@ -145,7 +159,7 @@ class Comments extends AdminController
 	 */
 	public function treeRecurse($id, $indent, $list, $children, $maxlevel=9999, $level=0, $type=1)
 	{
-		if (@$children[$id] && $level <= $maxlevel)
+		if (!empty($children[$id]) && $level <= $maxlevel)
 		{
 			foreach ($children[$id] as $v)
 			{
@@ -174,7 +188,7 @@ class Comments extends AdminController
 
 				$list[$id] = $v;
 				$list[$id]->set('treename', "$indent$txt");
-				$list[$id]->set('children', count(@$children[$id]));
+				$list[$id]->set('children', count($children[$id] ?? array()));
 				$list = $this->treeRecurse($id, $indent . $spacer, $list, $children, $maxlevel, $level+1, $type);
 			}
 		}

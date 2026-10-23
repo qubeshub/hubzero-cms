@@ -17,6 +17,7 @@ use Config;
 use Route;
 use Lang;
 use Event;
+use User;
 
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'ticket.php';
 require_once dirname(dirname(__DIR__)) . DS . 'helpers' . DS . 'acl.php';
@@ -37,7 +38,7 @@ class Commentsv1_0 extends ApiController
 		$this->database = \App::get('db');
 
 		$this->acl = \Components\Support\Helpers\ACL::getACL();
-		$this->acl->setUser($userid);
+		$this->acl->setUser(User::get('id'));
 
 		parent::execute();
 	}
@@ -97,6 +98,19 @@ class Commentsv1_0 extends ApiController
 
 		$obj = \Components\Support\Models\Comment::all();
 
+		if (!$this->acl->check('read', 'private_comments'))
+		{
+			$obj = $obj->whereEquals('access', 0);
+		}
+
+		// Scope to one ticket when asked. None of the $filters assembled below
+		// is applied to the query, so without this the endpoint answers every
+		// request with every comment on every ticket, whatever was asked for.
+		if ($ticketId = Request::getInt('ticket', 0))
+		{
+			$obj = $obj->whereEquals('ticket', $ticketId);
+		}
+
 		$filters = array(
 			'limit'      => Request::getInt('limit', 25),
 			'start'      => Request::getInt('limitstart', 0),
@@ -111,8 +125,9 @@ class Commentsv1_0 extends ApiController
 			'tag'        => Request::getWord('tag', ''),
 		);
 
-		$filters['opened'] = $this->_toTimestamp(Request::getString('opened', ''));
-		$filters['closed'] = $this->_toTimestamp(Request::getString('closed', ''));
+		// (opened/closed filters were computed here with a _toTimestamp()
+		// this class never defined -- a fatal on every call -- and, like the
+		// rest of $filters, never applied; dropped.)
 
 		$response = new stdClass;
 		$response->success  = true;
@@ -122,12 +137,30 @@ class Commentsv1_0 extends ApiController
 		// Get a list of all statuses
 		$statuses = \Components\Support\Models\Status::all()->rows();
 
-		// Get a count of tickets
-		$response->total = $obj->rows()->count();
+		// Count on a copy: the first fetch empties the builder, so a second
+		// rows() call ran an empty statement and 500ed whenever there was
+		// anything to list
+		$response->total = $obj->copy()->total();
 
 		if ($response->total)
 		{
-			$response->comments = $obj->rows();
+			$sort = in_array($filters['sort'], array('created', 'id')) ? $filters['sort'] : 'created';
+			$dir  = $filters['sortdir'] == 'ASC' ? 'asc' : 'desc';
+
+			$rows = $obj
+				->order($sort, $dir)
+				->limit($filters['limit'])
+				->start($filters['start'])
+				->rows();
+
+			// (a Rows collection encodes as its own bookkeeping, not the rows)
+			foreach ($rows as $row)
+			{
+				$temp = $row->toArray();
+				$temp['changelog'] = json_decode((string) $row->get('changelog'));
+
+				$response->comments[] = $temp;
+			}
 		}
 
 		$this->send($response);
@@ -177,15 +210,16 @@ class Commentsv1_0 extends ApiController
 			throw new Exception(Lang::txt('Not authorized'), 403);
 		}
 
-		$ticket_id = Request::getInt('ticket', 0, 'post');
+		// the router puts {ticket} in the query, the form may post it
+		$ticket_id = Request::getInt('ticket', 0);
 
 		// Load the old ticket so we can compare for the changelog
-		$old = \Components\Support\Models\Ticket::oneOrFail($ticket_id);
+		$old = \Components\Support\Models\Ticket::oneOrNew($ticket_id);
 		$old->set('tags', $old->tags('string'));
 
 		if (!$old->get('id'))
 		{
-			throw new Exception(500, Lang::txt('Ticket "%s" does not exist.', $ticket_id));
+			throw new Exception(Lang::txt('Ticket "%s" does not exist.', $ticket_id), 404);
 		}
 
 		// Initiate class and bind posted items to database fields
@@ -201,21 +235,20 @@ class Commentsv1_0 extends ApiController
 		if ($ticket_id && !$ticket->get('open') && $ticket->get('open') != $old->get('open'))
 		{
 			// Record the closing time
-			$ticket->set('closed', Date::toSql());
+			$ticket->set('closed', Date::of('now')->toSql());
 		}
 
 		// Any tags?
 		if ($tags = trim(Request::getString('tags', '', 'post')))
 		{
-			$ticket->tag($tags, $user->get('uidNumber'));
+			$ticket->tag($tags, User::get('id'));
 			$ticket->set('tags', $ticket->tags('string'));
 		}
 
 		// Store new content
-		if (!$ticket->store())
+		if (!$ticket->save())
 		{
-			$this->errorMessage(500, $ticket->getError());
-			return;
+			throw new Exception($ticket->getError(), 500);
 		}
 
 		// Create a new comment
@@ -225,13 +258,13 @@ class Commentsv1_0 extends ApiController
 		if ($comment->get('comment'))
 		{
 			// If a comment was posted by the ticket submitter to a "waiting user response" ticket, change status.
-			if ($ticket->isWaiting() && $user->get('username') == $ticket->get('login'))
+			if ($ticket->isWaiting() && User::get('username') == $ticket->get('login'))
 			{
 				$ticket->open();
 			}
 		}
-		$comment->set('created', Date::toSql());
-		$comment->set('created_by', $user->get('uidNumber'));
+		$comment->set('created', Date::of('now')->toSql());
+		$comment->set('created_by', User::get('id'));
 		$comment->set('access', Request::getInt('access', 0, 'post'));
 
 		// Compare fields to find out what has changed for this ticket and build a changelog
@@ -240,19 +273,19 @@ class Commentsv1_0 extends ApiController
 		$comment->changelog()->cced(Request::getString('cc', '', 'post'));
 
 		// Store new content
-		if (!$comment->store())
+		if (!$comment->save())
 		{
-			$this->errorMessage(500, $comment->getError());
-			return;
+			throw new Exception($comment->getError(), 500);
 		}
 
 		if ($ticket->get('owner'))
 		{
+			// (owner() and config() below were Table-era accessors the model no longer has)
 			$comment->addTo(array(
 				'role'  => Lang::txt('COM_SUPPORT_COMMENT_SEND_EMAIL_OWNER'),
-				'name'  => $ticket->owner('name'),
-				'email' => $ticket->owner('email'),
-				'id'    => $ticket->owner('id')
+				'name'  => $ticket->assignee->get('name'),
+				'email' => $ticket->assignee->get('email'),
+				'id'    => $ticket->assignee->get('id')
 			));
 		}
 
@@ -265,7 +298,7 @@ class Commentsv1_0 extends ApiController
 		// Check if the notify list has eny entries
 		if (count($comment->to()))
 		{
-			$allowEmailResponses = $ticket->config('email_processing');
+			$allowEmailResponses = Component::params('com_support')->get('email_processing');
 			if ($allowEmailResponses)
 			{
 				try
@@ -320,7 +353,8 @@ class Commentsv1_0 extends ApiController
 				// Get the user's email address
 				if (!Event::trigger('xmessage.onSendMessage', array('support_reply_submitted', $subject, $message, $from, array($to['id']), 'com_support')))
 				{
-					$this->setError(Lang::txt('COM_SUPPORT_ERROR_FAILED_TO_MESSAGE', $to['name'] . '(' . $to['role'] . ')'));
+					// not notified (an API controller has no error bag to record it in)
+					continue;
 				}
 				$comment->changelog()->notified(
 					$to['role'],
@@ -363,10 +397,9 @@ class Commentsv1_0 extends ApiController
 		 || count($comment->changelog()->get('changes')) > 0)
 		{
 			// Save the data
-			if (!$comment->store())
+			if (!$comment->save())
 			{
-				$this->errorMessage(500, $comment->getError());
-				return;
+				throw new Exception($comment->getError(), 500);
 			}
 		}
 
@@ -375,7 +408,7 @@ class Commentsv1_0 extends ApiController
 		$msg->comment  = $comment->get('id');
 		$msg->notified = $comment->changelog()->get('notifications');
 
-		$this->setMessageType(Request::getString('format', 'json'));
+		// (a setMessageType() call here named a method no controller has; send() answers JSON)
 		$this->send($msg, 200, 'OK');
 	}
 
@@ -412,19 +445,30 @@ class Commentsv1_0 extends ApiController
 		// Initiate class and bind data to database fields
 		$id = Request::getInt('comment', 0);
 
-		// Initiate class and bind data to database fields
-		$ticket = \Components\Support\Models\Comment::oneOrFail($id);
+		// Initiate class and bind data to database fields. The rest of this
+		// method refers to the loaded model under both names -- $comment was
+		// never assigned, so every call fataled on it in PHP 8 before reaching
+		// the response.
+		$ticket = $comment = \Components\Support\Models\Comment::oneOrFail($id);
+
+		if ($comment->isPrivate() && !$this->acl->check('read', 'private_comments'))
+		{
+			throw new Exception(Lang::txt('Not authorized'), 403);
+		}
 
 		$response = new stdClass;
 		$response->id = $comment->get('id');
 		$response->ticket = $comment->get('ticket');
 
-		$response->owner = new stdClass;
-		$response->owner->username = $ticket->owner('username');
-		$response->owner->name     = $ticket->owner('name');
-		$response->owner->id       = $ticket->owner('id');
+		// The owner is the assignee of the comment's ticket
+		$owner = $comment->ticket->assignee;
 
-		$response->content = $comment->content('raw');
+		$response->owner = new stdClass;
+		$response->owner->username = $owner->get('username');
+		$response->owner->name     = $owner->get('name');
+		$response->owner->id       = $owner->get('id');
+
+		$response->content = $comment->get('comment');
 
 		$response->url = str_replace('/api', '', rtrim(Request::base(), '/') . '/' . ltrim(Route::url('index.php?option=com_support&controller=tickets&task=tickets&id=' . $comment->get('ticket') . '#c' . $comment->get('id')), '/'));
 

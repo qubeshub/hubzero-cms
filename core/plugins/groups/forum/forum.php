@@ -135,9 +135,14 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 			if (User::isGuest()
 			 && ($group_plugin_acl == 'registered' || $group_plugin_acl == 'members'))
 			{
-				$return = base64_encode(Request::getString('REQUEST_URI', Route::url('index.php?option=com_groups&cn=' . $group->get('cn') . '&active=' . $active, false, true), 'server'));
+				$return = Route::url('index.php?option=com_groups&cn=' . $group->get('cn') . '&active=' . $active, false, true);
+				// A submitted action can't be replayed by the GET that follows login
+				if (Request::method() !== 'POST')
+				{
+					$return = Request::getString('REQUEST_URI', $return, 'server');
+				}
 				App::redirect(
-					Route::url('index.php?option=com_users&view=login&return=' . $return, false),
+					Route::url('index.php?option=com_users&view=login&return=' . base64_encode($return), false),
 					Lang::txt('GROUPS_PLUGIN_REGISTERED', ucfirst($active_real)),
 					'warning'
 				);
@@ -622,7 +627,33 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 		$fields['state'] = 1;
 
 		// Instantiate a new table row and bind the incoming data
-		$section = \Components\Forum\Models\Section::oneOrNew($fields['id'])->set($fields);
+		$__sid   = isset($fields['id']) ? (int) $fields['id'] : 0;
+		$section = \Components\Forum\Models\Section::oneOrNew($__sid);
+
+		// As savecategory(): an existing section has to already belong to this
+		// group's forum, and scope/scope_id are pinned rather than bound.
+		if (!$section->isNew()
+		 && ($section->get('scope') != $this->forum->get('scope')
+		  || $section->get('scope_id') != $this->forum->get('scope_id')))
+		{
+			App::redirect(
+				Route::url($this->base),
+				Lang::txt('PLG_GROUPS_FORUM_NOT_AUTHORIZED'),
+				'warning'
+			);
+			return;
+		}
+
+		$section->set($fields);
+		$section->set('scope', $this->forum->get('scope'));
+		$section->set('scope_id', $this->forum->get('scope_id'));
+
+		// Managers manage forum structure
+		$this->_authorize('category', $section->get('id'));
+		if (!$this->params->get('access-edit-category'))
+		{
+			App::redirect(Route::url($this->base));
+		}
 
 		// Default a new section's access to match the group's forum access
 		// setting, matching how new categories and threads inherit. Without
@@ -665,7 +696,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 					'action'      => ($fields['id'] ? 'updated' : 'created'),
 					'scope'       => 'forum.section',
 					'scope_id'    => $section->get('id'),
-					'description' => Lang::txt('PLG_GROUPS_FORUM_ACTIVITY_SECTION_' . ($fields['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($this->base) . '">' . $section->get('title') . '</a>'),
+					'description' => Lang::txt('PLG_GROUPS_FORUM_ACTIVITY_SECTION_' . ($fields['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($this->base) . '">' . htmlspecialchars((string) ($section->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 					'details'     => array(
 						'title' => $section->get('title'),
 						'url'   => Route::url($this->base)
@@ -733,6 +764,9 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 			);
 		}
 
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Set the section to "deleted"
 		$section->set('state', $section::STATE_DELETED);
 
@@ -750,7 +784,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 					'action'      => 'deleted',
 					'scope'       => 'forum.section',
 					'scope_id'    => $section->get('id'),
-					'description' => Lang::txt('PLG_GROUPS_FORUM_ACTIVITY_SECTION_DELETED', '<a href="' . Route::url($this->base) . '">' . $section->get('title') . '</a>'),
+					'description' => Lang::txt('PLG_GROUPS_FORUM_ACTIVITY_SECTION_DELETED', '<a href="' . Route::url($this->base) . '">' . htmlspecialchars((string) ($section->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 					'details'     => array(
 						'title' => $section->get('title'),
 						'url'   => Route::url($this->base)
@@ -805,23 +839,23 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 		switch ($filters['sortby'])
 		{
 			case 'title':
-				$filters['sort'] = 'sticky` DESC, `title';
+				$filters['sort'] = 'title';
 				$filters['sort_Dir'] = strtoupper(Request::getString('sortdir', 'ASC'));
 			break;
 
 			case 'replies':
-				$filters['sort'] = 'sticky` DESC, `rgt';
+				$filters['sort'] = 'rgt';
 				$filters['sort_Dir'] = strtoupper(Request::getString('sortdir', 'DESC'));
 			break;
 
 			case 'created':
-				$filters['sort'] = 'sticky` DESC, `created';
+				$filters['sort'] = 'created';
 				$filters['sort_Dir'] = strtoupper(Request::getString('sortdir', 'DESC'));
 			break;
 
 			case 'activity':
 			default:
-				$filters['sort'] = 'sticky` DESC, `activity';
+				$filters['sort'] = 'activity';
 				$filters['sort_Dir'] = strtoupper(Request::getString('sortdir', 'DESC'));
 			break;
 		}
@@ -867,6 +901,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 			->select("*, (CASE WHEN last_activity IS NOT NULL THEN last_activity ELSE created END)", 'activity')
 			->whereEquals('state', $filters['state'])
 			->whereIn('access', $filters['access'])
+			->order('sticky', 'desc') // pinned threads first, then the chosen sort
 			->order($filters['sort'], $filters['sort_Dir'])
 			->paginated()
 			->rows();
@@ -1052,7 +1087,52 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 		$fields = array_map('trim', $fields);
 
 		// Instantiate a category
-		$category = Category::oneOrNew($fields['id'])->set($fields);
+		$__cid    = isset($fields['id']) ? (int) $fields['id'] : 0;
+		$category = Category::oneOrNew($__cid);
+
+		// An existing category has to live in THIS group's forum before anything
+		// is bound onto it. oneOrNew() resolves any row on the hub, and
+		// _authorize('category', $id) ignores the id it is handed -- it switches
+		// on the asset type alone -- so the only thing between a manager of a
+		// group they just created and every forum category on the site was this
+		// test not existing.
+		if (!$category->isNew()
+		 && ($category->get('scope') != $this->forum->get('scope')
+		  || $category->get('scope_id') != $this->forum->get('scope_id')))
+		{
+			App::redirect(
+				Route::url($this->base),
+				Lang::txt('PLG_GROUPS_FORUM_NOT_AUTHORIZED'),
+				'warning'
+			);
+			return;
+		}
+
+		$category->set($fields);
+
+		// scope and scope_id are hidden inputs on the form, so pin them to this
+		// forum rather than taking the caller's word for where this belongs.
+		$category->set('scope', $this->forum->get('scope'));
+		$category->set('scope_id', $this->forum->get('scope_id'));
+
+		// section_id is a select, and Section::categories() lists by section_id
+		// alone with no scope predicate -- so a category scoped to this group but
+		// hung off another group's section renders in THEIR forum, and their
+		// manager cannot remove it (deletecategory resolves by alias + scope +
+		// scope_id, which no longer matches). The section has to be one of ours.
+		$__section = \Components\Forum\Models\Section::oneOrNew($category->get('section_id'));
+
+		if (!$__section->get('id')
+		 || $__section->get('scope') != $this->forum->get('scope')
+		 || $__section->get('scope_id') != $this->forum->get('scope_id'))
+		{
+			App::redirect(
+				Route::url($this->base),
+				Lang::txt('PLG_GROUPS_FORUM_NOT_AUTHORIZED'),
+				'warning'
+			);
+			return;
+		}
 
 		// Double-check that the user is authorized
 		$this->_authorize('category', $category->get('id'));
@@ -1098,7 +1178,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 				'action'      => ($fields['id'] ? 'updated' : 'created'),
 				'scope'       => 'forum.category',
 				'scope_id'    => $category->get('id'),
-				'description' => Lang::txt('PLG_GROUPS_FORUM_ACTIVITY_CATEGORY_' . ($fields['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($this->base) . '">' . $category->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_GROUPS_FORUM_ACTIVITY_CATEGORY_' . ($fields['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($this->base) . '">' . htmlspecialchars((string) ($category->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $category->get('title'),
 					'url'   => Route::url($this->base)
@@ -1167,6 +1247,9 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 			);
 		}
 
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Set the category to "deleted"
 		$category->set('state', $category::STATE_DELETED);
 
@@ -1185,7 +1268,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 				'action'      => 'deleted',
 				'scope'       => 'forum.category',
 				'scope_id'    => $category->get('id'),
-				'description' => Lang::txt('PLG_GROUPS_FORUM_ACTIVITY_CATEGORY_DELETED', '<a href="' . Route::url($this->base) . '">' . $category->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_GROUPS_FORUM_ACTIVITY_CATEGORY_DELETED', '<a href="' . Route::url($this->base) . '">' . htmlspecialchars((string) ($category->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $category->get('title'),
 					'url'   => Route::url($this->base)
@@ -1275,7 +1358,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 		if ($thread->get('state') == $thread::STATE_DELETED)
 		{
 			App::redirect(
-				Route::url($this->base . '&scope=' . $this->filters['section'] . '/' . $this->filters['category']),
+				Route::url($this->base . '&scope=' . $filters['section'] . '/' . $filters['category']),
 				Lang::txt('PLG_GROUPS_FORUM_ERROR_THREAD_NOT_FOUND'),
 				'error'
 			);
@@ -1386,13 +1469,27 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 		}
 
 		// Incoming
-		if (!is_object($post))
+		$loaded = !is_object($post);
+
+		if ($loaded)
 		{
 			$post = Post::oneOrNew($id);
 		}
 
 		// Get authorization
 		$this->_authorize('thread', $id);
+
+		// Post::oneOrNew() resolves any row of #__forum_posts, so a post reached
+		// by id has to sit in the category this request resolved -- that one was
+		// looked up by scope above, so another group's forum, or site-wide
+		// com_forum, can no longer be rendered into this edit form. Only applied
+		// when the id came from the request: savethread() hands back an already
+		// bound model on its error paths, whose category_id is the one the author
+		// just picked, and refusing that would throw away a draft mid-move.
+		if ($loaded && !$post->isNew() && $post->get('category_id') != $category->get('id'))
+		{
+			App::abort(404, Lang::txt('PLG_GROUPS_FORUM_ERROR_CATEGORY_NOT_FOUND'));
+		}
 
 		if ($post->isNew())
 		{
@@ -1404,7 +1501,15 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 		}
 		elseif ($post->get('created_by') != User::get('id') && !$this->params->get('access-edit-thread'))
 		{
-			App::redirect(Route::url($this->base . '&scope=' . $section . '/' . $category));
+			// $section and $category are model objects by this point, so the
+			// original concatenation here raised "could not be converted to
+			// string" and the refusal came back as a 500 instead of a redirect.
+			App::redirect(
+				Route::url($this->base . '&scope=' . $section->get('alias') . '/' . $category->get('alias')),
+				Lang::txt('PLG_GROUPS_FORUM_NOT_AUTHORIZED'),
+				'warning'
+			);
+			return;
 		}
 
 		return $this->view('edit', 'threads')
@@ -1449,6 +1554,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 
 		// Instantiate a Post record
 		$post = Post::oneOrNew($fields['id']);
+		$isNew = !$post->get('id');
 
 		$this->_authorize('thread', intval($fields['id']));
 		$asset = 'thread';
@@ -1458,6 +1564,12 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 		}
 
 		$moving = false;
+
+		// Real moderator status, captured BEFORE the block below grants
+		// access-edit-thread to the post's own author. sticky and closed are
+		// moderator controls, and testing the granted flag would have made the
+		// guard on them a no-op for exactly the caller it is meant to stop.
+		$__isModerator = (bool) $this->params->get('access-edit-' . $asset);
 
 		// Already present
 		if ($fields['id'])
@@ -1477,16 +1589,63 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 			$fields['modified_by'] = User::get('id');
 		}
 
-		// Extracting emails from the new post submitted
-		$domComment = new \DOMDocument();
-		$domComment->loadHTML($fields['comment'] == null ? '' : $fields['comment']);
+		// Extracting emails from the new post submitted. The anchors are part
+		// of the posted HTML, so only members of this group can be mentioned.
+		// loadHTML() refuses an empty string outright and warns on markup it
+		// does not know, so guard both.
 		$mentionEmailList = array();
-		foreach ($domComment->getElementsByTagName('a') as $item) {
-			$userId = $item->getAttribute('data-user-id');
-            $user = User::getInstance($userId);
-            $email = $user->get('email');
+		if (isset($fields['comment']) && trim((string) $fields['comment']) !== '')
+		{
+			$domComment = new \DOMDocument();
+			$__libxml = libxml_use_internal_errors(true);
+			$domComment->loadHTML($fields['comment']);
+			libxml_clear_errors();
+			libxml_use_internal_errors($__libxml);
 
-            $mentionEmailList[] = $email;
+			$groupMembers = (array) $this->group->get('members');
+			foreach ($domComment->getElementsByTagName('a') as $item) {
+				$userId = (int) $item->getAttribute('data-user-id');
+				if (!$userId || !in_array($userId, $groupMembers))
+				{
+					continue;
+				}
+				$user  = User::getInstance($userId);
+				$email = $user->get('email');
+				if ($email && !in_array($email, $mentionEmailList))
+				{
+					$mentionEmailList[] = $email;
+				}
+			}
+		}
+
+		// An existing post has to belong to this group's forum, and the caller
+		// has to own it or moderate here. Post::oneOrNew() resolves any row of
+		// #__forum_posts -- another group's forum, or a site-wide com_forum
+		// post -- while _authorize() grants access-create-thread to every group
+		// member, which on its own satisfies the check below. Without this, a
+		// member could rewrite any post on the hub by supplying its id.
+		//
+		// The category is what decides which forum a stored post lives in: the
+		// thread listing reaches posts through a category resolved by scope, so
+		// testing the stored category cannot refuse anything the group forum
+		// shows. The post's own scope column is not used, because editthread()
+		// sets scope without scope_id on new posts.
+		if (!$isNew)
+		{
+			$owner = Category::oneOrNew($post->get('category_id'));
+
+			if ($owner->get('scope') != $this->forum->get('scope')
+			 || $owner->get('scope_id') != $this->forum->get('scope_id')
+			 || ($post->get('created_by') != User::get('id')
+			  && !$this->params->get('access-edit-thread')))
+			{
+				App::redirect(
+					Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=forum'),
+					Lang::txt('PLG_GROUPS_FORUM_NOT_AUTHORIZED'),
+					'warning'
+				);
+				return;
+			}
 		}
 
 		if (!$this->params->get('access-edit-thread')
@@ -1497,10 +1656,67 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 				Lang::txt('PLG_GROUPS_FORUM_NOT_AUTHORIZED'),
 				'warning'
 			);
+			return;
 		}
 
 		// Bind data
+		$__owner  = $post->get('created_by');
+		$__sticky = $post->get('sticky');
+		$__closed = $post->get('closed');
+		// Nested-set position, counters and publishing state are never the
+		// form's to set
+		unset($fields['lft'], $fields['rgt'], $fields['state'], $fields['hits'], $fields['last_activity']);
+
+		$__state = $post->get('state');
+
 		$post->set($fields);
+
+		// With the form's state dropped, a new post has to be published here
+		// (as com_forum's threads controller does), or it is stored unpublished
+		// and the thread shows no posts to anyone
+		$post->set('state', $isNew ? Post::STATE_PUBLISHED : $__state);
+
+		// fields[scope], fields[scope_id], fields[category_id] and any added
+		// fields[created_by] all ride in from the form, so pin them rather than
+		// trusting the request. Scope and owner were previously pinned only on
+		// the isNew branch, which left an existing post relocatable wholesale --
+		// and the guard above reads the STORED category, so on the create path
+		// it never ran at all.
+		$post->set('scope', $this->forum->get('scope'));
+		$post->set('scope_id', $this->forum->get('scope_id'));
+
+		// created_by on BOTH paths, not just create: the owner is granted
+		// access-edit-thread on their own post, so leaving it bindable on edit
+		// let an author hand their post to someone else by adding
+		// fields[created_by]. Captured before set() so the stored value wins.
+		$post->set('created_by', $isNew ? User::get('id') : $__owner);
+
+		// sticky and closed are moderator controls. views/threads/tmpl/edit.php
+		// renders the checkboxes only on access-edit-thread and otherwise
+		// round-trips the stored values as hidden inputs -- so a member editing
+		// their own post could still pin it to the top of the category, or close
+		// it to replies, just by sending the fields by hand.
+		if (!$__isModerator)
+		{
+			$post->set('sticky', $isNew ? 0 : $__sticky);
+			$post->set('closed', $isNew ? 0 : $__closed);
+		}
+
+		// The DESTINATION category has to be in this forum too -- the guard
+		// above only vouches for where the post came from.
+		$target = Category::oneOrNew($post->get('category_id'));
+
+		if (!$target->get('id')
+		 || $target->get('scope') != $this->forum->get('scope')
+		 || $target->get('scope_id') != $this->forum->get('scope_id'))
+		{
+			App::redirect(
+				Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=forum'),
+				Lang::txt('PLG_GROUPS_FORUM_NOT_AUTHORIZED'),
+				'warning'
+			);
+			return;
+		}
 
 		// Make sure the thread exists and is accepting new posts
 		if ($post->get('parent') && isset($fields['thread']))
@@ -1512,6 +1728,33 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 				Notify::error(Lang::txt('PLG_GROUPS_FORUM_ERROR_THREAD_CLOSED'));
 				return $this->editthread($post);
 			}
+
+			// fields[thread] and fields[parent] name any rows on the hub. A
+			// reply goes into a thread starter of the category it is posted to
+			// (checked against this forum above), under a post of that same
+			// thread -- otherwise a member files a reply into any thread on
+			// the hub.
+			if ($thread->get('parent')
+			 || (int) $thread->get('category_id') !== (int) $post->get('category_id'))
+			{
+				Notify::error(Lang::txt('PLG_GROUPS_FORUM_ERROR_THREAD_CLOSED'));
+				return $this->editthread($post);
+			}
+
+			if ((int) $post->get('parent') !== (int) $thread->get('id'))
+			{
+				$parentPost = Post::oneOrNew((int) $post->get('parent'));
+				if ($parentPost->isNew() || (int) $parentPost->get('thread') !== (int) $thread->get('id'))
+				{
+					Notify::error(Lang::txt('PLG_GROUPS_FORUM_ERROR_THREAD_CLOSED'));
+					return $this->editthread($post);
+				}
+			}
+		}
+		elseif (!$post->get('parent') && $isNew)
+		{
+			// A new thread starter is its own thread; save() fills that in.
+			$post->set('thread', 0);
 		}
 
 		if (!$post->get('category_id'))
@@ -1701,7 +1944,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 		$type = 'thread';
 		$desc = Lang::txt(
 			'PLG_GROUPS_FORUM_ACTIVITY_' . strtoupper($type) . '_' . ($fields['id'] ? 'UPDATED' : 'CREATED'),
-			'<a href="' . Route::url($url) . '">' . $post->get('title') . '</a>'
+			'<a href="' . Route::url($url) . '">' . htmlspecialchars((string) $post->get('title'), ENT_QUOTES, 'UTF-8') . '</a>'
 		);
 		// If this is a post in a thread and not the thread starter...
 		if ($post->get('parent'))
@@ -1714,7 +1957,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 			$desc = Lang::txt(
 				'PLG_GROUPS_FORUM_ACTIVITY_' . strtoupper($type) . '_' . ($fields['id'] ? 'UPDATED' : 'CREATED'),
 				$post->get('id'),
-				'<a href="' . Route::url($url) . '">' . $thread->get('title') . '</a>'
+				'<a href="' . Route::url($url) . '">' . htmlspecialchars((string) $thread->get('title'), ENT_QUOTES, 'UTF-8') . '</a>'
 			);
 
 			// If the parent post is not the same as the
@@ -1966,15 +2209,23 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 		$redirect = Route::url($this->base . '&scope=' . $section . '/' . $category)  . '?' . $_SERVER['QUERY_STRING'];
 
 		// Is the user logged in?
-		// Login check is handled in the onGroup() method
-		/*if (User::isGuest())
+		if (User::isGuest())
 		{
 			App::redirect(
 				$redirect,
 				Lang::txt('PLG_GROUPS_FORUM_LOGIN_NOTICE'),
 				'warning'
 			);
-		}*/
+		}
+
+		// Require POST to prevent accidental deletion by crawlers
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('PLG_GROUPS_FORUM_ERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		// Check for request forgeries
+		Request::checkToken();
 
 		// Incoming
 		$id = Request::getInt('thread', 0);
@@ -1990,6 +2241,25 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 				Lang::txt('PLG_GROUPS_FORUM_MISSING_ID'),
 				'error'
 			);
+		}
+
+		// The post has to live in THIS group's forum. Post::oneOrFail() resolves
+		// any row on the hub, and access-delete-thread is granted to any group
+		// manager -- which anyone becomes by creating a group -- so without this
+		// the group route was a way to delete any forum post on the site,
+		// carrying its replies and attachments with it. The category is what
+		// decides which forum a stored post lives in, as savethread() tests.
+		$__owner = Category::oneOrNew($post->get('category_id'));
+
+		if ($__owner->get('scope') != $this->forum->get('scope')
+		 || $__owner->get('scope_id') != $this->forum->get('scope_id'))
+		{
+			App::redirect(
+				$redirect,
+				Lang::txt('PLG_GROUPS_FORUM_NOT_AUTHORIZED'),
+				'warning'
+			);
+			return;
 		}
 
 		// Check if user is authorized to delete entries
@@ -2032,7 +2302,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 					'action'      => 'deleted',
 					'scope'       => 'forum.thread',
 					'scope_id'    => $post->get('thread'),
-					'description' => Lang::txt('PLG_GROUPS_FORUM_THREAD_DELETED', '<a href="' . Route::url($url) . '">' . $post->get('title') . '</a>'),
+					'description' => Lang::txt('PLG_GROUPS_FORUM_THREAD_DELETED', '<a href="' . Route::url($url) . '">' . htmlspecialchars((string) ($post->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 					'details'     => array(
 						'thread' => $post->get('thread'),
 						'url'    => Route::url($url)
@@ -2073,7 +2343,20 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 		}
 
 		// Instantiate an attachment record
-		$attachment = Attachment::oneOrNew(Request::getInt('attachment', 0));
+		// oneOrNew() resolves any attachment row on the hub, and the lines below
+		// re-parent it onto the post just saved -- so naming someone else's
+		// attachment id moved it, with its stored file, onto this thread. An
+		// existing row has to already belong to the post being saved.
+		$__aid      = Request::getInt('attachment', 0);
+		$attachment = Attachment::oneOrNew($__aid);
+
+		if ($__aid
+		 && $attachment->get('id')
+		 && (int) $attachment->get('post_id') !== (int) $post_id)
+		{
+			$attachment = Attachment::blank();
+		}
+
 		$attachment->set('description', trim(Request::getString('description', '')));
 		$attachment->set('parent', $thread_id);
 		$attachment->set('post_id', $post_id);
@@ -2186,6 +2469,21 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 		if (!$post->get('id') || $post->get('state') == $post::STATE_DELETED)
 		{
 			App::abort(404, Lang::txt('PLG_GROUPS_FORUM_POST_NOT_FOUND'));
+		}
+
+		// ...and that post has to live in THIS group's forum. The attachment is
+		// resolved by a post or thread id straight from the request, and the
+		// access-view-thread gate below is granted to any group manager -- which
+		// anyone becomes by creating a group -- so without this the group route
+		// served any forum attachment on the hub. The category is what decides
+		// which forum a stored post lives in, as savethread() and deletethread()
+		// both test.
+		$__owner = Category::oneOrNew($post->get('category_id'));
+
+		if ($__owner->get('scope') != $this->forum->get('scope')
+		 || $__owner->get('scope_id') != $this->forum->get('scope_id'))
+		{
+			App::abort(404, Lang::txt('PLG_GROUPS_FORUM_FILE_NOT_FOUND'));
 		}
 
 		// Load ACL
@@ -2517,7 +2815,7 @@ class plgGroupsForum extends \Hubzero\Plugin\Plugin
 					'action'      => 'reordered',
 					'scope'       => 'forum.section',
 					'scope_id'    => $section->get('id'),
-					'description' => Lang::txt('PLG_GROUPS_FORUM_ACTIVITY_SECTION_REORDERED', '<a href="' . Route::url($this->base) . '">' . $section->get('title') . '</a>'),
+					'description' => Lang::txt('PLG_GROUPS_FORUM_ACTIVITY_SECTION_REORDERED', '<a href="' . Route::url($this->base) . '">' . htmlspecialchars((string) ($section->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 					'details'     => array(
 						'title' => $section->get('title'),
 						'url'   => Route::url($this->base)

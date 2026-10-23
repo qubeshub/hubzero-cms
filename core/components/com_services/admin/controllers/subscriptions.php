@@ -63,6 +63,13 @@ class Subscriptions extends AdminController
 			)
 		);
 
+		// Only the columns the list sorts by
+		if (!in_array($filters['sort'], array('id', 'status', 'uid', 'added', 'updated', 'expires'), true))
+		{
+			$filters['sort'] = 'id';
+		}
+		$filters['sort_Dir'] = (strtoupper((string) $filters['sort_Dir']) == 'DESC') ? 'DESC' : 'ASC';
+
 		// get all available subscriptions
 		$query = Subscription::all();
 
@@ -156,6 +163,14 @@ class Subscriptions extends AdminController
 		// Check for request forgeries
 		Request::checkToken();
 
+		if (
+			!User::authorise('core.edit', $this->_option)
+			&& !User::authorise('core.create', $this->_option)
+		)
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		$id = Request::getInt('id', 0);
 
 		$subscription = Subscription::oneOrFail($id);
@@ -233,6 +248,7 @@ class Subscriptions extends AdminController
 				$unitsleft = $subscription->getRemaining('unit', $service->get('maxunits'), $service->get('unitsize'));
 
 				// get cost per unit (to compute required refund)
+				$unitcost = $prevunitcost = (float) $service->get('unitprice');
 				$refund = ($subscription->get('totalpaid') > 0 && $unitsleft > 0 && ($subscription->get('totalpaid') - $unitsleft * $unitcost) > 0) ? $unitsleft * $prevunitcost : 0;
 
 				$subscription->set('status', 2);

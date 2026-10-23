@@ -133,15 +133,15 @@ if (($pagePrivacy== 'registered' && User::isGuest())
 						</li>
 						<?php /*if ($this->page->get('home') != 1) : ?>
 							<li>
-								<a class="home" title="<?php echo Lang::txt('COM_GROUPS_PAGES_SET_HOME'); ?>" data-title="<?php echo Lang::txt('COM_GROUPS_PAGES_SET_HOME'); ?>" href="<?php echo $setPageHomeLink; ?>">
+								<button type="submit" form="hz-post-action" formaction="<?php echo $setPageHomeLink; ?>" class="home" title="<?php echo Lang::txt('COM_GROUPS_PAGES_SET_HOME'); ?>" data-title="<?php echo Lang::txt('COM_GROUPS_PAGES_SET_HOME'); ?>">
 									<span><?php echo Lang::txt('COM_GROUPS_PAGES_SET_HOME'); ?></span>
-								</a>
+								</button>
 							</li>
 						<?php endif;*/ ?>
 
 						<?php if ($category->get('id') != '') : ?>
 							<li>
-								<a href="<?php echo $categoryLink; ?>" class="tooltips category category-<?php echo $category->get('id'); ?>" title="In <?php echo $category->get('title'); ?>"></a>
+								<a href="<?php echo $categoryLink; ?>" class="tooltips category category-<?php echo $category->get('id'); ?>" title="In <?php echo $this->escape($category->get('title')); ?>"></a>
 							</li>
 						<?php endif; ?>
 					<?php else : ?>

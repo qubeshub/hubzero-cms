@@ -11,12 +11,8 @@ defined('_HZEXEC_') or die();
 $canDo = \Components\Members\Helpers\Permissions::getActions('component');
 
 Toolbar::title(Lang::txt('COM_MEMBERS_REGISTRATION') . ': ' . Lang::txt('COM_MEMBERS_PREMIS'), 'user.png');
-if ($canDo->get('core.edit'))
-{
-	Toolbar::addNew();
-	Toolbar::editList();
-	Toolbar::deleteList();
-}
+// No New/Edit/Delete: this screen only imports (its Import button); there
+// were never tasks behind those toolbar buttons
 ?>
 
 <?php
@@ -28,6 +24,7 @@ if ($canDo->get('core.edit'))
 	<p class="error"><?php echo implode('<br />', $this->getErrors()); ?></p>
 <?php } ?>
 
+<?php if ($canDo->get('core.admin')) { ?>
 <form action="<?php echo Route::url('index.php?option=' . $this->option); ?>" name="hubForm" id="item-form" method="post" enctype="multipart/form-data">
 	<fieldset>
 		<p><input type="file" class="option" name="upload" /></p>
@@ -39,3 +36,6 @@ if ($canDo->get('core.edit'))
 		<?php echo Html::input('token'); ?>
 	</fieldset>
 </form>
+<?php } else { ?>
+	<p class="warning"><?php echo Lang::txt('JERROR_ALERTNOAUTHOR'); ?></p>
+<?php } ?>

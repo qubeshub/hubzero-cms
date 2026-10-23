@@ -386,7 +386,7 @@ class plgProjectsTodo extends \Hubzero\Plugin\Plugin
 	public function save()
 	{
 		// Check for request forgeries
-		Request::checkToken(['get', 'post']);
+		Request::checkToken();
 
 		// Incoming
 		$listcolor = Request::getString('list', '');
@@ -394,6 +394,15 @@ class plgProjectsTodo extends \Hubzero\Plugin\Plugin
 		$todoid    = Request::getInt('todoid', 0);
 		$newlist   = Request::getString('newlist', '', 'post');
 		$newcolor  = Request::getString('newcolor', '', 'post');
+		$todoColors = array('orange', 'lightblue', 'green', 'purple', 'blue', 'black', 'red', 'yellow', 'pink');
+		if (!in_array($listcolor, $todoColors))
+		{
+			$listcolor = $listcolor == 'none' ? 'none' : '';
+		}
+		if (!in_array($newcolor, $todoColors))
+		{
+			$newcolor = '';
+		}
 		$page      = Request::getString('page', 'list', 'post');
 		$assigned  = Request::getInt('assigned', 0);
 		$mine      = Request::getInt('mine', 0);
@@ -503,7 +512,10 @@ class plgProjectsTodo extends \Hubzero\Plugin\Plugin
 			}
 			else
 			{
-				$objTD->duedate = '';
+				// NULL, not '': the column is a nullable DATETIME and strict SQL
+				// mode refuses an empty string, which 500'd every to-do saved
+				// without a due date
+				$objTD->duedate = null;
 			}
 
 			// Get last order
@@ -673,6 +685,9 @@ class plgProjectsTodo extends \Hubzero\Plugin\Plugin
 	 */
 	public function delete()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Check permission
 		if (!$this->model->access('content'))
 		{
@@ -840,6 +855,9 @@ class plgProjectsTodo extends \Hubzero\Plugin\Plugin
 	 */
 	protected function _deleteComment()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Check permission
 		if (!$this->model->access('content'))
 		{
@@ -856,6 +874,20 @@ class plgProjectsTodo extends \Hubzero\Plugin\Plugin
 
 		if ($objC->load($cid))
 		{
+			// The comment's todo must belong to the current project
+			$todo = new \Components\Projects\Tables\Todo($this->_database);
+			$todo->loadTodo($this->model->get('id'), $objC->itemid);
+			if (!$todo->id)
+			{
+				throw new Exception(Lang::txt('ALERTNOTAUTH'), 403);
+			}
+
+			// Only the author (or a project manager) may remove a comment
+			if ($objC->created_by != $this->_uid && !$this->model->access('manager'))
+			{
+				throw new Exception(Lang::txt('ALERTNOTAUTH'), 403);
+			}
+
 			$activityid = $objC->activityid;
 
 			// delete comment
@@ -913,6 +945,13 @@ class plgProjectsTodo extends \Hubzero\Plugin\Plugin
 		$comment = \Hubzero\Utility\Sanitize::stripScripts($comment);
 		$comment = \Hubzero\Utility\Sanitize::stripImages($comment);
 		$comment = \Hubzero\Utility\Str::truncate($comment, 800);
+
+		// The todo being commented on must belong to this project
+		$todo = new \Components\Projects\Tables\Todo($this->_database);
+		if (!$itemid || !$todo->loadTodo($this->model->get('id'), $itemid))
+		{
+			throw new Exception(Lang::txt('ALERTNOTAUTH'), 403);
+		}
 
 		// Instantiate comment
 		$objC = new \Components\Projects\Tables\Comment($this->_database);

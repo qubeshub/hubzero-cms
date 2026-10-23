@@ -308,7 +308,26 @@ class plgPublicationsQuestions extends \Hubzero\Plugin\Plugin
 		// Initiate class and bind posted items to database fields
 		$fields = Request::getArray('question', array(), 'post');
 
-		$row = \Components\Answers\Models\Question::oneOrNew($fields['id'])->set($fields);
+		$__qid = isset($fields['id']) ? (int) $fields['id'] : 0;
+		$row = \Components\Answers\Models\Question::oneOrNew($__qid);
+
+		// A question may only be edited by its author
+		if (!$row->isNew() && $row->get('created_by') != User::get('id') && !User::authorise('core.admin'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
+		$__isNew = $row->isNew();
+		$__owner = $row->get('created_by');
+		// Only the fields the form is meant to edit; state, points, helpful etc. stay server-side
+		$row->set(array_intersect_key($fields, array_flip(array('subject', 'question', 'anonymous', 'email'))));
+		if ($__isNew)
+		{
+			$row->set('state', 0);
+		}
+		// Never take the author from the form: a new question is the caller's,
+		// an edited one keeps its author
+		$row->set('created_by', $__isNew ? User::get('id') : $__owner);
 
 		$banking = Component::params('com_members')->get('bankAccounts');
 

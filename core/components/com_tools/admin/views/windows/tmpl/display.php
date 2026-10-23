@@ -54,7 +54,7 @@ Html::behavior('tooltip');
 		$i = 0;
 		foreach ($this->rows as $row)
 		{
-			$appinfo = exec("/usr/bin/hz-aws-appstream getapp --appid " . $this->escape(stripslashes($row->get('path'))));
+			$appinfo = exec("/usr/bin/hz-aws-appstream getapp --appid " . escapeshellarg(stripslashes($row->get('path'))));
 			$appinfoArray = explode("|", $appinfo);
 			?>
 			<tr>
@@ -84,15 +84,15 @@ Html::behavior('tooltip');
 					<?php
 					if (count($appinfoArray) > 2)
 					{
-						echo $appinfoArray[2];
+						echo $this->escape($appinfoArray[2]);
 					}
 					?>
 				</td>
 				<td class="priority-1">
 					<?php
-					if (count($appinfoArray) > 2)
+					if (count($appinfoArray) > 3)
 					{
-						echo $appinfoArray[3];
+						echo $this->escape($appinfoArray[3]);
 					}
 					?>
 				</td>

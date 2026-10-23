@@ -323,6 +323,7 @@
 	}
 	.pane-queries li a.copy,
 	.pane-queries li a.delete,
+	.pane-queries li button.delete,
 	.pane-queries li a.edit {
 		border: none;
 		padding: 0;
@@ -336,14 +337,19 @@
 		display: inline-block;
 		color: #666;
 	}
+	.pane-queries li button.delete {
+		white-space: nowrap;
+	}
 	.pane-queries li a.copy:before,
 	.pane-queries li a.delete:before,
+	.pane-queries li button.delete:before,
 	.pane-queries li a.edit:before {
 		font-family: 'Fontcons';
 		line-height: 1;
 		margin-right: 2em;
 	}
-	.pane-queries li a.delete:before {
+	.pane-queries li a.delete:before,
+	.pane-queries li button.delete:before {
 		content: '\2716';
 	}
 	.pane-queries li a.edit:before {
@@ -436,7 +442,8 @@
 	.pane-queries li a:hover {
 		color: #222;
 	}
-	.pane-queries li a.delete:hover {
+	.pane-queries li a.delete:hover,
+	.pane-queries li button.delete:hover {
 		color: red;
 	}
 
@@ -1070,6 +1077,30 @@
 	ol.comments .comment-content {
 		margin-bottom: 0;
 		word-wrap: break-word;
+	}
+	ol.comments .comment-head {
+		margin-bottom: 0.3rem;
+	}
+	ol.comments .comment-meta {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+	ol.comments .comment-meta .permalink,
+	ol.comments .comment-meta .copy-link {
+		color: #767676;
+	}
+	ol.comments .comment-meta .copy-link {
+		display: flex;
+	}
+	ol.comments .comment-meta .copy-link .icn {
+		margin-left: 0.3rem;
+		line-height: 0;
+	}
+	ol.comments .comment-meta .permalink:hover,
+	ol.comments .comment-meta .copy-link:hover {
+		border: 0;
+		color: #222;
 	}
 	ol.comments .comment-changelog {
 		margin: 0 0 0 70px;

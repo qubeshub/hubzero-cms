@@ -136,7 +136,7 @@ class File extends Obj
 
 		if (in_array(false, $result, true))
 		{
-			$this->setError($table->getError());
+			$this->setError(Lang::txt('COM_TEMPLATES_ERROR_FAILED_TO_SAVE_FILENAME', $fileName));
 			return false;
 		}
 
@@ -158,7 +158,7 @@ class File extends Obj
 		}
 
 		// Trigger the onExtensionAfterSave event.
-		Event::trigger('extension.onExtensionAfterSave', array('com_templates.source', &$table, false));
+		Event::trigger('extension.onExtensionAfterSave', array('com_templates.source', &$this, false));
 
 		return true;
 	}

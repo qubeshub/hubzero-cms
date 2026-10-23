@@ -94,7 +94,7 @@ defined('_HZEXEC_') or die();
 					}
 
 					$expires .= '</p>' . "\n";
-					$expires .= $this->subscription->expires > $now ? ' <a href="' . Route::url('index.php?option=' . $this->option . '&task=cancel&uid=' . $this->uid) . '" class="cancelit" id="showconfirm">[ ' . Lang::txt( 'COM_JOBS_SUBSCRIPTION_CANCEL_THIS' ) . ' ]</a>' : '';
+					$expires .= $this->subscription->expires > $now ? ' <button type="submit" form="hz-post-action" formaction="' . Route::url('index.php?option=' . $this->option . '&task=cancel&uid=' . $this->uid) . '" class="cancelit" id="showconfirm">[ ' . Lang::txt( 'COM_JOBS_SUBSCRIPTION_CANCEL_THIS' ) . ' ]</button>' : '';
 					$expires .= $this->subscription->pendingunits > 0 && $this->subscription->status==1  ? '<p class="no">' . Lang::txt( 'COM_JOBS_SUBSCRIPTION_EXTEND_REQUEST_PENDING' ) . '</p>' :'';
 
 				}
@@ -121,7 +121,7 @@ defined('_HZEXEC_') or die();
 					<?php if ($thissub or ($this->subscription->serviceid==0 && $this->services->key() == 1)) {
 						echo 'checked="checked"';
 					}
-					echo '> ' . $currentService->title . ' - '; ?>
+					echo '> ' . $this->escape($currentService->title) . ' - '; ?>
 					<span class="priceline"><?php echo $currentService->currency . ' ' . $currentService->unitprice.'  ' . Lang::txt( 'COM_JOBS_PER' ) . ' ' . $currentService->unitmeasure; ?></span>
 					<span><?php echo $currentService->description; ?></span>
 
@@ -174,6 +174,7 @@ defined('_HZEXEC_') or die();
 			<div class="submitblock">
 				<input type="hidden" name="subid" value="<?php echo $this->employer->subscriptionid; ?>" />
 				<input type="hidden" name="uid" value="<?php echo $this->uid; ?>" />
+				<?php echo Html::input('token'); ?>
 				<input type="submit" class="option" value="<?php echo $btn; ?>" />
 			</div>
 		</fieldset>

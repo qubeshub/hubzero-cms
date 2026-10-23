@@ -146,6 +146,12 @@ class Tags extends SiteController
 			}
 		}
 
+		// Combining tags is a search; who may do that is a view access level
+		if (count($added) > 1 && !$this->requireViewLevel($this->config->get('search_access', 1), Lang::txt('COM_TAGS_SEARCH_LOGIN_REQUIRED')))
+		{
+			return;
+		}
+
 		$this->view->total      = 0;
 		$this->view->results    = null;
 		$this->view->categories = array();
@@ -457,6 +463,12 @@ class Tags extends SiteController
 			}
 		}
 
+		// Combining tags is a search; who may do that is a view access level
+		if (count($added) > 1 && !$this->requireViewLevel($this->config->get('search_access', 1), Lang::txt('COM_TAGS_SEARCH_LOGIN_REQUIRED')))
+		{
+			return;
+		}
+
 		// Paging variables
 		$limitstart = Request::getInt('limitstart', 0);
 		$limit = Request::getInt('limit', Config::get('list_limit'));
@@ -763,6 +775,7 @@ class Tags extends SiteController
 		$this->view
 			->set('tag', $tag)
 			->set('filters', $filters)
+			->set('config', $this->config)
 			->setLayout('edit')
 			->display();
 	}
@@ -774,7 +787,13 @@ class Tags extends SiteController
 	 */
 	public function cancelTask()
 	{
-		$return = Request::getString('return', 'index.php?option=' . $this->_option . '&task=browse', 'get');
+		$return = Request::getString('return', '', 'get');
+
+		// Only return to a page on this hub
+		if (!$return || !\Hubzero\Utility\Uri::isInternal($return))
+		{
+			$return = 'index.php?option=' . $this->_option . '&task=browse';
+		}
 
 		App::redirect(
 			Route::url($return, false)
@@ -800,6 +819,21 @@ class Tags extends SiteController
 		// Incoming
 		$tag = Request::getArray('fields', array(), 'post');
 
+		// Only what the form offers; the rest of the row (creator, counts,
+		// aliases) is the model's to keep
+		$tag = array_intersect_key($tag, array_flip(array('id', 'raw_tag', 'description', 'admin', 'substitutions')));
+
+		// Site editors may not flag a tag as an admin/system tag
+		if (!$this->config->get('access-manage-tag'))
+		{
+			unset($tag['admin']);
+		}
+		else
+		{
+			// An unticked checkbox is not posted
+			$tag['admin'] = !empty($tag['admin']) ? 1 : 0;
+		}
+
 		$subs = '';
 		if (isset($tag['substitutions']))
 		{
@@ -808,7 +842,9 @@ class Tags extends SiteController
 		}
 
 		// Bind incoming data
-		$row = Tag::oneOrFail(intval($tag['id']))->set($tag);
+		$row = Tag::oneOrNew(isset($tag['id']) ? intval($tag['id']) : 0);
+		unset($tag['id']);
+		$row->set($tag);
 
 		// Trigger before save event
 		$isNew  = $row->isNew();
@@ -854,6 +890,15 @@ class Tags extends SiteController
 	 */
 	public function deleteTask()
 	{
+		// Require POST to prevent accidental deletion by crawlers
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('COM_TAGS_ERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Check that the user is authorized
 		if (!$this->config->get('access-delete-tag'))
 		{

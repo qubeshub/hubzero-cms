@@ -105,11 +105,13 @@ class Course extends SiteController
 	 * Redirect to login page
 	 *
 	 * @param   string  $message
+	 * @param   string  $task     Task to return to after login (defaults to the current one)
 	 * @return  void
 	 */
-	public function loginTask($message = '')
+	public function loginTask($message = '', $task = null)
 	{
-		$return = base64_encode(Route::url('index.php?option=' . $this->_option . '&gid=' . $this->course->get('id') . '&task=' . $this->_task, false, true));
+		$task   = $task ?: $this->_task;
+		$return = base64_encode(Route::url('index.php?option=' . $this->_option . '&gid=' . $this->course->get('id') . '&task=' . $task, false, true));
 
 		App::redirect(
 			Route::url('index.php?option=com_users&view=login&return=' . $return, false),
@@ -294,8 +296,6 @@ class Course extends SiteController
 		// Push back into edit mode if any errors
 		if (!$course->bind($data))
 		{
-			$this->tags = $tags;
-
 			Notify::error($course->getError(), 'courses');
 			return $this->newTask($course);
 		}
@@ -313,8 +313,6 @@ class Course extends SiteController
 		// Push back into edit mode if any errors
 		if (!$course->store(true))
 		{
-			$this->tags = $tags;
-
 			Notify::error($course->getError(), 'courses');
 			return $this->editTask($course);
 		}
@@ -368,6 +366,15 @@ class Course extends SiteController
 	 */
 	public function publishTask()
 	{
+		// Check if they're logged in (returning to the course, not to this action)
+		if (User::isGuest())
+		{
+			return $this->loginTask(Lang::txt('COM_COURSES_NOT_LOGGEDIN'), 'display');
+		}
+
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Incoming
 		$id = Request::getCmd('gid', '');
 
@@ -475,6 +482,24 @@ class Course extends SiteController
 		$course   = Models\Course::getInstance($data['course_id']);
 		$offering = Models\Offering::getInstance($data['id']);
 
+		// Only a course manager may create or change its offerings.
+		if (!$course->access('edit', 'course'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
+		// ...and an existing offering has to already belong to that course, for
+		// the same reason as savepageTask: getInstance() loads any id and bind()
+		// writes the posted course_id over it.
+		if ($offering->exists() && (int) $offering->get('course_id') !== (int) $course->get('id'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
+		// The course was resolved above (an alias is accepted); store its id, not
+		// whatever spelling was posted, since check() intval()s the value.
+		$data['course_id'] = (int) $course->get('id');
+
 		// Is this a new entry or updating?
 		$isNew = false;
 		if (!$offering->exists())
@@ -560,6 +585,12 @@ class Course extends SiteController
 			App::abort(404, Lang::txt('COM_COURSES_NO_COURSE_FOUND'));
 		}
 
+		// Must be authorized to edit the source course
+		if (!$this->course->access('edit', 'course'))
+		{
+			App::abort(403, Lang::txt('COM_COURSES_NOT_AUTH'));
+		}
+
 		// Check authorization
 		if (!$this->course->access('delete'))
 		{
@@ -567,12 +598,27 @@ class Course extends SiteController
 		}
 
 		// Get number of course members
-		$managers = $this->course->get('managers');
+		// the manager ids (there is no 'managers' column: get() gave null, and
+		// count(null) is a TypeError)
+		$managers = array_keys((array) $this->course->managers());
 
 		// Incoming
 		$process = Request::getString('process', '');
 		$confirmdel = Request::getString('confirmdel', '');
 		$msg = trim(Request::getString('msg', '', 'post'));
+
+		// What the deletion covers: shown on the confirmation page and kept as
+		// the log entry once it happens (it used to exist only on the
+		// confirmation branch, an undefined $log at the end of the delete)
+		$log = Lang::txt('COM_COURSES_MEMBERS_LOG', count($managers));
+
+		// Trigger the functions that delete associated content
+		// Should return logs of what was deleted
+		$logs = Event::trigger('courses.onCourseDeleteCount', array($this->course));
+		if (count($logs) > 0)
+		{
+			$log .= '<br />' . implode('<br />', $logs);
+		}
 
 		// Did they confirm delete?
 		if (!$process || !$confirmdel)
@@ -582,19 +628,9 @@ class Course extends SiteController
 				Notify::error(Lang::txt('COM_COURSES_ERROR_CONFIRM_DELETION'), 'courses');
 			}
 
-			$log = Lang::txt('COM_COURSES_MEMBERS_LOG', count($managers));
-
-			// Trigger the functions that delete associated content
-			// Should return logs of what was deleted
-			$logs = Event::trigger('courses.onCourseDeleteCount', array($course));
-			if (count($logs) > 0)
-			{
-				$log .= '<br />' . implode('<br />', $logs);
-			}
-
 			// Output HTML
 			$this->view->title  = Lang::txt('COM_COURSES_DELETE_COURSE') . ': ' . $this->course->get('title');
-			$this->view->course = $course;
+			$this->view->course = $this->course;
 			$this->view->log    = $log;
 			$this->view->msg    = $msg;
 			$this->view->notifications = Notify::messages('courses');
@@ -604,11 +640,11 @@ class Course extends SiteController
 
 		$this->course->set('state', 2);
 
-		// Delete course
-		if (!$this->course->update())
+		// Delete course (update() is a Table method the model does not have)
+		if (!$this->course->store(false))
 		{
 			$this->view->setLayout('error');
-			$this->view->title = $title;
+			$this->view->title = Lang::txt('COM_COURSES_DELETE');
 			if ($this->course->getError())
 			{
 				Notify::error($this->course->getError(), 'courses');
@@ -628,6 +664,7 @@ class Course extends SiteController
 		);
 
 		// E-mail subject
+		$gcn = $this->course->get('alias');
 		$subject = Lang::txt('COM_COURSES_SUBJECT_COURSE_DELETED', $gcn);
 
 		// Build the e-mail message
@@ -640,28 +677,24 @@ class Course extends SiteController
 		$eview->user = User::getInstance();
 		$eview->gcn = $gcn;
 		$eview->msg = $msg;
-		$eview->course = $deletedcourse;
+		$eview->course = $this->course;
 
 		$message = $eview->loadTemplate();
 		$message = str_replace("\n", "\r\n", $message);
 
 		// Send the message
-		if (!Event::trigger('xmessage.onSendMessage', array('courses_deleted', $subject, $message, $from, $members, $this->_option)))
+		if (!Event::trigger('xmessage.onSendMessage', array('courses_deleted', $subject, $message, $from, $managers, $this->_option)))
 		{
 			Notify::error(Lang::txt('COM_COURSES_ERROR_EMAIL_MEMBERS_FAILED'));
 		}
 
-		// Log the deletion
-		$xlog = new Tables\Log($this->database);
-		$xlog->gid       = $this->course->get('id');
-		$xlog->uid       = User::get('id');
-		$xlog->timestamp = Date::toSql();
-		$xlog->action    = 'course_deleted';
-		$xlog->comments  = $log;
-		$xlog->actorid   = User::get('id');
-		if (!$xlog->store())
+		// Log the deletion (this used to fill gid/uid/actorid, columns the log
+		// table does not have, so the INSERT failed and the delete 500ed at
+		// the very end)
+		$this->course->log($this->course->get('id'), 'course', 'course_deleted', $log);
+		if ($this->course->getError())
 		{
-			Notify::error($xlog->getError());
+			Notify::error($this->course->getError());
 		}
 
 		// Redirect back to the courses page
@@ -702,6 +735,47 @@ class Course extends SiteController
 			);
 		}
 
+		// Only a course manager may create or change its pages.
+		if (!$course->access('edit', 'course'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
+		// ...and the page being written has to already belong to that course.
+		// Models\Page loads any id, and bind() writes every posted column
+		// including course_id, so authorizing the POSTed course_id alone let a
+		// manager of one course rebind another course's page into theirs.
+		if (!empty($page['id']))
+		{
+			$existing = new Models\Page($page['id']);
+
+			if ($existing->exists() && (int) $existing->get('course_id') !== (int) $course->get('id'))
+			{
+				App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+			}
+		}
+
+		// Pin the scope to the course that was actually authorized, and do it
+		// on the RESOLVED id. The guard above compares $course->get('id'), but
+		// bind() writes $page['course_id'] verbatim -- and Tables\Course::load()
+		// resolves a non-numeric key as an alias, so page[course_id]=<my-alias>
+		// authorized fine while Tables\Page::check() intval()'d it to 0. A page
+		// with course_id=0/offering_id=0/active=1 is exactly the "all courses"
+		// bucket plugins/courses/pages fetches, i.e. it renders in every
+		// offering on the hub. offering_id is pinned for the same reason:
+		// Offering::pages() filters on offering_id and active, never course_id.
+		$page['course_id'] = (int) $course->get('id');
+
+		if (!empty($page['offering_id']))
+		{
+			$offering = Models\Offering::getInstance((int) $page['offering_id']);
+
+			if (!$offering->exists() || (int) $offering->get('course_id') !== (int) $course->get('id'))
+			{
+				App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+			}
+		}
+
 		$model = new Models\Page($page['id']);
 
 		if (!$model->bind($page))
@@ -740,11 +814,14 @@ class Course extends SiteController
 	 */
 	public function deletepageTask()
 	{
-		// Check if they're logged in
+		// Check if they're logged in (returning to the course, not to this action)
 		if (User::isGuest())
 		{
-			return $this->loginTask('COM_COURSES_NOT_LOGGEDIN');
+			return $this->loginTask(Lang::txt('COM_COURSES_NOT_LOGGEDIN'), 'display');
 		}
+
+		// Check for request forgeries
+		Request::checkToken();
 
 		if (!$this->course->exists())
 		{
@@ -968,6 +1045,12 @@ class Course extends SiteController
 			App::abort(404, Lang::txt('COM_COURSES_NO_COURSE_FOUND'));
 		}
 
+		// Must be authorized to edit the source course
+		if (!$this->course->access('edit', 'course'))
+		{
+			App::abort(403, Lang::txt('COM_COURSES_NOT_AUTH'));
+		}
+
 		$rtrn = Request::getString('return');
 
 		$this->view
@@ -992,11 +1075,23 @@ class Course extends SiteController
 			App::abort(404, Lang::txt('COM_COURSES_NO_COURSE_FOUND'));
 		}
 
+		// Must be authorized to edit the source course
+		if (!$this->course->access('edit', 'course'))
+		{
+			App::abort(403, Lang::txt('COM_COURSES_NOT_AUTH'));
+		}
+
 		// Incoming
 		$rtrn = Request::getString('return', '', 'post');
 		if ($rtrn)
 		{
 			$rtrn = base64_decode($rtrn);
+
+			// Only ever send the user back to a page on this hub
+			if (!$rtrn || !\Hubzero\Utility\Uri::isInternal($rtrn))
+			{
+				$rtrn = '';
+			}
 		}
 
 		$fields = Request::getArray('fields', array('title' => '', 'alias' => ''), 'post');
@@ -1032,6 +1127,18 @@ class Course extends SiteController
 	 */
 	public function forkTask()
 	{
+		// Forking makes the caller the new course's manager, so there has to be one
+		if (User::isGuest())
+		{
+			$return = base64_encode(Request::getString('REQUEST_URI', Route::url('index.php?option=' . $this->_option . '&controller=' . $this->_controller . '&gid=' . $this->course->get('alias') . '&task=fork', false, true), 'server'));
+			App::redirect(
+				Route::url('index.php?option=com_users&view=login&return=' . $return, false),
+				Lang::txt('COM_COURSES_NOT_LOGGEDIN'),
+				'warning'
+			);
+			return;
+		}
+
 		// Ensure we found the course info
 		if (!$this->course->exists())
 		{
@@ -1061,6 +1168,12 @@ class Course extends SiteController
 		// Check for request forgeries
 		Request::checkToken();
 
+		// A guest fork would be created with user 0 as its only manager
+		if (User::isGuest())
+		{
+			App::abort(403, Lang::txt('COM_COURSES_NOT_LOGGEDIN'));
+		}
+
 		// Ensure we found the course info
 		if (!$this->course->exists())
 		{
@@ -1082,6 +1195,12 @@ class Course extends SiteController
 		if ($rtrn)
 		{
 			$rtrn = base64_decode($rtrn);
+
+			// Only ever send the user back to a page on this hub
+			if (!$rtrn || !\Hubzero\Utility\Uri::isInternal($rtrn))
+			{
+				$rtrn = '';
+			}
 		}
 
 		$fields = Request::getArray('fields', array('title' => '', 'alias' => ''), 'post');

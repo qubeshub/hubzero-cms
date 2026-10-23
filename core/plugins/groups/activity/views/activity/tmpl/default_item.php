@@ -115,10 +115,11 @@ $base = 'index.php?option=com_groups&cn=' . $this->group->get('cn') . '&active=a
 					if ($project)
 					{
 						$projectDetailUrl = $this->row->log->details->get('url');
-						$projectDetailUrl = !empty($projectDetailUrl) ? $projectDetailUrl : Route::url('index.php?option=com_projects&alias=' . $project->get('alias'));
+						// The stored URL is only followed to a site path or an http(s) address
+						$projectDetailUrl = (!empty($projectDetailUrl) && preg_match('#^(https?://|/)#i', $projectDetailUrl)) ? $projectDetailUrl : Route::url('index.php?option=com_projects&alias=' . $project->get('alias'));
 						?>
 						<div class="activity-source icon-project">
-							<a href="<?php echo $projectDetailUrl; ?>"><?php echo $project->get('title'); ?></a>
+							<a href="<?php echo $this->escape($projectDetailUrl); ?>"><?php echo $this->escape(stripslashes($project->get('title'))); ?></a>
 						</div>
 						<?php
 					}
@@ -189,7 +190,7 @@ $base = 'index.php?option=com_groups&cn=' . $this->group->get('cn') . '&active=a
 							{
 								?>
 								<a class="attachment <?php echo Filesystem::extension($attachment->get('filename')); ?>" href="<?php echo Route::url($link); ?>" title="<?php echo $this->escape($attachment->get('description')); ?>">
-									<p class="attachment-description"><?php echo $attachment->get('description'); ?></p>
+									<p class="attachment-description"><?php echo $this->escape($attachment->get('description')); ?></p>
 									<p class="attachment-meta">
 										<span class="attachment-size"><?php echo Hubzero\Utility\Number::formatBytes($attachment->size()); ?></span>
 										<span class="attachment-action"><?php echo Lang::txt('JLIB_HTML_CLICK_TO_DOWNLOAD'); ?></span>
@@ -231,31 +232,26 @@ $base = 'index.php?option=com_groups&cn=' . $this->group->get('cn') . '&active=a
 							<?php } ?>
 						</li>
 					<?php } ?>
-					<?php if (!$this->row->log->get('parent')) { ?>
+					<?php if ($this->canStar && !$this->row->log->get('parent')) { ?>
 						<li>
-							<a
+							<button type="submit" form="hz-post-action"
 								data-id="activity<?php echo $this->row->get('id'); ?>"
 								class="icon-starred tooltips"
-								href="<?php echo Route::url($base . '&action=' . ($this->row->get('starred') ? 'un' : '') . 'star&activity=' . $this->row->get('id')); ?>"
+								formaction="<?php echo Route::url($base . '&action=' . ($this->row->get('starred') ? 'un' : '') . 'star&activity=' . $this->row->get('id')); ?>"
 								data-hrf-active="<?php echo Route::url($base . '&action=unstar&activity=' . $this->row->get('id')); ?>"
 								data-hrf-inactive="<?php echo Route::url($base . '&action=star&activity=' . $this->row->get('id')); ?>"
 								data-txt-active="<?php echo Lang::txt('Unstar this'); ?>"
 								data-txt-inactive="<?php echo Lang::txt('Star this'); ?>"
 								title="<?php echo ($this->row->get('starred')) ? Lang::txt('Unstar this') : Lang::txt('Star this'); ?>"><!--
 								--><?php echo ($this->row->get('starred')) ? Lang::txt('Unstar this') : Lang::txt('Star this'); ?><!--
-							--></a>
+							--></button>
 						</li>
 					<?php } ?>
+					<?php if ($this->canModerate || $this->plugin->isOwnContent($this->row->log)) { ?>
 					<li>
-						<a
-							data-id="activity<?php echo $this->row->get('id'); ?>"
-							class="icon-delete tooltips"
-							href="<?php echo Route::url($base . '&action=remove&activity=' . $this->row->get('id') . '&' . Session::getFormToken() . '=1'); ?>"
-							title="<?php echo Lang::txt('PLG_GROUPS_ACTIVITY_DELETE'); ?>"
-							data-txt-confirm="<?php echo Lang::txt('PLG_GROUPS_ACTIVITY_CONFIRM_DELETE'); ?>"><!--
-							--><?php echo Lang::txt('PLG_GROUPS_ACTIVITY_DELETE'); ?><!--
-						--></a>
+						<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&action=remove&activity=' . $this->row->get('id')); ?>" class="icon-delete tooltips" title="<?php echo Lang::txt('PLG_GROUPS_ACTIVITY_DELETE'); ?>" data-id="activity<?php echo $this->row->get('id'); ?>" data-txt-confirm="<?php echo Lang::txt('PLG_GROUPS_ACTIVITY_CONFIRM_DELETE'); ?>"><?php echo Lang::txt('PLG_GROUPS_ACTIVITY_DELETE'); ?></button>
 					</li>
+					<?php } ?>
 					<?php /*<li>
 						<a data-id="activity<?php echo $this->row->get('id'); ?>" class="icon-options tooltips" href="#moreoptions<?php echo $this->row->get('id'); ?>" title="<?php echo Lang::txt('PLG_GROUPS_ACTIVITY_OPTIONS'); ?>"><?php echo Lang::txt('PLG_GROUPS_ACTIVITY_OPTIONS'); ?></a>
 						<ul class="activity-options-more" id="moreoptions<?php echo $this->row->get('id'); ?>">
@@ -326,11 +322,18 @@ $base = 'index.php?option=com_groups&cn=' . $this->group->get('cn') . '&active=a
 		$r = $recipient->getTableName();
 		$l = Hubzero\Activity\Log::blank()->getTableName();
 
+		// Replies in the managers' channel are recorded for managers only
+		$scopes = array('group');
+		if (in_array(User::get('id'), $this->group->get('managers')))
+		{
+			$scopes[] = 'group_managers';
+		}
+
 		$rows = $recipient
 			->select($r . '.*')
 			->including('log')
 			->join($l, $l . '.id', $r . '.log_id')
-			->whereEquals($r . '.scope', 'group')
+			->whereIn($r . '.scope', $scopes)
 			->whereEquals($r . '.scope_id', $this->group->get('gidNumber'))
 			->whereEquals($r . '.state', Hubzero\Activity\Recipient::STATE_PUBLISHED)
 			->whereEquals($l . '.parent', $this->row->log->get('id'))
@@ -346,6 +349,9 @@ $base = 'index.php?option=com_groups&cn=' . $this->group->get('cn') . '&active=a
 				{
 					$this->view('default_item')
 						->set('group', $this->group)
+						->set('canModerate', $this->canModerate)
+						->set('canStar', $this->canStar)
+						->set('plugin', $this->plugin)
 						->set('online', $this->online)
 						->set('row', $row)
 						->display();

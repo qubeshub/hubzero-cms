@@ -11,6 +11,9 @@ use Hubzero\Database\Table;
 use Lang;
 use User;
 
+// saveGroup() instantiates the tool table
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'tool.php';
+
 /**
  * Table class for tool/group mapping
  */
@@ -86,9 +89,9 @@ class Group extends Table
 		if (\Hubzero\User\Group::exists($devgroup))
 		{
 			$group->read($devgroup);
-			$existing_members = \Components\Tools\Helpers\Utils::transform(Tool::getToolDevelopers($toolid), 'uidNumber');
+			$existing_members = \Components\Tools\Helpers\Utils::transform((new Tool($this->_db))->getToolDevelopers($toolid), 'uidNumber');
 			$group->set('members', $existing_members);
-			$group->set('managers', $existing_managers);
+			// (managers used to be set from an unassigned variable; they are left as they are)
 		}
 		else
 		{
@@ -98,8 +101,8 @@ class Group extends Table
 			$group->set('discoverability', 0);
 			$group->set('description', 'Dev group for tool ' . $toolid);
 			$group->set('cn', $devgroup);
-			$group->set('members', $existing_members);
-			$group->set('managers', $existing_managers);
+			$group->set('members', $members);
+			$group->set('managers', $members);
 		}
 
 		$group->update();

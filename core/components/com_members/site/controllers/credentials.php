@@ -49,6 +49,24 @@ class Credentials extends SiteController
 	}
 
 	/**
+	 * Answer a reset request that can't be honoured (unknown, blocked or
+	 * super-user account, or too many requests) exactly as a successful one,
+	 * so the form can't be used to find out which accounts exist
+	 *
+	 * @return  void
+	 */
+	protected function pretendSent()
+	{
+		User::setState('com_members.reset.user', null);
+
+		$this->finish(
+			Route::url('index.php?option=' . $this->_option . '&task=verify', false),
+			Lang::txt('COM_MEMBERS_CREDENTIALS_EMAIL_SENT'),
+			'passed'
+		);
+	}
+
+	/**
 	 * Default task
 	 *
 	 * @return  void
@@ -112,10 +130,12 @@ class Credentials extends SiteController
 		// Make sure we have at least one
 		if ($users->count() < 1)
 		{
+			// Answer exactly as if mail had gone out, so the form can't be
+			// used to find out which addresses have accounts
 			$this->finish(
-				Route::url('index.php?option=' . $this->_option . '&task=remind', false),
-				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_USER_NOT_FOUND'),
-				'warning'
+				Route::url('index.php?option=com_login', false),
+				Lang::txt('COM_MEMBERS_CREDENTIALS_EMAIL_SENT'),
+				'passed'
 			);
 			return;
 		}
@@ -232,21 +252,11 @@ class Credentials extends SiteController
 		// Make sure we have at least one and not more than one
 		if ($user->count() < 1)
 		{
-			$this->finish(
-				Route::url('index.php?option=' . $this->_option . '&task=reset', false),
-				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_USER_NOT_FOUND'),
-				'warning'
-			);
-			return;
+			return $this->pretendSent();
 		}
 		else if ($user->count() > 1)
 		{
-			$this->finish(
-				Route::url('index.php?option=' . $this->_option . '&task=reset', false),
-				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_MULTIPLE_RESULTS'),
-				'warning'
-			);
-			return;
+			return $this->pretendSent();
 		}
 
 		// Get the user object
@@ -255,34 +265,19 @@ class Credentials extends SiteController
 		// Make sure the user isn't blocked
 		if ($user->get('block'))
 		{
-			$this->finish(
-				Route::url('index.php?option=' . $this->_option . '&task=reset', false),
-				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_USER_NOT_FOUND'),
-				'warning'
-			);
-			return;
+			return $this->pretendSent();
 		}
 
 		// Make sure the user isn't a super admin
 		if ($user->authorise('core.admin'))
 		{
-			$this->finish(
-				Route::url('index.php?option=' . $this->_option . '&task=reset', false),
-				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_USER_IS_SUPER'),
-				'warning'
-			);
-			return;
+			return $this->pretendSent();
 		}
 
 		// Make sure the user has not exceeded the reset limit
 		if ($this->hasExceededResetLimit($user))
 		{
-			$this->finish(
-				Route::url('index.php?option=' . $this->_option . '&task=reset', false),
-				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_EXCEEDED_LIMIT'),
-				'warning'
-			);
-			return;
+			return $this->pretendSent();
 		}
 
 		// Set the confirmation token
@@ -396,14 +391,18 @@ class Credentials extends SiteController
 			);
 			return;
 		}
-		$parts = explode(':', $user->tokens()->latest()->token);
+		// Newest token by id: 'created' has one-second resolution, so two
+		// requests in the same second (a double click, or a retry after the
+		// mail failed) made the choice arbitrary and the mailed code could be
+		// refused as "user not found"
+		$parts = explode(':', $user->tokens()->latest('id')->token);
 		$crypt = $parts[0];
 
 		if (!isset($parts[1]))
 		{
 			$this->finish(
 				Route::url('index.php?option=' . $this->_option . '&task=verify', false),
-				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_USER_NOT_FOUND'),
+				Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_TOKENS_MISSING'),
 				'warning'
 			);
 			return;
@@ -498,7 +497,7 @@ class Credentials extends SiteController
 		$user = \Hubzero\User\User::oneOrFail($id);
 
 		// Check for a user and that the tokens match
-		if ($user->tokens()->latest()->token !== $token)
+		if ($user->tokens()->latest('id')->token !== $token)
 		{
 			App::redirect(
 				Route::url('index.php?option=' . $this->_option . '&task=setpassword', false),
@@ -559,7 +558,9 @@ class Credentials extends SiteController
 		}
 		elseif (!empty($msg))
 		{
-			$error = Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_PASSWORD_FAILS_REQUIREMENTS');
+			// Say which rules failed (e.g. reusing an earlier password): the
+			// live checklist can't always tell, and showed them all as met
+			$error = Lang::txt('COM_MEMBERS_CREDENTIALS_ERROR_PASSWORD_FAILS_REQUIREMENTS') . ' ' . strip_tags(implode(' ', $msg));
 		}
 
 		// If we're resetting password to the current password, just return true

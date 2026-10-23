@@ -49,7 +49,7 @@ $this->css()
 			<div class="post <?php echo $item->type(); ?>" id="b<?php echo $row->get('id'); ?>" data-id="<?php echo $row->get('id'); ?>" data-closeup-url="<?php echo Route::url($base . '&task=post/' . $row->get('id')); ?>">
 				<div class="content">
 					<?php
-						$this->view('default_' . $item->type(), 'post')
+						$this->view('default_' . $item->layout(dirname(__DIR__, 2) . DS . 'post' . DS . 'tmpl', 'default_'), 'post')
 						     ->set('name', $this->name)
 						     ->set('option', $this->option)
 						     ->set('member', $this->member)
@@ -82,9 +82,9 @@ $this->css()
 										<span><?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_EDIT'); ?></span>
 									</a>
 								<?php } else { ?>
-									<a class="btn vote <?php echo ($item->get('voted')) ? 'unlike' : 'like'; ?>" data-id="<?php echo $row->get('id'); ?>" data-text-like="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_LIKE'); ?>" data-text-unlike="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_UNLIKE'); ?>" href="<?php echo Route::url($base . '&task=post/' . $row->get('id') . '/vote'); ?>">
+									<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&task=post/' . $row->get('id') . '/vote'); ?>" class="btn vote <?php echo ($item->get('voted')) ? 'unlike' : 'like'; ?>" data-id="<?php echo $row->get('id'); ?>" data-text-like="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_LIKE'); ?>" data-text-unlike="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_UNLIKE'); ?>">
 										<span><?php echo ($item->get('voted')) ? Lang::txt('PLG_MEMBERS_COLLECTIONS_UNLIKE') : Lang::txt('PLG_MEMBERS_COLLECTIONS_LIKE'); ?></span>
-									</a>
+									</button>
 								<?php } ?>
 									<a class="btn comment" data-id="<?php echo $row->get('id'); ?>" href="<?php echo Route::url('index.php?option=com_collections&controller=posts&post=' . $row->get('id') . '&task=comment'); //$base . '&task=post/' . $row->get('id') . '/comment'); ?>">
 										<span><?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_COMMENT'); ?></span>
@@ -98,7 +98,7 @@ $this->css()
 									</a>
 								<?php } ?>
 							<?php } else { ?>
-									<a class="btn vote like tooltips" href="<?php echo Route::url('index.php?option=com_users&view=login&return=' . base64_encode(Route::url($base . '&task=post/' . $row->get('id') . '/vote', false, true)), false); ?>" title="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_WARNING_LOGIN_TO_LIKE'); ?>">
+									<a class="btn vote like tooltips" href="<?php echo Route::url('index.php?option=com_users&view=login&return=' . base64_encode(Route::url($base, false, true)), false); ?>" title="<?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_WARNING_LOGIN_TO_LIKE'); ?>">
 										<span><?php echo Lang::txt('PLG_MEMBERS_COLLECTIONS_LIKE'); ?></span>
 									</a>
 									<a class="btn comment" data-id="<?php echo $row->get('id'); ?>" href="<?php echo Route::url('index.php?option=com_collections&controller=posts&post=' . $row->get('id') . '&task=comment'); //$base . '&task=post/' . $row->get('id') . '/comment'); ?>">

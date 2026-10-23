@@ -112,6 +112,15 @@ class plgResourcesWatch extends \Hubzero\Plugin\Plugin
 			);
 		}
 
+		// An old link or a crawler arrives by GET: show the box, whose
+		// buttons post, rather than change the subscription
+		if (Request::method() !== 'POST')
+		{
+			return $this->statusAction();
+		}
+
+		Request::checkToken();
+
 		// Load a subscription, if it exists
 		$watch = \Hubzero\Activity\Subscription::oneByScope(
 			$this->resource->id,
@@ -159,7 +168,7 @@ class plgResourcesWatch extends \Hubzero\Plugin\Plugin
 				'action'      => $this->action . 'd',
 				'scope'       => 'resource',
 				'scope_id'    => $this->resource->id,
-				'description' => Lang::txt('PLG_RESOURCES_WATCH_' . strtoupper($this->action) . 'D', '<a href="' . $url . '">' . $this->resource->title . '</a>'),
+				'description' => Lang::txt('PLG_RESOURCES_WATCH_' . strtoupper($this->action) . 'D', '<a href="' . $url . '">' . htmlspecialchars((string) ($this->resource->title), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $this->resource->title,
 					'url'   => $url

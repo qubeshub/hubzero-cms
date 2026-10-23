@@ -551,6 +551,13 @@ class Pipeline extends SiteController
 			);
 		}
 
+		// Only tool admins/developers may change license and code access
+		if (!$this->_checkAccess($id))
+		{
+			App::abort(403, Lang::txt('COM_TOOLS_ALERTNOTAUTH'));
+			return;
+		}
+
 		$hztv = \Components\Tools\Helpers\Version::getDevelopmentToolVersion($id);
 
 		// Replace the default values
@@ -887,6 +894,11 @@ class Pipeline extends SiteController
 	 */
 	public function saveTask()
 	{
+		// Check for request forgeries. The edit form already sends a token;
+		// this task writes the tool and its developers as resource authors
+		// and had never checked it.
+		Request::checkToken();
+
 		$exportmap  = array(
 			'@OPEN'   => null,
 			'@GROUP'  => null,
@@ -900,7 +912,7 @@ class Pipeline extends SiteController
 
 		// set vars
 		$tool = Request::getArray('tool', array(), 'post');
-		$tool = array_map('trim', $tool);
+		$tool = array_map(function ($v) { return is_scalar($v) ? trim((string) $v) : ''; }, $tool);
 		// Sanitize the input a bit
 		foreach ($tool as $i => $var)
 		{
@@ -989,6 +1001,10 @@ class Pipeline extends SiteController
 		else
 		{
 			$hzt = \Components\Tools\Models\Tool::getInstance($id);
+
+			// The name is fixed once registered: the version row, its invoke
+			// path and the Trac project are all derived from it
+			$tool['toolname'] = $hzt->toolname;
 		}
 
 		// get tool id for newly registered tool
@@ -1073,7 +1089,7 @@ class Pipeline extends SiteController
 			$hztv->wikiaccess    = $tool['wiki'];
 			$hztv->vnc_command   = $invokedir . DS . $tool['toolname'] . DS . 'dev' . DS . 'middleware' . DS . 'invoke -T dev';
 			$hztv->vnc_geometry  = $tool['vncGeometry'];
-			$hztv->exportControl = $exportmap[$tool['exec']];
+			$hztv->exportControl = (isset($exportmap[$tool['exec']]) ? $exportmap[$tool['exec']] : null);
 			$hztv->state         = 3;
 			$hztv->instance      = $tool['toolname'] . $dev_suffix;
 			$hztv->mw            = $this->config->get('default_mw', 'narwhal');
@@ -1095,7 +1111,7 @@ class Pipeline extends SiteController
 				$hztv->codeaccess    = $tool['code'];
 				$hztv->wikiaccess    = $tool['wiki'];
 				$hztv->vnc_geometry  = $tool['vncGeometry'];
-				$hztv->exportControl = $exportmap[$tool['exec']];
+				$hztv->exportControl = (isset($exportmap[$tool['exec']]) ? $exportmap[$tool['exec']] : null);
 				$hztv->hostreq       = $tool['hostreq'];
 
 				$hzt->add('version', $hztv->instance);
@@ -1153,6 +1169,18 @@ class Pipeline extends SiteController
 
 		$hztv->set('owner', $hzg->cn);
 		$hztv->add('owner', 'apps');
+		$oldgroups = array();
+		if ($id)
+		{
+			foreach (\Components\Tools\Models\Tool::getToolGroups($id) as $g)
+			{
+				$oldgroups[] = $g->cn;
+			}
+			sort($oldgroups);
+		}
+		$newgroups = array_values(array_filter($tool['membergroups']));
+		sort($newgroups);
+
 		$hztv->set('member', $tool['membergroups']);
 
 		// Add repo for new tools
@@ -1202,7 +1230,7 @@ class Pipeline extends SiteController
 				require_once __DIR__ . DS . 'authors.php';
 
 				$controller = new Authors();
-				$controller->saveTask(0, $rid, $tool['developers']);
+				$controller->saveAuthors($rid, $tool['developers'], 0);
 
 				//$this->author_save(0, $rid, $tool['developers']);
 			}
@@ -1214,6 +1242,17 @@ class Pipeline extends SiteController
 		$hzg->update();
 		$hzt->update();
 		$hztv->update(); // @FIXME: look
+
+		// Group restrictions are applied to the tool's files by the middleware;
+		// without this they'd only take effect at the nightly resetfacl
+		if ($id && $oldgroups !== $newgroups)
+		{
+			$out = '';
+			if (!\Components\Tools\Helpers\Utils::middleware('resetfacl', $out))
+			{
+				Log::debug(__FUNCTION__ . "() resetfacl failed for " . $tool['toolname'] . ": $out");
+			}
+		}
 
 		$status = $hztv->toArray();
 		$status['toolstate']    = $hzt->state;
@@ -1264,16 +1303,16 @@ class Pipeline extends SiteController
 
 			if (!file_exists('/usr/bin/addrepo.sh'))
 			{
-				$command  = '/usr/bin/addrepo ' . $toolinfo['toolname'];
+				$command  = '/usr/bin/addrepo ' . escapeshellarg($toolinfo['toolname']);
 				$command .= ' -title ' . escapeshellarg($toolinfo['title']);
 				$command .= ' -description ' . escapeshellarg($toolinfo['description']);
-				$command .= ' -password "' . $pw . '"';
+				$command .= ' -password ' . escapeshellarg($pw);
 				$command .= ' -hubdir ' . PATH_ROOT;
 			}
 			else
 			{
-				$command  = '/usr/bin/addrepo.sh ' . $toolinfo['repohost'];
-				$command .= ' --project ' . $toolinfo['toolname'];
+				$command  = '/usr/bin/addrepo.sh ' . escapeshellarg($toolinfo['repohost']);
+				$command .= ' --project ' . escapeshellarg($toolinfo['toolname']);
 				$command .= ' --title ' . escapeshellarg($toolinfo['title']);
 				$command .= ' --description ' . escapeshellarg($toolinfo['description']);
 				$command .= ' --hubdir ' . PATH_ROOT;
@@ -1281,12 +1320,12 @@ class Pipeline extends SiteController
 				{
 					if ($toolinfo['github'])
 					{
-						$command .= ' --gitURL ' . $toolinfo['github'];
+						$command .= ' --gitURL ' . escapeshellarg($toolinfo['github']);
 					}
 				}
 
 				if (is_file('/usr/share/hubzero-forge/svn/trunk/middleware/invoke.simtool')) {
-					$command .= ' --publishOption ' . $toolinfo['publishType'];
+					$command .= ' --publishOption ' . escapeshellarg($toolinfo['publishType']);
 				}
 			}
 
@@ -1523,6 +1562,9 @@ class Pipeline extends SiteController
 	 */
 	public function updateTask()
 	{
+		// Check for request forgeries; both status-page forms send a token
+		Request::checkToken();
+
 		// get vars
 		if (!$this->_toolid)
 		{

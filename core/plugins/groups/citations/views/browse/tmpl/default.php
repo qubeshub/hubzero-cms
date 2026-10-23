@@ -13,6 +13,10 @@ $this->css('citations.css')
 
 $base = 'index.php?option=com_groups&cn=' . $this->group->get('cn') . '&active=citations';
 
+// Bulk actions: the buttons post here, with the selected ids added by the script
+$bulkPublish = Route::url($base . '&action=publish&bulk=true');
+$bulkDelete  = Route::url($base . '&action=delete&bulk=true');
+
 if (isset($this->messages))
 {
 	foreach ($this->messages as $message)
@@ -64,12 +68,12 @@ if (isset($this->messages))
 										{
 											foreach ($v as $k2 => $v2)
 											{
-												$queryString .= "&{$k}[{$k2}]={$v2}";
+												$queryString .= "&" . rawurlencode($k) . "[" . rawurlencode($k2) . "]=" . rawurlencode($v2);
 											}
 										}
 										else
 										{
-											$queryString .= "&{$k}={$v}";
+											$queryString .= "&" . rawurlencode($k) . "=" . rawurlencode($v);
 										}
 									}
 								}
@@ -91,12 +95,12 @@ if (isset($this->messages))
 							<?php if ($this->isManager) : ?>
 								<tr class="hidden">
 									<div class="admin">
-										<a class="btn icon-window-publish bulk" data-link="<?php echo Route::url($base. '&action=publish&bulk=true'); ?>">
+										<button type="submit" form="hz-post-action" formaction="<?php echo $bulkPublish; ?>" class="btn icon-window-publish bulk" data-link="<?php echo $bulkPublish; ?>">
 											<?php echo Lang::txt('PLG_GROUPS_CITATIONS_PUBLISH_SELECTED'); ?>
-										</a>
-										<a class="btn icon-delete bulk" data-protected="true" data-link="<?php echo Route::url($base. '&action=delete&bulk=true'); ?>">
+										</button>
+										<button type="submit" form="hz-post-action" formaction="<?php echo $bulkDelete; ?>" class="btn icon-delete bulk" data-protected="true" data-link="<?php echo $bulkDelete; ?>">
 											<?php echo Lang::txt('PLG_GROUPS_CITATIONS_DELETE_SELECTED'); ?>
-										</a>
+										</button>
 										</td>
 									</div>
 								</tr>
@@ -158,7 +162,7 @@ if (isset($this->messages))
 										{
 											$formatted = str_replace(
 												'doi:' . $cite->doi,
-												'<a href="' . $cite->url . '" rel="external">' . 'doi:' . $cite->doi . '</a>',
+												'<a href="' . $this->escape($cite->url) . '" rel="external">' . 'doi:' . $this->escape($cite->doi) . '</a>',
 												$formatted
 											);
 										}
@@ -175,7 +179,7 @@ if (isset($this->messages))
 											<ul class="citation-links">
 												<?php foreach ($links as $link) { ?>
 													<li>
-														<a href="<?php echo $link->url; ?>"><?php echo $this->escape($link->title); ?></a>
+														<a href="<?php echo $this->escape($link->url); ?>"><?php echo $this->escape($link->title); ?></a>
 													</li>
 												<?php } ?>
 											</ul>
@@ -193,7 +197,7 @@ if (isset($this->messages))
 												<?php if ($final != '' && $this->config->get('citation_sponsors', 'yes') == 'yes') : ?>
 													<p class="sponsor"><?php echo Lang::txt('PLG_GROUPS_CITATIONS_ABSTRACT_BY'); ?> <?php echo substr($final, 0, -2); ?></p>
 												<?php endif; ?>
-												<p><?php echo nl2br($cite->abstract); ?></p>
+												<p><?php echo nl2br($this->escape($cite->abstract)); ?></p>
 											</div>
 										<?php endif; ?>
 										<div class="citation-details <?php echo ($cite->published == $cite::STATE_UNPUBLISHED) ? 'unpublished-details' : ''; ?>">
@@ -213,14 +217,10 @@ if (isset($this->messages))
 											</a>
 										</td>
 										<td class="col-delete">
-											<a class="icon-delete delete individual protected" href="<?php echo Route::url($base. '&action=delete&id=' . $cite->id); ?>" title="<?php echo Lang::txt('PLG_GROUPS_CITATIONS_DELETE'); ?>">
-												<span><?php echo Lang::txt('PLG_GROUPS_CITATIONS_DELETE'); ?></span>
-											</a>
+											<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base. '&action=delete&id=' . $cite->id); ?>" class="icon-delete delete individual protected" title="<?php echo Lang::txt('PLG_GROUPS_CITATIONS_DELETE'); ?>"><span><?php echo Lang::txt('PLG_GROUPS_CITATIONS_DELETE'); ?></span></button>
 										</td>
 										<td class="col-publish">
-											<a class="icon-window-publish individual publish" href="<?php echo Route::url($base. '&action=publish&id=' . $cite->id); ?>" title="<?php echo ($cite->published == $cite::STATE_PUBLISHED) ? Lang::txt('PLG_GROUPS_CITATIONS_UNPUBLISH') : Lang::txt('PLG_GROUPS_CITATIONS_PUBLISH'); ?>">
-												<span><?php echo ($cite->published == $cite::STATE_PUBLISHED) ? Lang::txt('PLG_GROUPS_CITATIONS_UNPUBLISH') : '<strong>' . Lang::txt('PLG_GROUPS_CITATIONS_PUBLISH') . '</strong>'; ?></span>
-											</a>
+											<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base. '&action=publish&id=' . $cite->id); ?>" class="icon-window-publish individual publish" title="<?php echo ($cite->published == $cite::STATE_PUBLISHED) ? Lang::txt('PLG_GROUPS_CITATIONS_UNPUBLISH') : Lang::txt('PLG_GROUPS_CITATIONS_PUBLISH'); ?>"><span><?php echo ($cite->published == $cite::STATE_PUBLISHED) ? Lang::txt('PLG_GROUPS_CITATIONS_UNPUBLISH') : '<strong>' . Lang::txt('PLG_GROUPS_CITATIONS_PUBLISH') . '</strong>'; ?></span></button>
 										</td>
 									<?php endif; ?>
 								</tr>

@@ -51,11 +51,21 @@ class Router extends Base
 
 		$vars['controller'] = 'tickets';
 
+		// The v2 tickets controller documents its URIs as /support/tickets[/...];
+		// the loader already takes the controller from that segment, so drop it
+		// here or "tickets" was read as the task (POST /support/tickets and
+		// GET /support/tickets/{id} answered "Task [...] not found")
+		if (isset($segments[0]) && $segments[0] == 'tickets')
+		{
+			array_shift($segments);
+		}
+
 		if (isset($segments[0]))
 		{
 			if (is_numeric($segments[0]))
 			{
-				$vars['id'] = $segments[0];
+				$vars['id']     = $segments[0];
+				$vars['ticket'] = $segments[0]; // the v1 tickets controller reads 'ticket'
 				$method = \App::get('request')->method();
 				switch ($method)
 				{
@@ -79,8 +89,29 @@ class Router extends Base
 			{
 				if ($segments[1] == 'comments')
 				{
+					// /support/{ticket}/comments[/list|/{comment}]: this always
+					// answered "list", so the documented comment create, read,
+					// update and delete could never be reached
 					$vars['controller'] = $segments[1];
-					$vars['task'] = 'list';
+					$vars['ticket']     = $segments[0];
+					unset($vars['task']);
+					if (isset($segments[2]) && is_numeric($segments[2]))
+					{
+						$vars['comment'] = $segments[2];
+						$method = \App::get('request')->method();
+						if ($method == 'GET')
+						{
+							$vars['task'] = 'read';
+						}
+					}
+					else if (isset($segments[2]))
+					{
+						$vars['task'] = $segments[2];
+					}
+					else if (\App::get('request')->method() == 'GET')
+					{
+						$vars['task'] = 'list';
+					}
 				}
 				else
 				{

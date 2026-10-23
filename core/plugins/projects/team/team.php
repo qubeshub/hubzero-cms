@@ -152,7 +152,7 @@ class plgProjectsTeam extends \Hubzero\Plugin\Plugin
 					break;
 
 				case 'sync':
-					$arr['html'] = $this->_sync();
+					$arr['html'] = $this->sync();
 					break;
 
 				case 'choose':
@@ -415,7 +415,8 @@ class plgProjectsTeam extends \Hubzero\Plugin\Plugin
 
 		$view->publication = new \Components\Publications\Models\Publication($pid, null, $vid);
 
-		if (!$view->publication->exists())
+		// The publication must belong to this project
+		if (!$view->publication->exists() || $view->publication->get('project_id') != $this->model->get('id'))
 		{
 			$this->setError(Lang::txt('PLG_PROJECTS_PUBLICATIONS_SELECTOR_ERROR_NO_PUBID'));
 
@@ -494,6 +495,12 @@ class plgProjectsTeam extends \Hubzero\Plugin\Plugin
 	 */
 	protected function _save()
 	{
+		// Managing team membership is a manager/owner action
+		if (!$this->model->access('manager'))
+		{
+			App::abort(403, Lang::txt('ALERTNOTAUTH'));
+		}
+
 		// Incoming
 		$newm    = Request::getVar('newmember', '', 'post');
 		if (is_string($newm))
@@ -581,7 +588,9 @@ class plgProjectsTeam extends \Hubzero\Plugin\Plugin
 					// By email
 					else
 					{
-						$regex = '/^([a-zA-Z0-9_.-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-]+)+/';
+						// Anchored at both ends: the address is stored, and a trailing
+						// quote was enough to reach the INSERT
+						$regex = '/^([a-zA-Z0-9_.-])+@([a-zA-Z0-9_-])+(\.[a-zA-Z0-9_-]+)+$/';
 						if (preg_match($regex, $cid))
 						{
 							// This is an email - check if user with the email exists
@@ -761,6 +770,12 @@ class plgProjectsTeam extends \Hubzero\Plugin\Plugin
 	 */
 	protected function sync()
 	{
+		// Pulling in group members is a manager action
+		if (!$this->model->access('manager'))
+		{
+			App::abort(403, Lang::txt('ALERTNOTAUTH'));
+		}
+
 		// Setup stage?
 		$setup = $this->model->inSetup();
 
@@ -803,6 +818,12 @@ class plgProjectsTeam extends \Hubzero\Plugin\Plugin
 	 */
 	protected function delete()
 	{
+		// Managing team membership is a manager/owner action
+		if (!$this->model->access('manager'))
+		{
+			App::abort(403, Lang::txt('ALERTNOTAUTH'));
+		}
+
 		// Incoming
 		$checked = Request::getArray('owner', array());
 		$groups  = Request::getArray('group', array());
@@ -905,7 +926,8 @@ class plgProjectsTeam extends \Hubzero\Plugin\Plugin
 	 */
 	protected function _approveMembership()
 	{
-		Request::checkToken('get');
+		// Both Approve buttons post the token
+		Request::checkToken();
 		$projectId = $this->model->get('id');
 		$userId = User::getInstance()->get('id');
 		$currentUser = Components\Projects\Models\Orm\Owner::oneByProjectAndUser($projectId, $userId);
@@ -942,7 +964,6 @@ class plgProjectsTeam extends \Hubzero\Plugin\Plugin
 	 */
 	protected function _denyMembership()
 	{
-		Request::checkToken('get');
 		$projectId = $this->model->get('id');
 		$userId = User::getInstance()->get('id');
 		$currentUser = Components\Projects\Models\Orm\Owner::oneByProjectAndUser($projectId, $userId);
@@ -968,6 +989,15 @@ class plgProjectsTeam extends \Hubzero\Plugin\Plugin
 
 				return $view->loadTemplate();
 			}
+
+			// The denial itself must be posted
+			if (Request::method() !== 'POST')
+			{
+				App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+			}
+
+			Request::checkToken();
+
 			$owner->set('status', 4);
 			$message = Request::getString('message');
 			$params = $owner->params;
@@ -1016,6 +1046,11 @@ class plgProjectsTeam extends \Hubzero\Plugin\Plugin
 	 */
 	protected function _changeOwner()
 	{
+		// Role and ownership changes are manager actions
+		if (!$this->model->access('manager'))
+		{
+			App::abort(403, Lang::txt('ALERTNOTAUTH'));
+		}
 		// Incoming
 		$confirm = Request::getInt('confirm', 0, 'post');
 		$user    = Request::getInt('owned_by_user', $this->model->get('owned_by_user'), 'post');
@@ -1023,6 +1058,20 @@ class plgProjectsTeam extends \Hubzero\Plugin\Plugin
 
 		if ($confirm)
 		{
+			// The group must be one the owner belongs to (the choices the form offers)
+			if ($group && $group != $this->model->get('owned_by_group'))
+			{
+				$allowed = array();
+				foreach (\Hubzero\User\Helper::getGroups($user, 'members', 1) as $g)
+				{
+					$allowed[] = $g->gidNumber;
+				}
+				if (!in_array($group, $allowed))
+				{
+					App::abort(403, Lang::txt('ALERTNOTAUTH'));
+				}
+			}
+
 			// Load project owner table class
 			$objO = $this->model->table('Owner');
 			$objO->loadOwner($this->model->get('id'), $user);
@@ -1193,6 +1242,11 @@ class plgProjectsTeam extends \Hubzero\Plugin\Plugin
 	 */
 	protected function _changeRole()
 	{
+		// Role and ownership changes are manager actions
+		if (!$this->model->access('manager'))
+		{
+			App::abort(403, Lang::txt('ALERTNOTAUTH'));
+		}
 		// Incoming
 		$checked = Request::getArray('owner', array());
 		$groups  = Request::getArray('group', array());

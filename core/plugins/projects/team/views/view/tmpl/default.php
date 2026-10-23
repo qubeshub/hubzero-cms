@@ -126,13 +126,11 @@ $sortAppend = '&sortdir=' . urlencode($sortbyDir);
 					</td>
 					<td>
 						<?php if ($owner->status == 3 && $this->currentUser->isManager()): ?>
-							<a id="<?php echo 'form-' . $owner->id;?>"
-								href="<?php echo Route::url('index.php?option=com_projects&alias=' . $this->model->get('alias') . '&task=team&action=approvemembership&owner=' . $owner->userid . '&' . Session::getFormToken() . '=1');?>"
-								class="btn btn-success">
+							<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=com_projects&alias=' . $this->model->get('alias') . '&task=team&action=approvemembership&owner=' . $owner->userid);?>" id="<?php echo 'form-approve-' . $owner->id;?>" class="btn btn-success">
 								<?php echo Lang::txt('PLG_PROJECTS_TEAM_APPROVE_REQUEST'); ?>
-							</a>
-							<a id="<?php echo 'form-' . $owner->id;?>"
-								href="<?php echo Route::url('index.php?option=com_projects&alias=' . $this->model->get('alias') . '&task=team&action=denymembership&owner=' . $owner->userid . '&' . Session::getFormToken() . '=1');?>"
+							</button>
+							<a id="<?php echo 'form-deny-' . $owner->id;?>"
+								href="<?php echo Route::url('index.php?option=com_projects&alias=' . $this->model->get('alias') . '&task=team&action=denymembership&owner=' . $owner->userid);?>"
 								class="btn btn-danger modal">
 								<?php echo Lang::txt('PLG_PROJECTS_TEAM_DENY_REQUEST'); ?>
 							</a>
@@ -140,7 +138,7 @@ $sortAppend = '&sortdir=' . urlencode($sortbyDir);
 					</td>
 					<?php if ($this->count_groups) { ?>
 						<td class="priority-2">
-							<?php echo $owner->groupdesc ? \Hubzero\Utility\Str::truncate($owner->groupdesc, 30) : ''; ?><span class="block short prominent"><?php echo $owner->groupname; ?></span>
+							<?php echo $owner->groupdesc ? $this->escape(\Hubzero\Utility\Str::truncate($owner->groupdesc, 30)) : ''; ?><span class="block short prominent"><?php echo $this->escape($owner->groupname); ?></span>
 						</td>
 					<?php } ?>
 					<td class="priority-4">

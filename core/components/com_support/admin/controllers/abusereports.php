@@ -173,6 +173,11 @@ class Abusereports extends AdminController
 		// Check for request forgeries
 		Request::checkToken();
 
+		if (!User::authorise('core.manage', $this->_option) && !User::authorise('core.delete', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		// Incoming
 		$id = Request::getInt('id', 0);
 		$parentid = Request::getInt('parentid', 0);
@@ -227,6 +232,11 @@ class Abusereports extends AdminController
 	{
 		// Check for request forgeries
 		Request::checkToken();
+
+		if (!User::authorise('core.manage', $this->_option) && !User::authorise('core.delete', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 
 		// Incoming
 		$id = Request::getInt('id', 0);
@@ -288,7 +298,8 @@ class Abusereports extends AdminController
 			}
 		}
 
-		if ($isSpam)
+		// The reported item may already be gone
+		if ($isSpam && $reported)
 		{
 			$results = Event::trigger('antispam.onAntispamTrain', array(
 				$reported->text,
@@ -306,7 +317,7 @@ class Abusereports extends AdminController
 		}
 
 		// Notify item owner
-		if ($email)
+		if ($email && $reported)
 		{
 			Lang::load($this->_option . '.abuse', dirname(dirname(__DIR__)) . '/site');
 

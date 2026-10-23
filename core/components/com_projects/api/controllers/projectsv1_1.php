@@ -103,13 +103,9 @@ class Projectsv1_1 extends ApiController
 		if ($response->total)
 		{
 			$base = rtrim(Request::base(), '/');
-			if (isset($searchable))
-			{
-				return false;
-			}
 			foreach ($model->entries('list', $filters, $admin) as $i => $entry)
 			{
-				if (isset($searchable))
+				if (!empty($searchable))
 				{
 					$obj = new stdClass;
 					$obj->id          = 'project-' . $entry->get('id');
@@ -261,7 +257,10 @@ class Projectsv1_1 extends ApiController
 			$obj->provisioned   = $this->model->isProvisioned();
 			$obj->state         = $this->model->get('state');
 			$obj->inSetup       = $this->model->inSetup();
-			$obj->userRole      = $this->model->member()->role;
+			// an admin passes access('member') without being on the team, and
+			// member() is then false ("Attempt to read property role on false")
+			$member             = $this->model->member();
+			$obj->userRole      = $member ? $member->role : null;
 		}
 
 		$response = new stdClass;

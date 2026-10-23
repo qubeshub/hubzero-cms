@@ -38,7 +38,7 @@ class SessionClassGroup extends Table
 			$this->setError(Lang::txt('COM_TOOLS_SESSION_CLASS_MUST_HAVE_CLASS_ID'));
 		}
 
-		if (!$this->class_id)
+		if (!$this->group_id)
 		{
 			$this->setError(Lang::txt('COM_TOOLS_SESSION_CLASS_MUST_HAVE_GROUP_ID'));
 		}
@@ -159,7 +159,7 @@ class SessionClassGroup extends Table
 				{
 					$filters['sort_Dir'] = 'ASC';
 				}
-				$query .= " ORDER BY " . $filters['sort'] . " " . $filters['sort_Dir'];
+				$query .= " ORDER BY " . (preg_replace('/[^a-zA-Z0-9_,. ]/', '', (string) $filters['sort']) ?: '1') . " " . (strtoupper((string) $filters['sort_Dir']) === 'ASC' ? 'ASC' : 'DESC');
 
 				if (isset($filters['limit']) && $filters['limit'] > 0)
 				{

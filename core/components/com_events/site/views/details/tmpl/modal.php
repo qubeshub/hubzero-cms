@@ -17,9 +17,9 @@ defined('_HZEXEC_') or die();
 			<a class="edit" href="<?php echo Route::url('index.php?option=' . $this->option . '&task=edit&id=' . $this->row->id); ?>" title="<?php echo Lang::txt('JACTION_EDIT'); ?>">
 				<?php echo strtolower(Lang::txt('JACTION_EDIT')); ?>
 			</a>
-			<a class="delete" href="<?php echo Route::url('index.php?option=' . $this->option . '&task=delete&id=' . $this->row->id . '&' . Session::getFormToken() . '=1'); ?>" title="<?php echo Lang::txt('JACTION_DELETE'); ?>">
+			<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=' . $this->option . '&task=delete&id=' . $this->row->id); ?>" class="delete" title="<?php echo Lang::txt('JACTION_DELETE'); ?>">
 				<?php echo strtolower(Lang::txt('JACTION_DELETE')); ?>
-			</a>
+			</button>
 		<?php } ?>
 	</h2>
 
@@ -38,7 +38,7 @@ defined('_HZEXEC_') or die();
 			?>
 				<li<?php if ($this->page->alias == $p->alias) { echo ' class="active"'; } ?>>
 					<a class="tab" href="<?php echo Route::url('index.php?option=' . $this->option . '&task=details&id=' . $this->row->id . '&no_html=1&page=' . $p->alias); ?>">
-						<span><?php echo trim(stripslashes($p->title)); ?></span>
+						<span><?php echo $this->escape(trim(stripslashes($p->title))); ?></span>
 					</a>
 				</li>
 			<?php
@@ -152,7 +152,7 @@ defined('_HZEXEC_') or die();
 				<div class="container">
 					<h3><?php echo Lang::txt('EVENTS_CAL_LANG_EVENT_EXTRA'); ?></h3>
 					<p class="entry-link">
-						<a href="<?php echo stripslashes($this->row->extra_info); ?>"><?php echo $this->escape(stripslashes($this->row->extra_info)); ?></a>
+						<a href="<?php echo $this->escape(stripslashes($this->row->extra_info)); ?>"><?php echo $this->escape(stripslashes($this->row->extra_info)); ?></a>
 					</p>
 				</div>
 			<?php } ?>

@@ -689,6 +689,26 @@ class Citations extends SiteController
 			App::abort(403, Lang::txt('COM_CITATIONS_CITATION_NOT_AUTH'));
 		}
 
+		// Ownership and placement are not the form's to choose: the hidden
+		// uid/scope/scope_id/published inputs would otherwise file the row
+		// under another member's or group's citation list.
+		if (!User::authorise('core.manage', $this->_option))
+		{
+			if ($row->isNew())
+			{
+				$c['uid']      = User::get('id');
+				$c['scope']    = 'hub';
+				$c['scope_id'] = '';
+			}
+			else
+			{
+				$c['uid']       = $row->get('uid');
+				$c['scope']     = $row->get('scope');
+				$c['scope_id']  = $row->get('scope_id');
+				$c['published'] = $row->get('published');
+			}
+		}
+
 		$row->set($c);
 
 		$updateAuthorsId = false;
@@ -721,7 +741,13 @@ class Citations extends SiteController
 			$assoc = array_map('trim', $assoc);
 			$assocId = !empty($assoc['id']) ? $assoc['id'] : null;
 			unset($assoc['id']);
-			$newAssociation = Association::oneOrNew($assocId)->set($assoc);
+			$newAssociation = Association::oneOrNew($assocId);
+			// An existing association must already belong to this citation
+			if (!$newAssociation->isNew() && (int) $newAssociation->get('cid') !== (int) $row->get('id'))
+			{
+				App::abort(403, Lang::txt('COM_CITATIONS_CITATION_NOT_AUTH'));
+			}
+			$newAssociation->set($assoc);
 			if (!$newAssociation->isNew() && (empty($assoc['tbl']) || empty($assoc['oid'])))
 			{
 				$newAssociation->destroy();
@@ -1080,7 +1106,7 @@ class Citations extends SiteController
 	 */
 	public function getformatTask()
 	{
-		echo 'format' . Request::getString('format', 'apa');
+		echo 'format' . htmlspecialchars(Request::getString('format', 'apa'), ENT_QUOTES, 'UTF-8');
 	}
 
 	/**
@@ -1090,6 +1116,15 @@ class Citations extends SiteController
 	 */
 	public function downloadimageTask()
 	{
+		// This fetched any URL from the request -- get_headers() then
+		// imagecreatefrom*() -- for anyone, guests included: a server-side
+		// request to internal hosts and cloud metadata addresses, and an open
+		// image proxy. Its only producer was the OpenURL resolver icon, whose
+		// lookup is commented out in displayTask(), so the icon is always ''
+		// and nothing links here. Refused until that feature returns with a
+		// fixed, configured icon URL.
+		App::abort(404, Lang::txt('JERROR_LAYOUT_PAGE_NOT_FOUND'));
+
 		// get the image we want to serve
 		$image = Request::getString('image', '');
 

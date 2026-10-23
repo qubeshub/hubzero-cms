@@ -57,12 +57,56 @@ class Authors extends SiteController
 	 * @param   array    $authorsNew  Authors to add
 	 * @return  void
 	 */
-	public function saveTask($show = 1, $id = 0, $authorsNew = array())
+	/**
+	 * Confirm the current user may edit the given resource
+	 *
+	 * @param   integer  $id  Resource ID
+	 * @return  Entry
+	 */
+	protected function _authorizeResource($id)
+	{
+		if (!$id)
+		{
+			App::abort(403, Lang::txt('COM_TOOLS_ALERTNOTAUTH'));
+		}
+		$resource = Entry::oneOrFail((int) $id);
+		if (!$resource->access('edit') && !$resource->access('edit-own')
+		 && !User::authorise('core.manage', 'com_tools'))
+		{
+			App::abort(403, Lang::txt('COM_TOOLS_ALERTNOTAUTH'));
+		}
+		return $resource;
+	}
+
+	public function saveTask()
+	{
+		// Check for request forgeries. This is the dispatched task; the
+		// internal callers go through saveAuthors() directly.
+		Request::checkToken();
+
+		return $this->saveAuthors(0, array(), 1);
+	}
+
+	/**
+	 * Save one or more authors to a resource
+	 *
+	 * Called by saveTask() after the token check, and directly by
+	 * the tool pipeline (pipeline.php), which pass \$show = 0 inside a request they
+	 * have already checked themselves.
+	 *
+	 * @param   integer  $id          Resource ID (0 = read pid from the request)
+	 * @param   array    $authorsNew  Authors to add
+	 * @param   integer  $show        Display author list when done?
+	 * @return  void
+	 */
+	public function saveAuthors($id = 0, $authorsNew = array(), $show = 1)
 	{
 		// Incoming resource ID
+		$fromRequest = false;
 		if (!$id)
 		{
 			$id = Request::getInt('pid', 0);
+			$fromRequest = true;
 		}
 		if (!$id)
 		{
@@ -72,6 +116,14 @@ class Authors extends SiteController
 				$this->displayTask($id);
 			}
 			return;
+		}
+
+		// Only a resource editor may change its authors. An internal caller
+		// (tool registration passes the id explicitly, before the developer
+		// group has been written) has already established that right.
+		if ($fromRequest)
+		{
+			$this->_authorizeResource($id);
 		}
 
 		// Incoming authors
@@ -229,6 +281,9 @@ class Authors extends SiteController
 	 */
 	public function removeTask()
 	{
+		// Check for request forgeries
+		Request::checkToken('get');
+
 		// Incoming
 		$id  = Request::getInt('id', 0);
 		$pid = Request::getInt('pid', 0);
@@ -239,6 +294,9 @@ class Authors extends SiteController
 			$this->setError(Lang::txt('COM_TOOLS_CONTRIBUTE_NO_ID'));
 			return $this->displayTask();
 		}
+
+		// Only a resource editor may change its authors
+		$this->_authorizeResource($pid);
 
 		// Ensure we have the contributor's ID ($id)
 		if ($id)
@@ -262,6 +320,9 @@ class Authors extends SiteController
 	 */
 	public function updateTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Incoming
 		$ids = Request::getArray('authors', array(), 'post');
 		$pid = Request::getInt('pid', 0);
@@ -272,6 +333,9 @@ class Authors extends SiteController
 			$this->setError(Lang::txt('COM_TOOLS_COM_CONTRIBUTE_NO_ID'));
 			return $this->displayTask();
 		}
+
+		// Only a resource editor may change its authors
+		$this->_authorizeResource($pid);
 
 		// Ensure we have the contributor's ID ($id)
 		if ($ids)
@@ -305,6 +369,9 @@ class Authors extends SiteController
 	 */
 	public function reorderTask()
 	{
+		// Check for request forgeries
+		Request::checkToken('get');
+
 		// Incoming
 		$id   = Request::getInt('id', 0);
 		$pid  = Request::getInt('pid', 0);
@@ -323,6 +390,9 @@ class Authors extends SiteController
 			$this->setError(Lang::txt('COM_TOOLS_CONTRIBUTE_NO_ID'));
 			return $this->displayTask($pid);
 		}
+
+		// Only a resource editor may reorder its authors
+		$this->_authorizeResource($pid);
 
 		switch ($move)
 		{
@@ -363,7 +433,7 @@ class Authors extends SiteController
 		// Ensure we have an ID to work with
 		if (!$id)
 		{
-			App::abort(500, Lang::txt('COM_TOOLS_CONTRIBUTE_NO_ID'));
+			App::abort(400, Lang::txt('COM_TOOLS_CONTRIBUTE_NO_ID'));
 		}
 
 		$version = Request::getString('version', $version);

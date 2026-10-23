@@ -51,7 +51,7 @@ $this->view('_submenu')
 					?>
 					<select name="skuRequested" id="skuRequested" class="filter filter-submit">
 						<option value="0"<?php if ($this->filters['skuRequested'] == -1) { echo ' selected="selected"'; } ?>><?php echo Lang::txt('All SKUs'); ?></option>
-						<option value="<?php echo $this->filters['skuRequested']; ?>"><?php echo $this->skuRequestedName; ?></option>
+						<option value="<?php echo $this->escape($this->filters['skuRequested']); ?>"><?php echo $this->escape($this->skuRequestedName); ?></option>
 					</select>
 					&nbsp;&nbsp;
 					<?php
@@ -77,7 +77,7 @@ $this->view('_submenu')
 							echo Lang::txt('COM_CART_ORDERS_FOR') . ': ';
 							$user = User::getInstance($this->filters['uidNumber']);
 
-							echo ($user->get('id')) ? $user->get('name') . ' (' . $user->get('username') . ')' : Lang::txt('COM_CART_USER_ID') . ': ' . $this->filters['uidNumber'];
+							echo ($user->get('id')) ? $this->escape($user->get('name') . ' (' . $user->get('username') . ')') : Lang::txt('COM_CART_USER_ID') . ': ' . (int) $this->filters['uidNumber'];
 							?>
 							<button type="button" id="filter_uidNumber-clear"><?php echo Lang::txt('JSEARCH_FILTER_CLEAR'); ?></button>
 							<?php

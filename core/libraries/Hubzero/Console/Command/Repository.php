@@ -651,8 +651,9 @@ class Repository extends Base implements CommandInterface
 
 		if ($this->arguments->getOpt('git_branch'))
 		{
-		$git_branch_arr = explode("/", $this->arguments->getOpt('git_branch'));
-		$git_branch = $git_branch_arr[1];
+		// "remote/branch", or just a branch name
+		$git_branch_arr = explode("/", $this->arguments->getOpt('git_branch'), 2);
+		$git_branch = isset($git_branch_arr[1]) ? $git_branch_arr[1] : $git_branch_arr[0];
 		}
 		else
 		{
@@ -678,6 +679,16 @@ class Repository extends Base implements CommandInterface
 		// undefined -- a PHP 8 warning printed ahead of the JSON payload that
 		// the caller then fails to decode.
 		$response = '';
+
+		// No branch could be determined (no git_branch given and the remote
+		// could not be queried, e.g. no network or no credentials). Without
+		// this guard the stash below ran and then "git checkout ''" failed,
+		// leaving the extension's local changes stranded in the stash.
+		if ($git_branch === '')
+		{
+			$this->output->addLine('Could not determine the branch to check out (no git_branch given and the remote default branch could not be read); leaving ' . $cur_branch . ' checked out.');
+			return;
+		}
 
 		// If the current branch doesn't match the specified branch, the checkout the specified branch
 		if ($cur_branch != $git_branch)
@@ -730,7 +741,12 @@ class Repository extends Base implements CommandInterface
 	public function updateRepo()
 	{
 		// Set our directory & call update
-		$this->arguments->setOpt('r', $repoPath );
+		$repoPath = $this->arguments->getOpt('repoPath');
+		if (!$repoPath)
+		{
+			$this->output->error('No repository path given');
+		}
+		$this->arguments->setOpt('r', $repoPath);
 
 		\App::get('client')->call('repository', 'update', $this->arguments, $this->output);
 	}

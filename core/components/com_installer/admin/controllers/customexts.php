@@ -38,6 +38,7 @@ class Customexts extends AdminController
 	{
 		$this->registerTask('unpublish', 'publish');
 		$this->registerTask('publish', 'publish');
+		$this->registerTask('apply', 'save');
 
 		parent::execute();
 	}
@@ -167,12 +168,11 @@ class Customexts extends AdminController
 			$result = array();
 			foreach ($rows as $i => $item)
 			{
-				if (!empty($filters['search']))
+				// a plain substring match: the search text is not a pattern,
+				// and a skipped row must not be re-added below
+				if (!empty($filters['search']) && stripos($item->name, $filters['search']) === false)
 				{
-					if (!preg_match("/" . $filters['search'] . "/i", $item->name))
-					{
-						unset($result[$i]);
-					}
+					continue;
 				}
 
 				$result[$i] = $item;
@@ -371,7 +371,7 @@ class Customexts extends AdminController
 
 		if ($this->getTask() == 'apply')
 		{
-			return $this->editTask($row);
+			return $this->editTask($model);
 		}
 
 		$this->cancelTask();
@@ -386,6 +386,18 @@ class Customexts extends AdminController
 	{
 		// Check for request forgeries.
 		Request::checkToken() or exit(Lang::txt('JINVALID_TOKEN'));
+
+		if (
+			!User::authorise('core.edit.state', $this->_option)
+			// core.edit.state, not core.edit: the button is rendered on
+			// core.edit.state (views/*/tmpl/default.php) and the shipped #__assets
+			// row denies core.edit.state to group 7 while leaving core.edit to be
+			// inherited from root -- so a core.edit test admitted exactly the
+			// administrators the ACL and the page both refuse.
+		)
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 
 		// Initialise variables.
 		$ids    = Request::getArray('cid', array());
@@ -413,7 +425,7 @@ class Customexts extends AdminController
 
 					if (is_dir($extdir . '/__' . $repodir))
 					{
-						$museCmd = 'renameRepo currPath=' . $extdir . '/__' . $repodir . ' targetPath=' . $model->path;
+						$museCmd = 'renameRepo currPath=' . escapeshellarg($extdir . '/__' . $repodir) . ' targetPath=' . escapeshellarg($model->path);
 
 						$rename_response = Cli::call($museCmd, $task='repository');
 						$rename_response = json_decode($rename_response);
@@ -433,7 +445,7 @@ class Customexts extends AdminController
 						$repoPath = array_pop($pieces);
 						$extdir = implode("/", $pieces);
 
-						$museCmd = 'renameRepo currPath=' . $model->path . ' targetPath=' . $extdir . '/__' . $repoPath;
+						$museCmd = 'renameRepo currPath=' . escapeshellarg($model->path) . ' targetPath=' . escapeshellarg($extdir . '/__' . $repoPath);
 
 						$rename_response = Cli::call($museCmd, $task='repository');
 						$rename_response = json_decode($rename_response);
@@ -483,6 +495,17 @@ class Customexts extends AdminController
 		// Check for request forgeries
 		Request::checkToken();
 
+		// Updating publishes the extension (publishTask() below), so it needs
+		// what publishing needs; the toolbar button is shown on the same test.
+		if (
+			(!User::authorise('core.edit', $this->_option)
+			&& !User::authorise('core.create', $this->_option))
+			|| !User::authorise('core.edit.state', $this->_option)
+		)
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		// Incoming
 		$ids = Request::getArray('cid', array());
 
@@ -516,11 +539,11 @@ class Customexts extends AdminController
 				if ($extension->get('apikey'))
 				{
 					$newURL = "https://oauth2:" . $extension->get('apikey') . "@" . parse_url($extension->get('url'), PHP_URL_HOST) . parse_url($extension->get('url'), PHP_URL_PATH);
-					$museCmd = 'cloneRepo repoPath=' . $extension->path . ' sourceUrl=' . $newURL;
+					$museCmd = 'cloneRepo repoPath=' . escapeshellarg($extension->path) . ' sourceUrl=' . escapeshellarg($newURL);
 				}
 				else
 				{
-					$museCmd = 'cloneRepo repoPath=' . $extension->path . ' sourceUrl=' . $extension->get('url');
+					$museCmd = 'cloneRepo repoPath=' . escapeshellarg($extension->path) . ' sourceUrl=' . escapeshellarg($extension->get('url'));
 				}
 
 				$clone_response = Cli::call($museCmd, $task='repository');
@@ -575,7 +598,7 @@ class Customexts extends AdminController
 					$newURL = $extension->get('url');
 				}
 
-				$museCmd = 'updateGitURLconf repoPath=' . $extension->path . ' newsourceUrl=' . $newURL;
+				$museCmd = 'updateGitURLconf repoPath=' . escapeshellarg($extension->path) . ' newsourceUrl=' . escapeshellarg($newURL);
 				$updateGitURLconf_response = Cli::call($museCmd, $task='repository');
 				$updateGitURLconf_response = json_decode($updateGitURLconf_response == null ? '' : $updateGitURLconf_response);
 
@@ -593,7 +616,7 @@ class Customexts extends AdminController
 				else
 				{
 					// Check if specified branch is being used.  If not checkout out specified branch
-					$museCmd = 'checkoutRepoBranch repoPath=' . $extension->path . ((!empty($extension->get('git_branch'))) ? ' git_branch=' . $extension->get('git_branch') : '');
+					$museCmd = 'checkoutRepoBranch repoPath=' . escapeshellarg($extension->path) . ((!empty($extension->get('git_branch'))) ? ' git_branch=' . escapeshellarg($extension->get('git_branch')) : '');
 					$checkoutRepoBranch_response = Cli::call($museCmd, $task='repository');
 					$checkoutRepoBranch_response = json_decode($checkoutRepoBranch_response);
 
@@ -605,8 +628,19 @@ class Customexts extends AdminController
 					}
 					else
 					{
-						// Check for updates in remote branch
-						$museCmd = 'update -r=' . $extension->path . ((!empty($extension->get('git_branch'))) ? ' source=' . $extension->get('git_branch') : '');
+						// Check for updates in remote branch. muse wants the source as
+						// "remote/branch" (it refuses a bare branch name as an invalid
+						// update mechanism source), and the form field holds a branch.
+						$museCmd = 'update -r=' . escapeshellarg($extension->path);
+						if (!empty($extension->get('git_branch')))
+						{
+							$source = $extension->get('git_branch');
+							if (strpos($source, '/') === false)
+							{
+								$source = 'origin/' . $source;
+							}
+							$museCmd .= ' source=' . escapeshellarg($source);
+						}
 
 						$fetch_response = Cli::call($museCmd, $task='repository');
 						$fetch_response = json_decode($fetch_response == null ? '' : $fetch_response);
@@ -621,6 +655,23 @@ class Customexts extends AdminController
 						{
 							$output = array(Lang::txt('COM_INSTALLER_CUSTOMEXTS_FETCH_UNKNOWN_BRANCH'));
 							$failed[] = array('ext_id' => $id, 'extension' => $extension->get('name'), 'message' => $output);
+						}
+						// muse now reports a fetch that could not reach or log in to the
+						// remote (it used to be silent and look "up to date"); that is a
+						// failure, not a list of incoming changes to merge.
+						else if (!is_null($fetch_response) && preg_grep("/could not read Username/uis", $fetch_response))
+						{
+							$output = array(Lang::txt('COM_INSTALLER_CUSTOMEXTS_MISSING_TOKEN'));
+							$failed[] = array('ext_id' => $id, 'extension' => $extension->get('name'), 'message' => $output);
+						}
+						else if (!is_null($fetch_response) && preg_grep("/Authentication failed|Permission denied \(publickey\)|HTTP Basic: Access denied/uis", $fetch_response))
+						{
+							$output = array(Lang::txt('COM_INSTALLER_CUSTOMEXTS_TOKEN_FAILURE'));
+							$failed[] = array('ext_id' => $id, 'extension' => $extension->get('name'), 'message' => $output);
+						}
+						else if (!is_null($fetch_response) && preg_grep("/^fetch failed:/uis", $fetch_response))
+						{
+							$failed[] = array('ext_id' => $id, 'extension' => $extension->get('name'), 'message' => $fetch_response);
 						}
 						else
 						{
@@ -660,6 +711,14 @@ class Customexts extends AdminController
 		// Check for request forgeries
 		Request::checkToken();
 
+		if (
+			!User::authorise('core.edit', $this->_option)
+			&& !User::authorise('core.create', $this->_option)
+		)
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		// Incoming
 		$ids = Request::getArray('id', array());
 
@@ -685,12 +744,28 @@ class Customexts extends AdminController
 		{
 			$extension = Custom_extensions::oneOrNew($id);
 
-			$museCmd = 'update -r=' . $extension->path . ' -f --no-colors';
-			$update_response = Cli::call($museCmd, $task='repository');
-			$update_response = json_decode($update_response == null ? '' : $update_response);
+			$museCmd = 'update -r=' . escapeshellarg($extension->path) . ' -f --no-colors';
+			$result = Cli::callWithStatus($museCmd, $task='repository');
 
-			// In minimal/json mode muse emits an empty array on success and a non-empty
-			// array of error strings on failure.  A null result means muse did not run.
+			// In minimal/json mode muse prints nothing at all on success (the
+			// "complete" line is suppressed) and exits 0; on failure it prints a
+			// json array of error strings and/or exits non-zero. shell_exec()
+			// could not tell "printed nothing" from "did not run", which is why
+			// the exit status is consulted here.
+			if ($result['status'] !== 0)
+			{
+				$update_response = trim($result['output']) !== '' ? json_decode($result['output']) : null;
+				$update_response = is_array($update_response) ? $update_response : array($result['output'] !== '' ? $result['output'] : 'muse exited with status ' . $result['status']);
+			}
+			else if (trim($result['output']) === '')
+			{
+				$update_response = array();
+			}
+			else
+			{
+				$update_response = json_decode($result['output']);
+			}
+
 			if (is_null($update_response) || !empty($update_response))
 			{
 				$failed[] = array(
@@ -703,6 +778,10 @@ class Customexts extends AdminController
 				// Run migrations only when the update succeeded
 				$migrations_response = Cli::migration($dryRun=false, $ignoreDates=true, $file=null, $dir='up', $folder=$extension->path);
 				$migrations_response = json_decode($migrations_response == null ? '' : $migrations_response);
+
+				// Every update tags a cmsrollbackpoint-<time> first; keep only the
+				// newest so the tags do not pile up in the extension's repository.
+				Cli::call('clean -r=' . escapeshellarg($extension->path) . ' --purge-rollback-points', $task='repository');
 
 				$success[] = array(
 					'extension' => $extension->get('name'),
@@ -746,7 +825,7 @@ class Customexts extends AdminController
 			// If enextion is enabled
 			if ($extension->enabled == 1)
 			{
-				$museCmd = 'removeRepo -path=' . $extension->path;
+				$museCmd = 'removeRepo -path=' . escapeshellarg($extension->path);
 			}  // If enextion is disabled
 			else if ($extension->enabled == 0)
 			{
@@ -754,38 +833,37 @@ class Customexts extends AdminController
 				$repodir = array_pop($pieces);
 				$extdir = implode("/", $pieces);
 
-				$museCmd = 'removeRepo -path=' . $extdir . '/__' . $repodir;
+				$museCmd = 'removeRepo -path=' . escapeshellarg($extdir . '/__' . $repodir);
 			}
 
 			// Run migrations
 			$migrations_response = Cli::migration($dryRun=false, $ignoreDates=true, $file=null, $dir='down', $folder=$extension->path);
 			$migrations_response = json_decode($migrations_response);
 
-			$remove_response = Cli::call($museCmd, $task='repository');
-			$remove_response = json_decode($remove_response);
-			// MUSE command failed
-			if ($remove_response === NULL){
-                               $failed[] = array(
-                                        'extension'   => $extension->get('name'),
-                                        'message' => array("MUSE Call returned NULL", $museCmd)
-                                );
-			}
-			// did we succeed
-			else if (preg_grep("/Updating the repository.../uis", $remove_response))
+			// removeRepo prints the boolean from deleteDirectory() (json "[true]"
+			// or "[false]"); an earlier check looked for the text of the update
+			// command instead and so reported every removal as failed. Keep the
+			// record when the directory is still there, so it can be retried.
+			$removeDir = ($extension->enabled == 1) ? $extension->path : $extdir . '/__' . $repodir;
+
+			if (!is_dir($removeDir) && !is_link($removeDir))
 			{
-				// add success message
-				$success[] = array(
-					'extension'   => $extension->get('name'),
-					'message' => $remove_response
-				);
+				// Nothing on disk for this registration (never cloned, or already
+				// removed by hand): there is nothing to fail at, drop the record.
+				$removed = true;
 			}
 			else
 			{
-				// add failed message
-				$failed[] = array(
-					'extension'   => $extension->get('name'),
-					'message' => $remove_response
-				);
+				$result = Cli::callWithStatus($museCmd, $task='repository');
+				$remove_response = trim($result['output']) !== '' ? json_decode($result['output']) : null;
+				$removed = ($result['status'] === 0 && is_array($remove_response) && !empty($remove_response[0]));
+			}
+
+			if (!$removed)
+			{
+				$detail = is_array($remove_response) ? implode(' ', array_map('strval', $remove_response)) : trim($result['output']);
+				Notify::error(Lang::txt('COM_INSTALLER_CUSTOMEXTS_REMOVE_FAILED', $extension->get('name')) . ($detail !== '' ? ' (' . $detail . ')' : ''));
+				continue;
 			}
 
 			// Load the record

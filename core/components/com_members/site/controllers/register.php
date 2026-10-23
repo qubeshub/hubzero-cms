@@ -164,7 +164,7 @@ class Register extends SiteController
 
 		if ($xregistration->get('email') != $xprofile->get('email'))
 		{
-			$code = Components\Members\Helper\Utility::genemailconfirm();
+			$code = \Components\Members\Helpers\Utility::genemailconfirm();
 			$xprofile->set('activation', $code);
 			$updateEmail = true;
 		}
@@ -665,6 +665,10 @@ class Register extends SiteController
 				// register::unconfirmedTask (which reads the session) would
 				// disagree and bounce the user in a redirect loop.
 				$suser->set('activation', $xprofile->get('activation'));
+				// Third-party-auth accounts were auto-created without a home
+				// directory. Later saves of the session user (e.g., resending the
+				// confirmation email) would write that stale empty value back.
+				$suser->set('homeDirectory', $xprofile->get('homeDirectory'));
 				Session::set('user', $suser);
 
 				// Update the session entry
@@ -910,46 +914,7 @@ class Register extends SiteController
 				}
 
 				// Set home directory
-				$hubHomeDir = rtrim($this->config->get('homedir'), '/');
-				if (!$hubHomeDir)
-				{
-					// try to deduce a viable home directory based on sitename or live_site
-					$sitename = strtolower(Config::get('sitename'));
-					$sitename = preg_replace('/^http[s]{0,1}:\/\//', '', $sitename, 1);
-					$sitename = trim($sitename, '/ ');
-					$sitename_e = explode('.', $sitename, 2);
-					if (isset($sitename_e[1]))
-					{
-						$sitename = $sitename_e[0];
-					}
-					if (!preg_match("/^[a-zA-Z]+[\-_0-9a-zA-Z\.]+$/i", $sitename))
-					{
-						$sitename = '';
-					}
-					if (empty($sitename))
-					{
-						$sitename = strtolower(Request::base());
-						$sitename = preg_replace('/^http[s]{0,1}:\/\//', '', $sitename, 1);
-						$sitename = trim($sitename, '/ ');
-						$sitename_e = explode('.', $sitename, 2);
-						if (isset($sitename_e[1]))
-						{
-							$sitename = $sitename_e[0];
-						}
-						if (!preg_match("/^[a-zA-Z]+[\-_0-9a-zA-Z\.]+$/i", $sitename))
-						{
-							$sitename = '';
-						}
-					}
-
-					$hubHomeDir = DS . 'home';
-
-					if (!empty($sitename))
-					{
-						$hubHomeDir .= DS . $sitename;
-					}
-				}
-				$user->set('homeDirectory', $hubHomeDir . DS . $user->get('username'));
+				$user->set('homeDirectory', \Hubzero\User\User::defaultHomeDirectory($user->get('username')));
 				$user->set('loginShell', '/bin/bash');
 				$user->set('ftpShell', '/usr/lib/sftp-server');
 
@@ -1001,6 +966,12 @@ class Register extends SiteController
 				{
 					$user->setParam('return', $regReturn);
 				}
+
+				// setParam() only touches the in-memory registry; write it to the
+				// column. #__users.params is NOT NULL with no default, so on a
+				// strict-SQL server leaving it unset made every sign-up fail
+				// ("Field 'params' doesn't have a default value")
+				$user->set('params', $user->params->toString());
 
 				// If we managed to create a user
 				if ($user->save())
@@ -1322,8 +1293,8 @@ class Register extends SiteController
 	 */
 	public function resendTask()
 	{
-		// Incoming
-		$return = urldecode(Request::getString('return', '/'));
+		// Incoming (validated as internal)
+		$return = ReturnUrl::sanitize(Request::getString('return', '')) ?: '/';
 
 		// An unconfirmed user rarely has a live session (that is the whole
 		// point of confirmation), so requiring login to re-request the
@@ -1545,8 +1516,8 @@ class Register extends SiteController
 
 		$success = false;
 
-		// Incoming
-		$return = urldecode(Request::getString('return', '/'));
+		// Incoming (validated as internal)
+		$return = ReturnUrl::sanitize(Request::getString('return', '')) ?: '/';
 
 		// Check if a new email was submitted
 		$pemail = Request::getString('email', '', 'post');
@@ -1688,6 +1659,10 @@ class Register extends SiteController
 			$code = Request::getString('code', false);
 		}
 
+		// The token is a positive integer; anything else is negated below,
+		// which is a type error on a non-numeric string
+		$code = ctype_digit((string) $code) ? (int) $code : false;
+
 		// Get the return value if it was requested (validated as internal)
 		$return = ReturnUrl::sanitize(Request::getString('return', false));
 
@@ -1717,7 +1692,7 @@ class Register extends SiteController
 					{
 						$dest = $cReturn;
 					}
-					$pReturn = base64_decode(urldecode($pending->getParam('return', '')));
+					$pReturn = ReturnUrl::sanitize($pending->getParam('return', ''));
 					if ($pReturn)
 					{
 						$dest = $pReturn;
@@ -1916,7 +1891,7 @@ class Register extends SiteController
 			->set('login', $xprofile->get('username'))
 			->set('email', $xprofile->get('email'))
 			->set('code', $code)
-			->set('redirect', (isset($return) ? $return : ''))
+			->set('redirect', (isset($redirect) ? $redirect : (isset($return) ? $return : '')))
 			->set('sitename', Config::get('sitename'))
 			->setErrors($this->getErrors())
 			->display();
@@ -1937,8 +1912,8 @@ class Register extends SiteController
 		// redirect straight back into the plugin and loop forever.
 		$email_confirmed = User::oneOrNew($xprofile->get('id'))->get('activation');
 
-		// Incoming
-		$return = Request::getString('return', urlencode('/'));
+		// Incoming (validated as internal)
+		$return = ReturnUrl::sanitize(Request::getString('return', '')) ?: '/';
 
 		// Loop guard: even if some unforeseen state mismatch lines up to send us
 		// back to this page over and over, never redirect off it more than a few
@@ -1950,7 +1925,7 @@ class Register extends SiteController
 		if (($email_confirmed == 1 || $email_confirmed == 3) && $redirects < 3)
 		{
 			Session::set('members.unconfirmed.redirects', $redirects + 1);
-			App::redirect(urldecode($return));
+			App::redirect($return);
 		}
 
 		// We're rendering the page rather than redirecting — clear the guard.

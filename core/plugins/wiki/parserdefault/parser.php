@@ -575,7 +575,7 @@ class WikiParser
 			$matches[0],
 			'anchor',
 			$this->_randomString(),
-			'<a class="ext-link" href="' . $href . '" rel="external">' . $this->glyphs($txt) . '</a>'
+			'<a class="ext-link" href="' . htmlspecialchars((string) $href, ENT_QUOTES, 'UTF-8') . '" rel="external">' . $this->glyphs($txt) . '</a>'
 		));
 	}
 
@@ -639,7 +639,7 @@ class WikiParser
 				$whole,
 				'anchor',
 				$this->_randomString(),
-				'<span id="' . ltrim($href, '=#') . '"></span>'
+				'<span id="' . htmlspecialchars((string) ltrim($href, '=#'), ENT_QUOTES, 'UTF-8') . '"></span>'
 			));
 		}
 		// Are we jumping to an anchor?
@@ -654,7 +654,7 @@ class WikiParser
 				$whole,
 				'anchor',
 				$this->_randomString(),
-				'<a class="' . $cls . '" href="' . $href . '">' . $this->glyphs($title) . '</a>'
+				'<a class="' . $cls . '" href="' . htmlspecialchars((string) $href, ENT_QUOTES, 'UTF-8') . '">' . $this->glyphs($title) . '</a>'
 			));
 		}
 
@@ -856,7 +856,7 @@ class WikiParser
 			$matches[0],
 			'anchor',
 			$this->_randomString(),
-			'<a class="ext-link" href="' . $href . '" rel="external">' . $this->glyphs(trim($title)) . '</a>'
+			'<a class="ext-link" href="' . htmlspecialchars((string) $href, ENT_QUOTES, 'UTF-8') . '" rel="external">' . $this->glyphs(trim($title)) . '</a>'
 		));
 	}
 
@@ -1395,7 +1395,13 @@ class WikiParser
 	 */
 	private function math($text)
 	{
-		Html::behavior('math');
+		// The API application has no Html facade (and no page to load MathJax
+		// into); wiki text parsed there, e.g. a collection description read
+		// through /api/collections, fataled on the missing class
+		if (class_exists('Html'))
+		{
+			Html::behavior('math');
+		}
 		return preg_replace_callback('/<math>(.*?)<\/math>/s', array(&$this, '_stripMath'), $text);
 	}
 

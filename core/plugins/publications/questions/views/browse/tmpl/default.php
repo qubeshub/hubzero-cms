@@ -91,9 +91,9 @@ $this->css();
 								<?php echo $row->get('helpful', 0); ?><span> Like</span>
 							</span>
 						<?php } else { ?>
-							<a class="vote-button <?php echo ($row->get('helpful', 0) > 0) ? 'like' : 'neutral'; ?> tooltips" href="<?php echo Route::url('index.php?option=com_answers&task=vote&id=' . $row->get('id') . '&category=question&vote=yes'); ?>" title="Vote this up :: <?php echo $row->get('helpful', 0); ?> people liked this">
+							<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=com_answers&task=vote&id=' . $row->get('id') . '&category=question&vote=yes'); ?>" class="vote-button <?php echo ($row->get('helpful', 0) > 0) ? 'like' : 'neutral'; ?> tooltips" title="Vote this up :: <?php echo $row->get('helpful', 0); ?> people liked this">
 								<?php echo $row->get('helpful', 0); ?><span> Like</span>
-							</a>
+							</button>
 						<?php } ?>
 					</span>
 				</td>

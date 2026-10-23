@@ -139,7 +139,8 @@
 		padding: 0;
 		float: right;
 	}
-	.course_pages .manager-options a {
+	.course_pages .manager-options a,
+	.course_pages .manager-options button {
 		display: block;
 		font-size: 1.6em;
 		width: 1em;
@@ -149,7 +150,8 @@
 		margin-left: 0.5em;
 		color: #bbb;
 	}
-	.course_pages .manager-options a:hover {
+	.course_pages .manager-options a:hover,
+	.course_pages .manager-options button:hover {
 		color: #333;
 	}
 	.course_pages .manager-options small.edit-before,
@@ -158,7 +160,8 @@
 		font-family: "Fontcons";
 	}
 	.course_pages .manager-options small.delete-before,
-	.course_pages .manager-options a.delete:before {
+	.course_pages .manager-options a.delete:before,
+	.course_pages .manager-options button.delete:before {
 		content: "\f014";
 		font-family: "Fontcons";
 	}
@@ -169,7 +172,8 @@
 	.course_pages .manager-options a.edit {
 		*zoom:expression(this.runtimeStyle['zoom']='1', this.innerHTML='<small class="edit-before">&#x270E;</small>' + this.innerHTML);
 	}
-	.course_pages .manager-options a.delete {
+	.course_pages .manager-options a.delete,
+	.course_pages .manager-options button.delete {
 		*zoom:expression(this.runtimeStyle['zoom']='1', this.innerHTML='<small class="delete-before">&#xf014;</small>' + this.innerHTML);
 	}
 	.course_pages .pages-wrap {

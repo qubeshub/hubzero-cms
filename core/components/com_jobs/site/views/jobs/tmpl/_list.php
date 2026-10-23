@@ -84,8 +84,8 @@ $maxscore  = $this->filters['search'] && $this->jobs[0]->keywords > 0 ? $this->j
 		?>
 		<tr>
 			<td class="jobtitle">
-				<a href="<?php echo Route::url('index.php?option=' . $this->option . '&task=job&code=' . $this->jobs[$i]->code); ?>" title="<?php echo $model->content('clean', 250); ?>">
-					<?php echo $this->jobs[$i]->title; ?>
+				<a href="<?php echo Route::url('index.php?option=' . $this->option . '&task=job&code=' . $this->jobs[$i]->code); ?>" title="<?php echo $this->escape(html_entity_decode($model->content('clean', 250), ENT_QUOTES, 'UTF-8')); ?>">
+					<?php echo $this->escape($this->jobs[$i]->title); ?>
 				</a>
 			</td>
 		<?php if ($this->admin && !$this->emp && !$this->mini) { ?>
@@ -94,10 +94,10 @@ $maxscore  = $this->filters['search'] && $this->jobs[0]->keywords > 0 ? $this->j
 			</td>
 		<?php } ?>
 			<td>
-				<?php echo $this->jobs[$i]->companyName; ?>
+				<?php echo $this->escape($this->jobs[$i]->companyName); ?>
 			</td>
 			<td>
-				<?php echo $this->jobs[$i]->companyLocation . ', ' . $this->jobs[$i]->companyLocationCountry; ?>
+				<?php echo $this->escape($this->jobs[$i]->companyLocation . ', ' . $this->jobs[$i]->companyLocationCountry); ?>
 			</td>
 			<td class="secondary"><?php echo $curcat; ?></td>
 			<td class="secondary"><?php echo $curtype; ?></td>

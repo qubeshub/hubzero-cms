@@ -35,18 +35,12 @@ class Postsv1_0 extends ApiController
 	 */
 	protected function _canManageCollection($collectionId)
 	{
-		$collection = new Collection((int) $collectionId);
-		if (!$collection->get('id'))
-		{
-			return false;
-		}
-		$uid = App::get('authn')['user_id'];
-		if ($collection->get('object_type') == 'group')
-		{
-			$group = \Hubzero\User\Group::getInstance($collection->get('object_id'));
-			return ($group && ($group->isMember($uid) || $group->isManager($uid)));
-		}
-		return ($collection->get('object_id') == $uid) || ($collection->get('created_by') == $uid);
+		// The one predicate the site uses for "may this user post to this board".
+		// This method used to carry its own copy, and the copy had drifted: it
+		// also admitted created_by == uid, which the site does not -- so the member
+		// who CREATED a group board could still post to it through the API after
+		// leaving the group, while the site refused them. One implementation now.
+		return (new Collection((int) $collectionId))->canBePostedToBy((int) App::get('authn')['user_id']);
 	}
 
 	/**
@@ -155,7 +149,9 @@ class Postsv1_0 extends ApiController
 				$obj->item_id   = $entry->get('item_id');
 				$obj->original  = $entry->get('original');
 				$obj->ordering  = $entry->get('ordering');
-				$obj->title     = $entry->get('title', $item->get('title'));
+				// posts() joins the collection, so the row's "title" is the
+				// collection's title; the post's own title is its item's
+				$obj->title     = $item->get('title', $entry->get('item_title'));
 				$obj->type      = $item->get('type');
 				$obj->created   = $entry->get('created');
 				$obj->created_by = new stdClass;
@@ -401,6 +397,12 @@ class Postsv1_0 extends ApiController
 
 		$collection = new Collection($entry->get('collection_id'));
 
+		// The post is only as readable as the board it sits on.
+		if (!$collection->isReadableBy())
+		{
+			throw new Exception(Lang::txt('COM_COLLECTIONS_ERROR_MISSING_RECORD'), 404);
+		}
+
 		$entry->set('object_type', $collection->get('object_type'));
 		$entry->set('object_id', $collection->get('object_id'));
 
@@ -530,21 +532,24 @@ class Postsv1_0 extends ApiController
 	{
 		$this->requiresAuthentication();
 
+		$row = new Post(Request::getInt('id', 0, 'put'));
+
+		// Fields not sent keep their current values. They defaulted to
+		// empty/0 before, so a partial PUT (just a new description) zeroed
+		// collection_id and the store failed with a 500.
 		$fields = array(
 			'id'             => Request::getInt('id', 0, 'put'),
-			'title'          => Request::getString('title', null, 'put'),
-			'description'    => Request::getString('description', null, 'put'),
-			'url'            => Request::getString('url', null, 'put'),
-			'created'        => Request::getString('created', with(new Date('now'))->toSql(), 'put'),
+			'title'          => Request::getString('title', $row->get('title'), 'put'),
+			'description'    => Request::getString('description', $row->get('description'), 'put'),
+			'url'            => Request::getString('url', $row->get('url'), 'put'),
+			'created'        => Request::getString('created', $row->get('created', with(new Date('now'))->toSql()), 'put'),
 			'created_by'     => Request::getInt('created_by', 0, 'put'),
-			'state'          => Request::getInt('state', 1, 'put'),
-			'access'         => Request::getInt('access', 0, 'put'),
-			'type'           => Request::getString('type', 'file', 'put'),
-			'object_id'      => Request::getInt('object_id', 0, 'put'),
-			'collection_id'  => Request::getInt('collection_id', 0, 'put')
+			'state'          => Request::getInt('state', (int) $row->get('state', 1), 'put'),
+			'access'         => Request::getInt('access', (int) $row->get('access', 0), 'put'),
+			'type'           => Request::getString('type', $row->get('type', 'file'), 'put'),
+			'object_id'      => Request::getInt('object_id', (int) $row->get('object_id', 0), 'put'),
+			'collection_id'  => Request::getInt('collection_id', (int) $row->get('collection_id', 0), 'put')
 		);
-
-		$row = new Post($fields['id']);
 
 		if (!$row->exists())
 		{

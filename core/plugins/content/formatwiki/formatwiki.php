@@ -14,6 +14,26 @@ defined('_HZEXEC_') or die;
 class plgContentFormatwiki extends \Hubzero\Plugin\Plugin
 {
 	/**
+	 * Output this plugin produced during this request, keyed by md5. formathtml
+	 * consults it before honouring a {FORMAT:RENDERED} marker: the marker on its
+	 * own is text, and text can be stored.
+	 *
+	 * @var  array
+	 */
+	public static $rendered = array();
+
+	/**
+	 * Did this plugin produce the given content in this request?
+	 *
+	 * @param   string  $content
+	 * @return  boolean
+	 */
+	public static function wasRendered($content)
+	{
+		return isset(self::$rendered[md5((string) $content)]);
+	}
+
+	/**
 	 * Finder before save content method
 	 * Article is passed by reference, but after the save, so no changes will be saved.
 	 * Method is called right after the content is saved
@@ -94,7 +114,14 @@ class plgContentFormatwiki extends \Hubzero\Plugin\Plugin
 				{
 					$content = '<!-- {FORMAT:WIKI} -->' . $content;
 					$article->set($key, $content);
-					$article->store(false);
+					// Only a stored row can carry the marker: a model without an
+					// id (a repost of a collection that no longer exists, say)
+					// would be INSERTed as a new, mostly empty row -- a strict-SQL
+					// error and a 500 on every page listing it
+					if ($article->get('id'))
+					{
+						$article->store(false);
+					}
 				}
 			}
 			else
@@ -104,6 +131,8 @@ class plgContentFormatwiki extends \Hubzero\Plugin\Plugin
 		}
 
 		$content = preg_replace('/^(<!-- \{FORMAT:WIKI\} -->)/i', '', $content == null ? '' : $content);
+
+		$rendered = false;
 
 		if (trim($content) && $this->_isWiki($content))
 		{
@@ -120,13 +149,32 @@ class plgContentFormatwiki extends \Hubzero\Plugin\Plugin
 			// Trigger the onFinderBeforeSave event.
 			$results = Event::trigger('wiki.onWikiParseText', array($content, $params, $params['fullparse'], true));
 			$content = implode('', $results);
+			$rendered = true;
 		}
 
 		if ($this->params->get('convertFormat') && $article instanceof \Hubzero\Base\Model)
 		{
 			$content = '<!-- {FORMAT:HTML} -->' . $content;
 			$article->set($key, $content);
-			$article->store(false);
+			if ($article->get('id'))
+			{
+				$article->store(false);
+			}
+		}
+		elseif ($rendered)
+		{
+			// Tell the rest of the onContentPrepare chain that this is the wiki
+			// parser's own output, not stored markup. formathtml runs next
+			// (ordering 9 against this plugin's 8) and sanitises unmarked
+			// content, which would put this HTML through HTMLPurifier: measured
+			// against the shipped configuration that drops allowfullscreen from
+			// video embeds, deletes empty layout divs outright, strips every
+			// data-* attribute and rewrites rel="external".
+			//
+			// The marker is transient. formathtml removes it, and if that plugin
+			// is disabled it degrades to an invisible HTML comment.
+			$content = '<!-- {FORMAT:RENDERED} -->' . $content;
+			self::$rendered[md5($content)] = true;
 		}
 
 		$article->set($key, $content);

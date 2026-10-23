@@ -19,13 +19,11 @@ $revisions = $this->page->versions()
 	->rows();
 ?>
 <header id="<?php echo ($this->sub) ? 'sub-content-header' : 'content-header'; ?>">
-	<?php if (count($this->parents)) { ?>
-		<p class="wiki-crumbs">
-			<?php foreach ($this->parents as $parent) { ?>
-				<a class="wiki-crumb" href="<?php echo Route::url($parent->link()); ?>"><?php echo $parent->title; ?></a> /
-			<?php } ?>
-		</p>
-	<?php } ?>
+	<?php
+	$this->view('crumbs', 'pages')
+		->set('parents', $this->parents)
+		->display();
+	?>
 
 	<h2><?php echo $this->escape($this->page->title); ?></h2>
 	<?php
@@ -169,7 +167,7 @@ $revisions = $this->page->versions()
 									<td><?php /* [a11y] new-version radio placeholder */ ?></td>
 								<?php } ?>
 								<td>
-									<a href="<?php echo Route::url($this->page->link('', 'version=' . $revision->get('version'))); ?>" class="tooltips" title="<?php echo Lang::txt('COM_WIKI_REVISION_SUMMARY').' :: ' . $summary; ?>">
+									<a href="<?php echo Route::url($this->page->link('', 'version=' . $revision->get('version'))); ?>" class="tooltips" title="<?php echo Lang::txt('COM_WIKI_REVISION_SUMMARY').' :: ' . $this->escape(strip_tags((string) $summary)); ?>">
 										<time datetime="<?php echo $revision->get('created'); ?>"><?php echo $this->escape(Date::of($revision->get('created'))->toLocal('Y-m-d h:i:s')); ?></time>
 									</a>
 								</td>
@@ -206,9 +204,7 @@ $revisions = $this->page->versions()
 									</td>
 								<?php } ?>
 								<td>
-									<a class="icon-trash delete" href="<?php echo Route::url($this->page->link('deleterevision', 'oldid=' . $revision->get('id'))); ?>" title="<?php echo Lang::txt('COM_WIKI_REVISION_DELETE'); ?>">
-										<?php echo Lang::txt('JACTION_DELETE'); ?>
-									</a>
+									<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($this->page->link('deleterevision', 'oldid=' . $revision->get('id'))); ?>" class="icon-trash delete" title="<?php echo Lang::txt('COM_WIKI_REVISION_DELETE'); ?>"><?php echo Lang::txt('JACTION_DELETE'); ?></button>
 								</td>
 								<?php } ?>
 							</tr>

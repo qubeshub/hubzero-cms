@@ -241,6 +241,33 @@ class plgGroupsMessages extends \Hubzero\Plugin\Plugin
 		// Load the message and parse it
 		$xmessage = Hubzero\Message\Message::oneOrFail($message);
 
+		// The id names any row of #__xmessage, including a private message between
+		// two users, so first: it has to belong to this group.
+		if ((int) $xmessage->get('group_id') !== (int) $this->group->get('gidNumber'))
+		{
+			App::abort(404, Lang::txt('PLG_GROUPS_MESSAGES_NOT_FOUND'));
+		}
+
+		// Belonging to the group is not enough to READ one. The forum plugin
+		// files a group message per recipient and picks those recipients by view
+		// level, precisely so a restricted category is not mailed to everyone
+		// (forum.php _getEmailRecipientIds, ticket 307). Those bodies carry this
+		// group_id too, so the sent list showing a subject to the whole area does
+		// not mean anyone may open it. Read it if you manage the group, or if it
+		// was addressed to you.
+		if ($this->authorized != 'manager' && $this->authorized != 'admin')
+		{
+			$mine = \Hubzero\Message\Recipient::all()
+				->whereEquals('mid', (int) $xmessage->get('id'))
+				->whereEquals('uid', (int) User::get('id'))
+				->total();
+
+			if (!$mine)
+			{
+				App::abort(404, Lang::txt('PLG_GROUPS_MESSAGES_NOT_FOUND'));
+			}
+		}
+
 		if (substr($xmessage->get('component'), 0, 4) == 'com_')
 		{
 			$xmessage->set('component', substr($xmessage->get('component'), 4));
@@ -284,11 +311,8 @@ class plgGroupsMessages extends \Hubzero\Plugin\Plugin
 		// Instantiate a vew
 		$view = $this->view('default', 'create');
 
-		//get all member roles
-		$db = App::get('db');
-		$sql = "SELECT * FROM `#__xgroups_roles` WHERE gidNumber=".$db->quote($this->group->get('gidNumber'));
-		$db->setQuery($sql);
-		$member_roles = $db->loadAssocList();
+		//get all member roles, in the order the group's managers set
+		$member_roles = Components\Groups\Models\Role::forGroup($this->group->get('gidNumber'))->rows()->toArray();
 
 		//get all group members
 		$members = $this->group->get('members');
@@ -320,11 +344,20 @@ class plgGroupsMessages extends \Hubzero\Plugin\Plugin
 	 */
 	protected function _send()
 	{
+		// Only group managers/admins may send group messages
+		if ($this->authorized != 'manager' && $this->authorized != 'admin')
+		{
+			return false;
+		}
+
 		// Ensure the user is logged in
 		if (User::isGuest())
 		{
 			return false;
 		}
+
+		// Check for request forgeries
+		Request::checkToken();
 
 		//message
 		$message = Lang::txt('PLG_GROUPS_MESSAGES_FROM_GROUP', $this->group->get('cn'));
@@ -356,13 +389,21 @@ class plgGroupsMessages extends \Hubzero\Plugin\Plugin
 			default:
 				$message = Lang::txt('PLG_GROUPS_MESSAGES_FOR_GROUP_MEMBER', $this->group->get('cn'));
 
+				// Collects the members of any roles addressed (an empty role
+				// otherwise left this unset)
+				$members = array();
+
 				foreach ($mbrs as $mbr)
 				{
 					if (strstr($mbr, '_'))
 					{
 						$role = explode('_', $mbr);
 						$db = App::get('db');
-						$sql = "SELECT uidNumber FROM `#__xgroups_member_roles` WHERE roleid=" . $db->Quote($role[1]);
+						// role_<id> names any role on the hub; only this group's roles are addressable
+						$sql = "SELECT mr.uidNumber FROM `#__xgroups_member_roles` AS mr"
+							. " INNER JOIN `#__xgroups_roles` AS r ON r.id = mr.roleid"
+							. " WHERE mr.roleid=" . $db->Quote((int) $role[1])
+							. " AND r.gidNumber=" . $db->Quote($this->group->get('gidNumber'));
 						$db->setQuery($sql);
 						$member_roles = $db->loadAssocList();
 						foreach ($member_roles as $member)
@@ -383,6 +424,12 @@ class plgGroupsMessages extends \Hubzero\Plugin\Plugin
 			break;
 		}
 
+		// Individually named recipients have to be members of this group
+		if (!$action)
+		{
+			$mbrs = array_intersect(array_map('intval', (array) $mbrs), (array) $this->group->get('members'));
+		}
+
 		// Incoming message and subject
 		$s = Request::getString('subject', Lang::txt('PLG_GROUPS_MESSAGES_SUBJECT'));
 		$m = Request::getString('message', '');
@@ -397,9 +444,9 @@ class plgGroupsMessages extends \Hubzero\Plugin\Plugin
 
 		// get all group members
 		$recipients = array();
-		foreach ($mbrs as $mbr)
+		foreach ((array) $mbrs as $mbr)
 		{
-			if ($profile = User::getInstance($mbr))
+			if (($profile = User::getInstance($mbr)) && $profile->get('email'))
 			{
 				$recipients[$profile->get('email')] = $profile->get('name');
 			}
@@ -448,9 +495,38 @@ class plgGroupsMessages extends \Hubzero\Plugin\Plugin
 				->setFrom(array($from['email'] => $from['name']))
 				->addPart($plain, 'text/plain');
 
+		// Send one at a time, and count: send() logs a transport failure and
+		// returns false, and an empty recipient list sends nothing at all -
+		// either way the sender was told it worked
+		$sent   = 0;
+		$failed = array();
 		foreach ($recipients as $email => $name)
 		{
-			$message->setTo(array($email => $name))->send();
+			try
+			{
+				if ($message->setTo(array($email => $name))->send())
+				{
+					$sent++;
+					continue;
+				}
+			}
+			catch (\Exception $e)
+			{
+				// e.g. an address the mailer won't accept
+			}
+			$failed[] = $email;
+		}
+
+		if (!count($recipients))
+		{
+			$html  = '<p class="error">' . Lang::txt('PLG_GROUPS_MESSAGES_ERROR_NO_RECIPIENTS') . '</p>';
+			$html .= $this->_create();
+			return $html;
+		}
+
+		if (count($failed))
+		{
+			$this->setError(Lang::txt('PLG_GROUPS_MESSAGES_ERROR_SEND_FAILED', count($failed), count($recipients)));
 		}
 
 		// add invite emails if sending to invitees

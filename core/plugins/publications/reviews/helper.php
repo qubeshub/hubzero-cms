@@ -140,6 +140,9 @@ class PlgPublicationsReviewsHelper extends \Hubzero\Base\Obj
 	 */
 	public function deletereply()
 	{
+		// The delete form posts a token
+		Request::checkToken();
+
 		$publication =& $this->publication;
 
 		// Incoming
@@ -184,6 +187,14 @@ class PlgPublicationsReviewsHelper extends \Hubzero\Base\Obj
 	 */
 	public function rateitem()
 	{
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
+
 		$database = App::get('db');
 		$publication =& $this->publication;
 
@@ -209,6 +220,12 @@ class PlgPublicationsReviewsHelper extends \Hubzero\Base\Obj
 		// Load answer
 		$rev = new \Components\Publications\Tables\Review($database);
 		$rev->load($id);
+
+		// The review must belong to the publication being viewed
+		if (!$rev->id || $rev->publication_id != $publication->get('id'))
+		{
+			return;
+		}
 		$voted = $rev->getVote($id, $cat, User::get('id'), 'v.id');
 
 		if ($vote)
@@ -236,6 +253,10 @@ class PlgPublicationsReviewsHelper extends \Hubzero\Base\Obj
 		if ($ajax)
 		{
 			$response = $rev->getRating($publication->get('id'), User::get('id'));
+			if (empty($response))
+			{
+				exit();
+			}
 			$view = new \Hubzero\Plugin\View(
 				array(
 					'folder' =>'publications',
@@ -252,7 +273,7 @@ class PlgPublicationsReviewsHelper extends \Hubzero\Base\Obj
 			exit();
 		}
 
-		App::redirect(Route::url($publication->get('reviews')));
+		App::redirect(Route::url($publication->link('reviews')));
 	}
 
 	/**
@@ -318,6 +339,9 @@ class PlgPublicationsReviewsHelper extends \Hubzero\Base\Obj
 	 */
 	public function savereview()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Is the user logged in?
 		if (User::isGuest())
 		{
@@ -361,6 +385,13 @@ class PlgPublicationsReviewsHelper extends \Hubzero\Base\Obj
 		// Perform some text cleaning, etc.
 		$row->id         = $reviewId;
 		$row->state      = 1;
+		// The review belongs to the publication being viewed, whatever the form says
+		$row->publication_id         = $publication->get('id');
+		$row->publication_version_id = $publication->get('version_id');
+		if ($row->rating)
+		{
+			$row->rating = min(5, max(1, (int) $row->rating));
+		}
 		$row->comment    = \Hubzero\Utility\Sanitize::stripAll($row->comment);
 		$row->anonymous  = ($row->anonymous == 1 || $row->anonymous == '1') ? $row->anonymous : 0;
 		$row->created    = ($row->created) ? $row->created : Date::toSql();
@@ -443,6 +474,9 @@ class PlgPublicationsReviewsHelper extends \Hubzero\Base\Obj
 	 */
 	public function deletereview()
 	{
+		// The delete form posts a token
+		Request::checkToken();
+
 		$database = App::get('db');
 		$publication =& $this->publication;
 

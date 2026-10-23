@@ -127,7 +127,7 @@ $url = Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&ac
 						<td class="priority-5 reward">
 							<span class="entry-reward">
 							<?php if (isset($item->bonus) && $item->bonus > 0 && ($item->status==0 or $item->status==6)) { ?>
-								<a class="bonus tooltips" href="<?php echo Route::url('index.php?option=com_wishlist&task=wish&category='.$this->wishlist->category.'&rid='.$this->wishlist->referenceid.'&wishid='.$item->id.'&action=addbonus&filterby='.$this->filters['filterby'].'&sortby='.$this->filters['sortby'].'&tags='.$this->filters['tag'].'#action'); ?>" title="<?php echo Lang::txt('COM_WISHLIST_WISH_ADD_BONUS').' ::'.$item->bonusgivenby.' '.Lang::txt('COM_WISHLIST_MULTIPLE_USERS').' '.Lang::txt('COM_WISHLIST_WISH_BONUS_CONTRIBUTED_TOTAL').' '.$item->bonus.' '.Lang::txt('COM_WISHLIST_POINTS').' '.Lang::txt('COM_WISHLIST_WISH_BONUS_AS_BONUS'); ?>">
+								<a class="bonus tooltips" href="<?php echo Route::url('index.php?option=com_wishlist&task=wish&category='.$this->wishlist->category.'&rid='.$this->wishlist->referenceid.'&wishid='.$item->id.'&action=addbonus&filterby='.$this->filters['filterby'].'&sortby='.$this->filters['sortby'].'&tags='.$this->filters['tag'].'#action'); ?>" title="<?php echo Lang::txt('COM_WISHLIST_WISH_ADD_BONUS').' ::'.$this->escape($item->bonusgivenby).' '.Lang::txt('COM_WISHLIST_MULTIPLE_USERS').' '.Lang::txt('COM_WISHLIST_WISH_BONUS_CONTRIBUTED_TOTAL').' '.$item->bonus.' '.Lang::txt('COM_WISHLIST_POINTS').' '.Lang::txt('COM_WISHLIST_WISH_BONUS_AS_BONUS'); ?>">
 									<?php echo $item->bonus; ?> <span><?php echo Lang::txt('COM_WISHLIST_POINTS'); ?></span>
 								</a>
 							<?php } else if ($item->status == 0 || $item->status == 6) { ?>
@@ -173,7 +173,7 @@ $url = Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&ac
 								{
 									case 0:
 										if (isset($item->ranked) && !$item->ranked && ($this->admin==2 or $this->admin==3)) {
-											$html .= '<a class="rankit" href="index.php?option=com_wishlist&task=wish&category='.$this->wishlist->category.'&rid='.$this->wishlist->referenceid.'&wishid='.$item->id.'&filterby='.$this->filters['filterby'].'&sortby='.$this->filters['sortby'].'&tags='.$this->filters['tag'].'">'.Lang::txt('COM_WISHLIST_WISH_RANK_THIS').'</a>'."\n";
+											$html .= '<a class="rankit" href="index.php?option=com_wishlist&task=wish&category='.$this->wishlist->category.'&rid='.$this->wishlist->referenceid.'&wishid='.$item->id.'&filterby='.$this->escape($this->filters['filterby']).'&sortby='.$this->escape($this->filters['sortby']).'&tags='.$this->escape($this->filters['tag']).'">'.Lang::txt('COM_WISHLIST_WISH_RANK_THIS').'</a>'."\n";
 										} else if (isset($item->ranked) && $item->ranked) {
 											//$html .= Lang::txt('WISH_PRIORITY').': <span class="priority">'.$item->ranking.'</span>'."\n";
 											$this->css('

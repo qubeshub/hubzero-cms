@@ -60,7 +60,7 @@ $this->view('_submenu')
 					<th colspan="6"><?php echo Lang::txt('COM_CART_ORDERS_FOR'); ?>: <?php
 						$user = User::getInstance($this->filters['uidNumber']);
 
-						echo ($user->get('id')) ? $user->get('name') . ' (' . $user->get('username') . ')' : Lang::txt('COM_CART_USER_ID') . ': ' . $this->filters['uidNumber'];
+						echo ($user->get('id')) ? $this->escape($user->get('name') . ' (' . $user->get('username') . ')') : Lang::txt('COM_CART_USER_ID') . ': ' . (int) $this->filters['uidNumber'];
 						?>
 						<button type="button" id="filter_uidNumber-clear"><?php echo Lang::txt('JSEARCH_FILTER_CLEAR'); ?></button>
 					</th>
@@ -139,8 +139,8 @@ $this->view('_submenu')
 	<input type="hidden" name="option" value="<?php echo $this->option ?>" />
 	<input type="hidden" name="controller" value="<?php echo $this->controller; ?>" />
 	<input type="hidden" name="task" value="<?php echo $this->task; ?>" />
-	<input type="hidden" name="filter_order" value="<?php echo $this->filters['sort']; ?>" />
-	<input type="hidden" name="filter_order_Dir" value="<?php echo $this->filters['sort_Dir']; ?>" />
+	<input type="hidden" name="filter_order" value="<?php echo $this->escape($this->filters['sort']); ?>" />
+	<input type="hidden" name="filter_order_Dir" value="<?php echo $this->escape($this->filters['sort_Dir']); ?>" />
 	<input type="hidden" name="uidNumber" id="filter_uidNumber" value="<?php echo $this->filters['uidNumber']; ?>" />
 
 	<?php echo Html::input('token'); ?>

@@ -149,7 +149,7 @@ class Group extends Table
 			return parent::load($oid);
 		}
 
-		$sql  = "SELECT * FROM $this->_tbl WHERE cn='$oid' LIMIT 1";
+		$sql  = "SELECT * FROM $this->_tbl WHERE cn=" . $this->_db->quote($oid) . " LIMIT 1";
 		$this->_db->setQuery($sql);
 		if ($result = $this->_db->loadAssoc())
 		{
@@ -275,10 +275,10 @@ class Group extends Table
 		{
 			$filters['sort_Dir'] = 'ASC';
 		}
-		$query .= " ORDER BY " . $filters['sort'] . " " . $filters['sort_Dir'];
+		$query .= " ORDER BY " . (preg_replace('/[^a-zA-Z0-9_,. ]/', '', (string) $filters['sort']) ?: '1') . " " . (strtoupper((string) $filters['sort_Dir']) === 'ASC' ? 'ASC' : 'DESC');
 		if (isset($filters['start']) && isset($filters['limit']))
 		{
-			$query .= " LIMIT " . $filters['start'] . "," . $filters['limit'];
+			$query .= " LIMIT " . (int) $filters['start'] . "," . (int) $filters['limit'];
 		}
 
 		$this->_db->setQuery($query);

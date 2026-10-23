@@ -19,12 +19,12 @@ $viewer  = $this->data->viewer;
 		<span class="item-options">
 		<?php if ($viewer == 'edit') { ?>
 			<span>
-				<a href="<?php echo Route::url($data->editUrl . '&action=deleteitem&aid=' . $data->id . '&p=' . $data->props); ?>" class="item-remove" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_REMOVE'); ?>">&nbsp;</a>
+				<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($data->editUrl . '&action=deleteitem&aid=' . $data->id . '&p=' . $data->props); ?>" class="item-remove" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_REMOVE'); ?>">&nbsp;</button>
 			</span>
 		<?php } ?>
 		</span>
 		<span class="item-title data-type">
-			 <a href="<?php echo $row->path; ?>" rel="external"><?php echo $title; ?></a>
-			<span class="item-details"><?php echo $details; ?></span>
+			 <a href="<?php echo (preg_match('#^(https?://|dataviewer/)#i', $row->path) ? $this->escape($row->path) : ''); ?>" rel="external"><?php echo $this->escape($title); ?></a>
+			<span class="item-details"><?php echo $this->escape($details); ?></span>
 		</span>
 	</li>

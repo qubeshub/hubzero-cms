@@ -58,15 +58,22 @@ class Filefsv1_0 extends ApiController
 			throw new Exception(Lang::txt('COM_PROJECTS_PROJECT_CANNOT_LOAD'), 404);
 		}
 
-		$contentTasks = array('insert', 'update', 'delete', 'move', 'rename', 'makedirectory');
+		// Read-only tasks; every other task writes and needs content access.
+		// An allowlist, and compared the way parent::execute() dispatches
+		// (lowercased getCmd): the old list of write tasks missed save itself
+		// (insert/update are only its aliases) and chunkedupload, and was
+		// case-sensitive against a case-insensitive dispatch, so a read-only
+		// member -- or, on an open project, anyone -- could write or delete.
+		$task      = strtolower(Request::getCmd('task', 'list'));
+		$readTasks = array('list', 'files', 'get', 'download', 'getmetadata', 'connections');
 
 		//tasks specific to adapters
-		$connectionTasks = array('upload', 'download', 'getmetadata', 'setmetadata');
+		$connectionTasks = array('upload', 'chunkedupload', 'download', 'getmetadata', 'setmetadata');
 
 		// Check authorization
-		if ((in_array($this->_task, $contentTasks) && !$this->model->access('content'))
-			|| (in_array($this->_task, $connectionTasks) && !$this->model->access('content'))
-			|| !$this->model->access('member'))
+		if (!$this->model->access('member')
+			|| (!in_array($task, $readTasks) && !$this->model->access('content'))
+			|| (in_array($task, $connectionTasks) && !$this->model->access('content')))
 		{
 			throw new Exception(Lang::txt('ALERTNOTAUTH'), 401);
 		}
@@ -720,7 +727,7 @@ class Filefsv1_0 extends ApiController
 				App::abort(404, Lang::txt('PLG_PROJECTS_FILES_ARCHIVE_ERROR'));
 			} else {
 				$downloadPath   = $archive['path'];
-				$serveas        = 'Project Files ' . Date::toSql() . '.zip';
+				$serveas        = 'Project Files ' . Date::of('now')->toSql() . '.zip';
 			}
 		} else {
 			$file = isset($collector[0]) ? $collector[0] : null;
@@ -835,6 +842,11 @@ class Filefsv1_0 extends ApiController
 			throw new Exception(Lang::txt('No data path given'), 404);
 		}
 
+		if (!$this->_acceptDataPath($dataPath))
+		{
+			throw new Exception(Lang::txt('ALERTNOTAUTH'), 403);
+		}
+
 		// Insert file
 		$response = new stdClass;
 		$response->results     = $this->model->repo()->insert(
@@ -927,6 +939,13 @@ class Filefsv1_0 extends ApiController
 	 */
 	public function getmetadataTask()
 	{
+		// Metadata is an adapter feature; this controller only serves the
+		// local repository and never loads a connection.
+		if (empty($this->ormconn))
+		{
+			throw new Exception("This action is only supported by connection adapters", 400);
+		}
+
 		$response = new stdClass;
 		$response->success = 0;
 
@@ -1015,6 +1034,13 @@ class Filefsv1_0 extends ApiController
 	 */
 	public function setmetadataTask()
 	{
+		// Metadata is an adapter feature; this controller only serves the
+		// local repository and never loads a connection.
+		if (empty($this->ormconn))
+		{
+			throw new Exception("This action is only supported by connection adapters", 400);
+		}
+
 		$response = new stdClass;
 		$response->success = 0;
 
@@ -1140,6 +1166,79 @@ class Filefsv1_0 extends ApiController
 	}
 
 	/**
+	 * Zip the selected files for a multi-file download (the files plugin has
+	 * the same helper; this controller called it without having it)
+	 *
+	 * @param   array  $items  [[type => path], ...] as _sortIncoming() returns them
+	 * @return  mixed  ['path' => zip path, 'name' => zip name] or false
+	 */
+	protected function _archiveFiles($items)
+	{
+		if (!extension_loaded('zip') || empty($items))
+		{
+			return false;
+		}
+
+		$root = realpath((string) $this->repo->get('path'));
+		if (!$root || !is_dir($root))
+		{
+			return false;
+		}
+
+		$maxDownload = intval(\Component::params('com_projects')->get('maxDownload', 104857600));
+		$path        = $this->subdir ? $root . DS . $this->subdir : $root;
+		$tarname     = 'project_files_' . \Components\Projects\Helpers\Html::generateCode(6, 6, 0, 1, 1) . '.zip';
+		$tarpath     = sys_get_temp_dir() . DS . $tarname;
+		$combined    = 0;
+
+		$zip = new \ZipArchive;
+		if ($zip->open($tarpath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true)
+		{
+			return false;
+		}
+
+		$i = 0;
+		foreach ($items as $element)
+		{
+			foreach ((array) $element as $type => $item)
+			{
+				if ($type != 'file')
+				{
+					continue;
+				}
+
+				// resolve symlinks and take only files still inside the project
+				$fpath = realpath($path . DS . $item);
+				if (!$fpath || strpos($fpath, $root . DS) !== 0 || !is_file($fpath))
+				{
+					continue;
+				}
+
+				$combined += filesize($fpath);
+				if ($combined > $maxDownload)
+				{
+					$zip->close();
+					@unlink($tarpath);
+					return false;
+				}
+
+				$zip->addFile($fpath, basename($item));
+				$i++;
+			}
+		}
+
+		$zip->close();
+
+		if ($i == 0)
+		{
+			@unlink($tarpath);
+			return false;
+		}
+
+		return array('path' => $tarpath, 'name' => $tarname);
+	}
+
+	/**
 	 * Sorts incoming file/folder data
 	 *
 	 * @return  array
@@ -1260,5 +1359,54 @@ class Filefsv1_0 extends ApiController
 
 		return $packedMetadata;
 	}
-}
 
+	/**
+	 * May this caller hand the repository this data_path?
+	 *
+	 * Repo::insert() copies a local path straight into the project, and fetches
+	 * anything else with curl. From any collaborator that was a read of every
+	 * file the web server can see (configuration.php included) into a project
+	 * they can download from, and a request from the server to any address.
+	 * A server-local path stays available to a site super admin; a remote one
+	 * must be http(s) to a host that resolves only to public addresses.
+	 *
+	 * @param   string   $dataPath
+	 * @return  boolean
+	 */
+	protected function _acceptDataPath($dataPath)
+	{
+		$scheme = strtolower((string) parse_url($dataPath, PHP_URL_SCHEME));
+
+		if ($scheme === '')
+		{
+			return User::authorise('core.admin');
+		}
+
+		if ($scheme !== 'http' && $scheme !== 'https')
+		{
+			return false;
+		}
+
+		$host = trim((string) parse_url($dataPath, PHP_URL_HOST), '[]');
+		if ($host === '')
+		{
+			return false;
+		}
+
+		$ips = filter_var($host, FILTER_VALIDATE_IP) ? array($host) : (array) gethostbynamel($host);
+		if (empty($ips))
+		{
+			return false;
+		}
+
+		foreach ($ips as $ip)
+		{
+			if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+}

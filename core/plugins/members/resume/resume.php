@@ -254,6 +254,9 @@ class plgMembersResume extends \Hubzero\Plugin\Plugin
 	 */
 	protected function _save($database, $option, $member, $task, $emp)
 	{
+		// Check for request forgeries (both forms in views/resume post the token)
+		Request::checkToken();
+
 		$lookingfor = Request::getString('lookingfor', '');
 		$tagline    = Request::getString('tagline', '');
 		$active     = Request::getInt('activeres', 0);
@@ -262,6 +265,11 @@ class plgMembersResume extends \Hubzero\Plugin\Plugin
 
 		if ($task == 'saveprefs')
 		{
+
+			if ($member->get('id') != User::get('id') && !User::authorise('core.admin'))
+			{
+				App::abort(403, Lang::txt('You are not authorized to perform this action.'));
+			}
 			$js = new \Components\Jobs\Tables\JobSeeker($database);
 
 			if (!$js->loadSeeker($member->get('id')))
@@ -270,10 +278,13 @@ class plgMembersResume extends \Hubzero\Plugin\Plugin
 				return '';
 			}
 
-			if (!$js->bind($_POST))
+			// Never bind the key (uid) or id from the form: the row was loaded for
+			// this member and must stay theirs
+			if (!$js->bind($_POST, array('uid', 'id')))
 			{
 				App::abort(500, $js->getError());
 			}
+			$js->uid = $member->get('id');
 
 			$js->active = $active;
 			$js->updated = Date::toSql();
@@ -285,6 +296,10 @@ class plgMembersResume extends \Hubzero\Plugin\Plugin
 		}
 		else if ($task == 'savetitle' && $author && $title)
 		{
+			if ($author != User::get('id') && !User::authorise('core.admin'))
+			{
+				App::abort(403, Lang::txt('You are not authorized to perform this action.'));
+			}
 			$resume = new \Components\Jobs\Tables\Resume($database);
 			if ($resume->loadResume($author))
 			{
@@ -312,6 +327,10 @@ class plgMembersResume extends \Hubzero\Plugin\Plugin
 	{
 		// are we activating or disactivating?
 		$active = Request::getInt('on', 0);
+		if ($member->get('id') != User::get('id') && !User::authorise('core.admin'))
+		{
+			App::abort(403, Lang::txt('You are not authorized to perform this action.'));
+		}
 
 		$js = new \Components\Jobs\Tables\JobSeeker($database);
 
@@ -524,6 +543,11 @@ class plgMembersResume extends \Hubzero\Plugin\Plugin
 			return $this->_view($database, $option, $member, $emp);
 		}
 
+		if (User::get('id') != $member->get('id') && !User::authorise('core.admin'))
+		{
+			App::abort(403, Lang::txt('You are not authorized to perform this action.'));
+		}
+
 		$row = new \Components\Jobs\Tables\Resume($database);
 
 		if (!$row->loadResume($member->get('id')))
@@ -588,6 +612,14 @@ class plgMembersResume extends \Hubzero\Plugin\Plugin
 	 */
 	protected function _deleteresume($database, $option, $member, $emp)
 	{
+		if (User::get('id') != $member->get('id') && !User::authorise('core.admin'))
+		{
+			App::abort(403, Lang::txt('You are not authorized to perform this action.'));
+		}
+
+		// Check for request forgeries
+		Request::checkToken();
+
 		$row = new \Components\Jobs\Tables\Resume($database);
 		if (!$row->loadResume($member->get('id')))
 		{

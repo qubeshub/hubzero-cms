@@ -92,8 +92,8 @@ class Entriesv1_0 extends ApiController
 	public function listTask()
 	{
 		$this->requiresAuthentication();
-		$this->authorizeOrFail();
 
+		// authorizeOrFail() does not exist on this controller; check rights directly
 		if (!User::authorise('core.manage', 'com_plugins'))
 		{
 			App::abort(403, 'Not Authorized');
@@ -188,8 +188,8 @@ class Entriesv1_0 extends ApiController
 	public function createTask()
 	{
 		$this->requiresAuthentication();
-		$this->authorizeOrFail();
 
+		// authorizeOrFail() does not exist on this controller; check rights directly
 		if (!User::authorise('core.manage', 'com_plugins'))
 		{
 			App::abort(403, 'Not Authorized');
@@ -239,8 +239,8 @@ class Entriesv1_0 extends ApiController
 	public function readTask()
 	{
 		$this->requiresAuthentication();
-		$this->authorizeOrFail();
 
+		// authorizeOrFail() does not exist on this controller; check rights directly
 		if (!User::authorise('core.manage', 'com_plugins'))
 		{
 			App::abort(403, 'Not Authorized');
@@ -250,7 +250,7 @@ class Entriesv1_0 extends ApiController
 
 		$row = Plugin::oneOrFail($id);
 
-		if (!$row->get('id'))
+		if ($row->isNew())
 		{
 			App::abort(404, Lang::txt('COM_PLUGINS_ERROR_MISSING_RECORD'));
 		}
@@ -317,8 +317,8 @@ class Entriesv1_0 extends ApiController
 	public function updateTask()
 	{
 		$this->requiresAuthentication();
-		$this->authorizeOrFail();
 
+		// authorizeOrFail() does not exist on this controller; check rights directly
 		if (!User::authorise('core.manage', 'com_plugins'))
 		{
 			App::abort(403, 'Not Authorized');
@@ -374,8 +374,8 @@ class Entriesv1_0 extends ApiController
 	public function deleteTask()
 	{
 		$this->requiresAuthentication();
-		$this->authorizeOrFail();
 
+		// authorizeOrFail() does not exist on this controller; check rights directly
 		if (!User::authorise('core.manage', 'com_plugins'))
 		{
 			App::abort(403, 'Not Authorized');
@@ -393,7 +393,7 @@ class Entriesv1_0 extends ApiController
 		{
 			$row = Plugin::oneOrNew(intval($id));
 
-			if (!$row->get('id'))
+			if ($row->isNew())
 			{
 				App::abort(404, Lang::txt('COM_PLUGINS_ERROR_MISSING_RECORD'));
 			}
@@ -435,7 +435,13 @@ class Entriesv1_0 extends ApiController
 	 */
 	public function triggerTask()
 	{
-		//$this->requiresAuthentication();
+		$this->requiresAuthentication();
+
+		// authorizeOrFail() does not exist on this controller; check rights directly
+		if (!User::authorise('core.manage', 'com_plugins'))
+		{
+			App::abort(403, 'Not Authorized');
+		}
 
 		$event  = Request::getString('event', '');
 		$folder = Request::getString('folder', '');

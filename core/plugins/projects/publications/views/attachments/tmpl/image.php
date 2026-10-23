@@ -48,12 +48,12 @@ $over  = $data->get('pubThumb') == 1 ? ' title="' . Lang::txt('PLG_PROJECTS_PUBL
 				<a href="<?php echo Route::url($pub->link('editversion') . '&action=saveitem&aid=' . $data->get('id') . '&p=' . $data->get('props') . '&makedefault=1'); ?>" class="item-default" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_IMAGE_MAKE_DEFAULT'); ?>">&nbsp;</a>
 				<?php } ?>
 				<a href="<?php echo Route::url($pub->link('editversion') . '&action=edititem&aid=' . $data->get('id') . '&p=' . $data->get('props')); ?>" class="showinbox item-edit" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_RELABEL'); ?>">&nbsp;</a>
-				<a href="<?php echo Route::url($pub->link('editversion') . '&action=deleteitem&aid=' . $data->get('id') . '&p=' . $data->get('props')); ?>" class="item-remove" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_REMOVE'); ?>">&nbsp;</a>
+				<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($pub->link('editversion') . '&action=deleteitem&aid=' . $data->get('id') . '&p=' . $data->get('props')); ?>" class="item-remove" title="<?php echo Lang::txt('PLG_PROJECTS_PUBLICATIONS_REMOVE'); ?>">&nbsp;</button>
 			</span>
 			<?php } ?>
 		</span>
 		<span class="item-image<?php echo $class; ?>" <?php echo $over; ?>><a class="more-content" href="<?php echo $filePath; ?>"><img alt="" src="<?php echo $thumbSrc; ?>" /></a></span>
 		<span class="item-title">
-			<?php echo $data->get('title'); ?></span>
-		<span class="item-details"><?php echo $details; ?></span>
+			<?php echo $this->escape($data->get('title')); ?></span>
+		<span class="item-details"><?php echo $this->escape($details); ?></span>
 	</li>

@@ -47,6 +47,9 @@ class Tools extends AdminController
 	 */
 	public function mozifyTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		//get request vars
 		$imageFile  = Request::getArray('image-file', '', 'files');
 		$imageUrl   = Request::getString('image-url', '', 'post');
@@ -55,8 +58,9 @@ class Tools extends AdminController
 		//temp upload path
 		$uploadPath = Config::get('tmp_path') . DS . 'newsletter' . DS . 'mozify';
 
-		//url regex
-		$UrlPtn = "(?:https?:|mailto:|ftp:|gopher:|news:|file:)" . "(?:[^ |\\/\"\']*\\/)*[^ |\\t\\n\\/\"\']*[A-Za-z0-9\\/?=&~_]";
+		//url regex -- a web image only: the URL is handed to getimagesize()
+		//and imagecreatefrom*(), which would read file: and other streams too
+		$UrlPtn = "^https?:\\/\\/[^ |\\t\\n\"\']+[A-Za-z0-9\\/?=&~_]$";
 
 		//make sure we have a valid url if we passed one
 		if ($imageUrl != '' && !preg_match("/$UrlPtn/", $imageUrl))
@@ -70,7 +74,8 @@ class Tools extends AdminController
 		{
 			//make sure file is image
 			$info = pathinfo($imageFile['name']);
-			if (!in_array($info['extension'], array('png','jpg','jpeg','bmp','gif', 'tiff')))
+			$ext  = isset($info['extension']) ? strtolower($info['extension']) : '';
+			if (!in_array($ext, array('png','jpg','jpeg','bmp','gif', 'tiff')))
 			{
 				Notify::error(Lang::txt('COM_NEWSLETTER_TOOLS_NOT_VALID_IMAGE'));
 				return $this->displayTask();

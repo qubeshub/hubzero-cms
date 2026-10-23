@@ -48,6 +48,32 @@ class Authors extends SiteController
 				$this->setError(Lang::txt('COM_CITATIONS_ERROR_INVALID_CITATION'));
 			}
 		}
+		// Only a logged-in citation editor (or citations manager) may change authors
+		if (User::isGuest())
+		{
+			throw new Exception(Lang::txt('COM_CITATIONS_ERROR_INVALID_CITATION'), 403);
+		}
+		if (!$this->citation->isNew()
+		 && !User::authorise('core.manage', $this->_option)
+		 && !$this->citation->canEdit())
+		{
+			// The member and group citation plugins share this author manager
+			$allowed = false;
+			if ($this->citation->get('scope') == 'member' && $this->citation->get('uid') == User::get('id'))
+			{
+				$allowed = true;
+			}
+			elseif ($this->citation->get('scope') == 'group')
+			{
+				$grp = \Hubzero\User\Group::getInstance($this->citation->get('scope_id'));
+				$allowed = ($grp && in_array(User::get('id'), (array) $grp->get('managers')));
+			}
+			if (!$allowed)
+			{
+				throw new Exception(Lang::txt('COM_CITATIONS_ERROR_INVALID_CITATION'), 403);
+			}
+		}
+
 		parent::execute();
 	}
 
@@ -150,9 +176,17 @@ class Authors extends SiteController
 		foreach ($mbrs as $i => $mbr)
 		{
 			$author = Author::one($mbr);
+
+			// author[] names any row of #__citations_authors; only this
+			// citation's rows are this request's to reorder
+			if ($author === false || (int) $author->get('cid') !== (int) $this->citation->get('id'))
+			{
+				$this->setError(Lang::txt('COM_CITATIONS_ERROR_UNABLE_TO_UPDATE') . ' ' . $mbr);
+				continue;
+			}
 			$author->set('ordering', $i + 1);
 
-			if ($author === false || !$author->save())
+			if (!$author->save())
 			{
 				$this->setError(Lang::txt('COM_CITATIONS_ERROR_UNABLE_TO_UPDATE') . ' ' . $mbr);
 			}
@@ -180,7 +214,10 @@ class Authors extends SiteController
 
 		$mbrs = Request::getArray('author', array());
 		$mbrs = (!is_array($mbrs) ? array($mbrs) : $mbrs);
-		$authors = Author::all()->whereIn('id', $mbrs)->rows();
+		$authors = Author::all()
+			->whereIn('id', $mbrs)
+			->whereEquals('cid', (int) $this->citation->get('id'))
+			->rows();
 
 		foreach ($authors as $author)
 		{

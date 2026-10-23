@@ -134,7 +134,7 @@ function renderIfJson($v)
 			{
 				continue;
 			}
-			$o[] = '<tr><th>' . $nm . ':</th><td>' . $vl . '</td></tr>';
+			$o[] = '<tr><th>' . htmlspecialchars((string) $nm, ENT_QUOTES, 'UTF-8') . ':</th><td>' . htmlspecialchars((string) $vl, ENT_QUOTES, 'UTF-8') . '</td></tr>';
 		}
 		$o[] = '</tbody>';
 		$o[] = '</table>';
@@ -719,11 +719,11 @@ $legacy = array(
 						if ($field->get('type') == 'url')
 						{
 							$parsed = parse_url($value);
-							if (empty($parsed['scheme']))
+							if (empty($parsed['scheme']) || !in_array(strtolower($parsed['scheme']), array('http', 'https')))
 							{
 								$value = 'http://' . ltrim($value, '/');
 							}
-							$value = '<a href="' . $value . '" rel="external">' . $value . '</a>';
+							$value = '<a href="' . $this->escape($value) . '" rel="external">' . $this->escape($value) . '</a>';
 						}
 					}
 				}
@@ -756,7 +756,7 @@ $legacy = array(
 					$val = array();
 					foreach ($value as $k => $v)
 					{
-						$val[$k] = renderIfJson($v);
+						$val[$k] = (is_string($v) && strpos($v, '{') === false) ? $this->escape($v) : renderIfJson($v);
 					}
 					$val = implode('<br />', $val);
 				}
@@ -767,7 +767,14 @@ $legacy = array(
 						$sh += $f[$field->get('name')][$value];
 					}
 
-					$val = renderIfJson($value);
+					if (is_string($value) && strpos($value, '{') === false && !in_array($field->get('type'), array('url', 'textarea', 'tags')))
+					{
+						$val = $this->escape($value);
+					}
+					else
+					{
+						$val = renderIfJson($value);
+					}
 				}
 
 				$hd = array_diff($hd, $sh);
@@ -891,26 +898,16 @@ $legacy = array(
 				switch ($this->profile->get('sendEmail'))
 				{
 					case '1':
-						$mailPreferenceValue = 'Yes, send me emails';
+						$mailPreferenceValue = Lang::txt('PLG_MEMBERS_PROFILE_EMAILUPDATES_OPT_YES');
 						break;
 					case '0':
-						$mailPreferenceValue = 'No, don\'t send me emails';
+						$mailPreferenceValue = Lang::txt('PLG_MEMBERS_PROFILE_EMAILUPDATES_OPT_NO');
 						break;
 					case '-1':
 					default:
-						$mailPreferenceValue = 'Unanswered';
+						$mailPreferenceValue = Lang::txt('PLG_MEMBERS_PROFILE_EMAILUPDATES_UNANSWERED');
 						break;
 				}
-
-				$select  = '<select name="access[optin]" class="input-select">' . "\n";
-				foreach ($legacy as $k => $v)
-				{
-					$selected = ($k == $this->params->get('access_optin'))
-							  ? ' selected=1'
-							  : '';
-					$select .= ' <option value="' . $k . '"' . $selected . '>' . $v . '</option>' . "\n";
-				}
-				$select .= '</select>' . "\n";
 			?>
 			<?php if ($isUser && (Field::state('registrationOptIn', 'RRRR', 'edit') != Components\Members\Models\Profile\Field::STATE_HIDDEN)) : ?>
 			<li class="profile-optin section <?php echo $cls; ?>">
@@ -939,16 +936,9 @@ $legacy = array(
 							$optin_html .= '</select>';
 							$optin_html .= '</label>';
 
-							if ($this->profile->get('access') > 2)
-							{
-								$access  = '<label>' . Lang::txt('PLG_MEMBERS_PROFILE_PRIVACY')  . '</label>';
-								$access .= Lang::txt('PLG_MEMBERS_PROFILE_ACCESS_MUST_BE_PUBLIC');
-								$access .= '<input type="hidden" name="access[sendEmail]" value="' . $this->params->get('access_optin') . '" />';
-							}
-							else
-							{
-								$access = '<div class="block"><label>' . Lang::txt('PLG_MEMBERS_PROFILE_PRIVACY') . $select . '</label></div>';
-							}
+							// Only the member ever sees this section, so a privacy
+							// setting for it has nothing to control
+							$access = '';
 
 							$this->view('default', 'edit')
 							     ->set('registration_field', 'sendEmail')

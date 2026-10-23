@@ -152,7 +152,7 @@ $base = 'index.php?option=com_members&id=' . $this->member->get('id') . '&active
 					{
 						?>
 						<div class="activity-source icon-group">
-							<a href="<?php echo Route::url('index.php?option=com_groups&cn=' . $group->get('cn') . '&active=activity'); ?>"><?php echo $group->get('description'); ?></a>
+							<a href="<?php echo Route::url('index.php?option=com_groups&cn=' . $group->get('cn') . '&active=activity'); ?>"><?php echo $this->escape($group->get('description')); ?></a>
 						</div>
 						<?php
 					}
@@ -168,7 +168,7 @@ $base = 'index.php?option=com_members&id=' . $this->member->get('id') . '&active
 					{
 						?>
 						<div class="activity-source icon-project">
-							<a href="<?php echo Route::url('index.php?option=com_projects&alias=' . $project->get('alias')); ?>"><?php echo $project->get('title'); ?></a>
+							<a href="<?php echo Route::url('index.php?option=com_projects&alias=' . $project->get('alias')); ?>"><?php echo $this->escape(stripslashes($project->get('title'))); ?></a>
 						</div>
 						<?php
 					}
@@ -243,28 +243,21 @@ $base = 'index.php?option=com_members&id=' . $this->member->get('id') . '&active
 				<ul class="activity-options-main">
 					<?php if (!$this->row->log->get('parent')) { ?>
 						<li>
-							<a
+							<button type="submit" form="hz-post-action"
 								data-id="activity<?php echo $this->row->get('id'); ?>"
 								class="icon-starred tooltips"
-								href="<?php echo Route::url($base . '&action=' . ($this->row->get('starred') ? 'un' : '') . 'star&activity=' . $this->row->get('id')); ?>"
+								formaction="<?php echo Route::url($base . '&action=' . ($this->row->get('starred') ? 'un' : '') . 'star&activity=' . $this->row->get('id')); ?>"
 								data-hrf-active="<?php echo Route::url($base . '&action=unstar&activity=' . $this->row->get('id')); ?>"
 								data-hrf-inactive="<?php echo Route::url($base . '&action=star&activity=' . $this->row->get('id')); ?>"
 								data-txt-active="<?php echo Lang::txt('PLG_MEMBERS_ACTIVITY_UNSTAR'); ?>"
 								data-txt-inactive="<?php echo Lang::txt('PLG_MEMBERS_ACTIVITY_STAR'); ?>"
 								title="<?php echo ($this->row->get('starred')) ? Lang::txt('PLG_MEMBERS_ACTIVITY_UNSTAR') : Lang::txt('PLG_MEMBERS_ACTIVITY_STAR'); ?>"><!--
 								--><?php echo ($this->row->get('starred')) ? Lang::txt('PLG_MEMBERS_ACTIVITY_UNSTAR') : Lang::txt('PLG_MEMBERS_ACTIVITY_STAR'); ?><!--
-							--></a>
+							--></button>
 						</li>
 					<?php } ?>
 					<li>
-						<a
-							data-id="activity<?php echo $this->row->get('id'); ?>"
-							class="icon-delete tooltips"
-							href="<?php echo Route::url($base . '&action=remove&activity=' . $this->row->get('id') . '&' . Session::getFormToken() . '=1'); ?>"
-							title="<?php echo Lang::txt('PLG_MEMBERS_ACTIVITY_DELETE'); ?>"
-							data-txt-confirm="<?php echo Lang::txt('PLG_MEMBERS_ACTIVITY_CONFIRM_DELETE'); ?>"><!--
-							--><?php echo Lang::txt('PLG_MEMBERS_ACTIVITY_DELETE'); ?><!--
-						--></a>
+						<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&action=remove&activity=' . $this->row->get('id')); ?>" class="icon-delete tooltips" title="<?php echo Lang::txt('PLG_MEMBERS_ACTIVITY_DELETE'); ?>" data-id="activity<?php echo $this->row->get('id'); ?>" data-txt-confirm="<?php echo Lang::txt('PLG_MEMBERS_ACTIVITY_CONFIRM_DELETE'); ?>"><?php echo Lang::txt('PLG_MEMBERS_ACTIVITY_DELETE'); ?></button>
 					</li>
 					<?php /*<li>
 						<a

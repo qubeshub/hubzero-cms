@@ -56,6 +56,9 @@ class Screenshots extends SiteController
 	 */
 	public function reorderTask()
 	{
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
 		// Incoming parent ID
 		$pid = Request::getInt('pid', 0);
 		$version = Request::getString('version', 'dev');
@@ -140,8 +143,19 @@ class Screenshots extends SiteController
 			return $this->displayTask($pid, $version);
 		}
 
+		// Only a member of the tool's dev team may edit a screenshot.
+		// deleteTask carries the same check; _authorize() returns without
+		// denying anything for a guest and execute() adds no gate, so without
+		// this the task is reachable unauthenticated for any pid.
+		$obj = new \Components\Tools\Tables\Tool($this->database);
+		$this->_toolid = $obj->getToolIdFromResource($pid);
+		if (!$this->_checkAccess($this->_toolid))
+		{
+			App::abort(403, Lang::txt('COM_TOOLS_ALERTNOTAUTH'));
+		}
+
 		// Incoming child ID
-		$this->view->file = Request::getString('filename', '');
+		$this->view->file = basename(str_replace('\\', '/', (string) Request::getString('filename', '')));
 		if (!$this->view->file)
 		{
 			$this->setError(Lang::txt('COM_TOOLS_CONTRIBUTE_NO_CHILD_ID'));
@@ -197,6 +211,9 @@ class Screenshots extends SiteController
 	 */
 	public function saveTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Incoming parent ID
 		$pid     = Request::getInt('pid', 0);
 		$version = Request::getString('version', 'dev');
@@ -205,6 +222,17 @@ class Screenshots extends SiteController
 		{
 			$this->setError(Lang::txt('COM_TOOLS_CONTRIBUTE_NO_ID'));
 			return $this->displayTask($pid, $version);
+		}
+
+		// Only a member of the tool's dev team may save a screenshot.
+		// deleteTask carries the same check; _authorize() returns without
+		// denying anything for a guest and execute() adds no gate, so without
+		// this the task is reachable unauthenticated for any pid.
+		$obj = new \Components\Tools\Tables\Tool($this->database);
+		$this->_toolid = $obj->getToolIdFromResource($pid);
+		if (!$this->_checkAccess($this->_toolid))
+		{
+			App::abort(403, Lang::txt('COM_TOOLS_ALERTNOTAUTH'));
 		}
 
 		// Incoming
@@ -240,6 +268,9 @@ class Screenshots extends SiteController
 	 */
 	public function deleteTask()
 	{
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
 		// Incoming parent ID
 		$pid = Request::getInt('pid', 0);
 		$version = Request::getString('version', 'dev');
@@ -251,12 +282,20 @@ class Screenshots extends SiteController
 		}
 
 		// Incoming child ID
-		$file = Request::getString('filename', '');
+		$file = basename(str_replace('\\', '/', (string) Request::getString('filename', '')));
 		if (!$file)
 		{
 			$this->setError(Lang::txt('COM_TOOLS_CONTRIBUTE_NO_CHILD_ID'));
 			$this->displayTask($pid, $version);
 			return;
+		}
+
+		// Only a member of the tool's dev team may delete a screenshot
+		$obj = new \Components\Tools\Tables\Tool($this->database);
+		$this->_toolid = $obj->getToolIdFromResource($pid);
+		if (!$this->_checkAccess($this->_toolid))
+		{
+			App::abort(403, Lang::txt('COM_TOOLS_ALERTNOTAUTH'));
 		}
 
 		// Load resource info
@@ -332,6 +371,17 @@ class Screenshots extends SiteController
 			return $this->displayTask($pid, $version);
 		}
 
+		// Only a member of the tool's dev team may upload a screenshot.
+		// deleteTask carries the same check; _authorize() returns without
+		// denying anything for a guest and execute() adds no gate, so without
+		// this the task is reachable unauthenticated for any pid.
+		$obj = new \Components\Tools\Tables\Tool($this->database);
+		$this->_toolid = $obj->getToolIdFromResource($pid);
+		if (!$this->_checkAccess($this->_toolid))
+		{
+			App::abort(403, Lang::txt('COM_TOOLS_ALERTNOTAUTH'));
+		}
+
 		$version = Request::getString('version', 'dev');
 		$title = preg_replace('/\s+/', ' ', Request::getString('title', ''));
 		$allowed = array('.gif', '.jpg', '.png', '.bmp');
@@ -341,6 +391,9 @@ class Screenshots extends SiteController
 			// reload screen
 			return $this->displayTask($pid, $version);
 		}
+
+		// Check for request forgeries
+		Request::checkToken();
 
 		// Get resource information
 		$resource = Entry::oneOrFail($pid);
@@ -570,6 +623,9 @@ class Screenshots extends SiteController
 	 */
 	public function copyTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		$version = Request::getString('version', 'dev');
 		$rid     = Request::getInt('rid', 0);
 		$from    = $version == 'dev' ? 'current' : 'dev';
@@ -608,6 +664,9 @@ class Screenshots extends SiteController
 	 */
 	public function moveTask()
 	{
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
 		$from    = Request::getInt('from', 0);
 		$to      = Request::getInt('to', 0);
 		$rid     = Request::getInt('rid', 0);
@@ -750,6 +809,14 @@ class Screenshots extends SiteController
 		}
 		// Get resource information
 		$resource = Entry::oneOrFail($rid);
+
+		// Dev-version screenshots are only shown inside the tool pipeline,
+		// so the list is limited to the tool's dev team like the other tasks.
+		$obj = new \Components\Tools\Tables\Tool($this->database);
+		if (!$this->_checkAccess($obj->getToolIdFromResource($rid)))
+		{
+			App::abort(403, Lang::txt('COM_TOOLS_ALERTNOTAUTH'));
+		}
 
 		// Get version id
 		$objV = new \Components\Tools\Tables\Version($this->database);

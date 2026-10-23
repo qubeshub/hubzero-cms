@@ -43,7 +43,7 @@ class plgAuthenticationCertificate extends \Hubzero\Plugin\Plugin
 
 		if ($this->isAuthenticated())
 		{
-			$status['username'] = $_SERVER['SSL_CLIENT_S_DN_CN'];
+			$status['username'] = isset($_SERVER['SSL_CLIENT_S_DN_CN']) ? $_SERVER['SSL_CLIENT_S_DN_CN'] : '';
 		}
 
 		return $status;
@@ -91,7 +91,7 @@ class plgAuthenticationCertificate extends \Hubzero\Plugin\Plugin
 
 		if (substr($service, -13) == 'administrator')
 		{
-			$scope = '/administrator/index.php?option=com_users&view=logintask=login&authenticator=certificate';
+			$scope = '/administrator/index.php?option=com_login&task=login&authenticator=certificate';
 		}
 		else
 		{
@@ -128,10 +128,12 @@ class plgAuthenticationCertificate extends \Hubzero\Plugin\Plugin
 	public function onUserAuthenticate($credentials, $options, &$response)
 	{
 		// Check for the required subject dn field
-		if (isset($_SERVER['SSL_CLIENT_S_DN']) && $_SERVER['SSL_CLIENT_S_DN'])
+		if ($this->isAuthenticated())
 		{
-			$domain   = $_SERVER['SSL_CLIENT_I_DN_CN'];
-			$username = $_SERVER['SSL_CLIENT_S_DN_CN'];
+			// A verified certificate need not carry a CN or an e-mail address;
+			// an empty username is refused by Link::find/find_or_create below
+			$domain   = isset($_SERVER['SSL_CLIENT_I_DN_CN']) ? $_SERVER['SSL_CLIENT_I_DN_CN'] : '';
+			$username = isset($_SERVER['SSL_CLIENT_S_DN_CN']) ? $_SERVER['SSL_CLIENT_S_DN_CN'] : '';
 
 			$method = (Component::params('com_members')->get('allowUserRegistration', false)) ? 'find_or_create' : 'find';
 			$hzal   = \Hubzero\Auth\Link::$method('authentication', 'certificate', $domain, $username);
@@ -143,7 +145,7 @@ class plgAuthenticationCertificate extends \Hubzero\Plugin\Plugin
 				return;
 			}
 
-			$hzal->set('email', $_SERVER['SSL_CLIENT_S_DN_Email']);
+			$hzal->set('email', isset($_SERVER['SSL_CLIENT_S_DN_Email']) ? $_SERVER['SSL_CLIENT_S_DN_Email'] : '');
 
 			$response->auth_link = $hzal;
 			$response->type      = 'certificate';
@@ -209,8 +211,8 @@ class plgAuthenticationCertificate extends \Hubzero\Plugin\Plugin
 		// Check for the required subject dn field
 		if ($this->isAuthenticated())
 		{
-			$domain   = $_SERVER['SSL_CLIENT_I_DN_CN'];
-			$username = $_SERVER['SSL_CLIENT_S_DN_CN'];
+			$domain   = isset($_SERVER['SSL_CLIENT_I_DN_CN']) ? $_SERVER['SSL_CLIENT_I_DN_CN'] : '';
+			$username = isset($_SERVER['SSL_CLIENT_S_DN_CN']) ? $_SERVER['SSL_CLIENT_S_DN_CN'] : '';
 
 			$hzad = \Hubzero\Auth\Domain::getInstance('authentication', 'certificate', $domain);
 
@@ -234,7 +236,7 @@ class plgAuthenticationCertificate extends \Hubzero\Plugin\Plugin
 				if ($hzal)
 				{
 					$hzal->set('user_id', User::get('id'));
-					$hzal->set('email', $_SERVER['SSL_CLIENT_S_DN_Email']);
+					$hzal->set('email', isset($_SERVER['SSL_CLIENT_S_DN_Email']) ? $_SERVER['SSL_CLIENT_S_DN_Email'] : '');
 					$hzal->update();
 				}
 				else
@@ -261,7 +263,24 @@ class plgAuthenticationCertificate extends \Hubzero\Plugin\Plugin
 	 */
 	private function isAuthenticated()
 	{
-		return (isset($_SERVER['SSL_CLIENT_S_DN']) && $_SERVER['SSL_CLIENT_S_DN']);
+		if (!isset($_SERVER['SSL_CLIENT_S_DN']) || !$_SERVER['SSL_CLIENT_S_DN'])
+		{
+			return false;
+		}
+
+		// The subject DN is only as good as the web server's verification of the
+		// certificate that carries it. With SSLVerifyClient optional_no_ca (or a
+		// proxy that forwards whatever it was handed) an unverified, self-made
+		// certificate supplies any subject, and the account linked to that
+		// subject is signed in. mod_ssl sets SSL_CLIENT_VERIFY with the DN
+		// variables; behind nginx, pass $ssl_client_verify as SSL_CLIENT_VERIFY.
+		if ($this->params->get('require_verify', 1)
+		 && (!isset($_SERVER['SSL_CLIENT_VERIFY']) || $_SERVER['SSL_CLIENT_VERIFY'] !== 'SUCCESS'))
+		{
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

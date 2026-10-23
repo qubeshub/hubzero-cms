@@ -67,11 +67,13 @@
 	.blog-entries li dl.entry-meta dt a.comment-counter:hover {
 		color: #ff6600 !important;
 	}
-	dl.entry-meta dd.entry-options a {
+	dl.entry-meta dd.entry-options a,
+	dl.entry-meta dd.entry-options button {
 		margin-left: 1.5em;
 	}
 	dl.entry-meta dd.entry-options a.edit,
-	dl.entry-meta dd.entry-options a.delete {
+	dl.entry-meta dd.entry-options a.delete,
+	dl.entry-meta dd.entry-options button.delete {
 		display: block;
 		width: 1.4em;
 		height: 1.4em;
@@ -86,14 +88,17 @@
 		color: #999;
 	}
 	dl.entry-meta dd.entry-options a:before,
-	dl.entry-meta dd.entry-options a:before {
+	dl.entry-meta dd.entry-options a:before,
+	dl.entry-meta dd.entry-options button.delete:before {
 		margin-right: 1em;
 	}
 	dl.entry-meta dd.entry-options a:hover:before,
-	dl.entry-meta dd.entry-options a:hover:before {
+	dl.entry-meta dd.entry-options a:hover:before,
+	dl.entry-meta dd.entry-options button.delete:hover:before {
 		color: #111;
 	}
-	dl.entry-meta dd.entry-options a.delete {
+	dl.entry-meta dd.entry-options a.delete,
+	dl.entry-meta dd.entry-options button.delete {
 		right: 2em;
 	}
 
@@ -109,11 +114,13 @@
 		color: #999;
 		font-size: 0.9em;
 	}
-	div.entry dl.entry-meta dd.entry-options a {
+	div.entry dl.entry-meta dd.entry-options a,
+	div.entry dl.entry-meta dd.entry-options button {
 		margin-left: 1.5em;
 	}
 	div.entry dl.entry-meta dd.entry-options a.edit,
-	div.entry dl.entry-meta dd.entry-options a.delete {
+	div.entry dl.entry-meta dd.entry-options a.delete,
+	div.entry dl.entry-meta dd.entry-options button.delete {
 		top: 0.5em;
 	}
 

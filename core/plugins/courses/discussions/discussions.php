@@ -517,6 +517,7 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 		$this->course = $course;
 		$this->offering = $course->offering();
 		$this->unit = $unit;
+		$this->lecture = $lecture;
 		$this->base = $this->offering->link() . '&active=' . $this->_active;
 
 		$this->_authorize('category');
@@ -529,6 +530,7 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 			'section'   => Request::getString('section', ''),
 			'category'  => Request::getString('category', ''),
 			'state'     => array(1, 3),
+			'access'    => User::getAuthorisedViewLevels(),
 			'scope'     => 'course',
 			'scope_id'  => $course->offering()->get('id'),
 			'sticky'    => false,
@@ -637,6 +639,15 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 			if ($thread)
 			{
 				$post = Post::oneOrNew($thread);
+
+				// thread= resolves any forum post on the hub. Only a post of this
+				// offering's forum is rendered (or, below, made sticky) here.
+				if ($post->get('id')
+				 && ($post->get('scope') != $filters['scope']
+				  || (int) $post->get('scope_id') !== (int) $filters['scope_id']))
+				{
+					App::abort(404, Lang::txt('PLG_COURSES_DISCUSSIONS_MISSING_ID'));
+				}
 			}
 
 			if (!$action && $thread)
@@ -672,6 +683,15 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 				break;
 
 				case 'sticky':
+					// Pinning a thread is a manager action (access-edit-thread is
+					// set for offering managers only)
+					if (!$post->get('id') || !$this->params->get('access-edit-thread'))
+					{
+						App::abort(403, Lang::txt('PLG_COURSES_DISCUSSIONS_NOT_AUTHORIZED'));
+					}
+					// Check for request forgeries
+					Request::checkToken();
+
 					$post->set('sticky', Request::getInt('sticky', 0));
 					$post->save();
 				break;
@@ -1244,6 +1264,15 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 			if ($thread)
 			{
 				$post = Post::oneOrNew($thread);
+
+				// thread= resolves any forum post on the hub. Only a post of this
+				// offering's forum is rendered (or, below, made sticky) here.
+				if ($post->get('id')
+				 && ($post->get('scope') != $filters['scope']
+				  || (int) $post->get('scope_id') !== (int) $filters['scope_id']))
+				{
+					App::abort(404, Lang::txt('PLG_COURSES_DISCUSSIONS_MISSING_ID'));
+				}
 			}
 
 			if (!$action && $thread)
@@ -1279,6 +1308,15 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 				break;
 
 				case 'sticky':
+					// Pinning a thread is a manager action (access-edit-thread is
+					// set for offering managers only)
+					if (!$post->get('id') || !$this->params->get('access-edit-thread'))
+					{
+						App::abort(403, Lang::txt('PLG_COURSES_DISCUSSIONS_NOT_AUTHORIZED'));
+					}
+					// Check for request forgeries
+					Request::checkToken();
+
 					$post->set('sticky', Request::getInt('sticky', 0));
 					$post->save();
 				break;
@@ -1585,6 +1623,11 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 	 */
 	public function savesection()
 	{
+		// Check for request forgeries. savecategory() and savethread() both take
+		// a token; this one did not, so a manager could be made to run it by
+		// visiting a page.
+		Request::checkToken();
+
 		if (!$this->course->access('manage', 'offering'))
 		{
 			return $this->panel();
@@ -1595,7 +1638,29 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 		$fields = array_map('trim', $fields);
 
 		// Instantiate a new table row and bind the incoming data
-		$section = Section::oneOrNew($fields['id'])->set($fields);
+		$__sid   = isset($fields['id']) ? (int) $fields['id'] : 0;
+		$section = Section::oneOrNew($__sid);
+
+		// The access test above is against the offering being VIEWED, while
+		// oneOrNew() resolves any section on the hub and scope/scope_id ride in
+		// through set() -- so a manager of their own offering could rename or
+		// re-scope a section in any group, course or site forum. An existing
+		// section has to already be this forum's, and the scope is pinned.
+		if (!$section->isNew()
+		 && ($section->get('scope') != $this->forum->get('scope')
+		  || $section->get('scope_id') != $this->forum->get('scope_id')))
+		{
+			App::redirect(
+				Route::url($this->base),
+				Lang::txt('You are not authorized to perform this action.'),
+				'warning'
+			);
+			return;
+		}
+
+		$section->set($fields);
+		$section->set('scope', $this->forum->get('scope'));
+		$section->set('scope_id', $this->forum->get('scope_id'));
 
 		// Check for alias duplicates
 		if (!$section->isUnique())
@@ -1616,10 +1681,10 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 		// Log activity
 		Event::trigger('system.logActivity', [
 			'activity' => [
-				'action'      => ($fields['id'] ? 'updated' : 'created'),
+				'action'      => ($__sid ? 'updated' : 'created'),
 				'scope'       => 'forum.section',
 				'scope_id'    => $section->get('id'),
-				'description' => Lang::txt('PLG_COURSES_DISCUSSIONS_ACTIVITY_SECTION_' . ($fields['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($this->base) . '">' . $section->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_COURSES_DISCUSSIONS_ACTIVITY_SECTION_' . ($__sid ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($this->base) . '">' . htmlspecialchars((string) ($section->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $section->get('title'),
 					'url'   => Route::url($this->base)
@@ -1646,6 +1711,9 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 	 */
 	public function deletesection()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		if (!$this->course->access('manage', 'offering'))
 		{
 			return $this->panel();
@@ -1670,7 +1738,9 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 		}
 
 		// Check if user is authorized to delete entries
-		$this->_authorize('section', $model->id);
+		// ($model has never existed here -- on PHP 8 reading ->id off it is a
+		// warning, which this hub turns into a 500.)
+		$this->_authorize('section', $section->get('id'));
 
 		if (!$this->params->get('access-delete-section'))
 		{
@@ -1700,7 +1770,7 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 				'action'      => 'deleted',
 				'scope'       => 'forum.section',
 				'scope_id'    => $section->get('id'),
-				'description' => Lang::txt('PLG_COURSES_DISCUSSIONS_ACTIVITY_SECTION_DELETED', '<a href="' . Route::url($this->base) . '">' . $section->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_COURSES_DISCUSSIONS_ACTIVITY_SECTION_DELETED', '<a href="' . Route::url($this->base) . '">' . htmlspecialchars((string) ($section->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $section->get('title'),
 					'url'   => Route::url($this->base)
@@ -1748,23 +1818,23 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 		switch ($filters['sortby'])
 		{
 			case 'title':
-				$filters['sort'] = 'sticky` DESC, `title';
+				$filters['sort'] = 'title';
 				$filters['sort_Dir'] = strtoupper(Request::getString('sortdir', 'ASC'));
 			break;
 
 			case 'replies':
-				$filters['sort'] = 'sticky` DESC, `rgt';
+				$filters['sort'] = 'rgt';
 				$filters['sort_Dir'] = strtoupper(Request::getString('sortdir', 'DESC'));
 			break;
 
 			case 'created':
-				$filters['sort'] = 'sticky` DESC, `created';
+				$filters['sort'] = 'created';
 				$filters['sort_Dir'] = strtoupper(Request::getString('sortdir', 'DESC'));
 			break;
 
 			case 'activity':
 			default:
-				$filters['sort'] = 'sticky` DESC, `activity';
+				$filters['sort'] = 'activity';
 				$filters['sort_Dir'] = strtoupper(Request::getString('sortdir', 'DESC'));
 			break;
 		}
@@ -1799,6 +1869,7 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 			->select("*, (CASE WHEN last_activity IS NOT NULL AND last_activity != '0000-00-00 00:00:00' THEN last_activity ELSE created END)", 'activity')
 			->whereEquals('state', $filters['state'])
 			->whereIn('access', $filters['access'])
+			->order('sticky', 'desc') // pinned threads first, then the chosen sort
 			->order($filters['sort'], $filters['sort_Dir'])
 			->paginated()
 			->rows();
@@ -1902,7 +1973,50 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 		$fields = array_map('trim', $fields);
 
 		// Instantiate a category
-		$category = Category::oneOrNew($fields['id'])->set($fields);
+		$__cid    = isset($fields['id']) ? (int) $fields['id'] : 0;
+		$category = Category::oneOrNew($__cid);
+
+		// As savesection(): oneOrNew() resolves any row on the hub, the access
+		// test above is against the offering being viewed, and
+		// _authorize('category', $id) ignores the id it is handed -- it switches
+		// on the asset type alone. An existing category has to already be this
+		// forum's before anything is bound onto it.
+		if (!$category->isNew()
+		 && ($category->get('scope') != $this->forum->get('scope')
+		  || $category->get('scope_id') != $this->forum->get('scope_id')))
+		{
+			App::redirect(
+				Route::url($this->base),
+				Lang::txt('You are not authorized to perform this action.'),
+				'warning'
+			);
+			return;
+		}
+
+		$category->set($fields);
+
+		// scope and scope_id are hidden inputs on the form, so pin them rather
+		// than taking the caller's word for where this belongs.
+		$category->set('scope', $this->forum->get('scope'));
+		$category->set('scope_id', $this->forum->get('scope_id'));
+
+		// section_id is a select, and Section::categories() lists by section_id
+		// alone with no scope predicate -- so a category scoped here but hung off
+		// another forum's section renders in THAT forum, where the local manager
+		// cannot remove it. The section has to be one of ours.
+		$__section = Section::oneOrNew($category->get('section_id'));
+
+		if (!$__section->get('id')
+		 || $__section->get('scope') != $this->forum->get('scope')
+		 || $__section->get('scope_id') != $this->forum->get('scope_id'))
+		{
+			App::redirect(
+				Route::url($this->base),
+				Lang::txt('You are not authorized to perform this action.'),
+				'warning'
+			);
+			return;
+		}
 
 		// Double-check that the user is authorized
 		$this->_authorize('category', $category->get('id'));
@@ -1945,10 +2059,10 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 		// Log activity
 		Event::trigger('system.logActivity', [
 			'activity' => [
-				'action'      => ($fields['id'] ? 'updated' : 'created'),
+				'action'      => ($__cid ? 'updated' : 'created'),
 				'scope'       => 'forum.category',
 				'scope_id'    => $category->get('id'),
-				'description' => Lang::txt('PLG_COURSES_DISCUSSIONS_ACTIVITY_CATEGORY_' . ($fields['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($this->base) . '">' . $category->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_COURSES_DISCUSSIONS_ACTIVITY_CATEGORY_' . ($__cid ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($this->base) . '">' . htmlspecialchars((string) ($category->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $category->get('title'),
 					'url'   => Route::url($this->base)
@@ -1975,6 +2089,9 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 	 */
 	public function deletecategory()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		if (!$this->course->access('manage', 'offering'))
 		{
 			return $this->panel();
@@ -2030,7 +2147,7 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 				'action'      => 'deleted',
 				'scope'       => 'forum.category',
 				'scope_id'    => $category->get('id'),
-				'description' => Lang::txt('PLG_COURSES_DISCUSSIONS_ACTIVITY_CATEGORY_DELETED', '<a href="' . Route::url($this->base) . '">' . $category->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_COURSES_DISCUSSIONS_ACTIVITY_CATEGORY_DELETED', '<a href="' . Route::url($this->base) . '">' . htmlspecialchars((string) ($category->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $category->get('title'),
 					'url'   => Route::url($this->base)
@@ -2156,6 +2273,8 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 			->set('section', $section)
 			->set('category', $category)
 			->set('thread', $thread)
+			->set('post', $thread)
+			->set('group', null)
 			->set('filters', $filters)
 			->setErrors($this->getErrors());
 
@@ -2197,7 +2316,7 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 
 				$list[$id] = $v;
 				$list[$id]->set('treename', "$indent$txt");
-				$list[$id]->set('children', count(@$children[$id]));
+				$list[$id]->set('children', count($children[$id] ?? array()));
 
 				$list = $this->_treeRecurse($id, $indent . $spacer, $list, $children, $maxlevel, $level+1, $type);
 			}
@@ -2266,6 +2385,10 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 			->set('offering', $this->offering)
 			->set('config', $this->params)
 			->set('forum', $this->forum)
+			->set('sections', $this->forum->sections(array(
+				'state'  => Section::STATE_PUBLISHED,
+				'access' => User::getAuthorisedViewLevels()
+			))->rows())
 			->set('section', $section)
 			->set('category', $category)
 			->set('post', $post)
@@ -2300,11 +2423,14 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 		$fields  = array_map('trim', $fields);
 
 		// Check permissions
-		$this->_authorize('thread', intval($fields['id']));
+		// $fields is Request::getArray('fields'), so 'id' need not be present at all;
+		// read it once, guarded, and use that everywhere below.
+		$__pid   = isset($fields['id']) ? (int) $fields['id'] : 0;
+		$this->_authorize('thread', $__pid);
 		$asset = 'thread';
 
-		if (($fields['id'] && !$this->params->get('access-edit-thread'))
-		 || (!$fields['id'] && !$this->params->get('access-create-thread')))
+		if (($__pid && !$this->params->get('access-edit-thread'))
+		 || (!$__pid && !$this->params->get('access-create-thread')))
 		{
 			App::redirect(
 				Route::url($this->base),
@@ -2315,7 +2441,29 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 		}
 
 		// Bind data
-		$post = Post::oneOrNew($fields['id']);
+		$post    = Post::oneOrNew($__pid);
+		$__isNew = $post->isNew();
+		$__owner = $post->get('created_by');
+		$__sub   = $post->get('scope_sub_id');
+
+		// oneOrNew() resolves any post on the hub, and _authorize('thread', $id)
+		// ignores the id it is handed -- it switches on the asset type alone,
+		// granting access-create-thread to every logged-in user and
+		// access-edit-thread to a manager of the offering being VIEWED. So
+		// without this an existing post in any group, course or site forum could
+		// be edited from here, and scope, scope_id, scope_sub_id, category_id,
+		// created_by, parent and state all ride in through the set() below.
+		if (!$__isNew
+		 && ($post->get('scope') != $this->forum->get('scope')
+		  || $post->get('scope_id') != $this->forum->get('scope_id')))
+		{
+			App::redirect(
+				Route::url($this->base),
+				Lang::txt('You are not authorized to perform this action.'),
+				'warning'
+			);
+			return;
+		}
 
 		// Double comment?
 		$double = Post::all()
@@ -2333,8 +2481,37 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 
 		$post->set($fields);
 
+		// Pin what decides where this post lives and whose name is on it. None
+		// of these is a field the author is asked for -- scope, scope_id and
+		// scope_sub_id are hidden inputs the form round-trips, and created_by is
+		// not on the form at all but arrives because $fields is the whole array.
+		//
+		// scope_sub_id separates the SECTIONS of one offering and the listing
+		// filters on it, so a bound one drops the post into another section's
+		// discussion. A new post takes the section being viewed; an existing one
+		// keeps the section it is already in, which is the only one its editor
+		// could have reached it through.
+		$post->set('scope', $this->forum->get('scope'));
+		$post->set('scope_id', $this->forum->get('scope_id'));
+		$post->set('scope_sub_id', $__isNew ? $this->offering->section()->get('id') : $__sub);
+		$post->set('created_by', $__isNew ? User::get('id') : $__owner);
+
 		// Load the category
 		$category = Category::oneOrFail($post->get('category_id'));
+
+		// category_id rides in through set() as well, and oneOrFail() resolves
+		// any row -- so a post scoped to this offering could still be filed under
+		// another forum's category, where it renders for that forum's readers.
+		if ($category->get('scope') != $this->forum->get('scope')
+		 || $category->get('scope_id') != $this->forum->get('scope_id'))
+		{
+			App::redirect(
+				Route::url($this->base),
+				Lang::txt('You are not authorized to perform this action.'),
+				'warning'
+			);
+			return;
+		}
 
 		if (!$post->get('object_id') && $category->get('object_id'))
 		{
@@ -2393,8 +2570,9 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 			}
 		}
 
+		// The return URL is posted by the form; only follow it back to this hub
 		$rtrn = base64_decode(Request::getString('return', '', 'post'));
-		if (!$rtrn)
+		if (!$rtrn || !\Hubzero\Utility\Uri::isInternal($rtrn))
 		{
 			$rtrn = Route::url($this->base . '&thread=' . $thread);
 		}
@@ -2430,6 +2608,9 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
+		// Check for request forgeries
+		Request::checkToken();
+
 		// Incoming
 		$id = ($id) ? $id : Request::getInt('thread', 0);
 
@@ -2443,6 +2624,31 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 				Route::url($this->base),
 				Lang::txt('PLG_COURSES_DISCUSSIONS_MISSING_ID'),
 				'error'
+			);
+			return;
+		}
+
+		// The post has to be in THIS offering's forum. oneOrFail() resolves any
+		// row on the hub and _authorize('thread', $id) ignores the id, granting
+		// access-delete-thread on nothing more than managing the offering being
+		// viewed -- so this was a way for a manager of their own course to delete
+		// any forum post on the site, replies and attachments with it.
+		//
+		// Derive the pair from the offering rather than from $this->forum.
+		// $this->forum is set only in onCourse(), and onCourseAfterLecture()
+		// reaches this method too -- the delete link on a lecture-page comment
+		// keeps active=outline, so the forum is never built on that request and
+		// reading it here would be a fatal, not a guard. The two are the same
+		// thing: the forum is always new Manager('course', $offering->get('id')).
+		$__scopeId = (int) $this->offering->get('id');
+
+		if ($post->get('scope') != 'course'
+		 || (int) $post->get('scope_id') !== $__scopeId)
+		{
+			App::redirect(
+				Route::url($this->base),
+				Lang::txt('PLG_COURSES_DISCUSSIONS_NOT_AUTHORIZED'),
+				'warning'
 			);
 			return;
 		}
@@ -2467,9 +2673,11 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 
 		if (!$post->save())
 		{
+			// $forum has never existed in this method; on PHP 8 the error path
+			// itself was a fatal.
 			App::redirect(
 				Route::url($this->base),
-				$forum->getError(),
+				$post->getError(),
 				'error'
 			);
 			return;
@@ -2509,7 +2717,21 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 		}
 
 		// Instantiate an attachment record
-		$attachment = Attachment::oneOrNew(Request::getInt('attachment', 0));
+		// oneOrNew() resolves any attachment row on the hub, and the lines below
+		// re-parent it onto the post just saved -- so naming someone else's
+		// attachment id moved it, with its stored file, onto this thread. An
+		// existing row has to already belong to the post being saved. The group
+		// forum plugin's twin of this method got the same test earlier.
+		$__aid      = Request::getInt('attachment', 0);
+		$attachment = Attachment::oneOrNew($__aid);
+
+		if ($__aid
+		 && $attachment->get('id')
+		 && (int) $attachment->get('post_id') !== (int) $post_id)
+		{
+			$attachment = Attachment::blank();
+		}
+
 		$attachment->set('description', trim(Request::getString('description', '')));
 		$attachment->set('parent', $thread_id);
 		$attachment->set('post_id', $post_id);
@@ -2578,14 +2800,19 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
-		// Instantiate an attachment object
-		if (!$post_id)
+		// Instantiate an attachment object.
+		//
+		// $post_id and $thread_id have never existed in this method -- the two
+		// incoming values above are $post and $thread -- so on PHP 8 reading
+		// them was a warning, which this hub turns into a 500. Every attachment
+		// download from a course discussion was a fatal.
+		if (!$post)
 		{
-			$attach = Attachment::oneByThread($thread_id, $file);
+			$attach = Attachment::oneByThread($thread, $file);
 		}
 		else
 		{
-			$attach = Attachment::oneByPost($post_id);
+			$attach = Attachment::oneByPost($post);
 		}
 
 		if (!$attach->get('filename'))
@@ -2599,6 +2826,20 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 		if (!$post->get('id') || $post->get('state') == $post::STATE_DELETED)
 		{
 			App::abort(404, Lang::txt('PLG_COURSES_DISCUSSIONS_POST_NOT_FOUND'));
+		}
+
+		// ...and that post has to live in THIS offering's forum. The attachment
+		// is resolved by a post or thread id straight from the request, and the
+		// course-view test below is about the course being viewed rather than
+		// about the file -- so with the fatal above repaired this would serve any
+		// forum attachment on the hub. The category is what decides which forum a
+		// stored post lives in, as savethread() and deletethread() both test.
+		$__owner = Category::oneOrNew($post->get('category_id'));
+
+		if ($__owner->get('scope') != $this->forum->get('scope')
+		 || $__owner->get('scope_id') != $this->forum->get('scope_id'))
+		{
+			App::abort(404, Lang::txt('PLG_COURSES_DISCUSSIONS_FILE_NOT_FOUND'));
 		}
 
 		// Load ACL
@@ -2686,7 +2927,7 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 				'action'      => 'reordered',
 				'scope'       => 'forum.section',
 				'scope_id'    => $section->get('id'),
-				'description' => Lang::txt('PLG_COURSES_DISCUSSIONS_ACTIVITY_SECTION_REORDERED', '<a href="' . Route::url($this->base) . '">' . $section->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_COURSES_DISCUSSIONS_ACTIVITY_SECTION_REORDERED', '<a href="' . Route::url($this->base) . '">' . htmlspecialchars((string) ($section->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $section->get('title'),
 					'url'   => Route::url($this->base)
@@ -2767,7 +3008,7 @@ class plgCoursesDiscussions extends \Hubzero\Plugin\Plugin
 
 				if (!$section->save())
 				{
-					$this->setError($sModel->getError());
+					$this->setError($section->getError());
 					return '';
 				}
 			}

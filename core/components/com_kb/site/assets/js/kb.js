@@ -16,17 +16,15 @@ jQuery(document).ready(function(jq){
 	var $ = jq;
 
 	// Voting
-	$('#content').on('click', '.vote-button', function (e) {
-		if ($(this).attr('href')) {
-			var el = $(this);
-			e.preventDefault();
+	$('#content').on('click', 'button.vote-button', function (e) {
+		e.preventDefault();
 
-			$.get(el.attr('href').nohtml(), {}, function(data) {
-				$(el.parent().parent()).html(data);
-				$('.tooltip').hide();
-			});
-			return false;
-		}
+		var el = $(this);
+
+		$.post(el.attr('formaction').nohtml(), $(this.form).serialize(), function(data) {
+			$(el.parent().parent()).html(data);
+			$('.tooltip').hide();
+		});
 	});
 
 	// Comment reply

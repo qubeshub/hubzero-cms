@@ -593,7 +593,7 @@ class Sessions extends SiteController
 
 				foreach ($this->getErrors() as $error)
 				{
-					$view->setError($error);
+					$this->view->setError($error);
 				}
 
 				$this->view->display();
@@ -701,7 +701,7 @@ class Sessions extends SiteController
 				'action'      => 'created',
 				'scope'       => 'tool.session',
 				'scope_id'    => $app->sess,
-				'description' => Lang::txt('COM_TOOLS_ACTIVITY_SESSION_CREATED', $app->sess, '<a href="' . Route::url($url) . '">' . $app->caption . '</a>'),
+				'description' => Lang::txt('COM_TOOLS_ACTIVITY_SESSION_CREATED', $app->sess, '<a href="' . Route::url($url) . '">' . htmlspecialchars((string) ($app->caption), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'tool'    => $app->name,
 					'url'     => $url
@@ -873,7 +873,7 @@ class Sessions extends SiteController
 		$row = $ms->checkSession($sess, User::get('username'));
 
 		// Ensure we found an active session
-		if (!$row->sesstoken)
+		if (!$row || !$row->sesstoken)
 		{
 			App::abort(404, Lang::txt('COM_TOOLS_ERROR_SESSION_NOT_FOUND') . ': ' . $sess);
 			return;
@@ -1477,7 +1477,13 @@ class Sessions extends SiteController
 		$sess = Request::getInt('sess', 0);
 		$rtrn = base64_decode(Request::getString('return', '', 'method', 'base64'));
 
-		$rediect = $this->config->get('stopRedirect', 'index.php?option=com_members&task=myaccount');
+		// Only go back to a page on this hub
+		if ($rtrn && !\Hubzero\Utility\Uri::isInternal($rtrn))
+		{
+			$rtrn = '';
+		}
+
+		$redirect = $this->config->get('stopRedirect', 'index.php?option=com_members&task=myaccount');
 
 		// Ensure we have a session
 		if (!$sess)
@@ -1505,7 +1511,7 @@ class Sessions extends SiteController
 		if (!$ms->username)
 		{
 			App::redirect(
-				Route::url($rediect)
+				Route::url($redirect)
 			);
 			return;
 		}
@@ -1557,7 +1563,7 @@ class Sessions extends SiteController
 		else
 		{
 			App::redirect(
-				Route::url($rediect)
+				Route::url($redirect)
 			);
 		}
 	}
@@ -1629,20 +1635,45 @@ class Sessions extends SiteController
 	 */
 	public function renameTask()
 	{
+		// Must be logged in
+		if (User::isGuest())
+		{
+			App::abort(403, Lang::txt('COM_TOOLS_ALERTNOTAUTH'));
+			return;
+		}
+
 		$mwdb = \Components\Tools\Helpers\Utils::getMWDBO();
 
 		$id = Request::getInt('id', 0);
+		// trim, not strip_tags. strip_tags treats an unterminated "<" as the
+		// start of a tag and drops everything after it, so a session named
+		// "Run 1 <2" was permanently stored as "Run 1 ". Every sink that prints
+		// this value now escapes it, which is where the defence belongs.
 		$name = trim(Request::getString('name', ''));
 
 		if ($id && $name)
 		{
 			$ms = new \Components\Tools\Tables\Session($mwdb);
-			$ms->load($id);
-			$ms->sessname = $name;
-			$ms->store();
+
+			// Restrict to the current user's own session unless allowed to manage all
+			if ($this->config->get('access-manage-session'))
+			{
+				$ms->load($id);
+			}
+			else
+			{
+				$ms->load($id, User::get('username'));
+			}
+
+			// Only rename when a matching (owned) session was found
+			if ($ms->username)
+			{
+				$ms->sessname = $name;
+				$ms->store();
+			}
 		}
 
-		echo $name;
+		echo htmlspecialchars($name);
 	}
 
 	/**
@@ -1813,7 +1844,7 @@ class Sessions extends SiteController
 				if (!\Hubzero\Geocode\Geocode::is_iplocation($ip, $exportcontrol))
 				{
 					$this->setError(Lang::txt('COM_TOOLS_ERROR_ACCESS_DENIED_EXPORT_PURDUE_ONLY'));
-					Log::debug("mw::_getToolExportControl($exportControl) FAILED PURDUE export control check");
+					Log::debug("mw::_getToolExportControl($exportcontrol) FAILED PURDUE export control check");
 					return false;
 				}
 			break;

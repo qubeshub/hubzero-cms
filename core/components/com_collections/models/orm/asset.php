@@ -96,7 +96,7 @@ class Asset extends Relational
 		{
 			$last = self::all()
 				->select('ordering')
-				->whereEquals('item_id', $data['item_id'])
+				->whereEquals('item_id', isset($data['item_id']) ? (int) $data['item_id'] : 0)
 				->order('ordering', 'desc')
 				->row();
 
@@ -242,10 +242,34 @@ class Asset extends Relational
 	 */
 	public function exists()
 	{
-		$path  = $this->filespace() . DS . $this->get('item_id') . DS;
-		$path .= ltrim($this->get('filename'), DS);
+		return file_exists($this->path());
+	}
 
-		return file_exists($path);
+	/**
+	 * Absolute path of the stored file, or of a sized variant of an image
+	 * (thumbnails are <name>_t.<ext>, medium <name>_m.<ext>, as the site
+	 * writes them); a variant that was never made falls back to the original
+	 *
+	 * @param   string  $size  original|thumb|medium
+	 * @return  string
+	 */
+	public function path($size = 'original')
+	{
+		$dir  = $this->filespace() . DS . $this->get('item_id') . DS;
+		$file = ltrim($this->get('filename'), DS);
+
+		$suffix = array('thumb' => '_t', 'medium' => '_m');
+		if (isset($suffix[$size]) && $this->isImage())
+		{
+			$ext     = pathinfo($file, PATHINFO_EXTENSION);
+			$variant = pathinfo($file, PATHINFO_FILENAME) . $suffix[$size] . ($ext !== '' ? '.' . $ext : '');
+			if (file_exists($dir . $variant))
+			{
+				return $dir . $variant;
+			}
+		}
+
+		return $dir . $file;
 	}
 
 	/**
@@ -261,10 +285,7 @@ class Asset extends Relational
 
 			if ($this->exists())
 			{
-				$path  = $this->filespace() . DS . $this->get('item_id') . DS;
-				$path .= ltrim($this->get('filename'), DS);
-
-				$this->size = filesize($path);
+				$this->size = filesize($this->path());
 			}
 		}
 
@@ -278,17 +299,17 @@ class Asset extends Relational
 	 */
 	public function dimensions()
 	{
-		if (is_null($this->_dimensions))
+		if (is_null($this->dimensions))
 		{
-			$this->_dimensions = array(0, 0);
+			$this->dimensions = array(0, 0);
 
 			if ($this->isImage() && $this->exists())
 			{
-				$this->_dimensions = getimagesize($this->path());
+				$this->dimensions = getimagesize($this->path());
 			}
 		}
 
-		return $this->_dimensions;
+		return $this->dimensions;
 	}
 
 	/**
@@ -323,10 +344,7 @@ class Asset extends Relational
 	 */
 	public function link($size = 'original')
 	{
-		$path  = $this->filespace() . DS . $this->get('item_id') . DS;
-		$path .= ltrim($this->file($size), DS);
-
-		return with(new \Hubzero\Content\Moderator($path, 'public'))->getUrl();
+		return with(new \Hubzero\Content\Moderator($this->path($size), 'public'))->getUrl();
 	}
 
 	/**

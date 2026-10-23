@@ -29,7 +29,7 @@ $resp = $this->resp;
 		<?php if (!empty($resp->email)): ?>
 			<tr>
 				<th><?php echo Lang::txt('COM_EVENTS_EMAIL'); ?></th>
-				<td><a href="mailto:<?php echo $resp->email; ?>"><?php echo $this->escape($resp->email); ?></a></td>
+				<td><a href="mailto:<?php echo $this->escape($resp->email); ?>"><?php echo $this->escape($resp->email); ?></a></td>
 			</tr>
 		<?php endif; ?>
 		<?php if (!empty($resp->affiliation)): ?>
@@ -72,7 +72,7 @@ $resp = $this->resp;
 					$r = array();
 					foreach ($races as $race)
 					{
-						$r[] = $this->escape($race . ($race->tribal_affiliation ? ' (' . $race->tribal_affiliation . ')' : ''));
+						$r[] = $this->escape($race->race . ($race->tribal_affiliation ? ' (' . $race->tribal_affiliation . ')' : ''));
 					}
 					echo implode(', ', $r);
 					?>

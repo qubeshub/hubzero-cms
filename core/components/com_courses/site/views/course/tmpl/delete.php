@@ -12,7 +12,7 @@ $this->css()
      ->js();
 ?>
 <header id="content-header">
-	<h2><?php echo $this->title; ?></h2>
+	<h2><?php echo $this->escape($this->title); ?></h2>
 
 	<div id="content-header-extra">
 		<ul id="useroptions">
@@ -41,7 +41,7 @@ $this->css()
 		<fieldset>
 			<h3><?php echo Lang::txt('COURSES_DELETE_HEADER'); ?></h3>
 
-	 		<p class="warning"><?php echo Lang::txt('COURSES_DELETE_WARNING', $this->course->get('description')).'<br /><br />'.$this->log; ?></p>
+	 		<p class="warning"><?php echo Lang::txt('COURSES_DELETE_WARNING', $this->escape($this->course->get('description'))).'<br /><br />'.$this->log; ?></p>
 
 			<div class="form-group">
 				<label for="msg">
@@ -59,7 +59,10 @@ $this->css()
 		</fieldset>
 		<div class="clear"></div>
 
-		<input type="hidden" name="gid" value="<?php echo $this->course->get('cn'); ?>" />
+		<?php /* courses have an alias, not a group's cn (this posted an empty gid); and the action
+		         routes to /courses/, whose default controller has no delete task, so name this one */ ?>
+		<input type="hidden" name="gid" value="<?php echo $this->escape($this->course->get('alias')); ?>" />
+		<input type="hidden" name="controller" value="course" />
 		<input type="hidden" name="task" value="delete" />
 		<input type="hidden" name="process" value="1" />
 		<input type="hidden" name="option" value="<?php echo $this->option; ?>" />

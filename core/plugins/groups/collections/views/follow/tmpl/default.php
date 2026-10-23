@@ -28,9 +28,9 @@ $base = 'index.php?option=' . $this->option . '&id=' . $this->member->get('uidNu
 					<?php echo Lang::txt('New post'); ?>
 				</a>
 			<?php } else { ?>
-				<a class="icon-follow follow btn tooltips" title="<?php echo Lang::txt('Repost :: Watch this collection'); ?>" href="<?php echo Route::url($base . '&task=' . $this->collection->get('alias') . '/follow'); ?>">
-					<?php echo Lang::txt('Follow'); //Repost collection ?>
-				</a>
+				<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&task=' . $this->collection->get('alias') . '/follow'); ?>" class="icon-follow follow btn tooltips" title="<?php echo Lang::txt('Repost :: Watch this collection'); ?>">
+					<?php echo Lang::txt('Follow'); ?>
+				</button>
 			<?php } ?>
 		<?php } ?>
 		<span class="clear"></span>
@@ -48,11 +48,11 @@ if ($this->rows->total() > 0)
 		{
 			$item->set('type', 'deleted');
 		}
-		$type = $item->get('type');
-		if (!in_array($type, array('collection', 'deleted', 'image', 'file', 'text', 'link')))
-		{
-			$type = 'link';
-		}
+		// This whitelist admitted 'image', for which no default_image.php exists
+		// in this directory -- and a missing template falls back to a view that
+		// is rendered without the variables it needs, taking the page down.
+		// layout() resolves against the templates that are actually here.
+		$type = $item->layout(dirname(__DIR__, 2) . DS . 'post' . DS . 'tmpl', 'default_');
 ?>
 		<div class="post <?php echo $type; ?>" id="b<?php echo $row->get('id'); ?>" data-id="<?php echo $row->get('id'); ?>" data-closeup-url="<?php echo Route::url($base . '&task=post/' . $row->get('id')); ?>" data-width="600" data-height="350">
 			<div class="content">
@@ -89,9 +89,9 @@ if ($this->rows->total() > 0)
 								<span><?php echo Lang::txt('Edit'); ?></span>
 							</a>
 						<?php } else { ?>
-							<a class="vote <?php echo ($item->get('voted')) ? 'unlike' : 'like'; ?>" data-id="<?php echo $row->get('id'); ?>" data-text-like="<?php echo Lang::txt('Like'); ?>" data-text-unlike="<?php echo Lang::txt('Unlike'); ?>" href="<?php echo Route::url($base . '&task=post/' . $row->get('id') . '/vote'); ?>">
+							<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&task=post/' . $row->get('id') . '/vote'); ?>" class="vote <?php echo ($item->get('voted')) ? 'unlike' : 'like'; ?>" data-id="<?php echo $row->get('id'); ?>" data-text-like="<?php echo Lang::txt('Like'); ?>" data-text-unlike="<?php echo Lang::txt('Unlike'); ?>">
 								<span><?php echo ($item->get('voted')) ? Lang::txt('Unlike') : Lang::txt('Like'); ?></span>
-							</a>
+							</button>
 						<?php } ?>
 							<a class="comment" data-id="<?php echo $row->get('id'); ?>" href="<?php echo Route::url($base . '&task=post/' . $row->get('id') . '/comment'); ?>">
 								<span><?php echo Lang::txt('Comment'); ?></span>
@@ -104,9 +104,9 @@ if ($this->rows->total() > 0)
 								<span><?php echo Lang::txt('Delete'); ?></span>
 							</a>
 						<?php } else if ($row->get('created_by') == User::get('id') || $this->params->get('access-edit-item')) { ?>
-							<a class="unpost" data-id="<?php echo $row->get('id'); ?>" href="<?php echo Route::url($base . '&task=post/' . $row->get('id') . '/remove'); ?>">
+							<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&task=post/' . $row->get('id') . '/remove'); ?>" class="unpost" data-id="<?php echo $row->get('id'); ?>">
 								<span><?php echo Lang::txt('Remove'); ?></span>
-							</a>
+							</button>
 						<?php } ?>
 						</div><!-- / .actions -->
 					<?php } ?>

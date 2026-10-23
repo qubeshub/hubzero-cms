@@ -9,6 +9,7 @@ namespace Components\Collections\Site\Controllers;
 
 use Components\Collections\Models\Collection;
 use Components\Collections\Models\Archive;
+use Hubzero\Base\ItemList;
 use Components\Collections\Models\Post;
 use Components\Collections\Models\Item;
 use Components\Collections\Tables;
@@ -44,11 +45,16 @@ class Posts extends SiteController
 	/**
 	 * Redirect to login page
 	 *
+	 * @param   string  $return  URL to come back to after logging in
 	 * @return  void
 	 */
-	public function loginTask()
+	public function loginTask($return = null)
 	{
-		$return = base64_encode(Request::getString('REQUEST_URI', Route::url('index.php?option=' . $this->_option . '&controller=' . $this->_controller . '&task=' . $this->_task, false, true), 'server'));
+		if (!$return)
+		{
+			$return = Request::getString('REQUEST_URI', Route::url('index.php?option=' . $this->_option . '&controller=' . $this->_controller . '&task=' . $this->_task, false, true), 'server');
+		}
+		$return = base64_encode($return);
 		App::redirect(
 			Route::url('index.php?option=com_users&view=login&return=' . $return, false)
 		);
@@ -98,6 +104,53 @@ class Posts extends SiteController
 	}
 
 	/**
+	 * The boards the current user may move a post onto, as the ItemList the edit
+	 * form iterates: their own boards and their groups', which is what
+	 * Archive::mine() returns for collectTask()'s repost form.
+	 *
+	 * mine('groups') leaves out a group board that only managers may post to when
+	 * the caller is not a manager, while canBePostedToBy() -- the test saveTask()
+	 * enforces -- admits any member. The post's current board is kept selectable
+	 * in that gap, or an edit that never touched the select would relocate the
+	 * post to whatever option came first.
+	 *
+	 * @param   object  $current  The post's current board, or null
+	 * @return  \Hubzero\Base\ItemList
+	 */
+	protected function _postableBoards($current = null)
+	{
+		$boards = array();
+		$seen   = array();
+
+		foreach ((array) $this->model->mine() as $row)
+		{
+			$boards[] = new Collection($row);
+			$seen[(int) $row->id] = true;
+		}
+
+		foreach ((array) $this->model->mine('groups') as $rows)
+		{
+			foreach ((array) $rows as $row)
+			{
+				if (!isset($seen[(int) $row->id]))
+				{
+					$boards[] = new Collection($row);
+					$seen[(int) $row->id] = true;
+				}
+			}
+		}
+
+		if ($current && $current->exists()
+		 && !isset($seen[(int) $current->get('id')])
+		 && $current->canBePostedToBy())
+		{
+			$boards[] = $current;
+		}
+
+		return new ItemList($boards);
+	}
+
+	/**
 	 * Display a form for editing an entry
 	 *
 	 * @return  string
@@ -119,15 +172,6 @@ class Posts extends SiteController
 
 		$this->view->collection = $this->model->collection(Request::getString('board', 0));
 
-		// Get all collections for a user
-		$this->view->collections = $this->model->collections();
-		if (!$this->view->collections->total())
-		{
-			$this->view->collection->setup(User::get('id'), 'member');
-			$this->view->collections = $this->model->collections();
-			$this->view->collection  = $this->model->collection(Request::getString('board', 0));
-		}
-
 		// Load the post
 		$this->view->entry = $this->view->collection->post($id);
 		if (!$this->view->collection->exists() && $this->view->entry->exists())
@@ -135,12 +179,70 @@ class Posts extends SiteController
 			$this->view->collection = $this->model->collection($this->view->entry->get('collection_id'));
 		}
 
+		// ?post=<id> resolves any row on the hub through Collection::post(), and
+		// this form then prints the item's title, description, url and its whole
+		// asset list. displayTask() asks canAccess() and voteTask() asks
+		// isReadableBy(); this was the one read of the same object with no test at
+		// all, so a private board's post could be read here by any logged-in user.
+		// saveTask() already refuses the write, so this closes the read.
+		if ($this->view->entry->exists()
+		 && !(new Collection($this->view->entry->get('collection_id')))->isReadableBy())
+		{
+			App::abort(403, Lang::txt('COM_COLLECTIONS_ERROR_ACCESS_DENIED'));
+		}
+
+		// The boards this post may be moved to. $this->model is the component's
+		// UNSCOPED archive -- deliberately, so displayTask() can show any post --
+		// and its collections() therefore listed every board on the hub, private
+		// ones included, as <option>s for anyone who opened this form. Offer what
+		// the caller may actually post to instead: their own boards and their
+		// groups', the same two sources collectTask()'s repost form draws on.
+		// saveTask() enforces canBePostedToBy() on whatever is submitted, so
+		// this closes the listing, not the write.
+		$this->view->collections = $this->_postableBoards($this->view->collection);
+		if (!$this->view->collections->total())
+		{
+			$this->view->collection->setup(User::get('id'), 'member');
+			$this->view->collections = $this->_postableBoards($this->view->collection);
+
+			// A board named in the request only if the post did not already
+			// resolve one -- re-resolving unconditionally would discard it.
+			if (!$this->view->collection->exists())
+			{
+				$this->view->collection = $this->model->collection(Request::getString('board', 0));
+			}
+		}
+
 		// Are we removing an asset?
 		if ($remove = Request::getInt('remove', 0))
 		{
-			if (!$this->view->entry->item()->removeAsset($remove))
+			// The post is chosen by ?post=<id> and Collection::post() resolves any
+			// row, so without this any logged-in user could delete an asset from
+			// another member's post by naming it. Item::removeAsset() does confirm
+			// the asset belongs to the item, which stops it reaching an unrelated
+			// asset -- but the item itself was still the caller's to pick.
+			//
+			// The test is on the ITEM's owner, not the post's: the asset hangs off
+			// the item, and collectTask() creates a repost whose created_by is the
+			// reposter while its item_id stays the original author's. Accepting the
+			// post's owner here would let anyone repost a victim's item and then
+			// delete its assets -- from the original and from every other repost.
+			// This refuses nothing the form offers: the delete link renders only
+			// inside `if ($this->entry->get('original'))`, and both Item::check()
+			// and Post::check() stamp created_by from the same user on create.
+			$item = $this->view->entry->item();
+
+			if ($item->get('created_by') != User::get('id'))
 			{
-				$this->view->setError($this->view->entry->item()->getError());
+				App::abort(403, Lang::txt('COM_COLLECTIONS_ERROR_ACCESS_DENIED'));
+			}
+
+			// Check for request forgeries
+			Request::checkToken();
+
+			if (!$item->removeAsset($remove))
+			{
+				$this->view->setError($item->getError());
 			}
 		}
 
@@ -189,6 +291,36 @@ class Posts extends SiteController
 		// Incoming
 		$fields = Request::getArray('fields', array(), 'post');
 
+		// fields[id] names an existing row and Item resolves any of them, so
+		// without this a caller could overwrite another member's item -- title,
+		// description, url and, because fields[created_by] is a hidden input on
+		// the edit form, its owner. Handing yourself the ownership of someone
+		// else's item is also enough to defeat every guard keyed on it,
+		// including the item delete.
+		$__iid = isset($fields['id']) ? (int) $fields['id'] : 0;
+
+		if ($__iid)
+		{
+			$__existing = new Item($__iid);
+
+			// The Edit button is also offered on a member's own REPOST, whose
+			// item belongs to the original poster: the form posts post[id], and
+			// a post the caller made of this very item is theirs to edit.
+			$__postin = Request::getArray('post', array(), 'post');
+			$__pid    = isset($__postin['id']) ? (int) $__postin['id'] : 0;
+			$__mine   = false;
+			if ($__pid)
+			{
+				$__p = Post::getInstance($__pid);
+				$__mine = ($__p && $__p->get('created_by') == User::get('id') && (int) $__p->get('item_id') === $__iid);
+			}
+
+			if ($__existing->exists() && $__existing->get('created_by') != User::get('id') && !$__mine)
+			{
+				App::abort(403, Lang::txt('COM_COLLECTIONS_ERROR_ACCESS_DENIED'));
+			}
+		}
+
 		// Get model
 		$row = new Item();
 
@@ -198,6 +330,9 @@ class Posts extends SiteController
 			$this->setError($row->getError());
 			return $this->editTask($row);
 		}
+
+		// The owner is never the submitter's to set
+		$row->set('created_by', $__iid ? $__existing->get('created_by') : User::get('id'));
 
 		// Add some data
 		//$row->set('_files', $files);
@@ -215,8 +350,18 @@ class Posts extends SiteController
 		// Create a post entry linking the item to the board
 		$p = Request::getArray('post', array(), 'post');
 
-		// Load a post entry
-		$post = new Post($p['id']);
+		// Load a post entry. post[id] resolves any row, so an existing one has
+		// to be the caller's and has to carry the item just written -- otherwise
+		// naming someone else's post re-homes it and rewrites its description.
+		$post = new Post(isset($p['id']) ? (int) $p['id'] : 0);
+
+		if ($post->exists()
+		 && ($post->get('created_by') != User::get('id')
+			|| (int) $post->get('item_id') !== (int) $row->get('id')))
+		{
+			App::abort(403, Lang::txt('COM_COLLECTIONS_ERROR_ACCESS_DENIED'));
+		}
+
 		if (!$post->exists())
 		{
 			// No post existed so set some values
@@ -226,6 +371,10 @@ class Posts extends SiteController
 
 		// Are we creating a new collection for it?
 		$coltitle = Request::getString('collection_title', '', 'post');
+		if (!isset($p['collection_id']))
+		{
+			$p['collection_id'] = 0;
+		}
 		if (!$p['collection_id'] && $coltitle)
 		{
 			$collection = new Collection();
@@ -236,6 +385,18 @@ class Posts extends SiteController
 
 			$p['collection_id'] = $collection->get('id');
 		}
+		// ...and the board it lands on has to be one the caller may post to.
+		//
+		// Cast first. Request::getArray() filters nothing, so post[collection_id]
+		// can itself be an array, and Models\Collection's constructor BINDS an
+		// array as the model's own data -- exists(), object_id and object_type
+		// would all be the caller's to state, and the predicate would agree.
+		if ((int) $p['collection_id']
+		 && !(new Collection((int) $p['collection_id']))->canBePostedToBy())
+		{
+			App::abort(403, Lang::txt('COM_COLLECTIONS_ERROR_ACCESS_DENIED'));
+		}
+
 		$post->set('collection_id', $p['collection_id']);
 
 		// Set the description
@@ -287,8 +448,66 @@ class Posts extends SiteController
 		// Incoming
 		$comment = Request::getArray('comment', array(), 'post');
 
-		// Instantiate a new comment object and pass it the data
-		$row = Comment::blank()->set($comment);
+		// The post being commented on, which decides what the comment hangs off.
+		// ?post= is what the form and the routes already carry.
+		$__post = Post::getInstance(Request::getInt('post', 0));
+
+		if (!$__post->get('id')
+		 || !(new Collection($__post->get('collection_id')))->isReadableBy())
+		{
+			App::abort(404, Lang::txt('COM_COLLECTIONS_ERROR_ACCESS_DENIED'));
+		}
+
+		// Instantiate the comment object and pass it the data
+		$row = Comment::oneOrNew(isset($comment['id']) ? (int) $comment['id'] : 0);
+
+		// For an existing comment, require ownership
+		if (!$row->isNew()
+		 && $row->get('created_by') != User::get('id')
+		 && !User::authorise('core.manage', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
+		$__isNew = $row->isNew();
+
+		// What the comment hangs off is never the submitter's to set.
+		// comment[item_type] and comment[item_id] are hidden inputs, so a new
+		// comment could otherwise be attached to any commentable object on the
+		// hub -- bypassing that object's own comment permissions and its
+		// allow_comments setting -- and an edit could re-point someone's comment
+		// at another object. Both plugins pin these; this controller did not.
+		$__type  = $__isNew ? 'collection' : $row->get('item_type');
+		$__item  = $__isNew ? (int) $__post->get('item_id') : (int) $row->get('item_id');
+		$__owner = $__isNew ? (int) User::get('id') : (int) $row->get('created_by');
+		$__state = $__isNew ? 1 : (int) $row->get('state');
+
+		// A parent must be a comment on the same item; anything else is a
+		// top-level comment
+		$__parent = $__isNew ? (isset($comment['parent']) ? (int) $comment['parent'] : 0) : (int) $row->get('parent');
+		if ($__isNew && $__parent)
+		{
+			$__p = Comment::oneOrNew($__parent);
+			if ($__p->isNew() || $__p->get('item_type') != $__type || (int) $__p->get('item_id') !== $__item)
+			{
+				$__parent = 0;
+			}
+		}
+
+		$row->set($comment);
+		$row->set('item_type', $__type);
+		$row->set('item_id', $__item);
+		$row->set('state', $__state);
+		$row->set('parent', $__parent);
+
+		// created_by on BOTH paths. It is not on any comment form, but $comment
+		// is the whole request array and modify() writes every set attribute that
+		// is a real column -- created_by is not in Comment::$always, so nothing
+		// downstream restores it. Pinning only on create left an author free to
+		// post comment[created_by]=<anyone> on an edit of their own comment and
+		// have it render under that person's name and avatar. Both plugins unset
+		// it; this controller pins it.
+		$row->set('created_by', $__owner);
 
 		// Store new content
 		if (!$row->save())
@@ -355,8 +574,16 @@ class Posts extends SiteController
 		// Ensure the user is logged in
 		if (User::isGuest())
 		{
-			return $this->loginTask();
+			return $this->loginTask(Route::url('index.php?option=' . $this->_option . '&controller=' . $this->_controller . '&post=' . Request::getInt('post', 0), false, true));
 		}
+
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
 
 		// Incoming
 		$id = Request::getInt('comment', 0);
@@ -367,6 +594,14 @@ class Posts extends SiteController
 
 		// Initiate a whiteboard comment object
 		$comment = Comment::oneOrFail($id);
+
+		// Only the author or a collections manager may delete a comment
+		if ($comment->get('created_by') != User::get('id')
+		 && !User::authorise('core.manage', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		$comment->set('state', $comment::STATE_DELETED);
 
 		// Delete the entry itself
@@ -400,7 +635,7 @@ class Posts extends SiteController
 			],
 			'recipients' => array(
 				['collection', $post->get('collection_id')],
-				['user', $row->get('created_by')],
+				['user', $comment->get('created_by')],
 				['user', $post->item()->get('created_by')]
 			)
 		]);
@@ -418,14 +653,31 @@ class Posts extends SiteController
 	{
 		if (User::isGuest())
 		{
-			return $this->loginTask();
+			return $this->loginTask(Route::url('index.php?option=' . $this->_option . '&controller=' . $this->_controller . '&post=' . Request::getInt('post', 0), false, true));
 		}
+
+		// Require POST
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('JERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		Request::checkToken();
 
 		// Incoming
 		$id = Request::getInt('post', 0);
 
 		// Get the post model
 		$post = Post::getInstance($id);
+
+		// The post id is the caller's to pick and getInstance() resolves any row,
+		// so the board it sits on has to be one they can actually read. Both
+		// plugins' _vote() was scoped this way; this one was not.
+		if (!$post->get('id')
+		 || !(new Collection($post->get('collection_id')))->isReadableBy())
+		{
+			App::abort(404, Lang::txt('COM_COLLECTIONS_ERROR_ACCESS_DENIED'));
+		}
 
 		// Record the vote
 		if (!$post->item()->vote())
@@ -445,7 +697,7 @@ class Posts extends SiteController
 				'action'      => 'voted',
 				'scope'       => 'collections.item',
 				'scope_id'    => $post->get('item_id'),
-				'description' => Lang::txt('COM_COLLECTIONS_ACTIVITY_VOTED', $post->get('item_id'), '<a href="' . Route::url($url) . '">' . $title . '</a>'),
+				'description' => Lang::txt('COM_COLLECTIONS_ACTIVITY_VOTED', $post->get('item_id'), '<a href="' . Route::url($url) . '">' . htmlspecialchars((string) ($title), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'collection_id' => $post->get('collection_id'),
 					'post_id' => $post->get('id'),
@@ -499,7 +751,18 @@ class Posts extends SiteController
 
 			if (!$post_id && $collection_id)
 			{
-				$collection = $model->collection($collection_id);
+				// Collecting a whole board. Resolve it unscoped -- $model is
+				// this user's archive, which now confines a numeric board to
+				// boards they own, and the board being collected is by
+				// definition someone else's. Ask the readability predicate
+				// instead, so this form cannot be used to read back the item id
+				// of a board the caller is not allowed to see.
+				$collection = new Collection($collection_id);
+
+				if (!$collection->isReadableBy())
+				{
+					App::abort(403, Lang::txt('COM_COLLECTIONS_ERROR_ACCESS_DENIED'));
+				}
 
 				$item_id       = $collection->item()->get('id');
 				$collection_id = $collection->item()->get('object_id');
@@ -542,6 +805,26 @@ class Posts extends SiteController
 				$this->setError($collection->getError());
 			}
 			$collection_id = $collection->get('id');
+		}
+
+		// Both ids arrive from the request and nothing downstream re-checks
+		// either: Tables\Post::check() only requires them to be non-zero, and it
+		// stamps created_by from the session. So without these two tests a
+		// caller can drop a post onto anyone's board, and can mint a post of
+		// their own carrying any item on the hub -- which is enough to defeat
+		// every guard keyed on "the item this post carries".
+		$__target = new Collection($collection_id);
+
+		if (!$__target->canBePostedToBy())
+		{
+			App::abort(403, Lang::txt('COM_COLLECTIONS_ERROR_ACCESS_DENIED'));
+		}
+
+		$__item = new Item($item_id);
+
+		if (!$__item->isCollectableBy())
+		{
+			App::abort(403, Lang::txt('COM_COLLECTIONS_ERROR_ACCESS_DENIED'));
 		}
 
 		// Try loading the current collection/post to see
@@ -642,6 +925,15 @@ class Posts extends SiteController
 				{
 					continue;
 				}
+
+				// The ids come from the request and Post resolves any row, so
+				// only reorder posts on a board the caller may moderate --
+				// otherwise this rewrites the ordering of anyone's board.
+				if (!(new Collection($row->get('collection_id')))->canBeModeratedBy())
+				{
+					continue;
+				}
+
 				$row->set('ordering', $i + 1);
 				$row->store(false);
 

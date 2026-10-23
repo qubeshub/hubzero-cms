@@ -7,7 +7,7 @@
 (function(window, document, ds, $, undefined) {
 
 	$(document).ready(function() {
-		$('a.delete-db').on('click', function() {
+		$('button.delete-db').on('click', function() {
 			var link = this;
 			$("#confirm-file-delete").dialog({
 				resizable: false,
@@ -15,7 +15,14 @@
 				modal: true,
 				buttons: {
 					"Delete Database": function() {
-						window.location = $(link).attr('href');
+						// Post a copy of the page's token form to the button's
+						// target, leaving the shared form itself untouched
+						$('#hz-post-action')
+							.clone()
+							.removeAttr('id')
+							.attr('action', $(link).attr('formaction'))
+							.appendTo('body')
+							.submit();
 					},
 					Cancel: function() {
 						$(this).dialog('close');

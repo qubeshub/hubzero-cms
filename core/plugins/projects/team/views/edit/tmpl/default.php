@@ -65,9 +65,9 @@ $roles = [
 			</select>
 
 			<div class="group-action group-action-syncall">
-				<?php if (count($notteam)) { ?>
-					<p><input type="submit" class="btn option" value="<?php echo Lang::txt('PLG_PROJECTS_TEAM_GROUP_SYNC'); ?>" /></p>
-				<?php } else { ?>
+				<?php // Always offer the button: it's also how the sync role above gets saved ?>
+				<p><input type="submit" class="btn option" value="<?php echo Lang::txt('PLG_PROJECTS_TEAM_GROUP_SYNC'); ?>" /></p>
+				<?php if (!count($notteam)) { ?>
 					<p class="icon-success"><?php echo Lang::txt('PLG_PROJECTS_TEAM_GROUP_MEMBERS_TEAM'); ?></p>
 				<?php } ?>
 			</div>
@@ -151,10 +151,7 @@ $roles = [
 			<span><?php echo ucfirst(Lang::txt('PLG_PROJECTS_TEAM_TOTAL_MEMBERS')); ?>: <span class="prominent"><?php echo $this->total; ?></span></span>
 			<span id="team-manage" class="manage-options hidden">
 				<span class="faded"><?php echo Lang::txt('PLG_PROJECTS_TEAM_EDIT_ROLE'); ?></span>
-				<form action="<?php echo Route::url('index.php?option=' . $this->option . '&alias=' . $this->model->get('alias') . '&active=team&action=delete'); ?>" method="post" class="inline-form">
-					<?php echo Html::input('token'); ?>
-					<button type="submit" class="manage" id="t-delete"><?php echo Lang::txt('PLG_PROJECTS_TEAM_DELETE'); ?></button>
-				</form>
+				<a href="<?php echo Route::url('index.php?option=' . $this->option . '&alias=' . $this->model->get('alias') . '&active=team&action=delete'); ?>" class="manage btn" id="t-delete" role="button"><?php echo Lang::txt('PLG_PROJECTS_TEAM_DELETE'); ?></a>
 			</span>
 		</p>
 	</div>
@@ -239,7 +236,7 @@ $roles = [
 					</span>
 				</td>
 				<td>
-					<?php echo $owner->fullname; ?><span class="block mini short prominent"><?php echo $username; ?></span>
+					<?php echo $this->escape($owner->fullname); ?><span class="block mini short prominent"><?php echo $this->escape($username); ?></span>
 				</td>
 				<td class="mini nobsp">
 					<?php if (!$creator) { ?>
@@ -263,23 +260,17 @@ $roles = [
 				</td>
 				<td>
 					<?php if ($owner->status == 3): ?>
-						<form method="post" action="<?php echo Route::url('index.php?option=com_projects&alias=' . $this->model->get('alias') . '&task=team&action=approvemembership&owner=' . $owner->userid);?>" class="inline-form">
-							<?php echo Html::input('token'); ?>
-							<button type="submit" id="<?php echo 'form-approve-' . $owner->id;?>" class="btn btn-success">
-								<?php echo Lang::txt('PLG_PROJECTS_TEAM_APPROVE_REQUEST'); ?>
-							</button>
-						</form>
-						<form method="post" action="<?php echo Route::url('index.php?option=com_projects&alias=' . $this->model->get('alias') . '&task=team&action=denymembership&owner=' . $owner->userid);?>" class="inline-form">
-							<?php echo Html::input('token'); ?>
-							<button type="submit" id="<?php echo 'form-deny-' . $owner->id;?>" class="btn btn-danger">
-								<?php echo Lang::txt('PLG_PROJECTS_TEAM_DENY_REQUEST'); ?>
-							</button>
-						</form>
+						<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=com_projects&alias=' . $this->model->get('alias') . '&task=team&action=approvemembership&owner=' . $owner->userid); ?>" id="<?php echo 'form-approve-' . $owner->id;?>" class="btn btn-success">
+							<?php echo Lang::txt('PLG_PROJECTS_TEAM_APPROVE_REQUEST'); ?>
+						</button>
+						<a href="<?php echo Route::url('index.php?option=com_projects&alias=' . $this->model->get('alias') . '&task=team&action=denymembership&owner=' . $owner->userid); ?>" id="<?php echo 'form-deny-' . $owner->id;?>" class="btn btn-danger" role="button">
+							<?php echo Lang::txt('PLG_PROJECTS_TEAM_DENY_REQUEST'); ?>
+						</a>
 					<?php endif; ?>
 				</td>
 				<td>
-					<?php echo $owner->groupdesc ? \Hubzero\Utility\Str::truncate($owner->groupdesc, 30) : ''; ?>
-					<span class="block mini short prominent"><?php echo $owner->groupname; ?></span>
+					<?php echo $owner->groupdesc ? $this->escape(\Hubzero\Utility\Str::truncate($owner->groupdesc, 30)) : ''; ?>
+					<span class="block mini short prominent"><?php echo $this->escape($owner->groupname); ?></span>
 				</td>
 			</tr>
 			<?php
