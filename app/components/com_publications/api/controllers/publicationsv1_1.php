@@ -100,10 +100,11 @@ class Publicationsv1_1 extends ApiController
 		}
 
 
-		if ($response->total && !isset($searchable))
-		{
-			$base = rtrim(Request::base(), '/');
+		// both list shapes build absolute links from it
+		$base = rtrim(Request::base(), '/');
 
+		if ($response->total && empty($searchable))
+		{
 			foreach ($publications as $i => $entry)
 			{
 				$obj = new stdClass;
@@ -131,9 +132,8 @@ class Publicationsv1_1 extends ApiController
 				$response->publications[] = $obj;
 			}
 		}
-		elseif (isset($searchable))
+		elseif (!empty($searchable))
 		{
-			return false;
 			foreach ($publications as $i => $entry)
 			{
 				$obj = new stdClass;

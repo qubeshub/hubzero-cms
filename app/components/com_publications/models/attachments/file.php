@@ -450,6 +450,7 @@ class File extends Base
 
 				$title = $attach->title ? $attach->title : $configs->title;
 				$title = $title ? $title : basename($attach->path);
+				$title = htmlspecialchars($title, ENT_QUOTES);
 				$pop   = Lang::txt('Download') . ' ' . $title;
 				$icon  = '<img height="16" src="' . $file->getIcon() . '" alt="' . $file->get('ext') . '" />';
 
@@ -567,6 +568,7 @@ class File extends Base
 			$attachments,
 			$this->_name
 		);
+		$attachments = $attachments ? (array) $attachments : array();
 
 		$disabled = 0;
 		$pop = null;
@@ -898,6 +900,7 @@ class File extends Base
 
 		// Sort out attachments for this element
 		$attachments = $this->_parent->getElementAttachments($elementId, $attachments, $this->_name);
+		$attachments = $attachments ? (array) $attachments : array();
 
 		if (!$forceDownload && $configs->handler)
 		{
@@ -1371,6 +1374,12 @@ class File extends Base
 
 			$a++;
 			$ordering = $i + 1;
+
+			// Keep the identifier within the repository - drop any parent refs
+			$identifier = implode('/', array_filter(explode('/', str_replace('\\', '/', (string) $identifier)), function ($s) {
+				return $s !== '' && $s !== '.' && $s !== '..';
+			}));
+
 			if ($this->addAttachment($identifier, $pub, $configs, User::get('id'), $elementId, $element, $ordering))
 			{
 				$i++;

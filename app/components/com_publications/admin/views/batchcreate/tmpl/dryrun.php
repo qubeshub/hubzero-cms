@@ -14,16 +14,16 @@ $skipFields = array('license_type', 'state', 'main', 'secret', 'access');
 <ul class="pubitems" id="resultlist">
 <?php foreach ($this->items as $item) { ?>
 	<li<?php if (count($item['errors']) > 0) { echo ' class="problem"'; } ?>>
-		<h5><?php echo Lang::txt('COM_PUBLICATIONS_BATCH_RECORD') . ' ' . $i . ': ' . $item['version']->title; ?></h5>
+		<h5><?php echo Lang::txt('COM_PUBLICATIONS_BATCH_RECORD') . ' ' . $i . ': ' . $this->escape($item['version']->title); ?></h5>
 		<table class="records">
 			<tbody>
 				<tr>
 					<td class="key"><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_TYPE'); ?></td>
-					<td><?php echo $item['type']; ?></td>
+					<td><?php echo $this->escape($item['type']); ?></td>
 				</tr>
 				<tr>
 					<td class="key"><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_CATEGORY'); ?></td>
-					<td><?php echo $item['category']; ?></td>
+					<td><?php echo $this->escape($item['category']); ?></td>
 				</tr>
 				<?php foreach ($item['version'] as $key => $value) {
 					if (!$value || in_array($key, $skipFields))
@@ -33,19 +33,19 @@ $skipFields = array('license_type', 'state', 'main', 'secret', 'access');
 					?>
 					<tr>
 						<td class="key"><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_' . strtoupper($key)); ?></td>
-						<td><?php echo $value; ?></td>
+						<td><?php echo $this->escape($value); ?></td>
 					</tr>
 				<?php } ?>
 				<tr<?php if (!$item['license']) { echo ' class="missing"'; } ?>>
 					<td class="key"><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_LICENSE'); ?></td>
-					<td><?php echo $item['license'] ? $item['license']->title : 'N/A'; ?></td>
+					<td><?php echo $item['license'] ? $this->escape($item['license']->title) : 'N/A'; ?></td>
 				</tr>
 				<tr>
 					<td class="key"><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_TAGS'); ?></td>
 					<td>
 						<?php if (!empty($item['tags'])) { ?>
 							<ol class="tags">
-								<?php foreach ($item['tags'] as $tag) { echo '<li>' . $tag . '</li>'; } ?>
+								<?php foreach ($item['tags'] as $tag) { echo '<li>' . $this->escape($tag) . '</li>'; } ?>
 							</ol>
 						<?php } else { echo 'N/A'; } ?>
 					</td>
@@ -66,9 +66,9 @@ $skipFields = array('license_type', 'state', 'main', 'secret', 'access');
 							<?php if (!empty($item['authors'])) { ?>
 								<?php foreach ($item['authors'] as $authorRecord) { ?>
 									<tr<?php if ($authorRecord['error']) { echo ' class="missing"'; } ?>>
-										<td><?php echo $authorRecord['author']->user_id; ?></td>
-										<td><?php echo $authorRecord['error'] ? ' <span class="block prominent">' . $authorRecord['error'] . '</span>' : ''; ?><?php echo $authorRecord['author']->name; ?></td>
-										<td><?php echo $authorRecord['author']->organization; ?></td>
+										<td><?php echo (int) $authorRecord['author']->user_id; ?></td>
+										<td><?php echo $authorRecord['error'] ? ' <span class="block prominent">' . $this->escape($authorRecord['error']) . '</span>' : ''; ?><?php echo $this->escape($authorRecord['author']->name); ?></td>
+										<td><?php echo $this->escape($authorRecord['author']->organization); ?></td>
 										<td><?php echo $authorRecord['owner'] ? Lang::txt('JYES') : Lang::txt('JNO'); ?></td>
 									</tr>
 								<?php } ?>
@@ -93,10 +93,10 @@ $skipFields = array('license_type', 'state', 'main', 'secret', 'access');
 							<?php if (!empty($item['files'])) { ?>
 								<?php foreach ($item['files'] as $filerecord) { ?>
 									<tr<?php if ($filerecord['error']) { echo ' class="missing"'; } ?>>
-										<td><?php echo $filerecord['type']; ?></td>
-										<td><?php echo $filerecord['subtype']; ?></td>
-										<td><?php echo $filerecord['error'] ? ' <span class="block prominent">' . $filerecord['error'] . '</span>' : ''; ?><?php echo $filerecord['attachment']->path; ?></td>
-										<td><?php echo $filerecord['attachment']->title; ?></td>
+										<td><?php echo $this->escape($filerecord['type']); ?></td>
+										<td><?php echo $this->escape($filerecord['subtype']); ?></td>
+										<td><?php echo $filerecord['error'] ? ' <span class="block prominent">' . $this->escape($filerecord['error']) . '</span>' : ''; ?><?php echo $this->escape($filerecord['attachment']->path); ?></td>
+										<td><?php echo $this->escape($filerecord['attachment']->title); ?></td>
 									</tr>
 								<?php } ?>
 							<?php } ?>
@@ -118,7 +118,7 @@ $skipFields = array('license_type', 'state', 'main', 'secret', 'access');
 							<?php if (!empty($item['metadata'])) { ?>
 								<?php foreach ($item['metadata'] as $alias => $text) { ?>
 									<tr>
-										<td><?php echo $alias; ?></td>
+										<td><?php echo $this->escape($alias); ?></td>
 										<td><?php echo htmlspecialchars($text, ENT_COMPAT); ?></td>
 									</tr>
 								<?php } ?>

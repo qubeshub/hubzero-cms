@@ -16,7 +16,7 @@ $tmpl = Request::getCmd('tmpl', '');
 
 if ($tmpl != 'component')
 {
-	Toolbar::title(Lang::txt('COM_PUBLICATIONS') . ': ' . $pageTitle . ' ' . Lang::txt('COM_PUBLICATIONS_FOR_PUB') . ' #' . $this->pub->id . ' (v.' . $this->row->version_label . ')', 'publications');
+	Toolbar::title(Lang::txt('COM_PUBLICATIONS') . ': ' . $pageTitle . ' ' . Lang::txt('COM_PUBLICATIONS_FOR_PUB') . ' #' . $this->pub->id . ' (v.' . $this->escape($this->row->version_label) . ')', 'publications');
 	Toolbar::save('saveauthor');
 	Toolbar::cancel();
 }
@@ -32,14 +32,15 @@ if (trim($name))
 	$firstname = count($nameParts) > 1 ? $nameParts[0] : '';
 }
 
-$firstname = $this->author->firstName ? htmlspecialchars($this->author->firstName) : $firstname;
-$lastname  = $this->author->lastName ? htmlspecialchars($this->author->lastName) : $lastname;
+// Plain text here; the inputs below escape once on output
+$firstname = $this->author->firstName ? $this->author->firstName : $firstname;
+$lastname  = $this->author->lastName ? $this->author->lastName : $lastname;
 $email = $this->author->p_email ? $this->author->p_email : $this->author->invited_email;
 
 ?>
 
 <?php if ($this->getError()) { ?>
-	<p class="error"><?php echo implode('<br />', $this->getError()); ?></p>
+	<p class="error"><?php echo implode('<br />', $this->getErrors()); ?></p>
 <?php } ?>
 <p class="crumbs"><?php echo Lang::txt('COM_PUBLICATIONS_PUBLICATION_MANAGER'); ?> &raquo; <a href="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller . '&task=edit&id[]=' . $this->pub->id); ?>"><?php echo Lang::txt('COM_PUBLICATIONS_PUBLICATION') . ' #' . $this->pub->id; ?></a> &raquo; <?php echo $pageTitle; ?></p>
 
@@ -92,13 +93,13 @@ $email = $this->author->p_email ? $this->author->p_email : $this->author->invite
 				<tr>
 					<td class="key"><label><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_AUTHOR_NAME_FIRST_AND_MIDDLE'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span></label></td>
 					<td>
-						<input type="text" name="firstName" value="<?php echo $firstname; ?>" size="25" />
+						<input type="text" name="firstName" value="<?php echo $this->escape($firstname); ?>" size="25" />
 					</td>
 				</tr>
 				<tr>
 					<td class="key"><label><?php echo Lang::txt('COM_PUBLICATIONS_FIELD_AUTHOR_NAME_LAST'); ?>: <span class="required"><?php echo Lang::txt('JOPTION_REQUIRED'); ?></span></label></td>
 					<td>
-						<input type="text" name="lastName" value="<?php echo $lastname; ?>" size="25" />
+						<input type="text" name="lastName" value="<?php echo $this->escape($lastname); ?>" size="25" />
 					</td>
 				</tr>
 				<tr>
