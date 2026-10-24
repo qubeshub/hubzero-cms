@@ -15,13 +15,11 @@ if (!$this->sub)
 }
 ?>
 <header id="<?php echo ($this->sub) ? 'sub-content-header' : 'content-header'; ?>">
-	<?php if (count($this->parents)) { ?>
-		<p class="wiki-crumbs">
-			<?php foreach ($this->parents as $parent) { ?>
-				<a class="wiki-crumb" href="<?php echo Route::url($parent->link()); ?>"><?php echo $parent->title; ?></a> /
-			<?php } ?>
-		</p>
-	<?php } ?>
+	<?php
+	$this->view('crumbs', 'pages')
+		->set('parents', $this->parents)
+		->display();
+	?>
 
 	<h2><?php echo $this->escape($this->page->title); ?></h2>
 	<?php

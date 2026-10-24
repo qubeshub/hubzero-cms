@@ -22,11 +22,15 @@ use App;
 use Route;
 use Event;
 
+require_once dirname(dirname(__DIR__)) . DS . 'helpers' . DS . 'pagepathway.php';
+
 /**
  * Wiki controller class for page history
  */
 class History extends SiteController
 {
+	use \Components\Wiki\Helpers\PagePathway;
+
 	/**
 	 * Book model
 	 *
@@ -112,6 +116,13 @@ class History extends SiteController
 			App::abort(404, Lang::txt('COM_WIKI_WARNING_NOT_FOUND'));
 		}
 
+		// Revisions and diffs show the page text, so the same view check
+		// the page itself gets
+		if (!$this->page->access('view', 'page'))
+		{
+			App::abort(403, Lang::txt('COM_WIKI_WARNING_NOT_AUTH'));
+		}
+
 		if (is_null($this->sub))
 		{
 			$this->sub = ($this->page->get('scope') != 'site');
@@ -145,25 +156,7 @@ class History extends SiteController
 			);
 		}
 
-		$parents = array();
-
-		if ($this->page->get('parent'))
-		{
-			$parents = $this->page->ancestors();
-
-			foreach ($parents as $p)
-			{
-				Pathway::append(
-					$p->get('title'),
-					$p->link()
-				);
-			}
-		}
-
-		Pathway::append(
-			$this->page->title,
-			$this->page->link()
-		);
+		$parents = $this->appendPagePathway();
 		Pathway::append(
 			Lang::txt(strtoupper($this->_option . '_' . $this->_task)),
 			$this->page->link() . '&' . ($this->sub ? 'action' : 'task') . '=' . $this->_task
@@ -233,25 +226,7 @@ class History extends SiteController
 			);
 		}
 
-		$parents = array();
-
-		if ($this->page->get('parent'))
-		{
-			$parents = $this->page->ancestors();
-
-			foreach ($parents as $p)
-			{
-				Pathway::append(
-					$p->get('title'),
-					$p->link()
-				);
-			}
-		}
-
-		Pathway::append(
-			$this->page->title,
-			$this->page->link()
-		);
+		$parents = $this->appendPagePathway();
 		Pathway::append(
 			Lang::txt(strtoupper($this->_option . '_' . $this->_task)),
 			$this->page->link() . '&' . ($this->sub ? 'action' : 'task') . '=' . $this->_task
@@ -279,11 +254,15 @@ class History extends SiteController
 		// Check if they are logged in
 		if (User::isGuest())
 		{
-			$url = Request::getString('REQUEST_URI', '', 'server');
+			// Return to the page history, not to this action
+			$url = Route::url($this->page->link('history'), false);
 			App::redirect(
 				Route::url('index.php?option=com_users&view=login&return=' . base64_encode($url), false)
 			);
 		}
+
+		// Check for request forgeries
+		Request::checkToken();
 
 		// Incoming
 		$id = Request::getInt('oldid', 0);
@@ -296,6 +275,13 @@ class History extends SiteController
 		}
 
 		$revision = Version::oneOrFail($id);
+
+		// oldid= resolves any revision on the hub; it has to be one of this
+		// page's, which is the page access('delete') was checked against
+		if ((int) $revision->get('page_id') !== (int) $this->page->get('id'))
+		{
+			App::abort(404, Lang::txt('COM_WIKI_WARNING_NO_REVISION_FOUND', $id));
+		}
 
 		// Get a count of all approved revisions
 		$total = $this->page->versions()
@@ -350,7 +336,7 @@ class History extends SiteController
 				'action'      => 'deleted',
 				'scope'       => 'wiki.page.revision',
 				'scope_id'    => $this->page->get('id'),
-				'description' => Lang::txt('COM_WIKI_ACTIVITY_REVISION_DELETED', $revision->get('id'), '<a href="' . Route::url($this->page->link()) . '">' . $this->page->title . '</a>'),
+				'description' => Lang::txt('COM_WIKI_ACTIVITY_REVISION_DELETED', $revision->get('id'), '<a href="' . Route::url($this->page->link()) . '">' . htmlspecialchars((string) ($this->page->title), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title'    => $this->page->title,
 					'url'      => Route::url($this->page->link()),
@@ -394,6 +380,13 @@ class History extends SiteController
 
 		// Load the revision, approve it, and save
 		$revision = Version::oneOrFail($id);
+
+		// It has to be a revision of this page (see deleteTask)
+		if ((int) $revision->get('page_id') !== (int) $this->page->get('id'))
+		{
+			App::abort(404, Lang::txt('COM_WIKI_WARNING_NO_REVISION_FOUND', $id));
+		}
+
 		$revision->set('approved', 1);
 		if (!$revision->save())
 		{
@@ -433,7 +426,7 @@ class History extends SiteController
 				'action'      => 'approved',
 				'scope'       => 'wiki.page.revision',
 				'scope_id'    => $this->page->get('id'),
-				'description' => Lang::txt('COM_WIKI_ACTIVITY_REVISION_APPROVED', $revision->get('id'), '<a href="' . Route::url($this->page->link()) . '">' . $this->page->title . '</a>'),
+				'description' => Lang::txt('COM_WIKI_ACTIVITY_REVISION_APPROVED', $revision->get('id'), '<a href="' . Route::url($this->page->link()) . '">' . htmlspecialchars((string) ($this->page->title), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title'    => $this->page->title,
 					'url'      => Route::url($this->page->link()),
@@ -475,7 +468,14 @@ class History extends SiteController
 
 		}
 
-		$this->page->set('version_id', $newversion_id);
+		// Changing the current revision requires edit/manage access
+		// (or delete, which is what the history view offers the link under)
+		if (!$this->page->access('edit') && !$this->page->access('manage') && !$this->page->access('delete'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
+		$this->page->set('version_id', (int) $newversion->get('id'));
 
 		if (!$this->page->save())
 		{
@@ -504,7 +504,7 @@ class History extends SiteController
 				'action'      => ($this->page['id'] ? 'updated' : 'created'),
 				'scope'       => 'wiki.page',
 				'scope_id'    => $this->page->get('id'),
-				'description' => Lang::txt('COM_WIKI_ACTIVITY_PAGE_UPDATED', '<a href="' . Route::url($this->page->link()) . '">' . $this->page->title . '</a>'),
+				'description' => Lang::txt('COM_WIKI_ACTIVITY_PAGE_UPDATED', '<a href="' . Route::url($this->page->link()) . '">' . htmlspecialchars((string) ($this->page->title), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title'    => $this->page->title,
 					'url'      => Route::url($this->page->link()),

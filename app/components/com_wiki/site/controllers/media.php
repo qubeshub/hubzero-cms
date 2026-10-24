@@ -29,6 +29,28 @@ use Component;
 class Media extends SiteController
 {
 	/**
+	 * Confirm the current user may edit the given wiki page
+	 *
+	 * @param   integer  $listdir  Page id
+	 * @return  void
+	 */
+	protected function _requirePageEdit($listdir)
+	{
+		$listdir = (int) $listdir;
+		if ($listdir < 0)
+		{
+			// Temporary directory of a page that has not been saved yet
+			return;
+		}
+
+		$page = Page::oneOrNew($listdir);
+		if (!$page->get('id') || (!$page->access('edit') && !$page->access('modify') && !$page->access('manage')))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+	}
+
+	/**
 	 * Book model
 	 *
 	 * @var  object
@@ -110,10 +132,9 @@ class Media extends SiteController
 		// Load the page
 		if ($this->page->exists())
 		{
-			// Check if the page is group restricted and the user is not authorized
-			if ($this->page->get('scope') != 'site'
-			 && $this->page->get('access') != 0
-			 && !$this->page->access('view'))
+			// Check if the page is restricted and the user is not authorized
+			// (site pages carry an access level too)
+			if (!$this->page->access('view'))
 			{
 				App::abort(403, Lang::txt('COM_WIKI_WARNING_NOT_AUTH'));
 			}
@@ -194,6 +215,7 @@ class Media extends SiteController
 			echo json_encode(array('error' => Lang::txt('COM_WIKI_NO_ID')));
 			return;
 		}
+		$this->_requirePageEdit($listdir);
 
 		// get the file
 		if (isset($_GET['qqfile']))
@@ -264,7 +286,7 @@ class Media extends SiteController
 		$filename = Filesystem::clean($filename);
 		$filename = str_replace(' ', '_', $filename);
 
-		$ext = $pathinfo['extension'];
+		$ext = isset($pathinfo['extension']) ? $pathinfo['extension'] : '';
 		while (file_exists($path . DS . $filename . '.' . $ext))
 		{
 			$filename .= rand(10, 99);
@@ -297,6 +319,16 @@ class Media extends SiteController
 		else
 		{
 			move_uploaded_file($_FILES['qqfile']['tmp_name'], $file);
+		}
+
+		// Virus scan. uploadTask() (the no-JS form) scans; this, the path the
+		// editor's drag-and-drop uploader takes, stored any file unscanned.
+		if (!Filesystem::isSafe($file))
+		{
+			Filesystem::delete($file);
+
+			echo json_encode(array('error' => Lang::txt('File rejected because the anti-virus scan failed.')));
+			return;
 		}
 
 		// Create database entry
@@ -344,6 +376,7 @@ class Media extends SiteController
 			$this->setError(Lang::txt('COM_WIKI_NO_ID'));
 			return $this->displayTask();
 		}
+		$this->_requirePageEdit($listdir);
 
 		// Incoming file
 		$file = Request::getArray('upload', '', 'files');
@@ -408,7 +441,7 @@ class Media extends SiteController
 			{
 				Filesystem::delete($path . DS . $file['name']);
 
-				$this->setError(Lang::txt('COM_WIKI_ERROR_UPLOADING'));
+				$this->setError(Lang::txt('File rejected because the anti-virus scan failed.'));
 			}
 			else
 			{
@@ -437,6 +470,9 @@ class Media extends SiteController
 	 */
 	public function deletefolderTask()
 	{
+		// Check for request forgeries
+		Request::checkToken('get');
+
 		// Check if they're logged in
 		if (User::isGuest())
 		{
@@ -450,10 +486,19 @@ class Media extends SiteController
 			$this->setError(Lang::txt('COM_WIKI_NO_ID'));
 			return $this->displayTask();
 		}
+		$this->_requirePageEdit($listdir);
 
 		// Incoming folder
 		$folder = trim(Request::getString('folder', '', 'get'));
 		if (!$folder)
+		{
+			$this->setError(Lang::txt('COM_WIKI_NO_DIRECTORY'));
+			return $this->displayTask();
+		}
+
+		// Confine the folder to the attachment filespace (reject any traversal)
+		$folder = \Hubzero\Filesystem\SafePath::relative($folder);
+		if ($folder === false)
 		{
 			$this->setError(Lang::txt('COM_WIKI_NO_DIRECTORY'));
 			return $this->displayTask();
@@ -495,6 +540,9 @@ class Media extends SiteController
 	 */
 	public function deletefileTask()
 	{
+		// Check for request forgeries
+		Request::checkToken('get');
+
 		// Check if they're logged in
 		if (User::isGuest())
 		{
@@ -508,10 +556,24 @@ class Media extends SiteController
 			$this->setError(Lang::txt('COM_WIKI_NO_ID'));
 			return $this->displayTask();
 		}
+		$this->_requirePageEdit($listdir);
 
 		// Incoming file
 		$file = trim(Request::getString('file', '', 'get'));
 		if (!$file)
+		{
+			$this->setError(Lang::txt('COM_WIKI_NO_FILE'));
+			return $this->displayTask();
+		}
+
+		// Confine the name to the attachment filespace, as deletefolderTask
+		// above already does for its folder. Attachment::destroy() builds
+		// filespace()/page_id/filename and hands it to Filesystem::delete()
+		// without validating it, and _requirePageEdit() returns early for the
+		// negative listdir an unsaved page uses -- so a raw name here was an
+		// arbitrary file delete that needed no access to any page.
+		$file = \Hubzero\Filesystem\SafePath::relative($file);
+		if ($file === false)
 		{
 			$this->setError(Lang::txt('COM_WIKI_NO_FILE'));
 			return $this->displayTask();
@@ -573,6 +635,11 @@ class Media extends SiteController
 		{
 			$this->setError(Lang::txt('COM_WIKI_NO_ID'));
 		}
+
+		// The same gate as the upload and delete tasks. Without it this task
+		// enumerates the attachment filenames of any page by id, including one
+		// whose access level forbids viewing it, to an unauthenticated caller.
+		$this->_requirePageEdit($listdir);
 
 		$attachment = Attachment::blank();
 

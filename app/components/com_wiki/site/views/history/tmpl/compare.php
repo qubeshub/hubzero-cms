@@ -17,6 +17,12 @@ $orauthor = $this->or->creator()->get('name', Lang::txt('COM_WIKI_UNKNOWN'));
 $drauthor = $this->dr->creator()->get('name', Lang::txt('COM_WIKI_UNKNOWN'));
 ?>
 <header id="<?php echo ($this->sub) ? 'sub-content-header' : 'content-header'; ?>">
+	<?php
+	$this->view('crumbs', 'pages')
+		->set('parents', $this->parents)
+		->display();
+	?>
+
 	<h2><?php echo $this->escape($this->page->title); ?></h2>
 	<?php
 	if (!$this->page->isStatic())

@@ -95,7 +95,8 @@ class Pagesv1_0 extends ApiController
 			'sort_Dir'   => strtoupper(Request::getWord('sort_Dir', 'ASC')),
 			'state'      => array(Page::STATE_PUBLISHED),
 			'scope'      => Request::getWord('scope', 'site'),
-			'scope_id'   => Request::getInt('scope_id', 0)
+			'scope_id'   => Request::getInt('scope_id', 0),
+			'access'     => User::getAuthorisedViewLevels()
 		);
 
 		$book = new Book($filters['scope'], $filters['scope_id']);
@@ -236,7 +237,9 @@ class Pagesv1_0 extends ApiController
 
 		$page = Page::oneOrFail($id);
 
-		if (!$page->get('id'))
+		// Deleted pages, pages above the caller's view level and pages in a
+		// group wiki the caller is not admitted to read the same as on the site
+		if (!$page->get('id') || $page->isDeleted() || !$page->access('view'))
 		{
 			throw new \Exception(Lang::txt('COM_WIKI_ERROR_PAGE_NOT_FOUND'), 404);
 		}
@@ -247,7 +250,8 @@ class Pagesv1_0 extends ApiController
 
 		$version = $page->version;
 
-		if (!$version->get('id'))
+		// revision= resolves any revision on the hub; it has to be one of this page's
+		if (!$version->get('id') || (int) $version->get('page_id') !== (int) $page->get('id'))
 		{
 			throw new \Exception(Lang::txt('COM_WIKI_WARNING_NO_REVISION_FOUND', $version_id), 404);
 		}
@@ -363,16 +367,34 @@ class Pagesv1_0 extends ApiController
 	{
 		$this->requiresAuthentication();
 
+		// $id was never assigned here, so the `if (!$id)` below threw 422 on
+		// every call and the whole task -- including its authorization -- was
+		// unreachable. readTask reads the same parameter.
+		$id = Request::getInt('id', 0);
+
+		// Every default here is null, so the writer loop below (which skips
+		// is_null) leaves a field the caller did not send alone. With the
+		// non-null defaults this had -- 'site', 0, 0, 0 -- a manager who posted
+		// only id and pagetext silently moved the page out of its group into the
+		// site wiki, published it and made it public, because modify() writes
+		// every attribute that is a real column. That was latent until this task
+		// became reachable; it is reachable now.
+		// getWord() runs its filter over `$result ? $result : ''`, so an absent
+		// parameter comes back as '' rather than the null default -- and the
+		// writer loop below, which skips only is_null, would then write that
+		// empty scope. Read the raw var and filter it only when one was sent.
+		$scope = Request::getVar('scope', null);
+		$scope = (is_string($scope) && $scope !== '') ? preg_replace('/[^A-Z_]/i', '', $scope) : null;
+
 		$fields = array(
 			'title'          => Request::getString('title', null, '', 'none', 2),
 			'pagename'       => Request::getString('pagename', null),
-			'scope'          => Request::getWord('scope', 'site'),
-			'scope_id'       => Request::getInt('scope_id', 0),
+			'scope'          => $scope,
+			'scope_id'       => Request::getInt('scope_id', null),
 			'created'        => Request::getString('created', null),
 			'created_by'     => Request::getInt('created_by', null),
-			'state'          => Request::getInt('state', 0),
-			'access'         => Request::getInt('access', 0),
-			'params'         => Request::getArray('params', array())
+			'state'          => Request::getInt('state', null),
+			'access'         => Request::getInt('access', null)
 		);
 
 		if (!$id)
@@ -390,6 +412,18 @@ class Pagesv1_0 extends ApiController
 		if ($page->isLocked() && !$page->access('manage'))
 		{
 			throw new \Exception(Lang::txt('COM_WIKI_ERROR_NOTAUTH'), 403);
+		}
+
+		// Editing a page requires edit or manage access
+		if (!$page->access('edit') && !$page->access('manage'))
+		{
+			throw new \Exception(Lang::txt('COM_WIKI_ERROR_NOTAUTH'), 403);
+		}
+
+		// Only managers may reassign ownership, state, access or scope
+		if (!$page->access('manage'))
+		{
+			unset($fields['created_by'], $fields['state'], $fields['access'], $fields['scope'], $fields['scope_id']);
 		}
 
 		$revision = $page->version;
