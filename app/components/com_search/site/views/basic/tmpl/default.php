@@ -51,7 +51,7 @@ $show_weight = array_key_exists('show_weight', $_GET);
 				<?php if (($tags = $this->results->get_tags())): ?>
 					<ol class="tags">
 						<?php foreach ($tags as $tag): ?>
-							<li><a class="tag" href="<?php echo Route::url($tag->get_link()); ?>"><?php echo $tag->get_title(); ?></a></li>
+							<li><a class="tag" href="<?php echo Route::url($tag->get_link()); ?>"><?php echo $this->escape($tag->get_title()); ?></a></li>
 						<?php endforeach; ?>
 					</ol>
 				<?php endif; ?>
@@ -64,11 +64,11 @@ $show_weight = array_key_exists('show_weight', $_GET);
 				<?php foreach ($this->results as $res) : ?>
 					<li>
 						<?php $before = Event::trigger('search.onBeforeSearchRender' . ucfirst($res->get_plugin()), array($res)); ?>
-						<p class="title"><a href="<?php echo $res->get_link(); ?>"><?php echo $res->get_highlighted_title(); ?></a></p>
+						<p class="title"><a href="<?php echo $res->get_link(); ?>"><?php echo $this->escape($res->get_highlighted_title()); ?></a></p>
 						<div class="summary">
 							<?php if ($res->has_metadata()): ?>
 								<p class="details">
-									<?php if (($section = $res->get_section())) {?><span class="section"><?php echo $section; ?></span><?php }?>
+									<?php if (($section = $res->get_section())) {?><span class="section"><?php echo $this->escape($section); ?></span><?php }?>
 									<?php if (($date = $res->get_date())) { ?><span class="date"><?php echo Date::of($date)->format('j M Y'); ?></span><?php } ?>
 									<?php if (($contributors = $res->get_contributors())): ?>
 									<span class="contributors">
@@ -79,9 +79,9 @@ $show_weight = array_key_exists('show_weight', $_GET);
 											Contributor(s):
 											<?php foreach ($contributors as $idx => $contrib): ?>
 												<?php if (isset($contrib_ids[$idx])): ?>
-												<a href="<?php echo Route::url('index.php?option=com_members&id=' . $contrib_ids[$idx]); ?>"><?php echo $contrib; ?></a><?php if ($idx != $contrib_len - 1) { echo ', ';} ?>
+												<a href="<?php echo Route::url('index.php?option=com_members&id=' . $contrib_ids[$idx]); ?>"><?php echo $this->escape($contrib); ?></a><?php if ($idx != $contrib_len - 1) { echo ', ';} ?>
 												<?php else: ?>
-												<?php echo $contrib; ?>
+												<?php echo $this->escape($contrib); ?>
 												<?php endif; ?>
 											<?php endforeach; ?>
 									</span>
@@ -132,20 +132,20 @@ $show_weight = array_key_exists('show_weight', $_GET);
 										if (!$last_type):
 									?>
 										<li>
-											<h4><span class="expand"></span><?php echo $current_type == 'Questions' ? 'Answers' : $current_type; ?> <small>(<?php echo $ctypec[$child->get_section()]; ?>)</small></h4>
+											<h4><span class="expand"></span><?php echo $this->escape($current_type == 'Questions' ? 'Answers' : $current_type); ?> <small>(<?php echo $ctypec[$child->get_section()]; ?>)</small></h4>
 											<ul class="child-result">
 									<?php elseif ($last_type != $current_type): ?>
 											</ul>
 										</li>
 										<li>
-											<h4><span class="expand"></span><?php echo $current_type; ?> <small>(<?php echo $ctypec[$child->get_section()]; ?>)</small></h4>
+											<h4><span class="expand"></span><?php echo $this->escape($current_type); ?> <small>(<?php echo $ctypec[$child->get_section()]; ?>)</small></h4>
 											<ul class="child-result">
 									<?php
 										endif;
 										$last_type = $current_type;
 									?>
 										<li class="<?php echo $idx&1 ? 'odd' : 'even'; ?>">
-											<a href="<?php echo $child->get_link(); ?>"><?php echo $child->get_highlighted_title(); ?></a>
+											<a href="<?php echo $child->get_link(); ?>"><?php echo $this->escape($child->get_highlighted_title()); ?></a>
 											<p><?php echo $child->get_highlighted_excerpt(); ?></p>
 										</li>
 								<?php endforeach; ?>
@@ -200,9 +200,9 @@ $show_weight = array_key_exists('show_weight', $_GET);
 				<?php if ($def['count']): ?>
 					<li>
 						<?php if ($this->plugin == $cat && !$this->section): ?>
-							<strong><?php echo $def['friendly_name']; ?> <span class="item-count"><?php echo $def['count']; ?></span></strong>
+							<strong><?php echo $this->escape($def['friendly_name']); ?> <span class="item-count"><?php echo $def['count']; ?></span></strong>
 						<?php else: ?>
-							<a href="<?php echo Route::url('index.php?option=com_search&terms=' . $cat . ':' . $this->url_terms) ?>"><?php echo $def['friendly_name']; ?> <span class="item-count"><?php echo $def['count']; ?></span></a>
+							<a href="<?php echo Route::url('index.php?option=com_search&terms=' . $cat . ':' . $this->url_terms) ?>"><?php echo $this->escape($def['friendly_name']); ?> <span class="item-count"><?php echo $def['count']; ?></span></a>
 						<?php endif; ?>
 						<?php
 						$fc_child_flag = 'plgsearch'.$def['plugin_name'].'::FIRST_CLASS_CHILDREN';
@@ -213,9 +213,9 @@ $show_weight = array_key_exists('show_weight', $_GET);
 								<?php
 								if (!$this->plugin || !$this->section || $cat != $this->plugin || $this->section != $section_key):
 								?>
-									<li><a href="<?php echo Route::url('index.php?option=com_search&terms=' . $cat . ':' . $section_key . ':' . $this->url_terms) ?>"><?php echo $sdef['name']; ?> <span class="item-count"><?php echo $sdef['count']; ?></span></a></li>
+									<li><a href="<?php echo Route::url('index.php?option=com_search&terms=' . $cat . ':' . $section_key . ':' . $this->url_terms) ?>"><?php echo $this->escape($sdef['name']); ?> <span class="item-count"><?php echo $sdef['count']; ?></span></a></li>
 								<?php else: ?>
-									<li><strong><?php echo $sdef['name']; ?> <span class="item-count"><?php echo $sdef['count']; ?></span></strong></li>
+									<li><strong><?php echo $this->escape($sdef['name']); ?> <span class="item-count"><?php echo $sdef['count']; ?></span></strong></li>
 								<?php endif; ?>
 							<?php endforeach; ?>
 							</ul>
