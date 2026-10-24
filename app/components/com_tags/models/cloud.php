@@ -31,7 +31,7 @@ class Cloud extends \Hubzero\Base\Obj
 	 *
 	 * @var integer
 	 */
-	protected $_scope_id = 0;
+	protected $_scope_id = null;
 
 	/**
 	 * Database
@@ -60,7 +60,7 @@ class Cloud extends \Hubzero\Base\Obj
 	 * @param   string   $scope
 	 * @return  void
 	 */
-	public function __construct($scope_id=0, $scope='')
+	public function __construct($scope_id=null, $scope='')
 	{
 		$this->_db = \App::get('db');
 
@@ -68,10 +68,9 @@ class Cloud extends \Hubzero\Base\Obj
 		{
 			$this->_scope    = (string)$scope;
 		}
-		if ($scope_id)
-		{
-			$this->_scope_id = (int)$scope_id;
-		}
+		// null = no object at all (a whole scope's tags); 0 = an object that
+		// has no id yet, which has no tags. tags() tells the two apart.
+		$this->_scope_id = ($scope_id === null || $scope_id === '') ? null : (int)$scope_id;
 	}
 
 	/**
@@ -223,8 +222,13 @@ class Cloud extends \Hubzero\Base\Obj
 				// and returns the entire scope's tag vocabulary (e.g. a brand-new
 				// support ticket's changelog showing "tags changed from <every
 				// support tag> to (blank)").
-				$scope_id = isset($filters['scope_id']) ? (int) $filters['scope_id'] : (int) $this->get('scope_id');
-				$results->whereEquals($tbl . '.objectid', $scope_id);
+				// ...but a caller asking for a whole scope's tags (no scope_id at
+				// all, e.g. courses' popular categories) must not be pinned to 0.
+				if (isset($filters['scope_id']) || $this->get('scope_id') !== null)
+				{
+					$scope_id = isset($filters['scope_id']) ? (int) $filters['scope_id'] : (int) $this->get('scope_id');
+					$results->whereEquals($tbl . '.objectid', $scope_id);
+				}
 			}
 			if (isset($filters['label']) && $filters['label'])
 			{
