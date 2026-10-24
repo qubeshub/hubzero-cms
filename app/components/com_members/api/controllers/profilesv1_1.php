@@ -24,6 +24,7 @@ use Date;
 include_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'member.php';
 include_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'profile' . DS . 'field.php';
 include_once dirname(dirname(__DIR__)) . DS . 'helpers' . DS . 'filters.php';
+include_once dirname(dirname(__DIR__)) . DS . 'helpers' . DS . 'utility.php';
 
 /**
  * Members API controller class
@@ -145,11 +146,6 @@ class Profilesv1_1 extends ApiController
 		if ($response->total)
 		{
 			$base = rtrim(Request::base(), '/');
-			if ($admin == true && isset($searchable))
-			{
-				return false;
-			}
-
 			foreach ($rows as $entry)
 			{
 				$fields = $entry->profiles()->rows()->toObject();
@@ -159,7 +155,7 @@ class Profilesv1_1 extends ApiController
 				// 3 - special
 				// 4 - protected
 				// 5 - private
-				if ($admin == true && isset($searchable))
+				if ($admin == true && !empty($searchable))
 				{
 					$obj = new stdClass;
 					$obj->hubtype = 'member';
@@ -225,6 +221,12 @@ class Profilesv1_1 extends ApiController
 	public function createTask()
 	{
 		$this->requiresAuthentication();
+
+		// Creating accounts is an administrator action
+		if (!User::authorise('core.admin') && !User::authorise('core.create', 'com_members'))
+		{
+			throw new Exception(Lang::txt('Access denied'), 403);
+		}
 
 		// Initialize new usertype setting
 		$usersConfig = Component::params('com_members');
@@ -293,7 +295,7 @@ class Profilesv1_1 extends ApiController
 		$user->set('givenName', $givenName);
 		$user->set('middleName', $middleName);
 		$user->set('surname', $surname);
-		$user->set('activation', -rand(1, pow(2, 31)-1));
+		$user->set('activation', \Components\Members\Helpers\Utility::genemailconfirm());
 		$user->set('access', 1);
 		$user->set('password', $password);
 
@@ -396,6 +398,19 @@ class Profilesv1_1 extends ApiController
 			throw new Exception(Lang::txt('COM_MEMBERS_ERROR_USER_NOT_FOUND'), 404);
 		}
 
+		// Honour the profile's access level: a caller may read their own profile
+		// or one whose access level is within their authorised view levels.
+		if (User::get('id') != $result->get('id')
+			&& !in_array($result->get('access'), User::getAuthorisedViewLevels()))
+		{
+			throw new Exception(Lang::txt('COM_MEMBERS_ERROR_USER_NOT_FOUND'), 404);
+		}
+
+		// Email is PII; it is only disclosed for the caller's own profile or to a
+		// component manager. A viewable profile page does not make the address public.
+		$isSelfOrManager = (User::get('id') == $result->get('id'))
+			|| User::authorise('core.manage', 'com_members');
+
 		// Get any request vars
 		$base = rtrim(Request::base(), '/');
 
@@ -406,7 +421,7 @@ class Profilesv1_1 extends ApiController
 			'first_name'        => $result->get('givenName'),
 			'middle_name'       => $result->get('middleName'),
 			'last_name'         => $result->get('surname'),
-			'email'             => $result->get('email'),
+			'email'             => $isSelfOrManager ? $result->get('email') : null,
 			'member_since'      => $result->get('registerDate'),
 			'picture'   => array(
 				'thumb' => $result->picture(0, true),
@@ -460,8 +475,15 @@ class Profilesv1_1 extends ApiController
 		}
 
 		// Corrects image path, API application breaks Route::url() in the Helper::getMemberPhoto() method.
-		$profile['picture']['thumb'] = str_replace('/api', '', $base . '/' . $profile['picture']['thumb']);
-		$profile['picture']['full']  = str_replace('/api', '', $base . '/' . $profile['picture']['full']);
+		// A member with no picture gets an inline data: URI (and a resolver may
+		// return an absolute URL); prefixing those with the base broke them
+		foreach (array('thumb', 'full') as $size)
+		{
+			if (!preg_match('#^(data:|https?://)#i', (string) $profile['picture'][$size]))
+			{
+				$profile['picture'][$size] = str_replace('/api', '', $base . '/' . $profile['picture'][$size]);
+			}
+		}
 
 		// Encode and return result
 		$object = new stdClass();
@@ -558,6 +580,10 @@ class Profilesv1_1 extends ApiController
 		$this->requiresAuthentication();
 
 		$userid = Request::getInt('id', 0);
+		if (User::get('id') != $userid && !User::authorise('core.admin'))
+		{
+			throw new Exception(Lang::txt('Access denied'), 400);
+		}
 		$result = User::getInstance($userid);
 
 		if (!$result || !$result->get('id'))

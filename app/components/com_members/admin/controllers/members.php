@@ -362,25 +362,72 @@ class Members extends AdminController
 		$fields = Request::getArray('fields', array(), 'post');
 
 		// Load the profile
-		$user = Member::oneOrNew($fields['id']);
+		$user = Member::oneOrNew(isset($fields['id']) ? (int) $fields['id'] : 0);
 
 		// Get the user before changes so we can
 		// compare how data changed later on
 		$prev = clone $user;
+
+		$iAmSuperAdmin = User::authorise('core.admin');
+
+		// $fields is the whole request array and User::save() binds every real
+		// column, so what must not be bindable has to come out before set().
+		//
+		// The password changes through newpass, below, behind the password rules;
+		// the users table's own password column is not the way in. It is still
+		// read as a fallback by Password::passwordMatches() for an account with
+		// no #__users_password row, so a posted hash there would log in.
+		unset($fields['password']);
+
+		// A non-super-admin may not edit a super admin. removeTask() already
+		// refuses to delete one on exactly this test; this method never made it,
+		// so any Administrator -- core.manage and core.edit here, no core.admin --
+		// could change a super admin's e-mail, block them, or drop their Super
+		// Users membership through accessgroups below.
+		if (!$iAmSuperAdmin && !$user->isNew() && Access::check($user->get('id'), 'core.admin'))
+		{
+			Notify::error(Lang::txt('JLIB_USER_ERROR_NOT_SUPERADMIN'));
+			return $this->cancelTask();
+		}
+
+		// ...nor hand out a group that carries core.admin. User::save() replaces
+		// the user's whole group map from accessgroups, so a posted
+		// fields[accessgroups][]=<Super Users> made any Administrator a super
+		// admin -- of themselves, since fields[id] is theirs to choose. The form's
+		// picker hides those groups from a non-super-admin
+		// (Html::access('usergroups', ..., true)); the server did not look. This
+		// is the refusal the access-group editor already makes, for the same
+		// reason.
+		if (!$iAmSuperAdmin && isset($fields['accessgroups']))
+		{
+			foreach ((array) $fields['accessgroups'] as $gid)
+			{
+				if (Access::checkGroup((int) $gid, 'core.admin'))
+				{
+					Notify::error(Lang::txt('JLIB_USER_ERROR_NOT_SUPERADMIN'));
+					return $this->editTask($user);
+				}
+			}
+		}
 
 		// Set the incoming data
 		$user->set($fields);
 
 		if ($user->isNew())
 		{
-			$newUsertype = $this->config->get('new_usertype');
-
-			if (!$newUsertype)
+			// The configured default group only when the form chose none: it
+			// used to replace whatever groups were checked
+			if (empty($fields['accessgroups']))
 			{
-				$newUsertype = Accessgroup::oneByTitle('Registered')->get('id');
-			}
+				$newUsertype = $this->config->get('new_usertype');
 
-			$user->set('accessgroups', array($newUsertype));
+				if (!$newUsertype)
+				{
+					$newUsertype = Accessgroup::oneByTitle('Registered')->get('id');
+				}
+
+				$user->set('accessgroups', array($newUsertype));
+			}
 
 			// Check that username is filled
 			if (!Validate::username($user->get('username')))
@@ -397,46 +444,7 @@ class Members extends AdminController
 			}
 
 			// Set home directory
-			$hubHomeDir = rtrim($this->config->get('homedir'), '/');
-			if (!$hubHomeDir)
-			{
-				// try to deduce a viable home directory based on sitename or live_site
-				$sitename = strtolower(Config::get('sitename'));
-				$sitename = preg_replace('/^http[s]{0,1}:\/\//', '', $sitename, 1);
-				$sitename = trim($sitename, '/ ');
-				$sitename_e = explode('.', $sitename, 2);
-				if (isset($sitename_e[1]))
-				{
-					$sitename = $sitename_e[0];
-				}
-				if (!preg_match("/^[a-zA-Z]+[\-_0-9a-zA-Z\.]+$/i", $sitename))
-				{
-					$sitename = '';
-				}
-				if (empty($sitename))
-				{
-					$sitename = strtolower(Request::base());
-					$sitename = preg_replace('/^http[s]{0,1}:\/\//', '', $sitename, 1);
-					$sitename = trim($sitename, '/ ');
-					$sitename_e = explode('.', $sitename, 2);
-					if (isset($sitename_e[1]))
-					{
-						$sitename = $sitename_e[0];
-					}
-					if (!preg_match("/^[a-zA-Z]+[\-_0-9a-zA-Z\.]+$/i", $sitename))
-					{
-						$sitename = '';
-					}
-				}
-
-				$hubHomeDir = DS . 'home';
-
-				if (!empty($sitename))
-				{
-					$hubHomeDir .= DS . $sitename;
-				}
-			}
-			$user->set('homeDirectory', $hubHomeDir . DS . $user->get('username'));
+			$user->set('homeDirectory', \Hubzero\User\User::defaultHomeDirectory($user->get('username')));
 			$user->set('loginShell', '/bin/bash');
 			$user->set('ftpShell', '/usr/lib/sftp-server');
 
@@ -485,14 +493,12 @@ class Members extends AdminController
 		}
 
 		// Make sure that we are not removing ourself from Super Admin group
-		$iAmSuperAdmin = User::authorise('core.admin');
-
 		if ($iAmSuperAdmin && User::get('id') == $user->get('id'))
 		{
 			// Check that at least one of our new groups is Super Admin
 			$stillSuperAdmin = false;
 
-			foreach ($fields['accessgroups'] as $group)
+			foreach ((array) (isset($fields['accessgroups']) ? $fields['accessgroups'] : array()) as $group)
 			{
 				$stillSuperAdmin = ($stillSuperAdmin ? $stillSuperAdmin : Access::checkGroup($group, 'core.admin'));
 			}
@@ -591,15 +597,17 @@ class Members extends AdminController
 		if (is_object($passinfo))
 		{
 			// Do we have shadow info to change?
-			$shadowMax     = Request::getInt('shadowMax', false, 'post');
+			// Read as a string: 0 is a real value (expire now), not "unset"
+			$shadowMax     = trim(Request::getString('shadowMax', '', 'post'));
+			$shadowMaxSet  = ($shadowMax !== '' && is_numeric($shadowMax) && $shadowMax >= 0);
 			$shadowWarning = Request::getInt('shadowWarning', false, 'post');
 			$shadowExpire  = Request::getString('shadowExpire', '', 'post');
 
-			if ($shadowMax || $shadowWarning || (!is_null($passinfo->get('shadowExpire')) && empty($shadowExpire)))
+			if ($shadowMaxSet || $shadowWarning || $shadowExpire || !is_null($passinfo->get('shadowExpire')))
 			{
-				if ($shadowMax)
+				if ($shadowMaxSet)
 				{
-					$passinfo->set('shadowMax', $shadowMax);
+					$passinfo->set('shadowMax', (int) $shadowMax);
 				}
 				if ($shadowExpire || (!is_null($passinfo->get('shadowExpire')) && empty($shadowExpire)))
 				{
@@ -730,6 +738,84 @@ class Members extends AdminController
 	}
 
 	/**
+	 * Add the selected members to an access group, remove them from it, or
+	 * make it their only group (the list's "Batch process" box)
+	 *
+	 * @return  void
+	 */
+	public function batchTask()
+	{
+		// Check for request forgeries
+		Request::checkToken();
+
+		if (!User::authorise('core.edit', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
+		$ids    = array_filter(array_map('intval', (array) Request::getArray('id', array(), 'post')));
+		$batch  = (array) Request::getArray('batch', array(), 'post');
+		$gid    = isset($batch['group_id']) ? (int) $batch['group_id'] : 0;
+		$action = isset($batch['group_action']) ? (string) $batch['group_action'] : '';
+
+		if (empty($ids) || !$gid || !in_array($action, array('add', 'del', 'set')))
+		{
+			Notify::warning(Lang::txt('COM_MEMBERS_BATCH_NO_SELECTION'));
+			return $this->cancelTask();
+		}
+
+		// Only super admins hand out (or take away) super admin groups, as on
+		// the member edit form
+		$iAmSuperAdmin = User::authorise('core.admin');
+		if (!$iAmSuperAdmin && Access::checkGroup($gid, 'core.admin'))
+		{
+			Notify::error(Lang::txt('JLIB_USER_ERROR_NOT_SUPERADMIN'));
+			return $this->cancelTask();
+		}
+
+		$done = 0;
+		foreach ($ids as $id)
+		{
+			// Don't let a super admin demote themselves: removing an admin
+			// group, or making a non-admin group their only one
+			if ($iAmSuperAdmin && $id == User::get('id'))
+			{
+				$isAdminGroup = Access::checkGroup($gid, 'core.admin');
+				if (($action == 'del' && $isAdminGroup) || ($action == 'set' && !$isAdminGroup))
+				{
+					Notify::error(Lang::txt('COM_MEMBERS_USERS_ERROR_CANNOT_DEMOTE_SELF'));
+					continue;
+				}
+			}
+
+			switch ($action)
+			{
+				case 'add':
+					$ok = \Hubzero\Access\Map::addUserToGroup($id, $gid);
+					break;
+				case 'del':
+					$ok = \Hubzero\Access\Map::removeUserFromGroup($id, $gid);
+					break;
+				case 'set':
+					$ok = \Hubzero\Access\Map::destroyByUser($id) && \Hubzero\Access\Map::addUserToGroup($id, $gid);
+					break;
+			}
+
+			if ($ok)
+			{
+				$done++;
+			}
+		}
+
+		if ($done)
+		{
+			Notify::success(Lang::txt('COM_MEMBERS_BATCH_SUCCESS', $done));
+		}
+
+		$this->cancelTask();
+	}
+
+	/**
 	 * Removes a profile entry, associated picture, and redirects to main listing
 	 *
 	 * @return  void
@@ -829,12 +915,21 @@ class Members extends AdminController
 			return $this->cancelTask();
 		}
 
+		$iAmSuperAdmin = User::authorise('core.admin');
+
 		$i = 0;
 
 		foreach ($ids as $id)
 		{
 			// Load the profile
 			$user = Member::oneOrFail(intval($id));
+
+			// A non-super-admin may not act on a super admin, as in removeTask().
+			if (!$iAmSuperAdmin && Access::check($user->get('id'), 'core.admin'))
+			{
+				Notify::error(Lang::txt('JLIB_USER_ERROR_NOT_SUPERADMIN'));
+				continue;
+			}
 
 			if ($state)
 			{
@@ -892,12 +987,21 @@ class Members extends AdminController
 			return $this->cancelTask();
 		}
 
+		$iAmSuperAdmin = User::authorise('core.admin');
+
 		$i = 0;
 
 		foreach ($ids as $id)
 		{
 			// Load the profile
 			$user = Member::oneOrFail(intval($id));
+
+			// A non-super-admin may not act on a super admin, as in removeTask().
+			if (!$iAmSuperAdmin && Access::check($user->get('id'), 'core.admin'))
+			{
+				Notify::error(Lang::txt('JLIB_USER_ERROR_NOT_SUPERADMIN'));
+				continue;
+			}
 
 			$prev = $user->get('approved');
 
@@ -1026,6 +1130,19 @@ class Members extends AdminController
 		// Check for request forgeries
 		Request::checkToken(['get', 'post']);
 
+		// core.deidentify is the action the page gates on
+		// (admin/views/members/tmpl/display.php renders the button on
+		// core.delete && core.deidentify) and the one config/access.xml
+		// declares. com_members has no #__assets row, so that action falls back
+		// to root, where only a core.admin holder has it -- a core.manage test
+		// therefore admitted administrators the page itself refuses.
+		if (!User::authorise('core.admin', $this->_option)
+		 && !(User::authorise('core.delete', $this->_option)
+		   && User::authorise('core.deidentify', $this->_option)))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		// Incoming user ID
 		$ids = Request::getArray('id', array());
 		$ids = (!is_array($ids) ? array($ids) : $ids);
@@ -1040,6 +1157,8 @@ class Members extends AdminController
 		// Make sure plugin user/deidentify has been migrated / imported
 		// Run through main CMS tables, then run through client specific database tables that pertains to jobs, sessions, views with same trigger name
 		foreach ($ids as $id) {
+			$id = (int) $id;
+
 			// Creating New Credentials for each user
 			$anonPassword = "anonPassword_" . $id;
 			$anonUserName = "anonUsername_" . $id;
@@ -1082,6 +1201,14 @@ class Members extends AdminController
 		// Check for request forgeries
 		Request::checkToken(['get', 'post']);
 
+		if (!User::authorise('core.manage', $this->_option)
+		 && !User::authorise('core.admin', $this->_option)
+		 && !User::authorise('core.edit.state', $this->_option)
+		 && !User::authorise('core.delete', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		$state = ($this->getTask() == 'block' ? 1 : 0);
 
 		// Incoming user ID
@@ -1095,12 +1222,22 @@ class Members extends AdminController
 			return $this->cancelTask();
 		}
 
+		$iAmSuperAdmin = User::authorise('core.admin');
+
 		$i = 0;
 
 		foreach ($ids as $id)
 		{
 			// Load the profile
 			$user = Member::oneOrFail(intval($id));
+
+			// A non-super-admin may not act on a super admin, as in removeTask().
+			if (!$iAmSuperAdmin && Access::check($user->get('id'), 'core.admin'))
+			{
+				Notify::error(Lang::txt('JLIB_USER_ERROR_NOT_SUPERADMIN'));
+				continue;
+			}
+
 			// Block user
 			$user->set('block', $state);
 

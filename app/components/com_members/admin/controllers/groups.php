@@ -45,7 +45,7 @@ class Groups extends AdminController
 
 		// Incoming group table
 		$tbl = Request::getString('tbl', '');
-		if (!$tbl)
+		if (!$tbl || !in_array($tbl, array('invitees', 'applicants', 'members', 'managers')))
 		{
 			$this->setError(Lang::txt('COM_MEMBERS_GROUPS_NO_TABLE'));
 			return $this->displayTask($id);
@@ -61,6 +61,11 @@ class Groups extends AdminController
 
 		// Load the group page
 		$group = Group::getInstance($gid);
+		if (!$group)
+		{
+			$this->setError(Lang::txt('COM_MEMBERS_GROUPS_NO_ID'));
+			return $this->displayTask($id);
+		}
 
 		// Make sure the user isn't already a member
 		if (in_array($id, $group->get($tbl)))
@@ -147,6 +152,12 @@ class Groups extends AdminController
 	{
 		// Check for request forgeries
 		Request::checkToken(['get', 'post']);
+
+		if (!User::authorise('core.admin', 'com_groups')
+		 && !User::authorise('core.manage', 'com_groups'))
+		{
+			return $this->displayTask();
+		}
 
 		$options = Request::getArray('memberoption', array());
 

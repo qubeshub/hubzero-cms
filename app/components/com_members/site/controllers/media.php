@@ -57,6 +57,7 @@ class Media extends SiteController
 		$id = Request::getInt('id', 0);
 
 		// load profile from id
+		$this->_requireSelfOrAdmin($id);
 		$profile = Member::oneOrFail($id);
 
 		if (!$profile->get('id'))
@@ -112,6 +113,7 @@ class Media extends SiteController
 
 		// Get the id and load profile
 		$id = Request::getInt('id', 0);
+		$this->_requireSelfOrAdmin($id);
 		$profile = Member::oneOrFail($id);
 
 		if (!$profile->get('id'))
@@ -246,6 +248,7 @@ class Media extends SiteController
 		}
 
 		//load the user profile
+		$this->_requireSelfOrAdmin($id);
 		$profile = Member::oneOrFail($id);
 		if (!$profile->get('id'))
 		{
@@ -282,8 +285,25 @@ class Media extends SiteController
 			return;
 		}
 
+		// Keep the lookup within the web root - no directory traversal
+		$dir  = str_replace('..', '', $dir);
+		$file = basename($file);
+
 		$dir  = '/' . trim($dir, '/') . '/';
 		$file = ltrim($file, '/');
+
+		// The only caller asks about the picture it just uploaded, so the
+		// directory is always a member's own filespace: anything else is a
+		// probe of the docroot. Match doajaxuploadTask's response format.
+		$base  = '/' . trim(str_replace(PATH_ROOT, '', PATH_APP . DS . $this->filespace()), '/') . '/';
+		$owner = (strpos($dir, $base) === 0) ? trim(substr($dir, strlen($base)), '/') : '';
+
+		if ($owner === '' || !ctype_digit($owner))
+		{
+			return;
+		}
+
+		$this->_requireSelfOrAdmin((int) $owner);
 
 		if (!file_exists(PATH_ROOT . $dir . $file))
 		{
@@ -325,6 +345,11 @@ class Media extends SiteController
 			$this->setError(Lang::txt('MEMBERS_NO_ID'));
 			return $this->displayTask('', $id);
 		}
+
+		// Before anything touches the filesystem: $path is built from this id, so
+		// checking further down still let a stranger's upload overwrite the
+		// directory and delete the current picture before being refused.
+		$this->_requireSelfOrAdmin($id);
 
 		// Incoming file
 		$file = Request::getArray('upload', array(), 'files');
@@ -375,7 +400,8 @@ class Media extends SiteController
 		}
 
 		// Do we have an old file we're replacing?
-		$curfile = Request::getString('currentfile', '');
+		// Restrict to a bare filename within the member directory
+		$curfile = basename(Request::getString('currentfile', ''));
 
 		// Perform the upload
 		if (!Filesystem::upload($file['tmp_name'], $path . DS . $file['name']))
@@ -468,6 +494,7 @@ class Media extends SiteController
 			return $this->displayTask('', $id);
 		}
 
+		$this->_requireSelfOrAdmin($id);
 		$profile = Member::oneOrFail($id);
 
 		if (!$profile->get('id'))
@@ -550,6 +577,20 @@ class Media extends SiteController
 	 * @param   string   $assetId    Asset ID
 	 * @return  boolean  True on success
 	 */
+	/**
+	 * Confirm the current user is the target member or a members admin
+	 *
+	 * @param   integer  $id  Member ID
+	 * @return  void
+	 */
+	protected function _requireSelfOrAdmin($id)
+	{
+		if (User::isGuest() || (User::get('id') != $id && $this->_authorize() != 'admin'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+	}
+
 	protected function _authorize($assetType='component', $assetId=null)
 	{
 		// Check if they are logged in
@@ -558,12 +599,13 @@ class Media extends SiteController
 			return false;
 		}
 
-		// Check if they're a site admin
-		// Admin
+		// Check if they're a site admin or a members manager (the profile edit
+		// page that hosts these picture actions allows core.manage as well)
+		$asset = $assetId ?: $this->_option;
 		$this->config->set('access-admin-' . $assetType, User::authorise('core.admin', $asset));
 		$this->config->set('access-manage-' . $assetType, User::authorise('core.manage', $asset));
 
-		if ($this->config->get('access-admin-' . $assetType))
+		if ($this->config->get('access-admin-' . $assetType) || $this->config->get('access-manage-' . $assetType))
 		{
 			return 'admin';
 		}
@@ -598,7 +640,16 @@ class Media extends SiteController
 
 		//get the file name
 		// make sure to leave out any query params (ex. ?v={timestamp})
-		$uri = Request::getString('SCRIPT_URL', '', 'server');
+		$uri  = Request::getString('SCRIPT_URL', '', 'server');
+		// SCRIPT_URL is set by Apache's mod_rewrite only; other servers
+		// (nginx, FrankenPHP) leave it empty and every Image:/File: link
+		// answered "No file provided". The router already keys off
+		// REQUEST_URI, so fall back to its path part.
+		if ($uri === '')
+		{
+			$uri = (string) parse_url(Request::getString('REQUEST_URI', '', 'server'), PHP_URL_PATH);
+		}
+		$file = '';
 		if (strstr($uri, 'Image:'))
 		{
 			$file = str_replace('Image:', '', strstr($uri, 'Image:'));
@@ -610,6 +661,28 @@ class Media extends SiteController
 
 		//decode file name
 		$file = urldecode($file);
+
+		// basename after the decode: the name arrives percent-encoded from the
+		// SCRIPT_URL branches above, so %2e%2e%2f becomes ../ here, and
+		// Hubzero\Content\Server performs no containment of its own. The other
+		// tasks in this controller were contained; this one serves a file.
+		// Keep any subdirectory the caller legitimately addresses by cleaning
+		// each segment rather than flattening the whole path.
+		$parts = array();
+		foreach (preg_split('#[\\\\/]+#', (string) $file) as $seg)
+		{
+			if ($seg === '' || $seg === '.' || $seg === '..')
+			{
+				continue;
+			}
+			$parts[] = $seg;
+		}
+		$file = implode(DS, $parts);
+
+		if ($file === '')
+		{
+			App::abort(404, Lang::txt('MEMBERS_NO_FILE'));
+		}
 
 		// build base path
 		$base_path = $this->filespace() . DS . \Hubzero\Utility\Str::pad($member->get('id'), 5);

@@ -647,7 +647,10 @@ class Registration
 
 		if ($registrationFullname != REG_HIDE)
 		{
-			if (!empty($registration['name']) && !Helpers\Utility::validname($registration['name']))
+			// The name was entity-encoded when it was read (O'Brien -> O&#039;Brien,
+			// José -> Jos&eacute;), which the validator's '&' rule rejects; check the
+			// name as the person typed it
+			if (!empty($registration['name']) && !Helpers\Utility::validname(html_entity_decode($registration['name'], ENT_QUOTES, 'UTF-8')))
 			{
 				$this->_invalid['name'] = 'Invalid name. You may be using characters that are not allowed.';
 			}
@@ -765,9 +768,15 @@ class Registration
 				{
 					if (!$validcaptcha)
 					{
-						$this->_invalid['captcha'] = 'Error: Invalid CAPTCHA response.';
+						$this->_invalid['captcha'] = 'Please answer the Human Check question correctly.';
 					}
 				}
+			}
+
+			// Name it in the summary of fields to fix, like the other fields
+			if (!empty($this->_invalid['captcha']))
+			{
+				$this->_missing['captcha'] = 'Human Check';
 			}
 		}
 

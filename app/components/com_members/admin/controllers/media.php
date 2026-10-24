@@ -92,7 +92,7 @@ class Media extends AdminController
 
 		// must be in allowed extensions
 		$pathInfo = pathinfo($file['name']);
-		$ext = $pathInfo['extension'];
+		$ext = isset($pathInfo['extension']) ? $pathInfo['extension'] : '';
 		if (!in_array($ext, $allowedExtensions))
 		{
 			$these = implode(', ', $allowedExtensions);
@@ -155,8 +155,8 @@ class Media extends AdminController
 			return $this->displayTask($id);
 		}
 
-		// Incoming file
-		$file = Request::getString('file', '');
+		// Incoming file - restrict to a bare filename within the member dir
+		$file = basename(Request::getString('file', ''));
 		if (!$file)
 		{
 			$this->setError(Lang::txt('COM_MEMBERS_NO_FILE'));
@@ -182,13 +182,14 @@ class Media extends AdminController
 			}
 
 			// Get the file thumbnail name
+			$curthumb = '';
 			if ($file == 'profile.png')
 			{
 				$curthumb = 'thumb.png';
 			}
 
 			// Remove the thumbnail
-			if (file_exists($path . DS . $curthumb))
+			if ($curthumb && file_exists($path . DS . $curthumb))
 			{
 				if (!Filesystem::delete($path . DS . $curthumb))
 				{

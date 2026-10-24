@@ -96,8 +96,13 @@ class Accesslevels extends AdminController
 
 		if (!$row)
 		{
-			// Incoming
-			$id = Request::getArray('id', array());
+			// Incoming: the toolbar's Edit posts the checked rows as cid[],
+			// the title links pass id
+			$id = Request::getArray('cid', array());
+			if (empty($id))
+			{
+				$id = Request::getArray('id', array());
+			}
 
 			// Get the single ID we're working with
 			if (is_array($id))
@@ -132,6 +137,15 @@ class Accesslevels extends AdminController
 	{
 		// Check for request forgeries
 		Request::checkToken();
+
+		if (
+			!User::authorise('core.admin', $this->_option)
+			&& !User::authorise('core.manage', $this->_option)
+			&& !User::authorise('core.edit', $this->_option)
+		)
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 
 		// Incoming password blacklist edits
 		$fields = Request::getArray('fields', array(), 'post');
@@ -183,7 +197,7 @@ class Accesslevels extends AdminController
 		// Check for request forgeries
 		Request::checkToken();
 
-		if (!User::authorise('core.delete', $this->option))
+		if (!User::authorise('core.delete', $this->_option))
 		{
 			return $this->cancelTask();
 		}

@@ -61,7 +61,7 @@ $redirectURI = $this->config->get('orcid_' . $srv . '_redirect_uri', '');
 ?>
 <section class="main section">
 	<form name="orcid-search-form">
-		<?php if ($srv != 'public' && !$tkn) { ?>
+		<?php if (($srv != 'public' && !$tkn) || !$clientID || !$redirectURI) { ?>
 			<p class="warning"><?php echo Lang::txt('COM_MEMBERS_PROFILE_ORCID_UNAVAILABLE', Route::url('index.php?option=com_support')); ?></p>
 		<?php } else { ?>
 			<h3><?php echo Lang::txt('COM_MEMBERS_PROFILE_ORCID_ASSOCIATE_ORCID'); ?></h3>
@@ -97,7 +97,7 @@ $redirectURI = $this->config->get('orcid_' . $srv . '_redirect_uri', '');
 					</div>
 					<div class="col span4 omega">
 						<p>
-							<a id="get-orcid-results" class="btn" onclick="<?php echo 'HUB.Orcid.fetchOrcidRecords(\'' . $this->escape($fname) . '\', \'' . $this->escape($lname) . '\');'; ?>"><?php echo Lang::txt('Search ORCID'); ?></a>
+							<a id="get-orcid-results" class="btn" onclick="<?php echo 'HUB.Orcid.fetchOrcidRecords(\'' . $this->escape(addslashes($fname)) . '\', \'' . $this->escape(addslashes($lname)) . '\');'; ?>"><?php echo Lang::txt('Search ORCID'); ?></a>
 						</p>
 					</div>
 				</div>
