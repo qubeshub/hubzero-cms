@@ -100,7 +100,7 @@ if (User::isGuest())
 			<div class="form-group">
 				<label for="problem_long"<?php echo ($this->getError() && !$this->row->get('report')) ? ' class="fieldWithErrors"' : ''; ?>>
 					<?php echo Lang::txt('COM_SUPPORT_TROUBLE_DESCRIPTION'); ?> <span class="required"><?php echo Lang::txt('JREQUIRED'); ?></span>
-					<textarea name="problem[long]" cols="40" rows="10" class="form-control" id="problem_long"><?php echo $this->row->get('report'); ?></textarea>
+					<textarea name="problem[long]" cols="40" rows="10" class="form-control" id="problem_long"><?php echo $this->escape($this->row->get('report')); ?></textarea>
 				</label>
 				<?php if ($this->getError() && !$this->row->get('report')) { ?>
 					<p class="error"><?php echo Lang::txt('COM_SUPPORT_ERROR_MISSING_DESCRIPTION'); ?></p>
@@ -115,7 +115,7 @@ if (User::isGuest())
 				$jbase = rtrim(Request::base(true), '/');
 				?>
 				<div class="form-group">
-					<div id="ajax-uploader" role="group" data-instructions="<?php echo Lang::txt('COM_SUPPORT_CLICK_OR_DROP_FILE'); ?>" data-action="<?php echo $jbase; ?>/index.php?option=com_support&amp;no_html=1&amp;controller=media&amp;task=upload&amp;ticket=<?php echo $tmp; ?>" data-list="<?php echo $jbase; ?>/index.php?option=com_support&amp;no_html=1&amp;controller=media&amp;task=list&amp;ticket=<?php echo $tmp; ?>">
+					<div id="ajax-uploader" role="group" data-instructions="<?php echo Lang::txt('COM_SUPPORT_CLICK_OR_DROP_FILE'); ?>" data-action="<?php echo $jbase; ?>/index.php?option=com_support&amp;no_html=1&amp;controller=media&amp;task=upload&amp;ticket=<?php echo $tmp; ?>&amp;<?php echo Session::getFormToken(); ?>=1" data-list="<?php echo $jbase; ?>/index.php?option=com_support&amp;no_html=1&amp;controller=media&amp;task=list&amp;ticket=<?php echo $tmp; ?>">
 						<noscript>
 							<div class="form-group">
 								<label for="upload">

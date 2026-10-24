@@ -31,19 +31,21 @@ jQuery(document).ready(function($){
 				parent.addClass('open');
 			}
 		})
-		.on('click', 'a.delete', function (e){
+		.on('click', 'button.delete', function (e){
 			e.preventDefault();
 
-			var res = confirm($(this).attr('data-confirm'));
+			var el = $(this);
+
+			var res = confirm(el.attr('data-confirm'));
 			if (!res) {
 				return false;
 			}
 
 			if (_DEBUG) {
-				window.console && console.log('Calling: ' + $(this).attr('href').nohtml());
+				window.console && console.log('Calling: ' + el.attr('formaction').nohtml());
 			}
 
-			$.get($(this).attr('href').nohtml(), {}, function(response){
+			$.post(el.attr('formaction').nohtml(), $(this.form).serialize(), function(response){
 				if (_DEBUG) {
 					window.console && console.log(response);
 				}
@@ -64,6 +66,14 @@ jQuery(document).ready(function($){
 				});
 			}
 		});
+
+	$('#tktlist').on('click', 'button.delete', function (e){
+		var res = confirm($(this).attr('data-confirm'));
+		if (!res) {
+			e.preventDefault();
+		}
+		return res;
+	});
 
 	if (jQuery.ui && jQuery.ui.sortable) {
 		$('#query-list').sortable({

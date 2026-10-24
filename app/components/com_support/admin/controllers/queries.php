@@ -166,6 +166,10 @@ class Queries extends AdminController
 		$tmpl    = Request::getString('component', '');
 
 		$row = Query::oneOrNew($fields['id'])->set($fields);
+		// build the SQL from the conditions, as the site controller does; the
+		// query column is NOT NULL with no default, so strict SQL refused every
+		// query saved here
+		$row->set('query', $row->toSql());
 
 		// Store new content
 		if (!$row->save())
@@ -383,9 +387,14 @@ class Queries extends AdminController
 		// Check for request forgeries
 		Request::checkToken(['get', 'post']);
 
+		if (!User::authorise('core.delete', $this->_option) && !User::authorise('core.manage', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		// Incoming
 		$ids = Request::getArray('id', array());
-		$ids = (is_array($ids) ?: array($ids));
+		$ids = (is_array($ids) ? $ids : array($ids));
 
 		$no_html = Request::getInt('no_html', 0);
 		$removed = 0;
@@ -427,7 +436,13 @@ class Queries extends AdminController
 		// Check for request forgeries
 		Request::checkToken(['get', 'post']);
 
+		if (!User::authorise('core.edit', $this->_option) && !User::authorise('core.manage', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		// Incoming
+		$no_html = Request::getInt('no_html', 0);
 		$folders = Request::getArray('folder', array());
 		$queries = Request::getArray('queries', array());
 

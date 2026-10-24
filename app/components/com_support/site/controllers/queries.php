@@ -61,6 +61,18 @@ class Queries extends SiteController
 		$id = Request::getInt('id', 0);
 
 		$row = Query::oneOrNew($id);
+
+		// A saved query belongs to the user who created it; user_id 0 is a
+		// shared core query. saveTask already enforces this -- without it here
+		// the edit form handed any caller any user's saved query, title and
+		// conditions included.
+		if (!$row->isNew()
+		 && (int) $row->get('user_id') !== 0
+		 && (int) $row->get('user_id') !== (int) User::get('id'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		if (!$row->get('sort'))
 		{
 			$row->set('sort', 'created');
@@ -90,6 +102,13 @@ class Queries extends SiteController
 	 */
 	public function saveTask()
 	{
+		// Saved queries belong to logged-in users; a guest (id 0) would
+		// otherwise match the shared core rows (user_id 0) below.
+		if (User::isGuest())
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		// Check for request forgeries
 		Request::checkToken();
 
@@ -98,7 +117,29 @@ class Queries extends SiteController
 		$no_html = Request::getInt('no_html', 0);
 		$tmpl    = Request::getCmd('component', '');
 
-		$row = Query::oneOrNew($fields['id'])->set($fields);
+		$row = Query::oneOrNew(isset($fields['id']) ? (int) $fields['id'] : 0);
+
+		// A saved query belongs to the user who created it; the core rows
+		// (iscore) are the component's and nobody's to edit here
+		if (!$row->isNew() && ($row->get('iscore') || $row->get('user_id') != User::get('id')))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
+		// iscore is what makes a query show for every non-agent; a folder is
+		// only the caller's own
+		unset($fields['iscore']);
+		if (!empty($fields['folder_id']))
+		{
+			$__folder = QueryFolder::oneOrNew((int) $fields['folder_id']);
+			if ($__folder->isNew() || $__folder->get('user_id') != User::get('id'))
+			{
+				App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+			}
+		}
+
+		$row->set($fields);
+		$row->set('user_id', User::get('id'));
 		$row->set('query', $row->toSql());
 
 		if ($row->isNew())
@@ -141,6 +182,17 @@ class Queries extends SiteController
 	 */
 	public function removeTask()
 	{
+		// Saved queries belong to logged-in users; a guest (id 0) would
+		// otherwise match the shared core rows (user_id 0) below.
+		if (User::isGuest())
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
+		// Check for request forgeries (the delete buttons post the token, so
+		// a GET token is not accepted: a followed link cannot delete)
+		Request::checkToken();
+
 		// Incoming
 		$id      = Request::getInt('id', 0);
 		$no_html = Request::getInt('no_html', 0);
@@ -161,6 +213,16 @@ class Queries extends SiteController
 		}
 
 		$row = Query::oneOrFail(intval($id));
+		if ($row->get('iscore'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
+		// Only the owner may delete their saved query
+		if ($row->get('user_id') != User::get('id'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 		$row->destroy();
 
 		if (!$no_html && $tmpl != 'component')
@@ -238,6 +300,14 @@ class Queries extends SiteController
 			}
 
 			$row = QueryFolder::oneOrNew($id);
+
+			// As editTask above: a folder belongs to its creator.
+			if (!$row->isNew()
+			 && (int) $row->get('user_id') !== 0
+			 && (int) $row->get('user_id') !== (int) User::get('id'))
+			{
+				App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+			}
 		}
 
 		// Output the HTML
@@ -265,6 +335,13 @@ class Queries extends SiteController
 	 */
 	public function savefolderTask($redirect=true)
 	{
+		// Saved queries belong to logged-in users; a guest (id 0) would
+		// otherwise match the shared core rows (user_id 0) below.
+		if (User::isGuest())
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		// Check for request forgeries
 		Request::checkToken(['get', 'post']);
 
@@ -277,7 +354,13 @@ class Queries extends SiteController
 		$response->success = 1;
 		$response->message = '';
 
-		$row = QueryFolder::oneOrNew($fields['id'])->set($fields);
+		$row = QueryFolder::oneOrNew(isset($fields['id']) ? $fields['id'] : 0);
+		if (!$row->isNew() && $row->get('user_id') != User::get('id'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+		$row->set($fields);
+		$row->set('user_id', User::get('id'));
 
 		// Store new content
 		if (!$row->save())
@@ -322,18 +405,33 @@ class Queries extends SiteController
 	 */
 	public function removefolderTask()
 	{
-		// Check for request forgeries
-		Request::checkToken(['get', 'post']);
+		// Saved queries belong to logged-in users; a guest (id 0) would
+		// otherwise match the shared core rows (user_id 0) below.
+		if (User::isGuest())
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
+		// Check for request forgeries (the delete buttons post the token, so
+		// a GET token is not accepted: a followed link cannot delete)
+		Request::checkToken();
 
 		// Incoming
 		$ids = Request::getArray('id', array());
-		$ids = (is_array($ids) ?: array($ids));
+		$ids = (is_array($ids) ? $ids : array($ids));
 
 		$no_html = Request::getInt('no_html', 0);
 
 		foreach ($ids as $id)
 		{
 			$row = QueryFolder::oneOrFail(intval($id));
+
+			// Only the caller's own folders; the core rows are the component's
+			if ($row->get('iscore') || (int) $row->get('user_id') !== (int) User::get('id'))
+			{
+				App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+			}
+
 			$row->destroy();
 		}
 
@@ -357,6 +455,13 @@ class Queries extends SiteController
 	 */
 	public function saveorderingTask()
 	{
+		// Saved queries belong to logged-in users; a guest (id 0) would
+		// otherwise match the shared core rows (user_id 0) below.
+		if (User::isGuest())
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		// Check for request forgeries
 		Request::checkToken(['get', 'post']);
 
@@ -369,6 +474,10 @@ class Queries extends SiteController
 			foreach ($folders as $key => $folder)
 			{
 				$row = QueryFolder::oneOrFail(intval($folder));
+				if ($row->get('user_id') != User::get('id'))
+				{
+					continue;
+				}
 				$row->set('ordering', $key + 1);
 				$row->save();
 			}
@@ -384,7 +493,25 @@ class Queries extends SiteController
 				$bits = explode('_', $query);
 
 				$fd = intval($bits[0]);
-				$id = intval($bits[1]);
+				$id = isset($bits[1]) ? intval($bits[1]) : 0;
+
+				if (!$id)
+				{
+					continue;
+				}
+
+				// The destination folder has to be the caller's too. Checking
+				// only the query let an owner drop their own query into someone
+				// else's sidebar. Folder 0 is "unfiled".
+				if ($fd)
+				{
+					$dest = QueryFolder::oneOrNew($fd);
+
+					if (!$dest->get('id') || $dest->get('user_id') != User::get('id'))
+					{
+						continue;
+					}
+				}
 
 				if ($fd != $folder)
 				{
@@ -393,6 +520,10 @@ class Queries extends SiteController
 				}
 
 				$row = Query::oneOrFail($id);
+				if ($row->get('user_id') != User::get('id'))
+				{
+					continue;
+				}
 				$row->set('folder_id', $fd);
 				$row->set('ordering', $i + 1);
 				$row->save();

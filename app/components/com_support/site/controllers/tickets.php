@@ -1019,7 +1019,10 @@ class Tickets extends SiteController
 		$row->set('status', 0);
 		$row->set('created', Date::toSql());
 		$row->set('login', $reporter['login']);
-		$row->set('severity', (isset($problem['severity']) ? $problem['severity'] : 'normal'));
+		// The form offers a fixed set of severities; anything else is stored as
+		// submitted and echoed back into class attributes on the ticket pages
+		$severities = Utilities::getSeverities($this->config->get('severities'));
+		$row->set('severity', (isset($problem['severity']) && in_array($problem['severity'], $severities) ? $problem['severity'] : 'normal'));
 		$row->set('owner', (isset($problem['owner']) ? $problem['owner'] : 0));
 		$row->set('category', (isset($problem['category']) ? $problem['category'] : ''));
 		$row->set('summary', $problem['short']);
@@ -1165,7 +1168,7 @@ class Tickets extends SiteController
 					'action'      => 'created',
 					'scope'       => 'support.ticket',
 					'scope_id'    => $row->get('id'),
-					'description' => Lang::txt('COM_SUPPORT_ACTIVITY_TICKET_CREATED', '<a href="' . Route::url($row->link()) . '">#' . $row->get('id') . ' - ' . $row->get('summary') . '</a>'),
+					'description' => Lang::txt('COM_SUPPORT_ACTIVITY_TICKET_CREATED', '<a href="' . Route::url($row->link()) . '">#' . htmlspecialchars((string) ($row->get('id') . ' - ' . $row->get('summary')), ENT_QUOTES, 'UTF-8') . '</a>'),
 					'details'     => array(
 						'id'      => $row->get('id'),
 						'summary' => $row->get('summary'),
@@ -1376,10 +1379,10 @@ class Tickets extends SiteController
 					$recipients[] = ['user', $creator->get('id')];
 				}
 
-				$desc = Lang::txt('COM_SUPPORT_ACTIVITY_TICKET_UPDATED', '<a href="' . Route::url($row->link()) . '">#' . $row->get('id') . ' - ' . $row->get('summary') . '</a>');
+				$desc = Lang::txt('COM_SUPPORT_ACTIVITY_TICKET_UPDATED', '<a href="' . Route::url($row->link()) . '">#' . htmlspecialchars((string) ($row->get('id') . ' - ' . $row->get('summary')), ENT_QUOTES, 'UTF-8') . '</a>');
 				if ($rowc->get('comment'))
 				{
-					$desc = Lang::txt('COM_SUPPORT_ACTIVITY_COMMENT_CREATED', $rowc->get('id'), '<a href="' . Route::url($row->link()) . '">#' . $row->get('id') . ' - ' . $row->get('summary') . '</a>');
+					$desc = Lang::txt('COM_SUPPORT_ACTIVITY_COMMENT_CREATED', $rowc->get('id'), '<a href="' . Route::url($row->link()) . '">#' . htmlspecialchars((string) ($row->get('id') . ' - ' . $row->get('summary')), ENT_QUOTES, 'UTF-8') . '</a>');
 				}
 
 				Event::trigger('system.logActivity', [
@@ -1704,6 +1707,26 @@ class Tickets extends SiteController
 		// Load the old ticket so we can compare for the changelog
 		$old = Ticket::oneOrNew($id);
 		$old->set('tags', $old->tags('string'));
+
+		if ($old->isNew())
+		{
+			App::abort(404, Lang::txt('COM_SUPPORT_ERROR_TICKET_NOT_FOUND'));
+		}
+
+		// Who may change what: the ticket form offers group, severity, status,
+		// target date and category to agents (update on tickets), and only an
+		// open/close checkbox to the ticket's submitter. Nothing else offered
+		// anyone the ticket[] fields, but they were bound as posted for any
+		// logged-in user on any ticket.
+		if ($this->acl->check('update', 'tickets') <= 0)
+		{
+			if (!$old->isSubmitter())
+			{
+				App::abort(403, Lang::txt('COM_SUPPORT_ERROR_NOT_AUTH'));
+			}
+			$incoming = array_intersect_key($incoming, array('status' => 1));
+		}
+		unset($incoming['id'], $incoming['login'], $incoming['created'], $incoming['report'], $incoming['summary'], $incoming['email'], $incoming['name'], $incoming['ip'], $incoming['hostname'], $incoming['uas'], $incoming['referrer']);
 
 		// Initiate class and bind posted items to database fields
 		$row = Ticket::oneOrNew($id)->set($incoming);
@@ -2048,10 +2071,10 @@ class Tickets extends SiteController
 				}
 			}
 
-			$desc = Lang::txt('COM_SUPPORT_ACTIVITY_TICKET_UPDATED', '<a href="' . Route::url($row->link()) . '">#' . $row->get('id') . ' - ' . $row->get('summary') . '</a>');
+			$desc = Lang::txt('COM_SUPPORT_ACTIVITY_TICKET_UPDATED', '<a href="' . Route::url($row->link()) . '">#' . htmlspecialchars((string) ($row->get('id') . ' - ' . $row->get('summary')), ENT_QUOTES, 'UTF-8') . '</a>');
 			if ($rowc->get('comment'))
 			{
-				$desc = Lang::txt('COM_SUPPORT_ACTIVITY_COMMENT_CREATED', $rowc->get('id'), '<a href="' . Route::url($row->link()) . '">#' . $row->get('id') . ' - ' . $row->get('summary') . '</a>');
+				$desc = Lang::txt('COM_SUPPORT_ACTIVITY_COMMENT_CREATED', $rowc->get('id'), '<a href="' . Route::url($row->link()) . '">#' . htmlspecialchars((string) ($row->get('id') . ' - ' . $row->get('summary')), ENT_QUOTES, 'UTF-8') . '</a>');
 			}
 
 			Event::trigger('system.logActivity', [
@@ -2086,6 +2109,31 @@ class Tickets extends SiteController
 	 */
 	public function deleteTask()
 	{
+		// Must be logged in
+		if (User::isGuest())
+		{
+			$return = base64_encode(Route::url('index.php?option=' . $this->_option . '&controller=' . $this->_controller . '&task=tickets', false, true));
+			App::redirect(
+				Route::url('index.php?option=com_users&view=login&return=' . $return, false)
+			);
+			return;
+		}
+
+		// Require POST to prevent accidental deletion by crawlers
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('COM_SUPPORT_ERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		// Guard against request forgeries
+		Request::checkToken();
+
+		// Must be authorized to delete tickets
+		if (!$this->acl->check('delete', 'tickets'))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		// Incoming
 		$id = Request::getInt('id', 0);
 
@@ -2101,7 +2149,7 @@ class Tickets extends SiteController
 		// Load the record
 		$ticket = Ticket::oneOrFail($id);
 
-		$description = Lang::txt('COM_SUPPORT_ACTIVITY_TICKET_DELETED', '<a href="' . Route::url($ticket->link()) . '">#' . $ticket->get('id') . ' - ' . $ticket->get('summary') . '</a>');
+		$description = Lang::txt('COM_SUPPORT_ACTIVITY_TICKET_DELETED', '<a href="' . Route::url($ticket->link()) . '">#' . htmlspecialchars((string) ($ticket->get('id') . ' - ' . $ticket->get('summary')), ENT_QUOTES, 'UTF-8') . '</a>');
 
 		// Delete ticket
 		if (!$ticket->destroy())
@@ -2177,9 +2225,15 @@ class Tickets extends SiteController
 	 */
 	public function createTask()
 	{
+		// Only the documented fields above; the ticket's owner, group, state
+		// and id are not the reporter's to set
+		$incoming = array_intersect_key($_POST, array_flip(array(
+			'login', 'severity', 'category', 'summary', 'report', 'email', 'name',
+			'os', 'browser', 'ip', 'hostname', 'uas', 'referrer', 'cookies', 'section', 'tags'
+		)));
+
 		// trim and addslashes all posted items
-		$incoming = array_map('trim', $_POST);
-		$incoming = array_map('addslashes', $incoming);
+		$incoming = array_map(function ($v) { return is_scalar($v) ? addslashes(trim((string) $v)) : ''; }, $incoming);
 
 		// initiate class and bind posted items to database fields
 		$row = Ticket::blank();
@@ -2519,6 +2573,9 @@ class Tickets extends SiteController
 						$this->setError(Lang::txt('COM_SUPPORT_ERROR_FAILED_VIRUS_SCAN'));
 						//return Lang::txt('COM_SUPPORT_ERROR_FAILED_VIRUS_SCAN');
 					}
+					// Skip the database entry: saving it anyway left an
+					// attachment on the ticket pointing at the deleted file
+					continue;
 				}
 
 				// File was uploaded
