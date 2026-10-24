@@ -23,7 +23,7 @@ defined('_HZEXEC_') or die();
 				<div class="item-container">
 					<div class="item-title">
 						<a href="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=categories&task=edit&categoryid='.$category->get('id')); ?>">
-							<?php echo $category->get('title'); ?>
+							<?php echo $this->escape($category->get('title')); ?>
 						</a>
 					</div>
 
@@ -42,7 +42,7 @@ defined('_HZEXEC_') or die();
 						<ul class="dropdown-menu">
 							<li><a class="icon-edit" href="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=categories&task=edit&categoryid='.$category->get('id')); ?>"> <?php echo Lang::txt('COM_GROUPS_PAGES_EDIT_CATEGORY'); ?></a></li>
 							<li class="divider"></li>
-							<li><a class="icon-delete" href="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=categories&task=delete&categoryid='.$category->get('id')); ?>"> <?php echo Lang::txt('COM_GROUPS_PAGES_DELETE_CATEGORY'); ?></a></li>
+							<li><button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=categories&task=delete&categoryid='.$category->get('id')); ?>" class="icon-delete"> <?php echo Lang::txt('COM_GROUPS_PAGES_DELETE_CATEGORY'); ?></button></li>
 						</ul>
 					</div>
 				</div>

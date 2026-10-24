@@ -41,6 +41,7 @@ $this->css('introduction.css', 'system')
 				<div class="container data-entry">
 					<input class="entry-search-submit" type="submit" value="<?php echo Lang::txt('COM_GROUPS_BROWSE_SEARCH'); ?>" />
 					<fieldset class="entry-search">
+						<legend class="sr-only"><?php echo Lang::txt('COM_GROUPS_BROWSE_SEARCH_HELP'); ?></legend>
 						<label for="gsearch"><?php echo Lang::txt('COM_GROUPS_BROWSE_SEARCH_HELP'); ?></label>
 						<input type="text" name="search" id="gsearch" value="" placeholder="<?php echo Lang::txt('COM_GROUPS_BROWSE_SEARCH_PLACEHOLDER'); ?>" />
 					</fieldset>
@@ -70,7 +71,7 @@ $this->css('introduction.css', 'system')
 					</div>
 					<ul>
 						<?php foreach ($this->mygroups['invitees'] as $invite) : ?>
-							<li><?php echo $invite->description; ?><a href="<?php echo Route::url('index.php?option=com_groups&cn='.$invite->cn.'&task=accept'); ?>">Accept Invite</a></li>
+							<li><?php echo $this->escape($invite->description); ?><button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=com_groups&cn='.$invite->cn.'&task=accept'); ?>">Accept Invite</button></li>
 						<?php endforeach; ?>
 					</ul>
 				</div>
@@ -84,7 +85,7 @@ $this->css('introduction.css', 'system')
 					</div>
 					<ul>
 						<?php foreach ($this->mygroups['applicants'] as $applicant) : ?>
-							<li><?php echo $applicant->description; ?><a href="<?php echo Route::url('index.php?option=com_groups&cn='.$applicant->cn.'&task=cancel'); ?>">Cancel Request</a></li>
+							<li><?php echo $this->escape($applicant->description); ?><button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=com_groups&cn='.$applicant->cn.'&task=cancel'); ?>">Cancel Request</button></li>
 						<?php endforeach; ?>
 					</ul>
 				</div>

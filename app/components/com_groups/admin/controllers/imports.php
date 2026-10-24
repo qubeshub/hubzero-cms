@@ -21,6 +21,8 @@ use User;
 use Date;
 use Lang;
 use App;
+use Notify;
+use Session;
 
 
 include_once dirname(dirname(__DIR__)) . '/models/orm/group.php';
@@ -265,6 +267,7 @@ class Imports extends AdminController
 		// If we have a file
 		if (is_array($file) && !empty($file) && $file['size'] > 0 && $file['error'] == 0)
 		{
+			$file['name'] = \Hubzero\Filesystem\Util::normalizeFile(basename(str_replace('\\', '/', $file['name'])));
 			move_uploaded_file($file['tmp_name'], $model->fileSpacePath() . DS . $file['name']);
 			$model->set('file', $file['name']);
 			$model->set('fields', '');
@@ -401,7 +404,7 @@ class Imports extends AdminController
 	public function doRunTask()
 	{
 		// Check token
-		//Session::checkToken();
+		Session::checkToken();
 
 		// Start of import
 		$start = microtime(true);

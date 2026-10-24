@@ -226,13 +226,13 @@ HUB.Groups = {
 	{
 		var $ = this.jQuery;
 
+		// The cancel control is now a button in a POST form: let it submit
+		// only once confirmed
 		$(".cancel_group_membership").on('click', function(e) {
-			e.preventDefault();
-
 			var answer = confirm('Are you sure you would like to cancel your group membership?');
-			if(answer)
+			if(!answer)
 			{
-				window.location = this.href;
+				e.preventDefault();
 			}
 		});
 	},
@@ -292,7 +292,7 @@ HUB.Groups = {
 		var floatingAssetBrowser = $('.floating-iframe-container');
 		if (floatingAssetBrowser.length)
 		{
-			floatingAssetBrowser.append('<a href="#" class="floating-iframe-toggle"></a>');
+			floatingAssetBrowser.append('<a href="#" class="floating-iframe-toggle" aria-label="Toggle asset browser"><span class="sr-only">Toggle asset browser</span></a>');
 			$('.floating-iframe-toggle')
 				.on('hover', function(event) {
 					event.preventDefault();
@@ -957,16 +957,13 @@ HUB.Groups = {
 		$versions
 			.on('cycle-update-view', function(event, optionHash, slideOptionsHash, currentSlideEl) {
 				$('.version-raw').attr('href', $(currentSlideEl).attr('data-raw-url'));
-				$('.version-restore').attr('href', $(currentSlideEl).attr('data-restore-url'));
 
-				if ($('.version-restore').attr('href') == '')
-				{
-					$('.version-restore').attr('disabled', 'disabled');
-				}
-				else
-				{
-					$('.version-restore').removeAttr('disabled');
-				}
+				// Restoring posts the page's token to the shown version's restore URL
+				var restoreUrl = $(currentSlideEl).attr('data-restore-url') || '';
+
+				$('.version-restore')
+					.attr('formaction', restoreUrl)
+					.prop('disabled', restoreUrl == '');
 
 				// sync jumpto select
 				$('.version-jumpto').val(optionHash.currSlide + 1);
@@ -1140,7 +1137,7 @@ jQuery(document).ready(function($){
 	if (el.length) {
 		el.addClass('js');
 
-		var select = $("<select />").on('change', function() {
+		var select = $("<select />", {"aria-label": "Group navigation"}).on('change', function() {
 			window.location = $(this).find("option:selected").val();
 		});
 

@@ -11,6 +11,7 @@ use Hubzero\Database\Relational;
 use Components\Groups\Models\Orm\Answer;
 use Date;
 use User;
+use Lang;
 
 include_once __DIR__ . DS . 'option.php';
 include_once __DIR__ . DS . 'answer.php';
@@ -502,7 +503,7 @@ class Field extends Relational
 	 */
 	public function renderValue($value)
 	{
-		$value = count($value) == 1 ? $value[0] : $value;
+		$value = (is_array($value) && count($value) > 0) ? $value[0] : $value;
 		if (empty($value))
 		{
 			return false;
@@ -517,6 +518,7 @@ class Field extends Relational
 				$value = $type->renderValue($value);
 			}
 		}
+
 		return $value;
 	}
 

@@ -12,6 +12,7 @@ use Hubzero\Config\Registry;
 use Components\Groups\Models\Log;
 use Components\Groups\Tables\Reason;
 use Request;
+use Session;
 use Config;
 use Event;
 use Route;
@@ -309,7 +310,7 @@ class Membership extends Base
 							$inviteemails[] = array(
 								'email'     => $l,
 								'gidNumber' => $this->view->group->get('gidNumber'),
-								'token'     => $this->_randomString(32)
+								'token'     => bin2hex(random_bytes(16))
 							);
 						}
 						else
@@ -394,7 +395,12 @@ class Membership extends Base
 			{
 				$groupInvitees[$profile->get('email')] = $profile->get('name');
 
-				$activity[] = $profile->get('name')  . '(' . $profile->get('email') . ')';
+				// This list is joined into an activity description, which the
+				// members activity plugin echoes as HTML -- so a display name
+				// carrying markup reaches every manager's feed. The other
+				// argument on that line is escaped; this one was not.
+				$activity[] = htmlspecialchars((string) $profile->get('name'), ENT_QUOTES, 'UTF-8')
+					. '(' . htmlspecialchars((string) $profile->get('email'), ENT_QUOTES, 'UTF-8') . ')';
 			}
 		}
 
@@ -427,7 +433,7 @@ class Membership extends Base
 					'action'      => 'invited',
 					'scope'       => 'group',
 					'scope_id'    => $this->view->group->get('gidNumber'),
-					'description' => Lang::txt('COM_GROUPS_ACTIVITY_GROUP_USER_INVITED', '<a href="' . $url . '">' . $this->view->group->get('description') . '</a>'),
+					'description' => Lang::txt('COM_GROUPS_ACTIVITY_GROUP_USER_INVITED', '<a href="' . $url . '">' . htmlspecialchars((string) ($this->view->group->get('description')), ENT_QUOTES, 'UTF-8') . '</a>'),
 					'details'     => array(
 						'title'     => $this->view->group->get('description'),
 						'url'       => $url,
@@ -455,7 +461,7 @@ class Membership extends Base
 				'action'      => 'invited',
 				'scope'       => 'group',
 				'scope_id'    => $this->view->group->get('gidNumber'),
-				'description' => Lang::txt('COM_GROUPS_ACTIVITY_GROUP_USERS_INVITED', implode(', ', $activity), '<a href="' . $url . '">' . $this->view->group->get('description') . '</a>'),
+				'description' => Lang::txt('COM_GROUPS_ACTIVITY_GROUP_USERS_INVITED', implode(', ', $activity), '<a href="' . $url . '">' . htmlspecialchars((string) ($this->view->group->get('description')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title'     => $this->view->group->get('description'),
 					'url'       => $url,
@@ -512,6 +518,14 @@ class Membership extends Base
 		$success_message = '';
 		$error_message = '';
 
+		// These two strings are handed to setNotification() and the group
+		// templates echo a notification's message raw, so every value joined in
+		// here is an HTML sink. The display name is attacker-controlled: the
+		// profile and admin saves run Sanitize::cleanProperName(), which strips
+		// '<', '>' and '&', but the profiles API sets `name` straight from
+		// Request::getString() with nothing applied, and the User model's only
+		// rule on the column is notempty. A manager inviting such an account by
+		// username renders whatever it holds in their own browser.
 		if (count($all_invites) > 0)
 		{
 			$success_message = Lang::txt('COM_GROUPS_INVITE_SUCCESS_MESSAGE');
@@ -520,11 +534,11 @@ class Membership extends Base
 				if (is_numeric($invite))
 				{
 					$user = User::getInstance($invite);
-					$success_message .= ' - ' . $user->get('name') . '<br />';
+					$success_message .= ' - ' . htmlspecialchars((string) $user->get('name'), ENT_QUOTES, 'UTF-8') . '<br />';
 				}
 				else
 				{
-					$success_message .= ' - ' . $invite['email'] . '<br />';
+					$success_message .= ' - ' . htmlspecialchars((string) $invite['email'], ENT_QUOTES, 'UTF-8') . '<br />';
 				}
 			}
 		}
@@ -534,21 +548,23 @@ class Membership extends Base
 			$error_message = Lang::txt('COM_GROUPS_INVITE_ERROR_MESSAGE');
 			foreach ($badentries as $entry)
 			{
+				$reason = htmlspecialchars((string) $entry[1], ENT_QUOTES, 'UTF-8');
+
 				if (is_numeric($entry[0]))
 				{
 					$user = User::getInstance($entry[0]);
 					if ($user->get('name') != '')
 					{
-						$error_message .= ' - ' . $user->get('name') . ' &rarr; ' . $entry[1] . '<br />';
+						$error_message .= ' - ' . htmlspecialchars((string) $user->get('name'), ENT_QUOTES, 'UTF-8') . ' &rarr; ' . $reason . '<br />';
 					}
 					else
 					{
-						$error_message .= ' - ' . $entry[0] . ' &rarr; ' . $entry[1] . '<br />';
+						$error_message .= ' - ' . htmlspecialchars((string) $entry[0], ENT_QUOTES, 'UTF-8') . ' &rarr; ' . $reason . '<br />';
 					}
 				}
 				else
 				{
-					$error_message .= ' - ' . $entry[0] . ' &rarr; ' . $entry[1] . '<br />';
+					$error_message .= ' - ' . htmlspecialchars((string) $entry[0], ENT_QUOTES, 'UTF-8') . ' &rarr; ' . $reason . '<br />';
 				}
 			}
 		}
@@ -625,7 +641,6 @@ class Membership extends Base
 		$group_inviteemails = new \Hubzero\User\Group\InviteEmail();
 		$inviteemails = $group_inviteemails->getInviteEmails($this->view->group->get('gidNumber'), true);
 		$inviteemails = array_map('strtolower', $inviteemails);
-		$inviteemails_with_token = $group_inviteemails->getInviteEmails($this->view->group->get('gidNumber'), false);
 
 		//are we already a member
 		if (in_array(User::get('id'), $members))
@@ -634,43 +649,62 @@ class Membership extends Base
 			return;
 		}
 
+		// The invitation this token stands for, for THIS group: a token is issued
+		// per invitation, and one for any group used to admit its holder to the
+		// group on the URL.
+		$invite = null;
+		if ($token)
+		{
+			$sql = "SELECT * FROM `#__xgroups_inviteemails` WHERE token=" . $this->database->quote($token)
+				. " AND gidNumber=" . (int) $this->view->group->get('gidNumber');
+			$this->database->setQuery($sql);
+			$invite = $this->database->loadAssoc();
+		}
+
+		$invitedByEmail = in_array(strtolower(User::get('email')), $inviteemails);
+		$invitedAsUser  = in_array(User::get('id'), $invitees);
+
+		if (!$invite && !$invitedByEmail && !$invitedAsUser)
+		{
+			$this->_errorHandler(404, Lang::txt('COM_GROUPS_ERROR_UNABLE_TO_JOIN'));
+		}
+
+		// Joining is done by a posted form. A link followed from an invitation
+		// e-mail, or the return from logging in, arrives by GET and gets a page
+		// whose button posts it (carrying the invitation token, if any).
+		if (Request::method() !== 'POST')
+		{
+			$this->_buildTitle();
+			$this->_buildPathway();
+
+			$this->view
+				->set('title', Lang::txt('COM_GROUPS_ACCEPT_INVITE') . ': ' . $this->view->group->get('description'))
+				->set('token', $invite ? $token : '')
+				->setLayout('accept')
+				->display();
+			return;
+		}
+
+		// Check for request forgeries
+		Request::checkToken();
+
 		//get request vars
 		$return = strtolower(trim(Request::getString('return', '', 'get')));
 
-		//check to make sure weve been invited
-		if ($token)
-		{
-			$sql = "SELECT * FROM `#__xgroups_inviteemails` WHERE token=" . $this->database->quote($token);
-			$this->database->setQuery($sql);
-			$invite = $this->database->loadAssoc();
+		// Join, and use up the invitation that let us in
+		$this->view->group->add('members', array(User::get('id')));
+		$this->view->group->remove('invitees', array(User::get('id')));
+		$this->view->group->update();
 
-			if ($invite)
-			{
-				$this->view->group->add('members', array(User::get('id')));
-				$this->view->group->update();
-
-				$sql = "DELETE FROM `#__xgroups_inviteemails` WHERE id=" . $this->database->quote($invite['id']);
-				$this->database->setQuery($sql);
-				$this->database->query();
-			}
-		}
-		elseif (in_array(strtolower(User::get('email')), $inviteemails))
+		if ($invite)
 		{
-			$this->view->group->add('members', array(User::get('id')));
-			$this->view->group->update();
-			$sql = "DELETE FROM `#__xgroups_inviteemails` WHERE LOWER(email)=" . $this->database->quote(strtolower(User::get('email'))) . " AND gidNumber=" . $this->database->quote($this->view->group->get('gidNumber'));
-			$this->database->setQuery($sql);
+			$this->database->setQuery("DELETE FROM `#__xgroups_inviteemails` WHERE id=" . $this->database->quote($invite['id']));
 			$this->database->query();
 		}
-		elseif (in_array(User::get('id'), $invitees))
+		if ($invitedByEmail)
 		{
-			$this->view->group->add('members', array(User::get('id')));
-			$this->view->group->remove('invitees', array(User::get('id')));
-			$this->view->group->update();
-		}
-		else
-		{
-			$this->_errorHandler(404, Lang::txt('COM_GROUPS_ERROR_UNABLE_TO_JOIN'));
+			$this->database->setQuery("DELETE FROM `#__xgroups_inviteemails` WHERE LOWER(email)=" . $this->database->quote(strtolower(User::get('email'))) . " AND gidNumber=" . $this->database->quote($this->view->group->get('gidNumber')));
+			$this->database->query();
 		}
 
 		// log invites
@@ -697,7 +731,7 @@ class Membership extends Base
 				'action'      => 'accepted',
 				'scope'       => 'group',
 				'scope_id'    => $this->view->group->get('gidNumber'),
-				'description' => Lang::txt('COM_GROUPS_ACTIVITY_GROUP_USER_ACCEPTED', '<a href="' . $url . '">' . $this->view->group->get('description') . '</a>'),
+				'description' => Lang::txt('COM_GROUPS_ACTIVITY_GROUP_USER_ACCEPTED', '<a href="' . $url . '">' . htmlspecialchars((string) ($this->view->group->get('description')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title'     => $this->view->group->get('description'),
 					'url'       => $url,
@@ -777,9 +811,22 @@ class Membership extends Base
 		// Check if they're logged in
 		if (User::isGuest())
 		{
-			$this->loginTask(Lang::txt('COM_GROUPS_INVITE_MUST_BE_LOGGED_IN_TO_CANCEL'));
+			// Return to the group rather than to this POST-only task
+			$this->loginTask(
+				Lang::txt('COM_GROUPS_INVITE_MUST_BE_LOGGED_IN_TO_CANCEL'),
+				'index.php?option=' . $this->_option . '&cn=' . $this->cn
+			);
 			return;
 		}
+
+		// Require POST to prevent accidental cancellation by crawlers
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('COM_GROUPS_ERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		// Check for request forgeries
+		Request::checkToken();
 
 		//check to make sure we have  cname
 		if (!$this->cn)
@@ -823,7 +870,7 @@ class Membership extends Base
 		// delete member roles
 		require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'member' . DS . 'role.php';
 
-		\Components\Groups\Models\Member\Role::destroyByUser(User::get('id'));
+		\Components\Groups\Models\Member\Role::destroyByUserAndGroup(User::get('id'), $this->view->group->get('gidNumber'));
 
 		// delete recent visit
 		require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'recent.php';
@@ -884,7 +931,7 @@ class Membership extends Base
 				'action'      => 'cancelled',
 				'scope'       => 'group',
 				'scope_id'    => $this->view->group->get('gidNumber'),
-				'description' => Lang::txt('COM_GROUPS_ACTIVITY_GROUP_USER_CANCELLED', '<a href="' . $url . '">' . $this->view->group->get('description') . '</a>'),
+				'description' => Lang::txt('COM_GROUPS_ACTIVITY_GROUP_USER_CANCELLED', '<a href="' . $url . '">' . htmlspecialchars((string) ($this->view->group->get('description')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title'     => $this->view->group->get('description'),
 					'url'       => $url,
@@ -915,10 +962,14 @@ class Membership extends Base
 		$return = Request::getString('return', '');
 		$return = (\Components\Support\Helpers\Utilities::isBase64($return) ? base64_decode($return) : $return);
 
-		// Check if they're logged in
+		// Check if they're logged in. A posted join can't be replayed after
+		// logging in, so come back to the page that asks to join.
 		if (User::isGuest())
 		{
-			return $this->loginTask(Lang::txt('COM_GROUPS_INVITE_MUST_BE_LOGGED_IN_TO_JOIN'));
+			return $this->loginTask(
+				Lang::txt('COM_GROUPS_INVITE_MUST_BE_LOGGED_IN_TO_JOIN'),
+				'index.php?option=' . $this->_option . '&cn=' . $this->cn . '&task=join'
+			);
 		}
 
 		//check to make sure we have  cname
@@ -984,6 +1035,24 @@ class Membership extends Base
 		//if this group is open just make a member
 		if ($this->view->group->get('join_policy') == 0)
 		{
+			// Joining is done by a posted form. A link to this task (an older
+			// page or template, or the return from logging in) arrives by GET
+			// and gets a page whose button posts it.
+			if (Request::method() !== 'POST')
+			{
+				$this->_buildTitle();
+				$this->_buildPathway();
+
+				$this->view
+					->set('title', Lang::txt('COM_GROUPS_TOOLBAR_JOIN') . ': ' . $this->view->group->get('description'))
+					->setLayout('join')
+					->display();
+				return;
+			}
+
+			// Check for request forgeries
+			Request::checkToken();
+
 			$this->view->group->add('members', array(User::get('id')));
 			$this->view->group->remove('applicants', array(User::get('id')));
 			$this->view->group->remove('invitees', array(User::get('id')));
@@ -1013,7 +1082,7 @@ class Membership extends Base
 					'action'      => 'joined',
 					'scope'       => 'group',
 					'scope_id'    => $this->view->group->get('gidNumber'),
-					'description' => Lang::txt('COM_GROUPS_ACTIVITY_GROUP_USER_JOINED', '<a href="' . $url . '">' . $this->view->group->get('description') . '</a>'),
+					'description' => Lang::txt('COM_GROUPS_ACTIVITY_GROUP_USER_JOINED', '<a href="' . $url . '">' . htmlspecialchars((string) ($this->view->group->get('description')), ENT_QUOTES, 'UTF-8') . '</a>'),
 					'details'     => array(
 						'title'     => $this->view->group->get('description'),
 						'url'       => $url,
@@ -1035,6 +1104,15 @@ class Membership extends Base
 	 */
 	public function requestTask()
 	{
+		// joinTask() shows this form once it has loaded the group and checked
+		// that the user may ask to join it. A link straight to this task
+		// (/groups/<cn>/request) arrives without the group, so it goes the
+		// same way.
+		if (empty($this->view->group))
+		{
+			return $this->joinTask();
+		}
+
 		// Get view notifications
 		$notifications = ($this->getNotifications()) ? $this->getNotifications() : array();
 
@@ -1142,7 +1220,7 @@ class Membership extends Base
 				'action'      => 'requested',
 				'scope'       => 'group',
 				'scope_id'    => $this->view->group->get('gidNumber'),
-				'description' => Lang::txt('COM_GROUPS_ACTIVITY_GROUP_USER_REQUESTED', '<a href="' . $url . '">' . $this->view->group->get('description') . '</a>'),
+				'description' => Lang::txt('COM_GROUPS_ACTIVITY_GROUP_USER_REQUESTED', '<a href="' . $url . '">' . htmlspecialchars((string) ($this->view->group->get('description')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title'     => $this->view->group->get('description'),
 					'url'       => $url,

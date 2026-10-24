@@ -12,7 +12,8 @@ $style = '';
 if ($this->category !== null)
 {
 	$cls .= ' category-' . $this->page->get('category');
-	$this->css('.category-' . $this->page->get('category') . '{ border-left-color: #' .  $this->category->get('color') . '; }');
+	// the colour is a stored value going into a <style> block: hex digits only
+	$this->css('.category-' . (int) $this->page->get('category') . '{ border-left-color: #' . preg_replace('/[^0-9a-fA-F]/', '', (string) $this->category->get('color')) . '; }');
 }
 if (isset($this->version) && $this->version->get('approved') == 0)
 {
@@ -25,7 +26,7 @@ if (isset($this->version) && $this->version->get('approved') == 0)
 			<span class="icon-lock tooltips" title="<?php echo Lang::txt('COM_GROUPS_PAGES_PAGE_PRIVATE'); ?>"></span>
 		<?php endif; ?>
 		<a href="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=pages&task=edit&pageid='.$this->page->get('id')); ?>">
-			<?php echo $this->page->get('title'); ?>
+			<?php echo $this->escape($this->page->get('title')); ?>
 		</a>
 	</div>
 
@@ -50,9 +51,9 @@ if (isset($this->version) && $this->version->get('approved') == 0)
 	<?php if ($this->page->get('home') == 0) : ?>
 		<div class="item-state">
 			<?php if ($this->page->get('state') == 0) : ?>
-				<a class="unpublished tooltips" title="<?php echo Lang::txt('COM_GROUPS_PAGES_PUBLISH_PAGE'); ?>" href="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=pages&task=publish&pageid='.$this->page->get('id')); ?>"><?php echo Lang::txt('COM_GROUPS_PAGES_PUBLISH_PAGE'); ?></a>
+				<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=pages&task=publish&pageid='.$this->page->get('id')); ?>" class="unpublished tooltips" title="<?php echo Lang::txt('COM_GROUPS_PAGES_PUBLISH_PAGE'); ?>"><?php echo Lang::txt('COM_GROUPS_PAGES_PUBLISH_PAGE'); ?></button>
 			<?php else : ?>
-				<a class="published tooltips" title="<?php echo Lang::txt('COM_GROUPS_PAGES_UNPUBLISH_PAGE'); ?>" href="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=pages&task=unpublish&pageid='.$this->page->get('id')); ?>"><?php echo Lang::txt('COM_GROUPS_PAGES_UNPUBLISH_PAGE'); ?></a>
+				<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=pages&task=unpublish&pageid='.$this->page->get('id')); ?>" class="published tooltips" title="<?php echo Lang::txt('COM_GROUPS_PAGES_UNPUBLISH_PAGE'); ?>"><?php echo Lang::txt('COM_GROUPS_PAGES_UNPUBLISH_PAGE'); ?></button>
 			<?php endif; ?>
 		</div>
 	<?php endif; ?>
@@ -69,9 +70,9 @@ if (isset($this->version) && $this->version->get('approved') == 0)
 			<li><a class="icon-search page-preview" href="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=pages&task=preview&pageid='.$this->page->get('id')); ?>"> <?php echo Lang::txt('COM_GROUPS_PAGES_PREVIEW_PAGE'); ?></a></li>
 			<?php if ($this->page->get('home') == 0) : ?>
 				<?php if ($this->page->get('state') == 0) : ?>
-					<li><a class="icon-ban-circle" href="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=pages&task=publish&pageid='.$this->page->get('id')); ?>"> <?php echo Lang::txt('COM_GROUPS_PAGES_PUBLISH_PAGE'); ?></a></li>
+					<li><button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=pages&task=publish&pageid='.$this->page->get('id')); ?>" class="icon-ban-circle"> <?php echo Lang::txt('COM_GROUPS_PAGES_PUBLISH_PAGE'); ?></button></li>
 				<?php else : ?>
-					<li><a class="icon-success" href="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=pages&task=unpublish&pageid='.$this->page->get('id')); ?>"> <?php echo Lang::txt('COM_GROUPS_PAGES_UNPUBLISH_PAGE'); ?></a></li>
+					<li><button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=pages&task=unpublish&pageid='.$this->page->get('id')); ?>" class="icon-success"> <?php echo Lang::txt('COM_GROUPS_PAGES_UNPUBLISH_PAGE'); ?></button></li>
 				<?php endif; ?>
 			<?php endif; ?>
 			<li class="divider"></li>
@@ -80,7 +81,7 @@ if (isset($this->version) && $this->version->get('approved') == 0)
 
 			<?php if ($this->page->get('home') == 0) : ?>
 				<li class="divider"></li>
-				<li><a class="icon-delete" href="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=pages&task=delete&pageid='.$this->page->get('id')); ?>"> <?php echo Lang::txt('COM_GROUPS_PAGES_DELETE_PAGE'); ?></a></li>
+				<li><button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=pages&task=delete&pageid='.$this->page->get('id')); ?>" class="icon-delete"> <?php echo Lang::txt('COM_GROUPS_PAGES_DELETE_PAGE'); ?></button></li>
 			<?php endif; ?>
 		</ul>
 	</div>

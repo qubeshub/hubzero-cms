@@ -15,6 +15,7 @@ use Request;
 use Route;
 use Lang;
 use App;
+use Component;
 
 /**
  * Manage files for a group
@@ -47,6 +48,29 @@ class Media extends AdminController
 	}
 
 	/**
+	 * Reduce a request-supplied relative path to segments that stay inside
+	 * the group's media folder: control characters go, and so does any
+	 * segment that would climb out ('..'). Returns '' or a DS-prefixed path.
+	 *
+	 * @param   string  $rel
+	 * @return  string
+	 */
+	protected function _containRelativePath($rel)
+	{
+		$rel = preg_replace('#\p{C}+#u', '', (string) $rel);
+		$out = array();
+		foreach (explode('/', str_replace('\\', '/', $rel)) as $seg)
+		{
+			if ($seg === '' || $seg === '.' || $seg === '..')
+			{
+				continue;
+			}
+			$out[] = $seg;
+		}
+		return $out ? DS . implode(DS, $out) : '';
+	}
+
+	/**
 	 * Download a file
 	 *
 	 * @return  void
@@ -57,6 +81,14 @@ class Media extends AdminController
 		Request::checkToken(['get', 'post']);
 
 		$file = urldecode(Request::getString('file', '', 'get'));
+
+		// Confine downloads to this group's own media directory
+		$real = realpath(PATH_ROOT . DS . $file);
+		$base = realpath($this->path);
+		if ($real === false || $base === false || strpos($real, $base . DS) !== 0)
+		{
+			App::abort(404, Lang::txt('COM_GROUPS_ERROR_FILE_NOT_FOUND'));
+		}
 
 		if (!file_exists(PATH_ROOT . DS . $file))
 		{
@@ -102,7 +134,7 @@ class Media extends AdminController
 		Request::checkToken();
 
 		// Incoming
-		$dir  = urldecode(Request::getString('dir', ''));
+		$dir  = $this->_containRelativePath(urldecode(Request::getString('dir', '')));
 
 		// Build upload path
 		$path = $this->path . ($dir ? DS . trim($dir, DS) : '');
@@ -145,12 +177,15 @@ class Media extends AdminController
 			$sizeLimit = $sizeLimit * 1024 * 1024;
 
 			// make sure we have a file
-			if (empty($file) || !$file['name'])
+			if (empty($file) || !is_array($file) || empty($file['name']))
 			{
 				$this->setError(Lang::txt('COM_GROUPS_NO_FILE'));
 
 				return $this->displayTask();
 			}
+
+			// the client's file name is not a path
+			$file['name'] = basename(str_replace('\\', '/', $file['name']));
 
 			// make sure we have an upload path
 			if (!is_dir($path))
@@ -219,8 +254,8 @@ class Media extends AdminController
 		Request::checkToken('get');
 
 		// Incoming directory to delete
-		$dir    = urldecode(Request::getString('dir', ''));
-		$folder = urldecode(Request::getString('folder', ''));
+		$dir    = $this->_containRelativePath(urldecode(Request::getString('dir', '')));
+		$folder = trim($this->_containRelativePath(urldecode(Request::getString('folder', ''))), DS);
 
 		if (!$folder)
 		{
@@ -263,14 +298,14 @@ class Media extends AdminController
 		// Check for request forgeries
 		Request::checkToken('get');
 
-		$dir  = urldecode(Request::getString('dir', ''));
+		$dir  = $this->_containRelativePath(urldecode(Request::getString('dir', '')));
 
 		// Build upload path
 		$path = $this->path . ($dir ? DS . trim($dir, DS) : '');
 		$path = Util::normalizePath($path);
 
 		// Incoming file to delete
-		$file = urldecode(Request::getString('file', ''));
+		$file = trim($this->_containRelativePath(urldecode(Request::getString('file', ''))), DS);
 
 		if (!$file)
 		{
@@ -304,7 +339,7 @@ class Media extends AdminController
 	 */
 	public function displayTask()
 	{
-		$dir  = urldecode(Request::getString('dir', ''));
+		$dir  = $this->_containRelativePath(urldecode(Request::getString('dir', '')));
 
 		$path = $this->path . ($dir ? DS . trim($dir, DS) : '');
 		$path = Util::normalizePath($path);
@@ -351,7 +386,7 @@ class Media extends AdminController
 	 */
 	public function listTask()
 	{
-		$dir  = Request::getString('dir', '');
+		$dir  = $this->_containRelativePath(Request::getString('dir', ''));
 
 		// Build upload path
 		$path = $this->path . ($dir ? DS . trim($dir, DS) : '');

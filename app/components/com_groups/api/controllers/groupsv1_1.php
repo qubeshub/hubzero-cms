@@ -168,7 +168,9 @@ class Groupsv1_1 extends ApiController
 	{
 		$this->requiresAuthentication();
 
-		$cn              = Request::getWord('cn', '');
+		// getWord() strips digits, so "lab2024" was created as "lab"; take the
+		// raw token and let Validate::group() below judge it
+		$cn              = Request::getCmd('cn', '');
 		$title           = Request::getString('title', '');
 		$tags            = Request::getString('tags', '');
 		$publicDesc      = Request::getString('public_description', '');
@@ -246,7 +248,9 @@ class Groupsv1_1 extends ApiController
 		// check for errors at this point
 		if (!empty($errors))
 		{
-			throw new Exception(Lang::txt('Validation Failed') . ': ' . implode("\n", $errors), 422);
+			// each error is a [field, message] pair; implode() of the pairs was an
+			// "Array to string conversion" 500 instead of this 422
+			throw new Exception(Lang::txt('Validation Failed') . ': ' . implode("\n", array_column($errors, 'message')), 422);
 		}
 
 		// make sure we have a public desc of none was entered
@@ -321,9 +325,25 @@ class Groupsv1_1 extends ApiController
 		$fields = explode(',', $fields);
 		$fields = array_map('trim', $fields);
 
+		// Private fields are only exposed to members, managers, or admins
+		$uid = User::get('id');
+		$isMember = (in_array($uid, (array) $record->get('members'))
+			|| in_array($uid, (array) $record->get('managers'))
+			|| User::authorise('core.admin', 'com_groups'));
+		if (!$isMember)
+		{
+			$fields = array_diff($fields, array('private_desc', 'params'));
+		}
+
+		// the group's page, offered as 'link' when asked for and always as 'url'
+		// ($base is used for the section URLs below too)
+		$base = rtrim(Request::base(), '/');
+		$url  = str_replace('/api', '', $base . '/' . ltrim(Route::url('index.php?option=com_groups&cn=' . $record->get('cn')), '/'));
+
 		foreach ($fields as $field)
 		{
-			if (property_exists($record, $field))
+			// link is computed, not a Group property
+			if ($field == 'link' || property_exists($record, $field))
 			{
 				switch ($field)
 				{
@@ -331,7 +351,7 @@ class Groupsv1_1 extends ApiController
 						$group[$field] = str_replace('/api', '', rtrim(Request::base(), '/') . ltrim($record->getLogo(), '/'));
 						break;
 					case 'link':
-						$group[$field] = $record->getLink();
+						$group[$field] = $url;
 						break;
 					case 'public_desc':
 					case 'private_desc':
@@ -356,12 +376,13 @@ class Groupsv1_1 extends ApiController
 			}
 		}
 
-		$base = rtrim(Request::base(), '/');
-		$group['url'] = str_replace('/api', '', $base . '/' . ltrim(Route::url('index.php?option=com_groups&cn=' . $record->get('cn')), '/'));
+		$group['url'] = $url;
 
 		$sections = array();
 
-		$pluginAccess = \Hubzero\User\Group\Helper::getPluginAccess($group);
+		// getPluginAccess() takes the group object; handed the output array it
+		// returned null and every read died on the offset lookups below
+		$pluginAccess = (array) \Hubzero\User\Group\Helper::getPluginAccess($record);
 		$plugins = Event::trigger('groups.onGroupAreas', array());
 
 		if ($plugins)
@@ -557,7 +578,9 @@ class Groupsv1_1 extends ApiController
 		// check for errors at this point
 		if (!empty($errors))
 		{
-			throw new Exception(Lang::txt('Validation Failed') . ': ' . implode("\n", $errors), 422);
+			// each error is a [field, message] pair; implode() of the pairs was an
+			// "Array to string conversion" 500 instead of this 422
+			throw new Exception(Lang::txt('Validation Failed') . ': ' . implode("\n", array_column($errors, 'message')), 422);
 		}
 
 		// map the join policy & discoverability values to their int value

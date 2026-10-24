@@ -24,7 +24,9 @@ $return      = Request::getString('return', '');
 $return_link = $base_link;
 if ($return != '')
 {
-	if (filter_var(base64_decode($return), FILTER_VALIDATE_URL))
+	// only a link back into this hub (FILTER_VALIDATE_URL alone lets a
+	// javascript: URL with a host part through)
+	if (\Hubzero\Utility\Uri::isInternal(base64_decode($return)))
 	{
 		$return_link = base64_decode($return);
 	}
@@ -134,7 +136,7 @@ if ($this->page->get('id'))
 								'fileBrowserWindowWidth'      => 1200,
 								'fileBrowserBrowseUrl'        => Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=media&task=filebrowser&tmpl=component&' . Session::getFormToken() . '=1', false),
 								'fileBrowserImageBrowseUrl'   => Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=media&task=filebrowser&tmpl=component&' . Session::getFormToken() . '=1', false),
-								'fileBrowserUploadUrl'        => Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=media&task=ckeditorupload&tmpl=component&' . Session::getFormToken() . '=1', false),
+								'fileBrowserUploadUrl'        => Route::url('index.php?option=com_groups&cn='.$this->group->get('cn').'&controller=media&task=editorupload&tmpl=component&' . Session::getFormToken() . '=1', false),
 								'allowPhpTags'                => $allowPhp,
 								'allowScriptTags'             => $allowScripts
 							);
@@ -146,8 +148,8 @@ if ($this->page->get('id'))
 								$config['templates_files']   = array('pagelayouts' => '/app/site/groups/' . $this->group->get('gidNumber') . '/template/assets/js/pagelayouts.js');
 							}
 
-							// display with ckeditor
-							$editor = App::get('editor'); //new \Hubzero\Html\Editor('ckeditor');
+							// display editor
+							$editor = App::get('editor');
 							echo $editor->display('pageversion[content]', $this->escape($content), '100%', '400', 0, 0, false, 'pagecontent', null, null, $config);
 						?>
 
@@ -219,7 +221,7 @@ if ($this->page->get('id'))
 							<option value=""><?php echo Lang::txt('COM_GROUPS_PAGES_PAGE_CATEGORY_OPTION_NULL'); ?></option>
 							<?php foreach ($this->categories as $pageCategory) : ?>
 								<?php $sel = ($category == $pageCategory->get('id')) ? 'selected="selected"' : ''; ?>
-								<option <?php echo $sel; ?> data-color="#<?php echo $pageCategory->get('color'); ?>" value="<?php echo $pageCategory->get('id'); ?>"><?php echo $pageCategory->get('title'); ?></option>
+								<option <?php echo $sel; ?> data-color="#<?php echo $this->escape($pageCategory->get('color')); ?>" value="<?php echo (int) $pageCategory->get('id'); ?>"><?php echo $this->escape($pageCategory->get('title')); ?></option>
 							<?php endforeach; ?>
 							<option value="other"><?php echo Lang::txt('COM_GROUPS_PAGES_PAGE_CATEGORY_OPTION_OTHER'); ?></a>
 						</select>
@@ -234,7 +236,7 @@ if ($this->page->get('id'))
 									<?php if ($page->get('id') == $id) { continue; } ?>
 									<?php $sel = ($parent == $page->get('id')) ? 'selected="selected"' : ''; ?>
 									<option <?php echo $sel; ?> value="<?php echo $page->get('id'); ?>">
-										<?php echo $page->heirarchyIndicator(' &ndash; ') . $page->get('title'); ?>
+										<?php echo $page->heirarchyIndicator(' &ndash; ') . $this->escape($page->get('title')); ?>
 									</option>
 								<?php endforeach; ?>
 							</select>
@@ -251,7 +253,7 @@ if ($this->page->get('id'))
 
 									<?php $sel = ($page->get('title') == $title) ? 'selected="selected"' : ''; ?>
 									<option <?php echo $sel; ?> data-parent="<?php echo $page->get('parent'); ?>" value="<?php echo $page->get('lft'); ?>">
-										<?php echo $page->get('lft') . ' ' . $page->get('title'); ?>
+										<?php echo $page->get('lft') . ' ' . $this->escape($page->get('title')); ?>
 									</option>
 								<?php endforeach; ?>
 							</select>

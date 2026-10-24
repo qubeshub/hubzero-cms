@@ -184,6 +184,14 @@ class Modules extends AdminController
 	 */
 	public function saveTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
+		if (!User::authorise('core.edit', $this->_option) && !User::authorise('core.manage', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		// get request vars
 		$module = Request::getArray('module', array(), 'post');
 		$menu   = Request::getArray('menu', array(), 'post');
@@ -299,6 +307,14 @@ class Modules extends AdminController
 	 */
 	public function deleteTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
+		if (!User::authorise('core.edit', $this->_option) && !User::authorise('core.manage', $this->_option))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
+
 		// get request vars
 		$ids = Request::getArray('id', array());
 
@@ -592,6 +608,9 @@ class Modules extends AdminController
 	 */
 	public function errorsCheckAgainTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// make sure we are approvers
 		if (!Helpers\Pages::isPageApprover())
 		{
@@ -607,7 +626,12 @@ class Modules extends AdminController
 		$module = Request::getArray('module', array(), 'post');
 
 		// load page
-		$groupModule = new Module($module['id']);
+		$groupModule = new Module((int) ($module['id'] ?? 0));
+
+		if (!$groupModule->belongsToGroup($this->group))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 
 		// set the new content
 		$groupModule->set('content', $module['content']);
@@ -715,6 +739,9 @@ class Modules extends AdminController
 	 */
 	public function markScannedTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// make sure we are approvers
 		if (!Helpers\Pages::isPageApprover())
 		{
@@ -730,7 +757,12 @@ class Modules extends AdminController
 		$module = Request::getArray('module', array(), 'post');
 
 		// load module
-		$groupModule = new Module($module['id']);
+		$groupModule = new Module((int) ($module['id'] ?? 0));
+
+		if (!$groupModule->belongsToGroup($this->group))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 
 		// set the new content
 		$groupModule->set('content', $module['content']);
@@ -754,6 +786,9 @@ class Modules extends AdminController
 	 */
 	public function scanAgainTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// make sure we are approvers
 		if (!Helpers\Pages::isPageApprover())
 		{
@@ -769,7 +804,12 @@ class Modules extends AdminController
 		$module = Request::getArray('module', array(), 'post');
 
 		// load page
-		$groupModule = new Module($module['id']);
+		$groupModule = new Module((int) ($module['id'] ?? 0));
+
+		if (!$groupModule->belongsToGroup($this->group))
+		{
+			App::abort(403, Lang::txt('JERROR_ALERTNOAUTHOR'));
+		}
 
 		// set the new content
 		$groupModule->set('content', $module['content']);
@@ -790,6 +830,9 @@ class Modules extends AdminController
 	 */
 	public function approveTask()
 	{
+		// Check for request forgeries
+		Request::checkToken(['get', 'post']);
+
 		// make sure we are approvers
 		if (!Helpers\Pages::isPageApprover())
 		{

@@ -18,7 +18,7 @@ Toolbar::cancel();
 $content = $this->module->get('content');
 ?>
 
-<form action="i<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller . '&gid=' . $this->group->cn); ?>" method="post" name="adminForm" id="item-form">
+<form action="<?php echo Route::url('index.php?option=' . $this->option . '&controller=' . $this->controller . '&gid=' . $this->group->cn); ?>" method="post" name="adminForm" id="item-form">
 
 	<p class="error">
 		<?php echo Lang::txt('COM_GROUPS_MODULES_ERROR_LIST', $this->module->get('title'), $this->error); ?>
@@ -45,7 +45,7 @@ $content = $this->module->get('content');
 	</div>
 
 	<h3><?php echo Lang::txt('COM_GROUPS_MODULES_UPDATE_CONTENT'); ?></h3>
-	<textarea name="module[content]" rows="40"><?php echo $content; ?></textarea>
+	<textarea name="module[content]" rows="40"><?php echo $this->escape($content); ?></textarea>
 
 	<input type="hidden" name="module[id]" value="<?php echo $this->module->get('id'); ?>">
 	<input type="hidden" name="option" value="<?php echo $this->option; ?>" />

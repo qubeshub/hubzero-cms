@@ -17,6 +17,7 @@ use User;
 use Date;
 use Lang;
 use App;
+use Event;
 
 /**
  * Groups controller class
@@ -173,6 +174,22 @@ class Pages extends Base
 			$this->view->version = $this->version;
 		}
 
+		// For a new page in a group that isn't fully public, default the
+		// privacy to members-only so private group content isn't published
+		// publicly by default. ('default' privacy would otherwise inherit the
+		// overview tab's access, which can be public even on a restricted
+		// group.) The author can still change this in the form.
+		if ($new && !$this->view->page->get('privacy'))
+		{
+			$isPrivateGroup = ($this->group->get('join_policy') != 0
+				|| $this->group->get('discoverability') == 1);
+
+			if ($isPrivateGroup)
+			{
+				$this->view->page->set('privacy', 'members');
+			}
+		}
+
 		// checkout page
 		Helpers\Pages::checkout($this->view->page->get('id'));
 
@@ -248,6 +265,14 @@ class Pages extends Base
 		// load page and version objects
 		$this->page    = new Page($page['id']);
 		$this->version = new Page\Version();
+
+		// make sure the STORED page belongs to this group -- before bind(),
+		// which would take page[gidNumber] from the request and make the test
+		// below compare the caller's own group with itself
+		if ($task == 'update' && !$this->page->belongsToGroup($this->group))
+		{
+			App::abort(403, Lang::txt('COM_GROUPS_PAGES_PAGE_NOT_AUTH'));
+		}
 
 		// bind new page properties
 		if (!$this->page->bind($page))
@@ -399,7 +424,8 @@ class Pages extends Base
 		Helpers\Pages::checkin($this->page->get('id'));
 
 		// redirect to return url
-		if ($return = Request::getString('return', '', 'post'))
+		if (($return = Request::getString('return', '', 'post'))
+		 && \Hubzero\Utility\Uri::isInternal(base64_decode($return)))
 		{
 			$this->setNotification(Lang::txt('COM_GROUPS_PAGES_PAGE_SAVED', $task), 'passed');
 			App::redirect(base64_decode($return));
@@ -532,6 +558,9 @@ class Pages extends Base
 	 */
 	public function setStateTask($state = 1, $status = 'published')
 	{
+		// Publish, unpublish and delete all post the token
+		Request::checkToken();
+
 		//get request vars
 		$pageid = Request::getInt('pageid', 0, 'get');
 
@@ -602,7 +631,8 @@ class Pages extends Base
 
 		//inform user & redirect
 		$url = Route::url('index.php?option=' . $this->_option . '&cn=' . $this->group->get('cn') . '&controller=pages');
-		if ($r = Request::getString('return', '', 'get'))
+		if (($r = Request::getString('return', '', 'get'))
+		 && \Hubzero\Utility\Uri::isInternal(base64_decode($r)))
 		{
 			$url = base64_decode($r);
 		}
@@ -649,6 +679,10 @@ class Pages extends Base
 	 */
 	public function reorderTask()
 	{
+		// Check for request forgeries (groups.js posts to the list's data-url,
+		// which carries the token in its query string)
+		Request::checkToken(['get', 'post']);
+
 		//get the request vars
 		$pagesOrder = Request::getArray('order', array(), 'post');
 
@@ -657,17 +691,24 @@ class Pages extends Base
 		{
 			// must have id
 			// dont add home page
-			if (!$pageOrder['item_id'])
+			if (!is_array($pageOrder) || empty($pageOrder['item_id']))
 			{
 				continue;
 			}
 
 			// update the pages parent, depth, left, right, and alias
-			$page = new Page($pageOrder['item_id']);
-			$page->set('parent', $pageOrder['parent_id']);
-			$page->set('depth', ($pageOrder['depth'] - 1));
-			$page->set('lft', $pageOrder['left']);
-			$page->set('rgt', $pageOrder['right']);
+			$page = new Page((int) $pageOrder['item_id']);
+
+			// item_id names any page on the hub; only this group's are ours to move
+			if (!$page->get('id') || !$page->belongsToGroup($this->group))
+			{
+				continue;
+			}
+
+			$page->set('parent', (int) ($pageOrder['parent_id'] ?? 0));
+			$page->set('depth', ((int) ($pageOrder['depth'] ?? 1) - 1));
+			$page->set('lft', (int) ($pageOrder['left'] ?? 0));
+			$page->set('rgt', (int) ($pageOrder['right'] ?? 0));
 			$page->set('alias', $page->uniqueAlias());
 			$page->store(false);
 		}
@@ -683,6 +724,9 @@ class Pages extends Base
 	 */
 	public function setHomeTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// get request vars
 		$pageid = Request::getInt('pageid', 0, 'get');
 
@@ -730,11 +774,12 @@ class Pages extends Base
 		$this->setNotification(Lang::txt('COM_GROUPS_PAGES_PAGE_HOME_SET', $page->get('title')), 'passed');
 
 		// redirect
-		App::redirect(Route::url('index.php?option=' . $this->_option . '&cn=' . $this->group->get('cn') . '&controller=pages'));
-		if ($return = Request::getString('return', '', 'get'))
+		if (($return = Request::getString('return', '', 'get'))
+		 && \Hubzero\Utility\Uri::isInternal(base64_decode($return)))
 		{
 			App::redirect(base64_decode($return));
 		}
+		App::redirect(Route::url('index.php?option=' . $this->_option . '&cn=' . $this->group->get('cn') . '&controller=pages'));
 	}
 
 	/**
@@ -760,6 +805,12 @@ class Pages extends Base
 
 		// page object
 		$page = new Page($pageid);
+
+		// make sure page belongs to this group
+		if (!$page->belongsToGroup($this->group))
+		{
+			App::abort(403, Lang::txt('COM_GROUPS_PAGES_PAGE_NOT_AUTH'));
+		}
 
 		// render preview
 		echo Helpers\Pages::generatePreview($page, $version);
@@ -799,11 +850,11 @@ class Pages extends Base
 		// output page version
 		if ($escape)
 		{
-			echo '<pre>' . utf8_decode($this->view->escape($pageVersion->get('content'))) . '</pre>';
+			echo '<pre>' . $this->view->escape($pageVersion->get('content')) . '</pre>';
 		}
 		else
 		{
-			echo utf8_decode($pageVersion->get('content'));
+			echo $pageVersion->get('content');
 		}
 		exit();
 	}
@@ -815,6 +866,9 @@ class Pages extends Base
 	 */
 	public function restoreTask()
 	{
+		// Check for request forgeries
+		Request::checkToken();
+
 		// get reqest vars
 		$pageid  = Request::getInt('pageid', 0, 'get');
 		$version = Request::getInt('version', null, 'get');
@@ -852,6 +906,7 @@ class Pages extends Base
 			return $this->versionsTask();
 		}
 
+		// the activity entry links back to the page's version history
 		$url = Route::url('index.php?option=' . $this->_option . '&cn=' . $this->group->get('cn') . '&controller=pages&task=versions&pageid=' . $page->get('id'));
 
 		// Log activity
