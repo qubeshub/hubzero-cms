@@ -153,7 +153,10 @@ class Password
 		// @FIXME: this should fail if id doesn't exist in #__users
 		if ($this->user_id > 0)
 		{
-			$query = "INSERT INTO #__users_password (user_id) VALUES ( " . $db->quote($this->user_id) . ");";
+			// passhash is NOT NULL with no default: name it, or the insert fails
+			// on a strict-SQL server (every brand-new registration lands here
+			// from changePassword() before any password row exists)
+			$query = "INSERT INTO #__users_password (user_id, passhash) VALUES ( " . $db->quote($this->user_id) . ", " . $db->quote((string) $this->passhash) . ");";
 
 			$db->setQuery($query);
 
@@ -549,12 +552,18 @@ class Password
 			return false;
 		}
 
+		// An absolute expiry date (days since the epoch), set by an admin
+		if (!empty($hzup->shadowExpire) && intval(time() / 86400) >= (int) $hzup->shadowExpire)
+		{
+			return true;
+		}
+
 		if (empty($hzup->shadowLastChange))
 		{
 			return false;
 		}
 
-		if ($hzup->shadowMax === '0')
+		if ($hzup->shadowMax === '0' || $hzup->shadowMax === 0)
 		{
 			return true;
 		}
@@ -747,10 +756,12 @@ class Password
 		}
 		else if ($encryption == 'crypt')
 		{
+			// A stored {CRYPT} hash that is not in $N$salt$ form (DES, or an
+			// imported hash with another salt length) leaves $parts empty
 			preg_match('/\$([[:alnum:]]{1,2})\$[[:alnum:]]{8}\$/', $passhash, $parts);
-			$salt = $parts[0];
+			$salt = isset($parts[0]) ? $parts[0] : '';
 
-			switch ($parts[1])
+			switch (isset($parts[1]) ? $parts[1] : '6')
 			{
 				case '6':
 				default:
@@ -762,7 +773,7 @@ class Password
 		if (empty($salt) && ($encryption == 'ssha'))
 		{
 			$salt = substr(base64_decode(substr($crypt, -32)), -4);
-			$hashed = base64_encode(mhash(MHASH_SHA1, $password . $salt) . $salt);
+			$hashed = base64_encode(hash('sha1', $password . $salt, true) . $salt);
 		}
 		else
 		{
@@ -1072,6 +1083,11 @@ class Password
 	{
 		$hzup = self::getInstance($user);
 
+		if (!$hzup)
+		{
+			return false;
+		}
+
 		$hzup->__set('shadowFlag', '-1');
 		$hzup->update();
 
@@ -1087,6 +1103,11 @@ class Password
 	public static function expirePassword($user = null)
 	{
 		$hzup = self::getInstance($user);
+
+		if (!$hzup)
+		{
+			return false;
+		}
 
 		$hzup->__set('shadowLastChange', '1');
 		$hzup->__set('shadowMax', '0');
