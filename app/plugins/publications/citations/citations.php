@@ -8,12 +8,10 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Plugin.php';
-
 /**
  * Publications Plugin class for citations
  */
-class plgPublicationsCitations extends \Qubeshub\Plugin\Plugin
+class plgPublicationsCitations extends \Hubzero\Plugin\Plugin
 {
 	/**
 	 * Affects constructor behavior. If true, language files will be loaded automatically.

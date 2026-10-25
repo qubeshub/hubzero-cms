@@ -8,12 +8,10 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Plugin.php';
-
 /**
  * Display Watch feature on publication page
  */
-class plgPublicationsWatch extends \Qubeshub\Plugin\Plugin
+class plgPublicationsWatch extends \Hubzero\Plugin\Plugin
 {
 	/**
 	 * Affects constructor behavior. If true, language files will be loaded automatically.

@@ -8,13 +8,10 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Plugin.php';
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Params.php';
-
 /**
  * Groups Plugin class for blog entries
  */
-class plgGroupsBlog extends \Qubeshub\Plugin\Plugin
+class plgGroupsBlog extends \Hubzero\Plugin\Plugin
 {
 	/**
 	 * Affects constructor behavior. If true, language files will be loaded automatically.
@@ -159,7 +156,7 @@ class plgGroupsBlog extends \Qubeshub\Plugin\Plugin
 			$this->database   = App::get('db');
 
 			//get the plugins params
-			$this->params = \Qubeshub\Plugin\Params::getParams($group->gidNumber, 'groups', $this->_name);
+			$this->params = \Hubzero\Plugin\Params::getParams($group->gidNumber, 'groups', $this->_name);
 
 			if ($authorized == 'manager' || $authorized == 'admin')
 			{
@@ -1117,7 +1114,7 @@ class plgGroupsBlog extends \Qubeshub\Plugin\Plugin
 		// Check for request forgeries
 		Request::checkToken();
 
-		$row = \Qubeshub\Plugin\Params::oneByPluginOrNew($this->group->get('gidNumber'), $this->_type, $this->_name);
+		$row = \Hubzero\Plugin\Params::oneByPluginOrNew($this->group->get('gidNumber'), $this->_type, $this->_name);
 
 		// Get parameters
 		$params = new \Hubzero\Config\Registry(Request::getArray('params', array(), 'post'));

@@ -20,11 +20,7 @@ require_once "$searchPath/helpers/solr.php";
 
 require_once Component::path('com_groups') . DS . 'models' . DS . 'orm' . DS . 'group.php';
 
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'SiteController.php';
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Module' . DS . 'Helper.php';
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'View.php';
-
-use Qubeshub\Component\SiteController;
+use Hubzero\Component\SiteController;
 use Hubzero\Pagination\Paginator;
 use Components\Projects\Tables\Project;
 use Components\Publications\Tables;
@@ -709,7 +705,7 @@ class Publications extends SiteController
 			array(
 				"name" => "collect",
 				"html" => "",
-				"metadata" => \Qubeshub\Module\Helper::renderModule('mod_collect')
+				"metadata" => \Hubzero\Module\Helper::renderModule('mod_collect')
 		));
 
 		$available = array('play');
@@ -923,7 +919,7 @@ class Publications extends SiteController
 			if ($this->model->_curationModel->package(false, $instructor))
 			{
 				// Build the HTML of the "about" tab
-				$view = new \Qubeshub\Component\View([
+				$view = new \Hubzero\Component\View([
 					'name'   => 'view',
 					'layout' => '_contents'
 				]);
@@ -1561,7 +1557,7 @@ class Publications extends SiteController
 		Lang::load('com_projects', Component::path('com_projects') . DS . 'site');
 
 		// Instantiate a new view
-		$this->view  = new \Qubeshub\Component\View(array(
+		$this->view  = new \Hubzero\Component\View(array(
 			'name'   => 'submit',
 			'layout' => 'default'
 		));
@@ -1723,7 +1719,7 @@ class Publications extends SiteController
 		{
 			$this->_buildPathway(null);
 
-			$this->view = new \Qubeshub\Component\View(array(
+			$this->view = new \Hubzero\Component\View(array(
 				'name'   => 'error',
 				'layout' => 'restricted'
 			));

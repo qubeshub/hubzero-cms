@@ -5,8 +5,6 @@
  * @license    http://opensource.org/licenses/MIT MIT
  */
 
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Mail' . DS . 'View.php';
-
 /**
  * Cron plugin for forum
  */
@@ -181,7 +179,7 @@ class plgCronForum extends \Hubzero\Plugin\Plugin
 		$encryptor = null;
 		try { $encryptor = new \Hubzero\Mail\Token(); } catch (Exception $e) {}
 
-		$eview = new Qubeshub\Mail\View(array(
+		$eview = new \Hubzero\Mail\View(array(
 			'base_path' => Component::path('com_forum') . DS . 'site',
 			'name'      => 'emails',
 			'layout'    => 'digest_plain'

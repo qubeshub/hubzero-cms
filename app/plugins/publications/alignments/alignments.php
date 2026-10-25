@@ -8,7 +8,6 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Plugin.php';
 require_once \Component::path('com_publications') . DS . 'models' . DS . 'cloud.php';
 
 use Components\Publications\Models\PubCloud;
@@ -16,7 +15,7 @@ use Components\Publications\Models\PubCloud;
 /**
  * Publications Plugin class for alignments
  */
-class plgPublicationsAlignments extends \Qubeshub\Plugin\Plugin
+class plgPublicationsAlignments extends \Hubzero\Plugin\Plugin
 {
 	/**
 	 * Affects constructor behavior. If true, language files will be loaded automatically.

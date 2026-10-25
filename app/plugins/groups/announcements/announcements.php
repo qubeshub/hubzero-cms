@@ -8,8 +8,6 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Mail' . DS . 'View.php';
-
 /**
  * Group Announcements
  */
@@ -662,7 +660,7 @@ class plgGroupsAnnouncements extends \Hubzero\Plugin\Plugin
 		|| $lang->load($extension, PATH_CORE . DS . 'plugins' . DS . 'groups' . DS . 'announcements', null, false, true);
 
 		// Create view object
-		$eview = new Qubeshub\Mail\View(array(
+		$eview = new \Hubzero\Mail\View(array(
 			'base_path' => __DIR__,
 			'name'      => 'email'
 		));

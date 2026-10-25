@@ -8,8 +8,6 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Params.php';
-
 /**
  * Members Plugin class for blog entries
  */
@@ -81,7 +79,7 @@ class plgMembersBlog extends \Hubzero\Plugin\Plugin
 			//$this->authorized = $authorized;
 			$this->database = App::get('db');
 
-			$this->params = \Qubeshub\Plugin\Params::getParams($this->member->get('id'), 'members', $this->_name);
+			$this->params = \Hubzero\Plugin\Params::getParams($this->member->get('id'), 'members', $this->_name);
 
 			if ($user->get('id') == $member->get('id'))
 			{
@@ -899,7 +897,7 @@ class plgMembersBlog extends \Hubzero\Plugin\Plugin
 		// Check for request forgeries
 		Request::checkToken();
 
-		$row = \Qubeshub\Plugin\Params::oneByPluginOrNew($this->member->get('id'), $this->_type, $this->_name);
+		$row = \Hubzero\Plugin\Params::oneByPluginOrNew($this->member->get('id'), $this->_type, $this->_name);
 
 		$params = new \Hubzero\Config\Registry(Request::getArray('params', array(), 'post'));
 		$row->set('params', $params->toString());

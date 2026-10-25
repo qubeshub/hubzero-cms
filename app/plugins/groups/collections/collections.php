@@ -8,13 +8,10 @@
 // No direct access
 defined('_HZEXEC_') or die();
 
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Plugin.php';
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Params.php';
-
 /**
  * Groups Plugin class for assets
  */
-class plgGroupsCollections extends \Qubeshub\Plugin\Plugin
+class plgGroupsCollections extends \Hubzero\Plugin\Plugin
 {
 	/**
 	 * Affects constructor behavior. If true, language files will be loaded automatically.
@@ -2119,7 +2116,7 @@ class plgGroupsCollections extends \Qubeshub\Plugin\Plugin
 		// Check for request forgeries
 		Request::checkToken();
 
-		$row = \Qubeshub\Plugin\Params::oneByPluginOrNew($this->group->get('gidNumber'), $this->_type, $this->_name);
+		$row = \Hubzero\Plugin\Params::oneByPluginOrNew($this->group->get('gidNumber'), $this->_type, $this->_name);
 
 		// Get parameters
 		$params = new \Hubzero\Config\Registry(Request::getArray('params', array(), 'post'));
@@ -2166,7 +2163,7 @@ class plgGroupsCollections extends \Qubeshub\Plugin\Plugin
 	{
 		if (!$this->_params)
 		{
-			$this->_params = \Qubeshub\Plugin\Params::getCustomParams($group_id, 'groups', $this->_name);
+			$this->_params = \Hubzero\Plugin\Params::getCustomParams($group_id, 'groups', $this->_name);
 		}
 		return $this->_params;
 	}

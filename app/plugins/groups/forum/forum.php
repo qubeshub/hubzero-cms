@@ -11,19 +11,13 @@ use Components\Forum\Models\Category;
 use Components\Forum\Models\Post;
 use Components\Forum\Models\Attachment;
 
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Mail' . DS . 'Message.php';
-
 // No direct access
 defined('_HZEXEC_') or die();
-
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Plugin.php';
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Plugin' . DS . 'Params.php';
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Mail' . DS . 'View.php';
 
 /**
  * Groups Plugin class for forum entries
  */
-class plgGroupsForum extends \Qubeshub\Plugin\Plugin
+class plgGroupsForum extends \Hubzero\Plugin\Plugin
 {
 	/**
 	 * Affects constructor behavior. If true, language files will be loaded automatically.
@@ -174,7 +168,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 			$this->authorized = $authorized;
 
 			// Get the plugins params
-			$this->params = \Qubeshub\Plugin\Params::getParams($this->group->get('gidNumber'), 'groups', $this->_name);
+			$this->params = \Hubzero\Plugin\Params::getParams($this->group->get('gidNumber'), 'groups', $this->_name);
 			$this->params->def('allow_anonymous', 1);
 			$this->params->def('threading', 'list');
 			$this->params->def('threading_depth', 3);
@@ -1664,7 +1658,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 				$msg = array();
 
 				// create view object
-				$eview = new Qubeshub\Mail\View(array(
+				$eview = new \Hubzero\Mail\View(array(
 					'base_path' => __DIR__,
 					'name'      => 'email',
 					'layout'    => 'comment_plain'
@@ -1818,7 +1812,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 		$html = str_replace("\n", "\r\n", $html);
 
 		// Create NEW message object and send
-		$message = new Qubeshub\Mail\Message();
+		$message = new \Hubzero\Mail\Message();
 		$message->setSubject($subject)
 			->addFrom($from['email'], $from['name'])
 			->setTo($from['email'])
@@ -2352,7 +2346,7 @@ class plgGroupsForum extends \Qubeshub\Plugin\Plugin
 		// Check for request forgeries
 		Request::checkToken();
 
-		$row = \Qubeshub\Plugin\Params::oneByPluginOrNew($this->group->get('gidNumber'), $this->_type, $this->_name);
+		$row = \Hubzero\Plugin\Params::oneByPluginOrNew($this->group->get('gidNumber'), $this->_type, $this->_name);
 
 		// Get parameters
 		$params = new \Hubzero\Config\Registry(Request::getArray('params', array(), 'post'));

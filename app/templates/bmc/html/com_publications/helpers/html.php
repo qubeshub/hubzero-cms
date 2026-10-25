@@ -7,8 +7,6 @@
 
 namespace Templates\Bmc\Publications\Helpers;
 
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Component' . DS . 'View.php';
-require_once PATH_APP . DS . 'libraries' . DS . 'Qubeshub' . DS . 'Document' . DS . 'Assets.php';
 require_once \Component::path('com_publications') . DS . 'models' . DS . 'cloud.php';
 
 use Component;
@@ -109,7 +107,7 @@ class Html
 	 */
 	public static function showContributors($contributors = '', $showorgs = false, $showaslist = false, $incSubmitter = false, $format = false)
 	{
-		$view = new \Qubeshub\Component\View(array(
+		$view = new \Hubzero\Component\View(array(
 			'base_path' => PATH_APP . DS . 'components' . DS . 'com_publications' . DS . 'site',
 			'name'      => 'view',
 			'layout'    => '_contributors'
@@ -137,7 +135,7 @@ class Html
         $listLabel = isset($publication->_curationModel->_manifest->params->list_label) ? $publication->_curationModel->_manifest->params->list_label : Lang::txt('COM_PUBLICATIONS_CONTENT_LIST');
 
         // Add plugin style
-        \Qubeshub\Document\Assets::addPluginStylesheet('publications', 'supportingdocs');
+        \Hubzero\Document\Assets::addPluginStylesheet('publications', 'supportingdocs');
 
 		// Membership required?
 		$publication->masterType();
@@ -219,7 +217,7 @@ class Html
 		{
 			return false;
 		}
-		$view = new \Qubeshub\Component\View(array(
+		$view = new \Hubzero\Component\View(array(
 			'base_path' => PATH_APP . DS . 'components' . DS . 'com_publications' . DS . 'site',
 			'name'      => 'view',
 			'layout'    => '_supportingdocs',
@@ -1001,7 +999,7 @@ class Html
 	public static function primaryButton($pub, $class, $msg = 'Download', $xtra = '', $title = '', $action = '', $disabled = false, $pop = '', $options = array())
 	{
         $href = Route::url('index.php?option=com_publications&id=' . $pub->id . '&task=serve&v=' . $pub->version_number . '&render=archive');
-		$view = new \Qubeshub\Component\View(array(
+		$view = new \Hubzero\Component\View(array(
 			'base_path' => PATH_APP . DS . 'components' . DS . 'com_publications' . DS . 'site',
 			'name'      => 'view',
 			'layout'    => '_primary'
