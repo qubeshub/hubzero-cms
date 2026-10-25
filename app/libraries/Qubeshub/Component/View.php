@@ -66,19 +66,17 @@ class View extends AbstractView
 	 */
 	public function __construct($config = array())
 	{
-		// Set the override path (call before parent constructor)
-		if (!array_key_exists('override_path', $config))
+		// Look for overrides under the component that owns the view, not
+		// the one the request is for: a group's wiki is com_wiki's views
+		// rendered inside com_groups, and belongs in html/com_wiki/
+		if (!array_key_exists('override_path', $config) && !empty($config['base_path']))
 		{
-			$config['override_path'] = array();
-
-			if (\App::has('template'))
+			if ($component = self::componentFromPath($config['base_path']))
 			{
-				$config['override_path'][] = \App::get('template')->path;
+				$config['override_path'] = $component;
 			}
-		} elseif (!is_array($config['override_path'])) {
-			$config['override_path'] = array($config['override_path']);
 		}
-		
+
 		parent::__construct($config);
 
 		// Set a base path for use by the view (call after parent constructor)
@@ -95,39 +93,37 @@ class View extends AbstractView
 	}
 
 	/**
-	 * Sets an entire array of search paths for templates or resources.
+	 * The component (com_*) a path lies inside, if any
 	 *
-	 * @param   string  $type  The type of path to set, typically 'template'.
-	 * @param   mixed   $path  The new search path, or an array of search paths.  If null or false, resets to the current directory only.
-	 * @return  void
+	 * @param   string  $path  A component path, such as core/components/com_wiki/site
+	 * @return  string|null
 	 */
-	protected function setPath($type, $path)
+	protected static function componentFromPath($path)
 	{
-		$type = strtolower($type);
+		$segments = array_values(array_filter(preg_split('#[/\\\\]+#', (string) $path), 'strlen'));
 
-		// Clear out the prior search dirs
-		$this->_path[$type] = array();
-
-		// Add view directories without the '/tmpl' legacy directory
-		if ($type == 'template' && basename($path) == 'tmpl')
+		// The directory after "components" names the component, with or
+		// without the com_ prefix: Component::path() accepts both
+		for ($i = count($segments) - 1; $i > 0; $i--)
 		{
-			// Push to the bottom of the stack
-			$this->addPath($type, dirname($path));
-		}
+			if ($segments[$i - 1] === 'components' && preg_match('/^[A-Z0-9_\.-]+$/i', $segments[$i]))
+			{
+				$name = strtolower($segments[$i]);
 
-		// Actually add the user-specified directories
-		$this->addPath($type, $path);
-
-		// Always add the fallback directories as last resort
-		if ($type == 'template' && $this->_overridePath)
-		{
-			$component = strtolower(\App::get('request')->getCmd('option'));
-			$component = preg_replace('/[^A-Z0-9_\.-]/i', '', $component);
-
-			foreach ($this->_overridePath as $overridePath) {
-				$this->addPath($type, $overridePath . DIRECTORY_SEPARATOR . 'html' . DIRECTORY_SEPARATOR . $component . DIRECTORY_SEPARATOR . $this->getName());
+				return substr($name, 0, 4) === 'com_' ? $name : 'com_' . $name;
 			}
 		}
+
+		// Not under a components directory: take the nearest com_* segment
+		foreach (array_reverse($segments) as $segment)
+		{
+			if (preg_match('/^com_[A-Z0-9_\.-]+$/i', $segment))
+			{
+				return strtolower($segment);
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -148,8 +144,7 @@ class View extends AbstractView
 		$view = new self(array(
 			'base_path' => $this->_basePath,
 			'name'      => ($name ? $name : $this->_name),
-			'layout'    => $layout,
-			'override_path' => $this->_overridePath
+			'layout'    => $layout
 		));
 		$view->set('option', $this->option)
 		     ->set('controller', $this->controller)

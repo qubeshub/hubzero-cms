@@ -20,6 +20,10 @@ use Qubeshub\Document\Assets;
 use ReflectionClass;
 use ReflectionMethod;
 use Lang;
+use App;
+use Request;
+use Route;
+use User;
 use Hubzero\Inertia\Inertia;
 use Hubzero\Htmx\Htmx;
 
@@ -129,13 +133,6 @@ class SiteController extends Obj implements ControllerInterface
 	protected $_messageType = 'message';
 
 	/**
-	 * The active supergroup (used for template override)
-	 * 
-	 * @var string
-	 */
-	protected $_group = null;
-
-	/**
 	 * Constructor
 	 *
 	 * @param   array  $config  Optional configurations to be used
@@ -146,16 +143,6 @@ class SiteController extends Obj implements ControllerInterface
 		$this->_redirect    = null;
 		$this->_message     = null;
 		$this->_messageType = 'message';
-
-		// Get group for possible override
-		if (Request::getCmd('cn'))
-		{
-			$group = \Hubzero\User\Group::getInstance(Request::getCmd('cn'));
-			if ($group && $group->isSuperGroup())
-			{
-				$this->_group = $group;
-			}
-		}
 
 		// Get the reflection info
 		$r = new ReflectionClass($this);
@@ -344,10 +331,9 @@ class SiteController extends Obj implements ControllerInterface
 
 		// Instantiate a view with layout the same name as the task
 		$this->view = new View(array(
-			'base_path' 	=> $this->_basePath,
-			'name'      	=> $name,
-			'layout'    	=> $layout,
-			'override_path' => $this->getOverridePath()
+			'base_path' => $this->_basePath,
+			'name'      => $name,
+			'layout'    => $layout
 		));
 
 		// Set some commonly used vars
@@ -381,7 +367,6 @@ class SiteController extends Obj implements ControllerInterface
 		{
 			$config['layout'] = $layout;
 		}
-		$config['override_path'] = $this->getOverridePath();
 		$this->view = new View($config);
 
 		// Set some commonly used vars
@@ -398,26 +383,6 @@ class SiteController extends Obj implements ControllerInterface
 	public function getTask()
 	{
 		return $this->_task;
-	}
-
-	/**
-	 * Get the override path(s) for the view.
-	 *
-	 * @return  array  Array of strings
-	 */
-	public function getOverridePath()
-	{
-		$overridePath = array();
-		if (\App::has('template'))
-		{
-			$overridePath[] = \App::get('template')->path;
-		}
-		if (!empty($this->_group) && $this->_group->isSuperGroup())
-		{
-			$overridePath[] = PATH_APP . DS . 'site' . DS . 'groups' . DS . $this->_group->get('gidNumber') . DS . 'template';
-		}
-
-		return $overridePath;
 	}
 
 	/**
@@ -569,6 +534,51 @@ class SiteController extends Obj implements ControllerInterface
 		}
 
 		return false;
+	}
+
+	/**
+	 * Does the current user hold a view access level?
+	 *
+	 * @param   int   $level  A #__viewlevels id (1 is Public)
+	 * @return  bool
+	 */
+	protected function canView($level)
+	{
+		return in_array((int) $level, User::getAuthorisedViewLevels());
+	}
+
+	/**
+	 * Require a view access level for the current task
+	 *
+	 * A guest is sent to log in and comes back here afterwards; a user who
+	 * is logged in but lacks the level gets a 403. Callers return as soon
+	 * as this returns false: the redirect has been queued.
+	 *
+	 * @param   int     $level    A #__viewlevels id (1 is Public)
+	 * @param   string  $message  Shown with the login page or the 403
+	 * @return  bool    True when the user may continue
+	 */
+	protected function requireViewLevel($level, $message = '')
+	{
+		if ($this->canView($level))
+		{
+			return true;
+		}
+
+		$message = $message ?: Lang::txt('JGLOBAL_YOU_MUST_LOGIN_FIRST');
+
+		if (User::isGuest())
+		{
+			App::redirect(
+				Route::url('index.php?option=com_users&view=login&return=' . base64_encode(Request::current(true)), false),
+				$message,
+				'warning'
+			);
+
+			return false;
+		}
+
+		App::abort(403, $message);
 	}
 
 	/**
