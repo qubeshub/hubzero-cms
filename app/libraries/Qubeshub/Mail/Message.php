@@ -105,8 +105,11 @@ class Message extends \Symfony\Component\Mime\Email
 				$scheme = strtolower(trim(\Config::get('mailer','sendmail')));
 				$host = strtolower(trim(\Config::get('smtphost','localhost')));
 				$port = strtolower(trim(\Config::get('smtpport','0')));
-				$username = strtolower(trim(\Config::get('smtpuser','')));
-				$password = strtolower(trim(\Config::get('smtppass','')));
+				// Credentials are case-sensitive (lowercasing them broke every
+				// mixed-case password), and go into the DSN URL-encoded so an @, :
+				// or / in them doesn't break it; the DSN parser decodes them
+				$username = trim(\Config::get('smtpuser',''));
+				$password = trim(\Config::get('smtppass',''));
 				switch ($scheme)
 				{
 					case 'smtp':
@@ -114,11 +117,11 @@ class Message extends \Symfony\Component\Mime\Email
 
 						if ($username || $password)
 						{
-							$dsn .= $username;
+							$dsn .= rawurlencode($username);
 
 							if ($password)
 							{
-								$dsn .= ":" . $password;
+								$dsn .= ":" . rawurlencode($password);
 							}
 
 							$dsn .= "@";
@@ -144,11 +147,11 @@ class Message extends \Symfony\Component\Mime\Email
 
 						if ($username || $password)
 						{
-							$dsn .= $username;
+							$dsn .= rawurlencode($username);
 
 							if ($password)
 							{
-								$dsn .= ":" . $password;
+								$dsn .= ":" . rawurlencode($password);
 							}
 
 							$dsn .= "@";
@@ -175,8 +178,12 @@ class Message extends \Symfony\Component\Mime\Email
 			$mailer->send($this, $this->_failures);
 			$result = true;
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
+			// Unqualified, this named Hubzero\Mail\Exception, which does not
+			// exist, so a transport failure escaped as a 500 after the caller
+			// had already saved its data
+			\Log::error('Mail send failed: ' . $e->getMessage());
 			$result = false;
 		}
 
@@ -264,13 +271,17 @@ class Message extends \Symfony\Component\Mime\Email
 	 */
 	public function setBody(...$params): static
 	{
-		if (isset($params[1]))
+		// Swiftmailer's signature: setBody($body, $contentType = null, $charset = null).
+		// The second argument is a content type, not a charset.
+		$charset = !empty($params[2]) ? $params[2] : 'utf-8';
+
+		if (isset($params[1]) && $params[1] == 'text/html')
 		{
-			$this->text($params[0], $params[1]);
+			$this->html($params[0], $charset);
 		}
 		else
 		{
-			$this->text($params[0]);
+			$this->text($params[0], $charset);
 		}
 
 		return $this;
@@ -635,6 +646,10 @@ class Message extends \Symfony\Component\Mime\Email
 		{
 			return parent::addPart($body);
 		}
+
+		// An empty charset would override Symfony's utf-8 default and leave the
+		// part without one (Swiftmailer, which this emulates, defaulted to utf-8)
+		$charset = $charset ?: 'utf-8';
 
 		if ($contentType == "text/html")
 		{
