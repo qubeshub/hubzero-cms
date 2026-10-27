@@ -126,11 +126,19 @@ class plgGroupsMemberOptions extends \Hubzero\Plugin\Plugin
 	 */
 	protected function save($group, $user, $recvEmailOptionID, $recvEmailOptionValue)
 	{
+		// Check for request forgeries (every producer is a POST form carrying the token)
+		Request::checkToken();
+
 		$postSaveRedirect = Request::getString('postsaveredirect', '');
 
 		// Save the GROUPS_MEMBEROPTION_TYPE_DISCUSSION_NOTIFICIATION setting
-		$row = Plugins\Groups\Memberoptions\Models\Memberoption::blank()->set(array(
-			'id'          => $recvEmailOptionID,
+		// Load this user's own option row rather than trusting a request-supplied id
+		$row = Plugins\Groups\Memberoptions\Models\Memberoption::oneByUserAndOption(
+			$group->get('gidNumber'),
+			$user->get('id'),
+			'receive-forum-email'
+		);
+		$row->set(array(
 			'userid'      => $user->get('id'),
 			'gidNumber'   => $group->get('gidNumber'),
 			'optionname'  => 'receive-forum-email',
@@ -150,7 +158,7 @@ class plgGroupsMemberOptions extends \Hubzero\Plugin\Plugin
 			exit();
 		}
 
-		if (!$postSaveRedirect)
+		if (!$postSaveRedirect || !\Hubzero\Utility\Uri::isInternal($postSaveRedirect))
 		{
 			$postSaveRedirect = Route::url('index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') . '&active=memberoptions&action=edit');
 		}
