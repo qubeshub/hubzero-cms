@@ -10,15 +10,23 @@ defined('_HZEXEC_') or die();
 
 $mode      = $this->params->get('automatic_toc', '');
 $threshold = $this->params->get('toc_threshold', '');
+$crumbs    = $this->params->get('wiki_crumbs', '');
 
 $defMode   = $this->defaults->get('automatic_toc', 'inline');
 $defThresh = (int) $this->defaults->get('toc_threshold', 4);
+$defCrumbs = $this->defaults->get('wiki_crumbs', 0) ? 'YES' : 'NO';
 
 $modes = array(
 	''        => Lang::txt('PLG_GROUPS_WIKI_SETTINGS_TOC_DEFAULT', Lang::txt('PLG_GROUPS_WIKI_SETTINGS_TOC_' . strtoupper($defMode))),
 	'inline'  => Lang::txt('PLG_GROUPS_WIKI_SETTINGS_TOC_INLINE'),
 	'sidebar' => Lang::txt('PLG_GROUPS_WIKI_SETTINGS_TOC_SIDEBAR'),
 	'off'     => Lang::txt('PLG_GROUPS_WIKI_SETTINGS_TOC_OFF'),
+);
+
+$crumbOptions = array(
+	''  => Lang::txt('PLG_GROUPS_WIKI_SETTINGS_TOC_DEFAULT', Lang::txt('PLG_GROUPS_WIKI_SETTINGS_CRUMBS_' . $defCrumbs)),
+	'1' => Lang::txt('PLG_GROUPS_WIKI_SETTINGS_CRUMBS_YES'),
+	'0' => Lang::txt('PLG_GROUPS_WIKI_SETTINGS_CRUMBS_NO'),
 );
 ?>
 <div class="container">
@@ -37,6 +45,18 @@ $modes = array(
 
 			<label for="toc_threshold"><?php echo Lang::txt('PLG_GROUPS_WIKI_SETTINGS_THRESHOLD'); ?></label>
 			<input type="text" name="toc_threshold" id="toc_threshold" value="<?php echo $this->escape($threshold); ?>" placeholder="<?php echo Lang::txt('PLG_GROUPS_WIKI_SETTINGS_THRESHOLD_DEFAULT', $defThresh); ?>" />
+		</fieldset>
+
+		<fieldset>
+			<legend><?php echo Lang::txt('PLG_GROUPS_WIKI_SETTINGS_CRUMBS_LEGEND'); ?></legend>
+
+			<label for="wiki_crumbs"><?php echo Lang::txt('PLG_GROUPS_WIKI_SETTINGS_CRUMBS'); ?></label>
+			<select name="wiki_crumbs" id="wiki_crumbs">
+				<?php foreach ($crumbOptions as $v => $label) { ?>
+					<option value="<?php echo $this->escape($v); ?>"<?php if ((string) $crumbs === (string) $v) { echo ' selected="selected"'; } ?>><?php echo $this->escape($label); ?></option>
+				<?php } ?>
+			</select>
+			<p class="hint"><?php echo Lang::txt('PLG_GROUPS_WIKI_SETTINGS_CRUMBS_HINT'); ?></p>
 		</fieldset>
 
 		<p class="submit">
