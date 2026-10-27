@@ -188,7 +188,8 @@ class plgGroupsBlog extends \Hubzero\Plugin\Plugin
 					$arr['html'] = $this->_savecomment();
 					break;
 				case 'newcomment':
-					$arr['html'] = $this->_newcomment();
+					// the entry page carries the comment form (_newcomment() was never defined)
+					$arr['html'] = $this->_entry();
 					break;
 				case 'editcomment':
 					$arr['html'] = $this->_entry();
@@ -741,7 +742,34 @@ class plgGroupsBlog extends \Hubzero\Plugin\Plugin
 		$entry['allow_comments'] = (isset($entry['allow_comments'])) ? : 0;
 
 		// Instantiate model
-		$row = Components\Blog\Models\Entry::oneOrNew($entry['id'])->set($entry);
+		$row = Components\Blog\Models\Entry::oneOrNew(isset($entry['id']) ? (int) $entry['id'] : 0);
+
+		if (!$row->isNew() && $row->get('scope_id') != $this->group->get('gidNumber'))
+		{
+			App::abort(403, Lang::txt('PLG_GROUPS_BLOG_ERROR_PERMISSION_DENIED'));
+		}
+
+		// An existing entry is edited by its author or a group manager (the
+		// entry view offers Edit on that rule); its authorship stays as stored
+		if (!$row->isNew())
+		{
+			if ($row->get('created_by') != User::get('id')
+			 && $this->authorized != 'manager' && $this->authorized != 'admin')
+			{
+				App::abort(403, Lang::txt('PLG_GROUPS_BLOG_ERROR_PERMISSION_DENIED'));
+			}
+			unset($entry['created'], $entry['created_by']);
+		}
+		else
+		{
+			$entry['created_by'] = User::get('id');
+		}
+
+		// The entry stays in this group's blog whatever the form says
+		$entry['scope']    = 'group';
+		$entry['scope_id'] = $this->group->get('gidNumber');
+
+		$row->set($entry);
 		if ($row->get('alias') == '')
 		{
 			$alias = $row->automaticAlias($row);
@@ -794,7 +822,7 @@ class plgGroupsBlog extends \Hubzero\Plugin\Plugin
 				'action'      => ($entry['id'] ? 'updated' : 'created'),
 				'scope'       => 'blog.entry',
 				'scope_id'    => $row->get('id'),
-				'description' => Lang::txt('PLG_GROUPS_BLOG_ACTIVITY_ENTRY_' . ($entry['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($row->link()) . '">' . $row->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_GROUPS_BLOG_ACTIVITY_ENTRY_' . ($entry['id'] ? 'UPDATED' : 'CREATED'), '<a href="' . Route::url($row->link()) . '">' . htmlspecialchars((string) ($row->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title' => $row->get('title'),
 					'url'   => Route::url($row->link())
@@ -839,6 +867,19 @@ class plgGroupsBlog extends \Hubzero\Plugin\Plugin
 
 		// Initiate a blog entry object
 		$entry = Components\Blog\Models\Entry::oneOrFail($id);
+
+		// The entry must belong to this group
+		if ($entry->get('scope_id') != $this->group->get('gidNumber'))
+		{
+			App::abort(403, Lang::txt('PLG_GROUPS_BLOG_ERROR_PERMISSION_DENIED'));
+		}
+
+		// ... and be the caller's own, unless they manage the group
+		if ($entry->get('created_by') != User::get('id')
+		 && $this->authorized != 'manager' && $this->authorized != 'admin')
+		{
+			App::abort(403, Lang::txt('PLG_GROUPS_BLOG_ERROR_PERMISSION_DENIED'));
+		}
 
 		// Did they confirm delete?
 		if (!$process || !$confirmdel)
@@ -936,7 +977,39 @@ class plgGroupsBlog extends \Hubzero\Plugin\Plugin
 		$data = Request::getArray('comment', array(), 'post');
 
 		// Instantiate a new comment object and pass it the data
-		$comment = Components\Blog\Models\Comment::oneOrNew($data['id'])->set($data);
+		$cid = isset($data['id']) ? (int) $data['id'] : 0;
+		$comment = Components\Blog\Models\Comment::oneOrNew($cid);
+
+		if (!$comment->isNew()
+		 && $comment->get('created_by') != User::get('id')
+		 && $this->authorized != 'manager' && $this->authorized != 'admin')
+		{
+			App::abort(403, Lang::txt('PLG_GROUPS_BLOG_ERROR_PERMISSION_DENIED'));
+		}
+
+		$__isNew = $comment->isNew();
+		if ($__isNew)
+		{
+			// A new comment goes on an entry of this group's blog
+			$__entry = Components\Blog\Models\Entry::oneOrNew(isset($data['entry_id']) ? (int) $data['entry_id'] : 0);
+			if (!$__entry->get('id')
+			 || $__entry->get('scope') != 'group'
+			 || $__entry->get('scope_id') != $this->group->get('gidNumber'))
+			{
+				App::abort(403, Lang::txt('PLG_GROUPS_BLOG_ERROR_PERMISSION_DENIED'));
+			}
+			unset($data['state']);
+		}
+		else
+		{
+			// Keep the stored entry, authorship and state on an edit
+			unset($data['entry_id'], $data['created'], $data['created_by'], $data['state']);
+		}
+		$comment->set($data);
+		if ($__isNew)
+		{
+			$comment->set('created_by', User::get('id'));
+		}
 
 		// Store new content
 		if (!$comment->save())
@@ -974,7 +1047,7 @@ class plgGroupsBlog extends \Hubzero\Plugin\Plugin
 				'scope'       => 'blog.entry.comment',
 				'scope_id'    => $comment->get('id'),
 				'anonymous'   => $comment->get('anonymous', 0),
-				'description' => Lang::txt('PLG_GROUPS_BLOG_ACTIVITY_COMMENT_' . ($data['id'] ? 'UPDATED' : 'CREATED'), $comment->get('id'), '<a href="' . Route::url($entry->link() . '#c' . $comment->get('id')) . '">' . $entry->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_GROUPS_BLOG_ACTIVITY_COMMENT_' . ($data['id'] ? 'UPDATED' : 'CREATED'), $comment->get('id'), '<a href="' . Route::url($entry->link() . '#c' . $comment->get('id')) . '">' . htmlspecialchars((string) ($entry->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title'    => $entry->get('title'),
 					'entry_id' => $entry->get('id'),
@@ -1001,6 +1074,15 @@ class plgGroupsBlog extends \Hubzero\Plugin\Plugin
 			return;
 		}
 
+		// Require POST to prevent accidental deletion by crawlers
+		if (Request::method() !== 'POST')
+		{
+			App::abort(405, Lang::txt('PLG_GROUPS_BLOG_ERROR_METHOD_NOT_ALLOWED'));
+		}
+
+		// Check for request forgeries
+		Request::checkToken();
+
 		if ($this->group->published != 1)
 		{
 			$this->setError(Lang::txt('PLG_GROUPS_BLOG_ERROR_PERMISSION_DENIED'));
@@ -1016,6 +1098,14 @@ class plgGroupsBlog extends \Hubzero\Plugin\Plugin
 
 		// Initiate a blog comment object
 		$comment = Components\Blog\Models\Comment::oneOrFail($id);
+
+		$targetEntry = Components\Blog\Models\Entry::oneOrFail($comment->get('entry_id'));
+		if ($targetEntry->get('scope_id') != $this->group->get('gidNumber')
+		 || ($comment->get('created_by') != User::get('id')
+		 && $this->authorized != 'manager' && $this->authorized != 'admin'))
+		{
+			App::abort(403, Lang::txt('PLG_GROUPS_BLOG_ERROR_PERMISSION_DENIED'));
+		}
 
 		// Delete all comments on an entry
 		$comment->set('state', $comment::STATE_DELETED);
@@ -1046,7 +1136,7 @@ class plgGroupsBlog extends \Hubzero\Plugin\Plugin
 				'action'      => 'deleted',
 				'scope'       => 'blog.entry.comment',
 				'scope_id'    => $comment->get('id'),
-				'description' => Lang::txt('PLG_GROUPS_BLOG_ACTIVITY_COMMENT_DELETED', $comment->get('id'), '<a href="' . Route::url($entry->link()) . '">' . $entry->get('title') . '</a>'),
+				'description' => Lang::txt('PLG_GROUPS_BLOG_ACTIVITY_COMMENT_DELETED', $comment->get('id'), '<a href="' . Route::url($entry->link()) . '">' . htmlspecialchars((string) ($entry->get('title')), ENT_QUOTES, 'UTF-8') . '</a>'),
 				'details'     => array(
 					'title'    => $entry->get('title'),
 					'entry_id' => $entry->get('id'),

@@ -41,7 +41,7 @@ jQuery(document).ready(function (jq) {
 			}
 		})
 		// Add confirm dialog to delete links
-		.on('click', 'a.delete', function (e) {
+		.on('click', 'a.delete, button.delete', function (e) {
 			var res = confirm($(this).attr('data-confirm'));
 			if (!res) {
 				e.preventDefault();
