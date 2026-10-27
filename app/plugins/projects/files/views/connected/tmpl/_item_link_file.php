@@ -71,14 +71,14 @@ if ($itemMimeType && strpos($itemMimeType, 'application/vnd.google') === 0)
 	<?php if ($linkUrl) : ?>
 		<a href="<?php echo $linkUrl; ?>" class="preview file:<?php echo $urlEncodedItemName; ?>" <?php echo $linkTarget; ?>>
 	<?php endif; ?>
-			<?php echo $itemFileNameShort; ?>
+			<?php echo str_replace('&amp;#8230;', '&#8230;', $this->escape($itemFileNameShort)); ?>
 	<?php if ($linkUrl) : ?>
 		</a>
 	<?php endif; ?>
 	<?php if ($handlers && count($handlers) > 0) : ?>
 		<?php foreach ($handlers as $handler) : ?>
 		<a href="<?php echo Route::url($handler['url']); ?>">
-			<?php echo $handler['prompt']; ?>
+			<?php echo $this->escape($handler['prompt']); ?>
 		</a>
 		<?php endforeach; ?>
 	<?php endif; ?>

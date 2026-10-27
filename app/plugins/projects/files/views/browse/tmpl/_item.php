@@ -93,7 +93,7 @@ $ext = $this->item->get('type') == 'file' ? $this->item->get('ext') : 'folder';
 				}
 			}
 		?>
-		<input type="checkbox" value="<?php echo urlencode($this->item->get('name')); ?>" name="<?php echo $this->item->get('type') == 'file' ? 'asset[]' : 'folder[]'; ?>" class="checkasset js<?php echo $checkasset ?>" />
+		<input type="checkbox" value="<?php echo urlencode($this->item->get('name')); ?>" name="<?php echo $this->item->get('type') == 'file' ? 'asset[]' : 'folder[]'; ?>" aria-label="<?php echo $this->escape($this->item->get('name')); ?>" class="checkasset js<?php echo $checkasset ?>" />
 	</td>
 	<?php } ?>
 	<td class="middle_valign nobsp is-relative">
@@ -131,6 +131,7 @@ $ext = $this->item->get('type') == 'file' ? $this->item->get('ext') : 'folder';
 	<?php } ?>
 	<td class="shrinked middle_valign nojs">
 		<?php if ($this->model->access('content')) { ?>
+			<?php // A link, not a form: these rows sit inside #plg-form. Delete by GET only shows the confirmation, which posts with a token ?>
 			<a href="<?php echo Route::url($this->model->link('files') . '&action=delete' . $subdirPath . '&asset=' . urlencode($this->item->get('name'))); ?>" title="<?php echo Lang::txt('PLG_PROJECTS_FILES_DELETE_TOOLTIP'); ?>" class="i-delete">&nbsp;</a>
 			<a href="<?php echo Route::url($this->model->link('files') . '&action=move' . $subdirPath . '&asset=' . urlencode($this->item->get('name'))); ?>" title="<?php echo Lang::txt('PLG_PROJECTS_FILES_MOVE_TOOLTIP'); ?>" class="i-move">&nbsp;</a>
 		<?php } ?>
