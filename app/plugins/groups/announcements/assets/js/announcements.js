@@ -35,7 +35,7 @@ jQuery(document).ready(function(jq){
 			//set cookie
 			document.cookie = 'group_announcement_' + id + '=closed; expires=' + date.toGMTString() + ';';
 		})
-		.on('click', 'a.delete', function(event) {
+		.on('click', 'a.delete, button.delete', function(event) {
 			if (confirm($(this).attr('data-confirm'))) {
 				return true;
 			}
