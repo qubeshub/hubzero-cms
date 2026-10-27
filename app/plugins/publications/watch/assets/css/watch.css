@@ -17,10 +17,10 @@
 	padding: 1em;
 	margin: 2em 0;
 }
-.item-watch p:first-child {
+.item-watch > :first-child {
 	margin-top: 0;
 }
-.item-watch p:last-child {
+.item-watch > :last-child {
 	margin-bottom: 0;
 }
 .item-watch.watching {
@@ -28,4 +28,9 @@
 }
 .item-watch .btn {
 	display: block;
+	width: 100%;
+}
+.item-watch button.btn {
+	box-sizing: border-box;
+	width: 100%;
 }
