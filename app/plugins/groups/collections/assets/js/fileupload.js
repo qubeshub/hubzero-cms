@@ -16,10 +16,16 @@ jQuery(document).ready(function(jq){
 		var linkr = $('#link-adder');
 
 		$('#ajax-uploader-list')
-			.on('click', 'a.delete', function (e){
+			.on('click', 'a.delete, button.delete', function (e){
 				e.preventDefault();
-				if ($(this).attr('data-id')) {
-					$.get($(this).attr('href'), {}, function(data) {});
+				// A link added in this session (no data-id) has nothing stored to delete
+				if ($(this).is('button') && $(this).attr('data-id')) {
+					var url = $(this).attr('formaction');
+
+					if (!/[?&]no_html=/.test(url)) {
+						url += (url.indexOf('?') == -1 ? '?' : '&') + 'no_html=1';
+					}
+					$.post(url, $(this.form).serialize(), function(data) {});
 				}
 				$(this).parent().parent().remove();
 			});

@@ -40,13 +40,13 @@ $base = 'index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') .
 					</span>
 				</p>
 			<?php } else { ?>
-				<p class="typeof <?php echo $item->get('type'); ?>">
+				<p class="typeof <?php echo $this->escape($item->get('type')); ?>">
 					<?php echo $this->escape($item->type('title')); ?>
 				</p>
 			<?php } ?>
 		</div><!-- / .attribution -->
 		<?php
-		$this->view('default_' . $item->type(), 'post')
+		$this->view('default_' . $item->layout(__DIR__, 'default_'), 'post')
 		     ->set('name', $this->name)
 		     ->set('option', $this->option)
 		     ->set('group', $this->group)
@@ -78,9 +78,9 @@ $base = 'index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') .
 					<span><?php echo Lang::txt('Edit'); ?></span>
 				</a>
 		<?php } else { ?>
-				<a class="vote <?php echo ($item->get('voted')) ? 'unlike' : 'like'; ?>" data-id="<?php echo $this->post->get('id'); ?>" data-text-like="<?php echo Lang::txt('Like'); ?>" data-text-unlike="<?php echo Lang::txt('Unlike'); ?>" href="<?php echo Route::url($base . '&scope=post/' . $this->post->get('id') . '/vote'); ?>">
+				<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&scope=post/' . $this->post->get('id') . '/vote'); ?>" class="vote <?php echo ($item->get('voted')) ? 'unlike' : 'like'; ?>" data-id="<?php echo $this->post->get('id'); ?>" data-text-like="<?php echo Lang::txt('Like'); ?>" data-text-unlike="<?php echo Lang::txt('Unlike'); ?>">
 					<span><?php echo ($item->get('voted')) ? Lang::txt('Unlike') : Lang::txt('Like'); ?></span>
-				</a>
+				</button>
 		<?php } ?>
 				<a class="comment" data-id="<?php echo $this->post->get('id'); ?>" href="<?php echo Route::url($base . '&scope=post/' . $this->post->get('id') . '/comment'); ?>">
 					<span><?php echo Lang::txt('Comment'); ?></span>
@@ -93,9 +93,9 @@ $base = 'index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') .
 					<span><?php echo Lang::txt('Delete'); ?></span>
 				</a>
 		<?php } else if ($this->post->get('created_by') == User::get('id') || $this->params->get('access-edit-item')) { ?>
-				<a class="unpost" data-id="<?php echo $this->post->get('id'); ?>" href="<?php echo Route::url($base . '&scope=post/' . $this->post->get('id') . '/remove'); ?>">
+				<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&scope=post/' . $this->post->get('id') . '/remove'); ?>" class="unpost" data-id="<?php echo $this->post->get('id'); ?>">
 					<span><?php echo Lang::txt('Remove'); ?></span>
-				</a>
+				</button>
 		<?php } ?>
 			</div><!-- / .actions -->
 	<?php }*/ ?>
@@ -107,10 +107,18 @@ $base = 'index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') .
 			</a>
 			<p>
 				<?php
+				// $who already holds the escaped POST creator's name. It used to be
+				// re-linked around $name, which is the ITEM creator's name and is
+				// assigned only inside the branch far above that tests
+				// $item->get('type') for 'file' or 'collection'. So on a post of
+				// any other stored type the variable did not exist and PHP 8 made
+				// the whole page a 500, and on those two it named the wrong person.
+				// (An image or text post does not get this far: the layout
+				// dispatch above fataled on it first.)
 				$who = $this->escape(stripslashes($this->post->creator()->get('name')));
 				if (in_array($this->post->creator()->get('access'), User::getAuthorisedViewLevels()))
 				{
-					$who = '<a href="' . Route::url($this->post->creator()->link()) . '">' . $name . '</a>';
+					$who = '<a href="' . Route::url($this->post->creator()->link()) . '">' . $who . '</a>';
 				}
 
 				$where = '<a href="' . Route::url($base . '&task=' . $this->collection->get('alias')) . '">' . $this->escape(stripslashes($this->collection->get('title'))) . '</a>';
@@ -148,7 +156,7 @@ $base = 'index.php?option=' . $this->option . '&cn=' . $this->group->get('cn') .
 						</span>
 					</p>
 					<blockquote>
-						<p><?php echo stripslashes($comment->content); ?></p>
+						<p><?php echo $this->escape(stripslashes($comment->content)); ?></p>
 					</blockquote>
 				</div>
 			</div>
