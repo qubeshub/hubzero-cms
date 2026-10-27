@@ -88,9 +88,7 @@ if ($this->config->get('access-manage-section')) {
 						<?php } ?>
 						<?php if ($this->config->get('access-edit-section') || $this->config->get('access-delete-section')) { ?>
 							<?php if ($this->config->get('access-delete-section')) { ?>
-								<a class="icon-delete delete" href="<?php echo Route::url($base . '&scope=' . $section->get('alias') . '/delete'); ?>" title="<?php echo Lang::txt('PLG_GROUPS_FORUM_DELETE'); ?>">
-									<span><?php echo Lang::txt('PLG_GROUPS_FORUM_DELETE'); ?></span>
-								</a>
+								<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '&scope=' . $section->get('alias') . '/delete'); ?>" class="icon-delete delete" title="<?php echo Lang::txt('PLG_GROUPS_FORUM_DELETE'); ?>"><span><?php echo Lang::txt('PLG_GROUPS_FORUM_DELETE'); ?></span></button>
 							<?php } ?>
 							<?php if ($this->config->get('access-edit-section') && $this->edit != $section->get('alias')) { ?>
 								<a class="icon-edit edit" href="<?php echo Route::url($base . '&scope=' . $section->get('alias') . '/edit#s' . $section->get('id')); ?>" title="<?php echo Lang::txt('PLG_GROUPS_FORUM_EDIT'); ?>">
@@ -153,9 +151,7 @@ if ($this->config->get('access-manage-section')) {
 											</a>
 										<?php } ?>
 										<?php if ($this->config->get('access-delete-category')) { ?>
-											<a class="icon-delete delete tooltips" title="<?php echo Lang::txt('PLG_GROUPS_FORUM_DELETE_CATEGORY'); ?>" href="<?php echo Route::url($row->link('delete')); ?>" title="<?php echo Lang::txt('PLG_GROUPS_FORUM_DELETE'); ?>">
-												<span><?php echo Lang::txt('PLG_GROUPS_FORUM_DELETE'); ?></span>
-											</a>
+											<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($row->link('delete')); ?>" class="icon-delete delete tooltips" title="<?php echo Lang::txt('PLG_GROUPS_FORUM_DELETE_CATEGORY'); ?>"><span><?php echo Lang::txt('PLG_GROUPS_FORUM_DELETE'); ?></span></button>
 										<?php } ?>
 									</td>
 								<?php } ?>

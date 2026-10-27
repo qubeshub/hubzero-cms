@@ -22,7 +22,7 @@ $bgcolor = '#f1f1f1';
 $bdcolor = '#e1e1e1';
 
 // Text for preheader
-$preheader = (!$this->post->get('anonymous') ? $this->post->creator->get('name') : Lang::txt('JANONYMOUS')) . ' said "' . $this->post->comment . '" | ';
+$preheader = (!$this->post->get('anonymous') ? $this->escape($this->post->creator->get('name')) : Lang::txt('JANONYMOUS')) . ' said "' . $this->escape($this->post->comment) . '" | ';
 ?>
 
 <!-- Start Preheader -->
@@ -126,7 +126,7 @@ $preheader = (!$this->post->get('anonymous') ? $this->post->creator->get('name')
 									<img width="50" src="<?php echo Request::root() . '/members/' . $this->post->created_by . '/Image:thumb.png'; ?>" alt="Post author"/>
 								</th>
 								<th style="text-align: left; padding-left: 10px;" align="left" valign="top">
-									<strong><a href="<?php echo Request::root() . 'members/' . $this->post->created_by; ?>"><?php echo (!$this->post->get('anonymous')) ? $this->post->creator->get('name') : Lang::txt('JANONYMOUS'); ?></a></strong>
+									<strong><a href="<?php echo Request::root() . 'members/' . $this->post->created_by; ?>"><?php echo (!$this->post->get('anonymous')) ? $this->escape($this->post->creator->get('name')) : Lang::txt('JANONYMOUS'); ?></a></strong>
 								</th>
 								<th style="text-align: right; color: #666; font-size: 0.9em;"" align="right" valign="top">
 									<?php echo Lang::txt('PLG_GROUPS_FORUM_CREATED', $this->post->created('time'), $this->post->created('date')); ?>
@@ -150,7 +150,7 @@ $preheader = (!$this->post->get('anonymous') ? $this->post->creator->get('name')
 										{
 											$attachment->set('description', $attachment->get('filename'));
 										}
-										echo '<p class="attachment" style="margin: 0.5em 0; padding: 0 0 0 0.5em; text-align: left;"><a class="' . ($attachment->isImage() ? 'img' : 'file') . '" data-filename="' . $attachment->get('filename') . '" href="' . $base . '/' . trim(Route::url($this->thread->link()), '/') . '/' . $attachment->get('post_id') . '/' . $attachment->get('filename') . '">' . $attachment->get('description') . '</a></p>';
+										echo '<p class="attachment" style="margin: 0.5em 0; padding: 0 0 0 0.5em; text-align: left;"><a class="' . ($attachment->isImage() ? 'img' : 'file') . '" data-filename="' . $this->escape($attachment->get('filename')). '" href="' . $base . '/' . trim(Route::url($this->thread->link()), '/') . '/' . $attachment->get('post_id') . '/' . $this->escape($attachment->get('filename')) . '">' . $this->escape($attachment->get('description')) . '</a></p>';
 									}
 									?>
 								</div>

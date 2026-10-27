@@ -227,9 +227,7 @@ $this->css()
 												</a>
 											<?php } ?>
 											<?php if ($this->config->get('access-delete-thread')) { ?>
-												<a class="icon-delete delete" href="<?php echo Route::url($base . '/' . $row->get('id') . '/delete')  . $sortingQueryString; ?>">
-													<?php echo Lang::txt('PLG_GROUPS_FORUM_DELETE'); ?>
-												</a>
+												<button type="submit" form="hz-post-action" formaction="<?php echo Route::url($base . '/' . $row->get('id') . '/delete') . $sortingQueryString; ?>" class="icon-delete delete"><?php echo Lang::txt('PLG_GROUPS_FORUM_DELETE'); ?></button>
 											<?php } ?>
 										</td>
 									<?php } ?>
