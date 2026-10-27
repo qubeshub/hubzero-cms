@@ -62,7 +62,7 @@ class RecentPageMacro extends WikiMacro
 			}
 			if (isset($args[1]))
 			{
-				$cls = $args[1];
+				$cls = preg_replace('/[^A-Za-z0-9_\- ]/', '', $args[1]);
 			}
 			if (isset($args[2]))
 			{
@@ -95,7 +95,7 @@ class RecentPageMacro extends WikiMacro
 		{
 			foreach ($rows as $row)
 			{
-				$txt = strip_tags($row->version->get('pagehtml'));
+				$txt = strip_tags((string) $row->version->get('pagehtml'));
 				$txt = str_replace(array("\n", "\r", "\t", '   '), ' ', $txt);
 				$txt = trim($txt);
 
@@ -105,7 +105,7 @@ class RecentPageMacro extends WikiMacro
 					$html .= ' class="' . $cls . '"';
 				}
 				$html .= '>' . "\n";
-				$html .= "\t" . '<h3><a href="' . Route::url($row->link()) . '">' . stripslashes($row->title) . '</a></h3>' . "\n";
+				$html .= "\t" . '<h3><a href="' . Route::url($row->link()) . '">' . htmlspecialchars(stripslashes((string) $row->title), ENT_QUOTES, 'UTF-8') . '</a></h3>' . "\n";
 				$html .= "\t" . '<p class="modified-date">';
 				if ($row->get('version') > 1)
 				{
