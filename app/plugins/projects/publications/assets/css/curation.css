@@ -395,7 +395,19 @@
 		display: block;
 		text-align: right;
 	}
+/* The remove control is a <button> (it posts with a token) */
+.item-options button.item-remove {
+	-webkit-appearance: none;
+	appearance: none;
+	background: none;
+	border: none;
+	margin: 0;
+	padding: 0;
+	cursor: pointer;
+	font: inherit;
+}
 	.item-options a:before,
+.item-options button.item-remove:before,
 	.starred:before,
 	a.item-download:before {
 		width: 22px;
@@ -406,7 +418,8 @@
 		border: none;
 		content: "";
 	}
-	.item-options a:hover:before {
+	.item-options a:hover:before,
+	.item-options button.item-remove:hover:before {
 		color: #5ec1da;
 	}
 	.item-options a.item-moveup,
@@ -444,7 +457,8 @@
 	.item-options a.item-edit:before {
 		content: "\270D";
 	}
-	.item-options a.item-remove:before {
+.item-options a.item-remove:before,
+.item-options button.item-remove:before {
 		content: "\f014";
 	}
 	.item-options a.item-default:before,
