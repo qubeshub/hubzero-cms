@@ -119,6 +119,7 @@ class Miner extends Obj implements Provider
 	 */
 	public function records($filters = array())
 	{
+		$gid = 0;
 		if (isset($filters['set']) && $filters['set'])
 		{
 			if (!preg_match('/^\bpublications(?:\:)?(.+)?\b/i', $filters['set'], $matches))
@@ -135,7 +136,6 @@ class Miner extends Obj implements Provider
 					return '';
 				}
 			} else {
-				$gid = 0;
 				$set = '';
 			}
 			$this->set('type', $set);
@@ -396,12 +396,18 @@ class Miner extends Obj implements Provider
 		}
 
 		$this->database->setQuery(
-			"SELECT pa.name
+			"SELECT pa.name, pa.user_id
 			FROM `#__publication_authors` AS pa
 			WHERE (pa.role IS NULL OR pa.role != 'submitter') AND pa.status=1 AND pa.publication_version_id=" . $this->database->quote($record->version_id) . "
 			ORDER BY pa.ordering"
 		);
-		$record->creator = $this->database->loadColumn();
+		$creators = $this->database->loadObjectList();
+		foreach ($creators as $creator)
+		{
+			$this->database->setQuery("SELECT profile_value FROM `#__user_profiles` WHERE user_id = " . $this->database->quote($creator->user_id) . " AND profile_key='orcid'");
+			$orcid = $this->database->loadResult();
+			$record->creator[] = $creator->name . (!empty($orcid) ? ", " . $orcid : "");
+		}
 
 		$this->database->setQuery(
 			"SELECT L.url
