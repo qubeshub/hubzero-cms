@@ -83,7 +83,7 @@
 		<div class="result-tags">
 			<ul class="tags">
 				<?php foreach (explode(',', $this->result['keywords']) as $kw): ?>
-					<li><a class="tag" href="<?php echo Route::url('index.php?option=com_search&terms=' . trim($kw)); ?>"><?php echo $kw; ?></a></li>
+					<li><a class="tag" href="<?php echo Route::url('index.php?option=com_search&terms=' . urlencode(trim($kw))); ?>"><?php echo $this->escape(trim($kw)); ?></a></li>
 				<?php endforeach; ?>
 			</ul>
 		</div>

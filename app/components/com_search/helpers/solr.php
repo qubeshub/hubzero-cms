@@ -13,6 +13,8 @@ use \Hubzero\Search\Index;
 use stdClass;
 use Solarium;
 use Component;
+use Config;
+use Lang;
 
 /**
  * Solr helper class
@@ -108,7 +110,7 @@ class SolrHelper
 		$selected = array();
 		foreach ($fl as $leaf_child) {
 			$path = array();
-			if ($fa = FocusArea::oneOrFail($leaf_child)) {
+			if ($fa = FocusArea::one($leaf_child)) {
 				$child = $fa;
 				$ctag = $child->tag->tag;
 				$parent = $child->parents()->row();
