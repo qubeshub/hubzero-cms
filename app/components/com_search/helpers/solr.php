@@ -264,7 +264,8 @@ class SolrHelper
 	{
 		if ($id != null)
 		{
-			return $this->index->delete(array('id' => $id));
+			// The adapter returns null on success, otherwise false or an error message
+			return $this->index->delete(array('id' => $id)) === null;
 		}
 		else
 		{
