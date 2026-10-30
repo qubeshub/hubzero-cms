@@ -48,7 +48,8 @@ $this->css('tags.css')
 			if (count($tf) > 0) {
 				echo $tf[0];
 			} else {
-				echo '<textarea name="tags" id="tags" rows="6" cols="35">' . $this->keywords . '</textarea>' . "\n";
+				// keywords already carries &quot; and &#44; (see PubCloud::render), so don't double-encode
+				echo '<textarea name="tags" id="tags" rows="6" cols="35">' . htmlspecialchars($this->keywords, ENT_COMPAT, 'UTF-8', false) . '</textarea>' . "\n";
 			}
 			?>
 		</div>

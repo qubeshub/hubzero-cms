@@ -21,7 +21,7 @@ echo $complete ? ' el-complete' : ' el-incomplete'; ?> freezeblock">
 	echo $this->elHtml; 
 	$keywords = $this->pub->getTagsForEditing(array('type' => 'keywords'));
 	if ($keywords) {
-		echo '<strong>Keywords</strong>: ' . $keywords;
+		echo '<strong>Keywords</strong>: ' . $this->escape($keywords);
 	}
 ?>
 </div>

@@ -92,9 +92,9 @@ $placeholder = $this->row->title && $this->row->title != $defaultTitle ? $this->
 							<span><?php echo $dirpath; ?> <input type="text" name="filename" maxlength="100" value="<?php echo $this->escape(basename($this->row->path)); ?>" /></span>
 						</p>
 					<?php } ?>
-					<label for="access" class="<?php echo (Component::params('com_publications')->get('instructor_only') ? '' : 'hidden'); ?>">
+					<label for="attachment-access" class="<?php echo (Component::params('com_publications')->get('instructor_only') ? '' : 'hidden'); ?>">
 						<span class="leftshift faded"><?php echo ucfirst(Lang::txt('PLG_PROJECTS_PUBLICATIONS_FILE_ACCESS')); ?>:</span>
-						<input type="checkbox" name="access" value="1" <?php echo ($this->row->access ? 'checked' : ''); ?> />
+						<input type="checkbox" id="attachment-access" name="access" value="1" <?php echo ($this->row->access ? 'checked' : ''); ?> />
 					</label>
 				<?php } ?>
 

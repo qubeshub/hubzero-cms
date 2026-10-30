@@ -91,16 +91,6 @@ $department = $author->department;
 						?>
 					</label>
 					<div class="clear"></div>
-					<label class="display_inline">
-						<span class="faded"><?php echo ucfirst(Lang::txt('PLG_PROJECTS_PUBLICATIONS_AUTHORS_AUTHOR_SCHOOL_DEPARTMENT')); ?>*:</span>
-						<input type="text" name="department" value="<?php echo $department; ?>" maxlength="255" />
-						<?php 
-							if (\Component::params('com_publications')->get('department')) { 
-								echo "<div id='autocomplete-department' class='departmentAvailable'></div>";	
-							} 
-						?>
-					</label>
-					<div class="clear"></div>
 					<label for="organization">
 						<span class="leftshift faded"><?php echo ucfirst(Lang::txt('PLG_PROJECTS_PUBLICATIONS_AUTHORS_AUTHOR_ORGANIZATION')); ?>*:</span>
 						<input type="text" name="organization" class="long" value="<?php echo (isset($author->organization) && $author->organization) ? htmlspecialchars($author->organization == null ? '' : $author->organization) : htmlspecialchars($author->p_organization == null ? '' : $author->p_organization); ?>" maxlength="255" />
@@ -124,12 +114,6 @@ $department = $author->department;
 						<label for="email">
 							<span class="leftshift faded"><?php echo ucfirst(Lang::txt('PLG_PROJECTS_PUBLICATIONS_AUTHORS_AUTHOR_EMAIL')); ?>:</span>
 							<input type="text" name="email" class="long" value="<?php echo $this->escape($author->p_email ? $author->p_email : ''); ?>" maxlength="255" /><span class="optional"><?php echo Lang::txt('OPTIONAL'); ?></span>
-						</label>
-						<div class="clear"></div>
-					<?php } else { ?>
-						<label for="email">
-							<span class="leftshift faded"><?php echo ucfirst(Lang::txt('PLG_PROJECTS_PUBLICATIONS_AUTHORS_AUTHOR_EMAIL')); ?>:</span>
-							<input type="text" name="email" class="long" value="<?php echo $author->p_email ? $author->p_email : ''; ?>" maxlength="255" /><span class="optional"><?php echo Lang::txt('OPTIONAL'); ?></span>
 						</label>
 						<div class="clear"></div>
 					<?php } ?>
