@@ -214,8 +214,35 @@ jQuery(document).ready(function(jq){
 		}
 	});
 
-	// Handle link navigation
-	$(document).on('click', '.fancybox-inner a:not(.primary):not(.google):not(.new-pub)', function(e) {
+	// Join group pop-up. Joining is a posted form now, so a join link opens
+	// the confirm page (open groups) or request form (restricted groups) here
+	// instead of leaving the page. Logged-in users only: a guest's join link
+	// would answer with a redirect to the login page.
+	if (HUB.template.accountTrigger.length) {
+		$('a[href]').filter(function() {
+			return /\/groups\/[^\/?#]+\/join(?:[?#]|$)/.test(this.getAttribute('href'));
+		}).fancybox({
+			type: 'ajax',
+			autoSize: false,
+			width: 600,
+			height: 'auto',
+			tpl: {
+				wrap:'<div class="fancybox-wrap"><div class="fancybox-skin"><div class="fancybox-outer"><div id="fancybox-message-container"></div><div id="sbox-content" class="fancybox-inner group-join"></div></div></div></div>'
+			},
+			beforeLoad: function() {
+				this.href = this.href.nohtml();
+			}
+		});
+	}
+
+	$(document).on('click', '.fancybox-inner .fancybox-close-action', function(e) {
+		e.preventDefault();
+		$.fancybox.close(true);
+	});
+
+	// Handle link navigation (not in the join group pop-up, whose links -- the
+	// group's restricted message, the editor toolbar -- should act normally)
+	$(document).on('click', '.fancybox-inner:not(.group-join) a:not(.primary):not(.google):not(.new-pub)', function(e) {
 		e.preventDefault();
 
 		var target = $(this);
