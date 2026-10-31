@@ -443,7 +443,7 @@ $option = 'com_groups';
 									if ($row)
 									{
 										$html .= '<span class="reason" data-title="' . Lang::txt('PLG_GROUPS_MEMBERS_REASON_FOR_REQUEST') . '">';
-										$html .= '<span class="reason-reason">'.$this->escape(stripslashes($row->reason)).'</span>';
+										$html .= '<span class="reason-reason">'.\Hubzero\Utility\Sanitize::html((string) $row->reason).'</span>';
 										$html .= '<span class="reason-date">'.Date::of($row->date)->toLocal('F d, Y @ g:ia').'</span>';
 										$html .= '</span>';
 									}
