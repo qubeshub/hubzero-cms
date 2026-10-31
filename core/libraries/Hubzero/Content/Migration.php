@@ -121,7 +121,8 @@ class Migration
 					}
 
 					// Does the directory conform to extension naming conventions?
-					if (strstr($directory, '.') || strstr($directory, ' '))
+					// Skip soft-deleted/disabled dirs prefixed with '_'.
+					if (strstr($directory, '.') || strstr($directory, ' ') || $directory[0] === '_')
 					{
 						continue;
 					}
@@ -147,7 +148,7 @@ class Migration
 
 				foreach ($directories as $directory)
 				{
-					if (!is_dir($base . DS . $directory))
+					if (!is_dir($base . DS . $directory) || $directory[0] === '_')
 					{
 						continue;
 					}
@@ -157,7 +158,8 @@ class Migration
 					foreach ($subdirectories as $subdirectory)
 					{
 						// Does the directory conform to extension naming conventions?
-						if (strstr($subdirectory, '.') || strstr($subdirectory, ' '))
+						// Skip soft-deleted/disabled dirs prefixed with '_'.
+						if (strstr($subdirectory, '.') || strstr($subdirectory, ' ') || $subdirectory[0] === '_')
 						{
 							continue;
 						}
