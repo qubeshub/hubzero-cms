@@ -50,7 +50,7 @@ $this->css()
 
         <h5>Get credit for your teaching scholarship</h5>
         <div class="contribute-descriptor">
-          <img src="app/components/com_publications/site/assets/img/chart.png" />
+          <img src="app/components/com_publications/site/assets/img/chart.png" alt="" />
           <div>
             <p>Participating in OER is valuable work that you should receive credit for! QUBES resources provide multiple ways to document your contributions and track your impact:</p>
             <ul>
@@ -63,7 +63,7 @@ $this->css()
 
         <h5>Share, Improve, Broaden Impact of Visibility and Engagement</h5>
         <div class="contribute-descriptor">
-          <img src="app/components/com_publications/site/assets/img/orbit2.png" />
+          <img src="app/components/com_publications/site/assets/img/orbit2.png" alt="" />
           <p><a href="https://qubeshub.org/community/partners">Many educational projects and professional societies</a> use QUBES to further broaden the impacts of their work. The BioQUEST <a href="https://qubeshub.org/community/fmns">Faculty Mentoring Networks</a> (FMNs) provide partners with an opportunity to share and improve their materials with faculty who implement these resources in their classrooms - providing valuable real-time feedback. When you share on QUBES, you are also searchable in the <a href="https://mason.deepwebaccess.com/mason__MasonLibrariesOpenEducationResources_5f4/desktop/en/search.html">Mason Open Metafinder</a> database.</p>
         </div>
       </div>

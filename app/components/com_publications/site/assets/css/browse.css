@@ -157,8 +157,11 @@ section.section {
   transform: rotate(-45deg);
 }
 
-.text-search-options h5:last-of-type {
+.text-search-options label[for="search"] {
   margin-top: 0.5em;
+  display: block;
+  font-weight: bold;
+  font-size: 0.83em;
 }
 .text-search-options #reset-btn {
   margin-top: 1em;

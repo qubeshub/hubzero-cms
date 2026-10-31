@@ -1291,7 +1291,10 @@ class Publications extends SiteController
 		if (!$no_html) {
 			$this->view->display();
 		} else {
+			$title = htmlspecialchars(stripslashes($this->model->version->get('title')) . ': ' . Lang::txt('COM_PUBLICATIONS_LICENSE'), ENT_QUOTES);
+			echo '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>' . $title . '</title></head><body>';
 			echo $this->view->loadTemplate();
+			echo '</body></html>';
 			return false;
 		}
 	}
