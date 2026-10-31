@@ -43,6 +43,18 @@ $(document).ready(function () {
     }
 
     /*
+    Build an active-filter pill. Labels and search text are set with .text()
+    and .attr() rather than interpolated into HTML, so a search term or tag
+    label can't inject markup.
+    */
+    const activeFilterItem = (cls, value, label) =>
+        $('<li>').addClass(cls).attr('value', value).append(
+            $('<button>').addClass('active-filter-tag').text(label).append(
+                $('<span>').addClass('close-active-filter-tag')
+            )
+        )
+
+    /*
     Add active filters
     @param input - selector i.e. $('input[value="#"]')
     @param type - string = checkbox || search
@@ -67,7 +79,7 @@ $(document).ready(function () {
                         $('input#active-tags').val(tags)
 
                         // Add active filter
-                        $('.active-filters').append(`<li class='checked-tag' value='${getFl.attr('value')}'><button class='active-filter-tag'>${getLabel}<span class='close-active-filter-tag'></span></button></li>`)
+                        $('.active-filters').append(activeFilterItem('checked-tag', getFl.attr('value'), getLabel))
                     } else {
                         // Check if filter is not in the tags array, add it
                         if (jQuery.inArray(getLabel, tags) === -1) {
@@ -76,7 +88,7 @@ $(document).ready(function () {
                             $('input#active-tags').val(tags)
 
                             // Add active filter
-                            $('.active-filters').append(`<li class='checked-tag' value='${getFl.attr('value')}'><button class='active-filter-tag'>${getLabel}<span class='close-active-filter-tag'></span></button></li>`)
+                            $('.active-filters').append(activeFilterItem('checked-tag', getFl.attr('value'), getLabel))
                         }
                     }
                 })
@@ -89,7 +101,7 @@ $(document).ready(function () {
              $('input#active-tags').val(tags)
             
              // Add active filter
-            $('.active-filters').append(`<li class='checked-tag' value='${input.attr('value')}'><button class='active-filter-tag'>${input.siblings('.tagfa-label').text()}<span class='close-active-filter-tag'></span></button></li>`)
+            $('.active-filters').append(activeFilterItem('checked-tag', input.attr('value'), input.siblings('.tagfa-label').text()))
         }
 
         if (type === 'search') {
@@ -97,11 +109,11 @@ $(document).ready(function () {
             const searchValue = input.val()
             
             if (!activeTags.length) {
-            $('.active-filters').append(`<li class='search-data' value='${searchValue}'><button class='active-filter-tag'>${searchValue}<span class='close-active-filter-tag'></span></button></li>`)
+            $('.active-filters').append(activeFilterItem('search-data', searchValue, searchValue))
             } else {
                 // Replace current active tag
                 activeTags.remove()
-                $('.active-filters').append(`<li class='search-data' value='${searchValue}'><button class='active-filter-tag'>${searchValue}<span class='close-active-filter-tag'></span></button></li>`)
+                $('.active-filters').append(activeFilterItem('search-data', searchValue, searchValue))
 
             }
         }
@@ -201,21 +213,19 @@ $(document).ready(function () {
     let tags = []
 
     // If loading with incoming fl - add appropriate active tags
+    // fl comes from the URL, so match checkboxes by comparing values rather
+    // than building a selector from it (a stray quote would throw and stop
+    // the rest of this handler), and skip values that match no filter.
     if ($('input#fl').val().length) {
-        const getValue = $('input#fl').val()
-        const getInput = $(`input[value="${getValue}"]`)
-      
-        // Check if there are multi fl values
-        if (getValue.indexOf(',') !== -1) {
-            const values = getValue.split(',')
-            values.forEach(function (values) {
-                const input = $(`input[value="${values}"]`)
-                
-                addActiveFilter(input, 'checkbox' )
+        $('input#fl').val().split(',').forEach(function (value) {
+            const input = $('input[type=checkbox]').filter(function () {
+                return this.value === value
             })
-        } else {
-            addActiveFilter(getInput, 'checkbox') 
-        }
+
+            if (input.length) {
+                addActiveFilter(input, 'checkbox')
+            }
+        })
     }
 
     // If loading with incoming search

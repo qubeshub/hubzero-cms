@@ -34,7 +34,7 @@ switch ($this->stage) {
         $checked = in_array($pctag, $this->props['filters']);
         $html .= '<li class="filter-option" ' . ($count == 0 && !$checked ? ' style="display:none;"' : '') . '>';
         $html .= '<label>';
-        $html .= '<input class="option" type="checkbox" id="tagfa-' . $ctag . '" name="tagfa-' . $this->props['root'] . '[' . $ptag . '][]" value="' . $this->child->id . '"' . ($checked ? ' checked' : '') . '/><span class="tagfa-label">' . $this->child->label . '</span>';
+        $html .= '<input class="option" type="checkbox" id="tagfa-' . $ctag . '" name="tagfa-' . $this->props['root'] . '[' . $ptag . '][]" value="' . $this->child->id . '"' . ($checked ? ' checked' : '') . '/><span class="tagfa-label">' . htmlspecialchars((string) $this->child->label, ENT_QUOTES, 'UTF-8') . '</span>';
         $html .= '<span class="facet-count">(' . $count . ')</span>';
         $html .= '</label>';
         if (in_array($pctag, $this->props['filters'])) {

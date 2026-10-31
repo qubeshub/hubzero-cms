@@ -495,6 +495,13 @@ class Publications extends SiteController
 		// $sortDir = Request::getString('sortdir', 'desc');
 		$limit = Request::getInt('limit', Config::get('list_limit'));
 		$start = Request::getInt('limitstart', 0);
+		// Cap the page size: every card costs several queries, so an
+		// unbounded ?limit= could exhaust memory in one request (d6800eec06)
+		if ($limit <= 0 || $limit > 100)
+		{
+			$limit = 100;
+		}
+		$start = max(0, $start);
 		$fl = Request::getString('fl', '');
 		$fl = $fl ? explode(',', $fl) : array();
 		$no_html = Request::getInt('no_html', 0);
@@ -531,6 +538,8 @@ class Publications extends SiteController
 			$start,
 			$limit
 		);
+		// Offer no page size above the 100 cap applied to $limit
+		$pageNav->setLimits(array(5, 10, 15, 20, 25, 30, 50, 100));
 		$pageNav->setAdditionalUrlParam('fl', count($fl) > 1 ? implode(",", $fl) : implode($fl));
 		$pageNav->setAdditionalUrlParam('search', $search);
 		$pageNav->setAdditionalUrlParam('sortby', $sortBy);
