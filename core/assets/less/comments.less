@@ -57,6 +57,11 @@
 					margin-right: 0.4em;
 				}
 			}
+			// The links take the site's link colour; an action button beside
+			// them has to be told, or it inherits the white above and vanishes
+			button {
+				color: @linkColor;
+			}
 
 			&:hover a,
 			&:hover button {

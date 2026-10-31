@@ -35,6 +35,12 @@ button:where([form="hz-post-action"]:not(.btn)) {
 	appearance: none;
 }
 
+/* A .btn keeps the button look, but in the page's typeface as the link it
+   replaced had: browsers give buttons their own font, not the inherited one */
+button:where([form="hz-post-action"].btn) {
+	font-family: inherit;
+}
+
 button:where([form="hz-post-action"]:not(.btn)):where(:hover) {
 	text-decoration: underline;
 }
