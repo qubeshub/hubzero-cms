@@ -55,17 +55,19 @@ if (($this->publication->params->get('show_notes')) && $this->publication->get('
 }
 ?>
 
-<h4><?php echo Lang::txt('COM_PUBLICATIONS_DESCRIPTION'); ?></h4>
+<h3><?php echo Lang::txt('COM_PUBLICATIONS_DESCRIPTION'); ?></h3>
 <?php echo $description; ?>
 
 <?php if ($notes) { ?>
-<h4><?php echo Lang::txt('COM_PUBLICATIONS_NOTES'); ?></h4>
+<h3><?php echo Lang::txt('COM_PUBLICATIONS_NOTES'); ?></h3>
 <div class="pub-content">
     <?php echo $notes; ?>
 </div>
 <?php } ?>
 
-<h4 id="citethis"><?php echo Lang::txt('COM_PUBLICATIONS_CITE_THIS'); ?></h4>
+<?php if (!empty($citeinstruct)) { ?>
+<h3 id="citethis"><?php echo Lang::txt('COM_PUBLICATIONS_CITE_THIS'); ?></h3>
 <div class="pub-content">
     <?php echo $citeinstruct; ?>
 </div>
+<?php } ?>

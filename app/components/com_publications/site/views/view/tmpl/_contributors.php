@@ -100,7 +100,7 @@ if ($this->contributors)
 
 	if (count($names) > 0)
 	{
-		$html = '<p>' . ucfirst(Lang::txt('By')) . ' ';
+		$html = '<p>' . ucfirst(Lang::txt('Author(s):')) . ' ';
 		$html .= count($names) > 1 && count($orgs) > 0  ? implode( ', ', $names ) : implode( ', ', $names_s );
 		$html .= '</p>';
 	}

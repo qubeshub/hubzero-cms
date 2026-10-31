@@ -52,8 +52,8 @@
     padding: 0 1em;
   }
 }
-.title-wrapper .title .affiliation {
-  font-style: italic;
+.title-wrapper .title p {
+  line-height: 1.5;
 }
 .title-wrapper .cta-wrapper {
   grid-column: 2/span 2;
@@ -185,7 +185,10 @@
 .content-top .abstract-wrapper .meta-top img {
   width: 5rem;
 }
-.content-top .abstract-wrapper .tags h4 {
+.content-top .abstract-wrapper .meta-top .license {
+  line-height: 1.5;
+}
+.content-top .abstract-wrapper .tags h3, .content-top .abstract-wrapper .tags h4 {
   font-size: 1rem;
 }
 .content-top .abstract-wrapper .high-level-tag-wrapper {
@@ -234,7 +237,7 @@
   padding: 1em;
 }
 .content-top .files-wrapper .element-list {
-  height: 6.5rem;
+  min-height: 6.5rem;
   overflow: hidden;
 }
 .content-top .files-wrapper .element-list .extras {
@@ -252,6 +255,16 @@
 }
 .content-top .files-wrapper ul li img {
   margin-right: 0.2em;
+}
+.content-top .files-wrapper ul li a {
+  display: inline-block;
+  vertical-align: middle;
+  min-width: 24px;
+  min-height: 24px;
+  line-height: 24px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .content-top .files-wrapper .more-files {
   margin: 0.5em;

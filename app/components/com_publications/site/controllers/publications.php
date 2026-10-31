@@ -94,6 +94,17 @@ class Publications extends SiteController
 		// Are we allowing contributions
 		$this->_contributable = Plugin::isEnabled('projects', 'publications') ? true : false;
 
+		// base_url re-points the record's links at a supergroup's publications
+		// page. Only the groups publications plugin sets it, always in this
+		// form; anything else came from the query string and would be
+		// reflected into links and redirects, so drop it for every reader.
+		$baseUrl = Request::getString('base_url', '');
+		if ($baseUrl !== '' && !preg_match('/^index\.php\?option=com_groups&cn=[A-Za-z0-9_-]+&active=publications$/', $baseUrl))
+		{
+			Request::setVar('base_url', '', 'get');
+			Request::setVar('base_url', '', 'post');
+		}
+
 		// Incoming
 		//$this->_incoming();
 		$this->_id      = Request::getInt('id', 0);

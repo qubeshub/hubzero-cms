@@ -45,7 +45,7 @@ $tabOverrides = array(
 ?>
 <div class="wrapper">
 	<div class="title-wrapper">
-		<img alt="Resource Image" class="resource-image" src="<?php echo Route::url($this->publication->link('masterimage')) ?>" />
+		<img alt="" class="resource-image" src="<?php echo Route::url($this->publication->link('masterimage')) ?>" />
 		<div class="title">
 			<?php echo \Templates\Bmc\Publications\Helpers\Html::title($this->publication); ?>
 
@@ -174,7 +174,7 @@ $tabOverrides = array(
 
 	<div class="content-bottom">
 		<div class="content-menu">
-			<nav>
+			<nav aria-label="Publication sections">
 				<?php
 				echo \Templates\Bmc\Publications\Helpers\Html::tabs(
 					$this->base_url,
