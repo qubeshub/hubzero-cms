@@ -29,6 +29,7 @@ defined('_HZEXEC_') or die();
 
 				<input type="hidden" name="id" value="<?php echo $this->model->get('id'); ?>" />
 				<input type="hidden" name="task" value="fixownership" />
+				<?php echo Html::input('token'); ?>
 				<input type="hidden" name="option" value="<?php echo $this->option; ?>" />
 
 				<div class="form-group form-check">

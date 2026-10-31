@@ -913,6 +913,11 @@ class Projects extends Base
 			return;
 		}
 
+		// Delete, suspend, reinstate and fixownership change the project, so
+		// they come as a POST with the token: a plain link or an image tag
+		// pointed at /projects/<alias>/delete used to delete the project
+		Request::checkToken();
+
 		// Only managers can change project state
 		if (!$this->model->access('manager'))
 		{

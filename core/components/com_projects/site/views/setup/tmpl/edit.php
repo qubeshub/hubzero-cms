@@ -119,7 +119,7 @@ endif;
 								<?php echo Lang::txt('COM_PROJECTS_CANCEL_PROJECT_NEED'); ?>
 							</p>
 							<p>
-								<a class="btn btn-danger" href="<?php echo Route::url('index.php?option=' . $this->option . '&alias=' . $this->model->get('alias') . '&task=delete'); ?>" id="delproject"><?php echo Lang::txt('JACTION_DELETE'); ?></a>
+								<button type="submit" form="hz-post-action" formaction="<?php echo Route::url('index.php?option=' . $this->option . '&alias=' . $this->model->get('alias') . '&task=delete'); ?>" class="btn btn-danger" id="delproject"><?php echo Lang::txt('JACTION_DELETE'); ?></button>
 							</p>
 						<?php endif; ?>
 					</div>

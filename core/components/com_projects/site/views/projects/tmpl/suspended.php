@@ -37,6 +37,7 @@ if ($result)
 			<fieldset >
 				<input type="hidden" name="id" value="<?php echo $this->model->get('id'); ?>" />
 				<input type="hidden" name="task" value="reinstate" />
+				<?php echo Html::input('token'); ?>
 				<input type="hidden" name="option" value="<?php echo $this->option; ?>" />
 
 				<?php
