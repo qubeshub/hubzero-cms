@@ -48,7 +48,8 @@ class Css extends Base implements CommandInterface
 	 */
 	public function clear()
 	{
-		$cacheDir = PATH_APP . DS . 'cache';
+		// Compiled under the site client's directory (see Document\Assets)
+		$cacheDir = PATH_APP . DS . 'cache' . DS . 'site';
 		$files    = array('site.css', 'site.less.cache');
 
 		// Remove each file
