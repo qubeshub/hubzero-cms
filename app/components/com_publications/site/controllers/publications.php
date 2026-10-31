@@ -1559,7 +1559,7 @@ class Publications extends SiteController
 		$action  = Request::getString('action', '');
 		$active  = Request::getString('active', 'publications');
 		$action  = $this->_task == 'start' ? 'start' : $action;
-		$base 	 = Request::getString('base', 'qubesresource');
+		$base 	 = Request::getCmd('base', 'qubesresource'); // master type alias
 		$ajax    = Request::getInt('ajax', 0);
 		$doiErr  = Request::getInt('doierr', 0);
 

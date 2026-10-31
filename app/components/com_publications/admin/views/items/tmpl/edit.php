@@ -183,7 +183,7 @@ $panels = array(
 					if (count($tf) > 0) {
 						echo $tf[0];
 					} else { ?>
-						<input type="text" name="tags" id="actags" value="<?php echo $this->model->getTagsForEditing(array('type' => 'keywords')); ?>" />
+						<input type="text" name="tags" id="actags" value="<?php echo $this->escape($this->model->getTagsForEditing(array('type' => 'keywords'))); ?>" />
 					<?php } ?>
 				</div>
 			</fieldset>
@@ -198,7 +198,7 @@ $panels = array(
 						foreach ($focusAreas['fas'] as $fa) { ?>
 							<fieldset value="<?php echo ($fa->mandatory_depth ? $fa->mandatory_depth : 0) ?>">
 								<legend>
-									<span class="tooltips" title="<?php echo $fa->about; ?>"><?php echo $fa->label; ?></span>
+									<span class="tooltips" title="<?php echo $this->escape($fa->about); ?>"><?php echo $this->escape($fa->label); ?></span>
 									<?php echo ($fa->mandatory_depth ? '<span class="required">required</span>' : '<span class="optional">optional</span>'); ?>
 								</legend>
 								<?php echo $fa->render('select', array('selected' => $focusAreas['selected'], 'multiple_depth' => $fa->multiple_depth)); ?>

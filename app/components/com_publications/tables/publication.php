@@ -287,7 +287,7 @@ class Publication extends Table
 		}
 
 		if (isset($filters['group_owner'])) {
-			$query .= " AND C.group_owner = " . $filters['group_owner'] . " ";
+			$query .= " AND C.group_owner = " . (int) $filters['group_owner'] . " ";
 		}
 
 		if (isset($filters['minranking']) && $filters['minranking'] != '' && $filters['minranking'] > 0)

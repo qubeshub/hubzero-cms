@@ -13,6 +13,7 @@ use Components\Tags\Models\FocusArea;
 use stdClass;
 use Lang;
 use Request;
+use User;
 
 require_once dirname(dirname(__DIR__)) . DS . 'helpers' . DS . 'tags.php';
 require_once dirname(dirname(__DIR__)) . DS . 'models' . DS . 'cloud.php';
@@ -232,7 +233,7 @@ class Tags extends Base
 		}
 
 		// Get keywords and focus area tags
-		$keywords = preg_split('/,\s*/', $_POST['tags']);
+		$keywords = array_filter(preg_split('/,\s*/', trim(Request::getString('tags', '', 'post'))), 'strlen');
 		$fa_tags = FocusArea::fromObject($pub->master_type)->processTags();
 		$tags = array_merge($keywords, $fa_tags);
 
@@ -243,7 +244,7 @@ class Tags extends Base
 		$this->_parent->_db->setQuery('DELETE FROM `#__tags_object` WHERE tbl = \'publications\' AND objectid = ' . $pub->version->id);
 		$this->_parent->_db->execute();
 		foreach ($tags as $tag) {
-			$rt->add($tag, User::get('id'), 0, 1); // Ignore label
+			$rt->add($tag, $actor ?: User::get('id'), 0, 1); // Ignore label
 		}
 
 		// Reflect the update in curation record

@@ -816,14 +816,16 @@ class Publication extends Base
 	{
 		$publication = new \Components\Publications\Models\Publication($objPA->object_id, 'default');
 
-		$title = $publication->get('title');
-		$abstract = $publication->get('abstract');
-		$description = $publication->get('description');
+		// This page ships in the bundle, so escape the title and URL and
+		// purify the stored abstract and description HTML (4a13f80295)
+		$title = htmlspecialchars((string) $publication->get('title'), ENT_QUOTES, 'UTF-8');
+		$abstract = \Hubzero\Utility\Sanitize::html((string) $publication->get('abstract'));
+		$description = \Hubzero\Utility\Sanitize::html((string) $publication->get('description'));
 		$link = $objPA->path;
 
 		$content = '<html>' . "\n\n";
 		$content .= '<head>' . "\n\n";
-		$content .= '<meta http-equiv="refresh" content="1.5;url=' . $link . '">' . "\n\n";
+		$content .= '<meta http-equiv="refresh" content="1.5;url=' . htmlspecialchars($link, ENT_QUOTES, 'UTF-8') . '">' . "\n\n";
 		$content .= '</head>' . "\n\n";
 		$content .= '<body>' . "\n";
 		$content .= '<p><strong>Title</strong>: ' . $title . "</p>\n\n";

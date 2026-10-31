@@ -835,7 +835,7 @@ class Link extends Base
 	{
 		$content = '<html>' . "\n\n";
 		$content .= '<head>' . "\n\n";
-		$content .= '<meta http-equiv="refresh" content="1.5;url=' . $link . '">' . "\n\n";
+		$content .= '<meta http-equiv="refresh" content="1.5;url=' . htmlspecialchars($link, ENT_QUOTES, 'UTF-8') . '">' . "\n\n";
 		$content .= '</head>' . "\n\n";
 		$content .= '<body>' . "\n";
 		$content .= '<p>Please wait while you are redirected...</p>' . "\n";

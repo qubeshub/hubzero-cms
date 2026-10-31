@@ -657,7 +657,8 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 			break;
 
 			case 'thumb':
-				$src = Helpers\Html::getThumb($this->publication->get('id'), $this->get('id'), $this->publication->config());
+				require_once \Component::path('com_publications') . DS . 'helpers' . DS . 'html.php';
+				$src = \Components\Publications\Helpers\Html::getThumb($this->publication->get('id'), $this->get('id'), $this->publication->config());
 				$link = with(new \Hubzero\Content\Moderator($src, 'public'))->getUrl();
 				// $link = 'index.php?option=com_publications&id=' . $this->get('publication_id') . '&v=' . $this->get('id') . '&media=Image:thumb';
 			break;
@@ -769,9 +770,10 @@ class Version extends Relational implements \Hubzero\Search\Searchable
 	public function stats()
 	{
 		$db = \App::get('db');
-		$query = 'SELECT * FROM (SELECT SUM(page_views) as views, SUM(primary_accesses + support_accesses) as downloads FROM #__publication_logs WHERE publication_version_id=' . $this->get('id') . ') AS views_downloads,
-			(SELECT COUNT(*) as comments FROM #__item_comments WHERE item_type="publications" AND item_id=' . $this->get('id') . ') AS comments,
-			(SELECT COUNT(*) as adaptations FROM `jos_publication_versions` WHERE forked_from=' . $this->get('id') . ' AND state=1) AS adaptations';	
+		$id = (int) $this->get('id');
+		$query = 'SELECT * FROM (SELECT SUM(page_views) as views, SUM(primary_accesses + support_accesses) as downloads FROM #__publication_logs WHERE publication_version_id=' . $id . ') AS views_downloads,
+			(SELECT COUNT(*) as comments FROM #__item_comments WHERE item_type="publications" AND item_id=' . $id . ') AS comments,
+			(SELECT COUNT(*) as adaptations FROM `#__publication_versions` WHERE forked_from=' . $id . ' AND state=1) AS adaptations';	
 		return array($db->setQuery($query)->loadObject()); // Return as an array to match the expected format (otherwise need to update some supergroups)
 	}
 

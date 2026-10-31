@@ -227,14 +227,17 @@ class Curation extends Obj
 
 				// Override tags elements with master manifest
 				if ($b->name == 'tags') {
-					$masterTagsBlockId = null; 
-					foreach ($masterManifest->blocks as $blockId => $block) {
-						if ($block->name == 'tags') {
-							$masterTagsBlockId = $blockId;
+					$masterTagsBlockId = null;
+					foreach ($masterManifest->blocks as $masterBlockId => $masterBlock) {
+						if ($masterBlock->name == 'tags') {
+							$masterTagsBlockId = $masterBlockId;
 							break;
 						}
 					}
-					$b->elements = $masterManifest->blocks->$masterTagsBlockId->elements;
+					// The master manifest may have no tags block (6d3b9c46d2)
+					if ($masterTagsBlockId !== null && isset($masterManifest->blocks->$masterTagsBlockId->elements)) {
+						$b->elements = $masterManifest->blocks->$masterTagsBlockId->elements;
+					}
 				}
 			}
 		}

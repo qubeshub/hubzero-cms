@@ -22,7 +22,7 @@ if ($fas != null)
 	$html = '<ul id="alignment-list" style="position:relative;overflow:auto;">'."\n";
 	foreach ($fas as $fa)
 	{
-		$label = $fa->label;
+		$label = $this->escape($fa->label);
         $id = $fa->id;
 
 		$html .= "\t".'<li class="pick reorder" data-id="' . $id . '" data-depth="' . $depth[$id] . '">'
@@ -43,7 +43,7 @@ if ($fas != null)
 }
 else
 {
-	$html.= '<p class="notice">' . Lang::txt('COM_PUBLICATIONS_NO_AUTHORS') . '</p>';
+	$html = '<p class="notice">' . Lang::txt('COM_PUBLICATIONS_NO_ALIGNMENTS') . '</p>';
 }
 ?>
 
@@ -52,7 +52,7 @@ else
     <select id="select-alignment" class="sidenote" style="width:unset;margin-bottom:10px;" onchange="HUB.PublicationsCuration.addAlignment(this)">
         <?php foreach($fas_all as $fa) { 
             $selected = in_array($fa->id, $fas_ids); ?>
-            <option value="<?php echo $fa->id; ?>" data-depth="<?php echo $depth[$fa->id]; ?>" <?php echo ($selected ? 'disabled selected' : '')?>><?php echo $fa->label . ' (' . $fa->id . ')';?></option>
+            <option value="<?php echo $fa->id; ?>" data-depth="<?php echo $depth[$fa->id]; ?>" <?php echo ($selected ? 'disabled selected' : '')?>><?php echo $this->escape($fa->label) . ' (' . $fa->id . ')';?></option>
         <?php } ?>
     </select>
     <label for="select-alignment" class="sidenote add">Add Alignment</label>

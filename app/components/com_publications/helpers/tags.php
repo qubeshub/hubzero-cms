@@ -506,6 +506,9 @@ class Tags extends \Hubzero\Base\Obj
 
 		$alias1 = is_numeric($tag) ? 'id' : 'tag';
 		$alias2 = is_numeric($tag2) ? 'id' : 'tag';
+		// Tag ids are cast, tag names quoted (c53091b77e)
+		$tagSql  = is_numeric($tag) ? (int) $tag : $this->_db->quote($tag);
+		$tag2Sql = is_numeric($tag2) ? (int) $tag2 : $this->_db->quote($tag2);
 
 		if ($tag || $tag2)
 		{
@@ -525,7 +528,7 @@ class Tags extends \Hubzero\Base\Obj
 
 		$query .= "WHERE V.state = 1 AND V.main = 1 ";
 		if ($type) {
-			$query .= "AND C.master_type=$type ";
+			$query .= "AND C.master_type=" . (int) $type . " ";
 		}
 		$query .= "AND (V.published_up IS NULL OR V.published_up = '0000-00-00 00:00:00' OR V.published_up <= '" . $now . "') ";
 		$query .= "AND (V.published_down IS NULL OR V.published_down = '0000-00-00 00:00:00' OR V.published_down >= '" . $now . "') AND ";
@@ -536,18 +539,18 @@ class Tags extends \Hubzero\Base\Obj
 		{
 			if ($tag && !$tag2)
 			{
-				$query .= "AND (TA.$alias1=$tag) ";
+				$query .= "AND (TA.$alias1=$tagSql) ";
 				$query .= "GROUP BY V.id HAVING uniques=1 ";
 			}
 			else if ($tag2 && !$tag)
 			{
-				$query .= "AND (TA.$alias2=$tag2) ";
+				$query .= "AND (TA.$alias2=$tag2Sql) ";
 				$query .= "GROUP BY V.id HAVING uniques=1 ";
 			}
 			else if ($tag && $tag2)
 			{
-				$query .= "AND (TA.$alias1=$tag) ";
-				$query .= "AND (TA.$alias2=$tag2) ";
+				$query .= "AND (TA.$alias1=$tagSql) ";
+				$query .= "AND (TA.$alias2=$tag2Sql) ";
 				$query .= "GROUP BY V.id HAVING uniques=2 ";
 			}
 		}
