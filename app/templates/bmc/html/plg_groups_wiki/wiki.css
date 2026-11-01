@@ -1,0 +1,46 @@
+/**
+ * Group wiki plugin styles for the bmc template.
+ *
+ * Loads core's plugin stylesheet and layers the QUBESHub changes from
+ * app/plugins/groups/wiki/assets/css/wiki.css on top of it, so that app
+ * override of the plugin's CSS can be retired.
+ */
+@import "/core/plugins/groups/wiki/assets/css/wiki.css";
+
+/* Table of contents: wider box, and no extra indent for nested lists */
+.wikipage .article-toc {
+	width: 350px;
+}
+.wikipage .article-toc ul ul {
+	margin: 0;
+}
+
+/* Admonitions: em-based spacing, and no icon (core's admon-*.png URLs 404) */
+div.admon-caution,
+div.admon-important,
+div.admon-note,
+div.admon-tip,
+div.admon-warning {
+	margin: 1em 1.75em;
+	padding: 0 0 0 5em;
+	background-image: none;
+}
+div.admon-caution p,
+div.admon-important p,
+div.admon-note p,
+div.admon-tip p,
+div.admon-warning p {
+	/* core nudges these down 8px to line up with its icon; use the normal paragraph spacing */
+	margin-top: 1em;
+}
+
+/* Footnotes: tighten the gap between entries */
+.wikipage ol.footnotes li:not(:first-child) {
+	margin: -1em 0 0em 2em;
+}
+
+/* Fixes */
+.tex2jax_ignore a:target:before,
+ol.footnotes a:target:before {
+	display: none;
+}
