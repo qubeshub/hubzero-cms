@@ -44,3 +44,25 @@ div.admon-warning p {
 ol.footnotes a:target:before {
 	display: none;
 }
+
+/* Edit page: attachments list spans the full width of the upload drop area,
+   and file names use the whole row instead of core's 180px scroll box */
+#attachments table {
+	width: 100%;
+	margin-top: 0.75em;
+}
+#attachments tbody td {
+	padding: 0.5em 1em;
+}
+#attachments tbody td span {
+	max-width: none;
+	overflow: visible;
+	overflow-wrap: anywhere;
+}
+
+/* Comments page: supergroup templates' main.css sets `.super-group-content .btn
+   { font-size: 1em }`, which inside .btn-group (font-size: 0) collapses the
+   version dropdown to nothing; give its buttons a real size again */
+.super-group-content #commentlist-title + .btn-group-wrap .btn {
+	font-size: initial;
+}
